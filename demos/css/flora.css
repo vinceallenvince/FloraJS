@@ -1,0 +1,133 @@
+/* http://meyerweb.com/eric/tools/css/reset/ */
+/* v1.0 | 20080212 */
+/* reset */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent;margin:0;padding:0;}body{line-height:1;}ol,ul{list-style:none;}blockquote,q{quotes:none;}blockquote:before,blockquote:after,q:before,q:after{content:none;}:focus{outline:0;}ins{text-decoration:none;}del{text-decoration:line-through;}table{border-collapse:collapse; border-spacing:0;}
+	
+/* */
+
+body {
+	background: #f6edd2;
+	background-image: -webkit-radial-gradient(circle, #fefefe, #f6edd2);
+	background-image: -moz-radial-gradient(circle, #fefefe, #f6edd2);
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	border: 1px solid #999;
+}
+
+.world {
+	background: #000;
+	background-image: -webkit-radial-gradient(circle, #fff, #000);
+	background-image: -webkit-radial-gradient(circle, #fff, #000);
+	position: absolute;
+	margin: 0 auto;
+	z-index: 0;
+	height:600px;
+	width: 900px;
+}
+.mover {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: rgb(234, 53, 86); opacity: 0;
+	z-index: 1;
+}
+.nose {
+	position: absolute;
+	left: 80%;
+	top: 40%;
+	width: 20%; height: 20%;
+	background: rgb(255, 255, 255); 
+}
+.liquid {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: rgb(97, 210, 214);
+	opacity: .5;
+	z-index: 10;
+	border: 3px solid rgba(0,210,214, .5);
+	border-radius: 50px;
+}
+.attractor {
+	position: absolute;
+	background: rgb(237, 222, 69); 
+	opacity: .5; 
+}
+.repeller {
+	position: absolute;
+	background: #0000ff;
+	opacity: .5; 
+}
+.heat {
+	position: absolute;left: 0; top: 0;
+	width: 0; height: 0;
+}
+.cold {
+	position: absolute;left: 0; top: 0;
+	width: 0; height: 0;
+	border-radius: 50px;
+}
+.light {
+	position: absolute;left: 0; top: 0;
+	width: 0; height: 0;
+	border-radius: 50px;
+}
+.oxygen {
+	position: absolute;left: 0; top: 0;
+	width: 0; height: 0;
+	border-radius: 50px;
+}
+.food {
+	position: absolute;left: 0; top: 0;
+	width: 0; height: 0;
+}
+.predator {
+	position: absolute;left: 0; top: 0;
+	width: 0; height: 0;
+}
+.walker {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: rgb(255, 150, 50); opacity: 0;
+	border-radius: 5px;
+}
+.particle {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: transparent; opacity: 0;
+}
+.particle-system {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: transparent; opacity: 0;
+}
+.animal {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: rgb(0, 200, 200); opacity: 0;
+}
+.connector {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: transparent; opacity: .1;
+	border-top: 2px dotted #fff;
+}
+.point {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: rgb(0, 255, 0); opacity: 0;
+	z-index: 1;
+	border-radius: 5px;
+	border: 3px solid rgba(0, 0, 0, 1);
+}
+.sensor {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	opacity: 0;
+	z-index: 1;
+	border-radius: 10px;
+	border: 1px solid rgba(0, 0, 0, 0.5);
+}
+.flowFieldMarker {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+}

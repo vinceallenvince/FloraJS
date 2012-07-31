@@ -1,0 +1,109 @@
+<project name="hellojs" default="build.dev">
+
+	<loadproperties srcfile="build.properties" />
+
+  <loadfile property="license" srcfile="license.txt" />
+
+  <tstamp>
+    <format property="build.time"
+            pattern="MMMM d, yyyy hh:mm:ss"
+            locale="en,US"/>
+  </tstamp>
+
+  <target name="init">
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>  
+
+  <target name="build.dev" depends="clean,init,validate,concatenate,minify">
+  </target>
+
+  <target name="build.release" depends="clean,init,validate,concatenate,document,minify,bake">
+  </target>  
+
+	<target name="validate">
+		<apply executable="java" failonerror="true" parallel="true">
+			<fileset dir="${src.dir}" includes="**/*.js"/>
+			<arg line="-jar"/>
+			<arg path="${rhino}"/>
+			<arg path="${jshint}"/>
+			<arg line="${jshint.options}"/>
+		</apply>
+	</target>
+
+  <target name="concatenate">
+
+    <concat destfile="${build.dir}/build.js" fixlastline="yes" eol="lf">
+      <header trimleading="yes">/*!
+        ${license}
+        */
+        /* Build time: ${build.time} */</header>
+      <filelist dir="${src.dir}" files="app.js,utils.js,pvector.js,simplexnoise.js,interface.js,world.js,camera.js,obj.js,mover.js"/>
+    </concat>
+
+  </target>
+
+  <target name="document3">
+    <taskdef name="jsdoc" classname="net.jannon.ant.tasks.JsDoc3" classpath="${jsdoc3-task-jar}:${rhino-jar}"/>
+    <jsdoc jsdochome="${jsdoc.home}" to="${jsdoc.output}" dir="${src.dir}" />
+  </target>
+
+  <target name="document">
+    <delete dir="${jsdoc.output}"/>
+    <mkdir dir="${jsdoc.output}"/>
+    <apply executable="java" failonerror="true" parallel="true">
+      <fileset dir="${src.dir}" includes="**/*.js"/>
+      <arg line="-jar"/>
+      <arg path="${jsdoc}"/>
+      <arg path="${jsdoc.run}"/>
+      <arg line="-t=${jsdoc.templates}"/>
+      <arg line="-d=${jsdoc.output}"/>
+      <srcfile/>
+    </apply>
+  </target>
+
+  <target name="minify">
+
+    <apply executable="java" failonerror="true">
+      
+      <fileset dir="${build.dir}" includes="*.js" excludes="*-min.js"/>
+      <mapper type="glob" from="*.js" to="${build.dir}/*-min.js"/>
+
+      <arg line="-jar"/>
+      <arg path="${closure}"/>
+      <arg line="${closure.options}"/>
+
+      <arg line="--js"/>
+      <srcfile/>
+
+      <arg line="--js_output_file"/>
+      <targetfile/>
+
+    </apply>
+
+  </target>
+
+  <target name="test">
+
+    <exec executable="phantomjs" failonerror="true">
+      <arg path="${phantomjs.driver}"/>
+      <arg path="${tests.dir}/${phantomjs.tests}"/>
+    </exec>
+
+  </target>
+
+  <target name="bake">
+    <replaceregexp match="@VERSION@" replace="${version}" flags="g" byline="true">
+      <fileset dir="${build.dir}" includes="**/*"/>
+    </replaceregexp>
+  </target>
+
+
+
+
+
+
+</project>

@@ -1,0 +1,151 @@
+body {
+	background: #000;
+	background-image: -webkit-radial-gradient(circle, #444, #000);
+}
+.container-menu {
+	position: absolute;
+	bottom: 50%; right: 35%;
+	width: 500px; height: auto;
+	opacity: 0.85;
+}
+.container-panel {
+	padding: 1.5em;
+	border: 1px solid #555;
+	background: transparent;
+	font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+}
+.container-behavior, .container-vehicle-description {
+	display: inline-block;
+	vertical-align: middle;
+}
+.container-behavior {
+	color: #ff4500;
+	opacity: .85;
+	font-size: 3em;
+	font-weight: bold;
+}
+
+.vehicle-type, .theme {
+	color: #fff;
+	font-size: 1em;
+	padding-left: 0.5em;
+	line-height: 1.5em;
+}
+
+.theme {
+	font-family: Georgia, Times, "Times New Roman", serif;
+	font-style: oblique;
+	font-size: .8em;
+	color: #aaa;
+}
+
+.container-quote {
+	padding-top: 1.5em;
+	font-family: Georgia, Times, "Times New Roman", serif;
+	font-size: .8em;
+	line-height: 1.25em;
+	color: #aaa;
+}
+
+.container-quote .behavior {
+	color: #fff;
+}
+
+.author {
+	text-align: right;
+	font-style: oblique;
+	color: #777;
+}
+
+.container-button {
+	position: relative;
+} 
+
+.button {
+	position: absolute;
+	right: 0;
+	width: 12%;
+	padding: 1em .45em;
+	border-left: 1px solid #555;
+	border-bottom: 1px solid #555;
+	border-right: 1px solid #555;
+	text-align: center;
+	cursor: pointer;
+	font-size: 1em;
+	text-decoration: none;
+	color: #fff;
+}
+
+.container-system {
+	padding: 1em;
+	border-left: 1px solid #555;
+	border-bottom: 1px solid #555;
+	border-right: 1px solid #555;
+	color: #fff;
+}
+
+.element-type {
+	font-size: .85em;
+	color: #999;
+}
+
+.system-element, .system-element-icon {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: .5em;
+}
+
+.system-element-row {
+	padding: .25em 0;
+}
+
+.system-element-icon {
+	width: 15px; height: 15px;
+}
+
+.system-element-icon.heat,
+.system-element-icon.cold,
+.system-element-icon.light,
+.system-element-icon.oxygen,
+.system-element-icon.food  {
+	position: static;
+	left: auto; top: auto;
+}
+
+.heat {
+	background: rgb(255, 69, 0);
+}
+
+.light {
+	background: rgb(255, 200, 0);
+}
+
+.cold {
+	background: rgb(132, 192, 201);
+}
+
+.oxygen {
+	background: rgb(0, 174, 239);
+}
+
+.food {
+	background: rgb(155, 231, 93);
+}
+
+.eye {
+	position: absolute;
+	top: 9px; left: 5px;
+	width: 10px; height: 2px;
+	background: #666;
+}
+
+
+
+
+
+
+
+
+
+
+
