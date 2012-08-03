@@ -1,7 +1,7 @@
 /*!
 This is the license.
 */
-/* Build time: July 29, 2012 05:22:54 */
+/* Build time: August 3, 2012 07:49:25 */
 /** @namespace */
 var Flora = {},
     exports = Flora;
@@ -1202,78 +1202,14 @@ Interface.checkRequiredParams(params_passed, params_required) returns true in th
 (function(exports) {  
 
   /**
-   * Creates a new Mover.
+   * Creates a new Mover and appends it to Flora.elements.
    *
    * @constructor
    * @extends Obj
-   * @param {Object} options
-   * @param {string} options.id
-   * @param {Object} options.el
-   */ 
-  function Mover(opt_options) {
-    //Mover.__super__.constructor.apply(this, arguments);
-
-    var options = opt_options || {}, i, max, evt;
-
-    this.id = options.id || "m-" + Mover.idCount; // if no id, create one
-
-    if (options.view && Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-      this.el = options.view.call();
-    } else if (Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
-      this.el = options.view;
-    } else {
-      this.el = document.createElement("div");
-    }
-    
-    // optional
-    this.className = options.className || this.className;
-    this.mass = options.mass || this.mass;  
-    this.maxSpeed = options.maxSpeed || this.maxSpeed;
-    this.minSpeed = options.minSpeed || this.minSpeed;
-    this.scale = options.scale || this.scale;   
-    this.angle = options.angle || this.angle;   
-    this.opacity = options.opacity || this.opacity;   
-    this.lifespan = options.lifespan || this.lifespan;    
-    this.width = options.width || this.width; 
-    this.height = options.height || this.height;    
-    this.colorMode = options.colorMode || this.colorMode;     
-    this.color = options.color || this.color;
-    this.zIndex = options.zIndex || this.zIndex;  
-    this.pointToDirection = options.pointToDirection || this.pointToDirection;      
-    this.followMouse = options.followMouse || this.followMouse;     
-    this.isStatic = options.isStatic || this.isStatic;    
-    this.checkEdges = options.checkEdges || this.checkEdges;    
-    this.wrapEdges = options.wrapEdges || this.wrapEdges;   
-    this.avoidEdges = options.avoidEdges || this.avoidEdges;    
-    this.avoidEdgesStrength = options.avoidEdgesStrength || this.avoidEdgesStrength;    
-    this.bounciness = options.bounciness || this.bounciness;    
-    this.maxSteeringForce = options.maxSteeringForce || this.maxSteeringForce;  
-    this.flocking = options.flocking || this.flocking;  
-    this.desiredSeparation = options.desiredSeparation || this.desiredSeparation;
-    this.separateStrength = options.separateStrength || this.separateStrength;  
-    this.alignStrength = options.alignStrength || this.alignStrength;     
-    this.cohesionStrength = options.cohesionStrength || this.cohesionStrength;      
-    this.sensors = options.sensors || this.sensors;
-    this.flowField = options.flowField || this.flowField;
-    this.beforeStep = options.beforeStep || this.beforeStep;    
-    this.afterStep = options.afterStep || this.afterStep;   
-    this.acceleration = options.acceleration || exports.PVector.create(0, 0);
-    this.velocity = options.velocity || exports.PVector.create(0, 0);
-    this.location = options.location || exports.PVector.create(Flora.World.width/2, Flora.World.height/2);
-
-    exports.elements.push(this); // push new instance of Mover
-
-    exports.World.el.appendChild(this.el); // append the view to the World
-    
-    Mover.idCount += 1; // increment id
-    
-  };
-  exports.Utils.inherit(Mover, exports.Obj);
- 
-  /**
-   * Creates a new Mover instance and appends it to Flora.elements.
    *
    * @param {Object} [opt_options] Mover options.
+   * @param {string} [opt_options.id = "m-" + Mover._idCount] An id. If an id is not provided, one is created.
+   * @param {Object|function} [opt_options.view] HTML representing the Mover instance.
    * @param {string} [opt_options.className = 'mover'] The corresponding DOM element's class name.
    * @param {number} [opt_options.mass = 10] Mass
    * @param {number} [opt_options.maxSpeed = 10] Maximum speed
@@ -1313,72 +1249,111 @@ Interface.checkRequiredParams(params_passed, params_required) returns true in th
    * @param {Object} [opt_options.location = The center of the world] The object's initial location.
    */
 
-  Mover.create = function(opt_options) {
-    
-    var inst, options = opt_options || {}, i, max, evt;
+   
+  function Mover(opt_options) {
 
-    options.id = options.id || "m-" + Mover.idCount; // if no id, create one
+    var options = opt_options || {}, i, max, evt;
+
+    this.id = options.id || this.constructor.name.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
     if (options.view && Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-      options.el = options.view.call();
+      this.el = options.view.call();
     } else if (Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
-      options.el = options.view;
+      this.el = options.view;
     } else {
-      options.el = document.createElement("div");
+      this.el = document.createElement("div");
     }
     
-    inst = new this(options); // create Mover instance
-    inst.el.id = options.id; // assign id to element
-    inst.el.className = inst.className; // assign className to element
+    /* TODO
+       Provide default values here.
+    */
+    // optional
+    this.className = options.className || this.constructor.name.toLowerCase();
+    this.mass = options.mass || 10;  
+    this.maxSpeed = options.maxSpeed || 10;
+    this.minSpeed = options.minSpeed || 0;
+    this.scale = options.scale || 1;   
+    this.angle = options.angle || 0;   
+    this.opacity = options.opacity || 0.85;   
+    this.lifespan = options.lifespan || -1;    
+    this.width = options.width || 20; 
+    this.height = options.height || 20;    
+    this.colorMode = options.colorMode || 'rgb';     
+    this.color = options.color || {r: 197, g: 177, b: 115};
+    this.zIndex = options.zIndex || 10;  
+    this.pointToDirection = options.pointToDirection || true;      
+    this.followMouse = options.followMouse || false;     
+    this.isStatic = options.isStatic || false;    
+    this.checkEdges = options.checkEdges || true;    
+    this.wrapEdges = options.wrapEdges || false;   
+    this.avoidEdges = options.avoidEdges || false;    
+    this.avoidEdgesStrength = options.avoidEdgesStrength || 200;    
+    this.bounciness = options.bounciness || 0.75;    
+    this.maxSteeringForce = options.maxSteeringForce || 10;  
+    this.flocking = options.flocking || false;  
+    this.desiredSeparation = options.desiredSeparation || this.width * 2;
+    this.separateStrength = options.separateStrength || 1;  
+    this.alignStrength = options.alignStrength || 1;     
+    this.cohesionStrength = options.cohesionStrength || 1;      
+    this.sensors = options.sensors || [];
+    this.flowField = options.flowField || null;
+    this.beforeStep = options.beforeStep || '';    
+    this.afterStep = options.afterStep || '';   
+    this.acceleration = options.acceleration || exports.PVector.create(0, 0);
+    this.velocity = options.velocity || exports.PVector.create(0, 0);
+    this.location = options.location || exports.PVector.create(Flora.World.width/2, Flora.World.height/2);
+    this.controlCamera = options.controlCamera || false;
 
-    Flora.elements.push(inst); // push new instance of Mover
+    exports.elements.push(this); // push new instance of Mover
+
+    exports.World.el.appendChild(this.el); // append the view to the World
+    
+    Mover._idCount += 1; // increment id
+
+    if (this.className === "liquid") {
+      Flora.liquids.push(this); // push new instance of liquids to liquid list
+    } else if (this.className === "repeller") {
+      Flora.repellers.push(this); // push new instance of repeller to repeller list
+    } else if (this.className === "attractor") {
+      Flora.attractors.push(this); // push new instance of attractor to attractor list
+    } else if (this.className === "heat") {
+      Flora.heats.push(this);
+    } else if (this.className === "cold") {
+      Flora.colds.push(this);
+    } else if (this.className === "predator") {
+      Flora.predators.push(this);
+    } else if (this.className === "light") {
+      Flora.lights.push(this);
+    } else if (this.className === "oxygen") {
+      Flora.oxygen.push(this);
+    } else if (this.className === "food") {
+      Flora.food.push(this);
+    }
+    
+    if (this.controlCamera) { // if this object controls the camera
+
+      Flora.Camera.controlObj = this;
+      
+      // need to position world so controlObj is centered on screen
+      Flora.World.location.x = -Flora.World.width/2 + $(window).width()/2 + (Flora.World.width/2 - this.location.x);
+      Flora.World.location.y = -Flora.World.height/2 + $(window).height()/2 + (Flora.World.height/2 - this.location.y);
+    }
 
     /*inst.el.addEventListener("mouseenter", function (e) { Obj.mouseenter.call(inst, e); }, false);
     inst.el.addEventListener("mousedown", function (e) { Obj.mousedown.call(inst, e); }, false);
     inst.el.addEventListener("mousemove", function (e) { Obj.mousemove.call(inst, e); }, false);
     inst.el.addEventListener("mouseup", function (e) { Obj.mouseup.call(inst, e); }, false);
-    inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/
+    inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/      
     
-    Flora.World.el.appendChild(inst.el); // append the view to the World
-    
-    if (inst.className === "liquid") {
-      Flora.liquids.push(inst); // push new instance of liquids to liquid list
-    } else if (inst.className === "repeller") {
-      Flora.repellers.push(inst); // push new instance of repeller to repeller list
-    } else if (inst.className === "attractor") {
-      Flora.attractors.push(inst); // push new instance of attractor to attractor list
-    } else if (inst.className === "heat") {
-      Flora.heats.push(inst);
-    } else if (inst.className === "cold") {
-      Flora.colds.push(inst);
-    } else if (inst.className === "predator") {
-      Flora.predators.push(inst);
-    } else if (inst.className === "light") {
-      Flora.lights.push(inst);
-    } else if (inst.className === "oxygen") {
-      Flora.oxygen.push(inst);
-    } else if (inst.className === "food") {
-      Flora.food.push(inst);
-    }
-    
-    Mover.idCount += 1; // increment id
-
-    if (inst.controlCamera) { // if this object controls the camera
-      Flora.Camera.controlObj = inst;
-      // need to position world so controlObj is centered on screen
-      Flora.World.location.x = -Flora.World.width/2 + $(window).width()/2 + (Flora.World.width/2 - inst.location.x);
-      Flora.World.location.y = -Flora.World.height/2 + $(window).height()/2 + (Flora.World.height/2 - inst.location.y);
-    }
-    
-    return Flora.elements[Flora.elements.length - 1];
   };
+  exports.Utils.inherit(Mover, exports.Obj);
   
   /**
    * Increments as each Mover is created.
    * @type number
    * @default 0
    */
-  Mover.idCount = 0;
+  Mover._idCount = 0;
   
 
   /**
@@ -1950,42 +1925,299 @@ Interface.checkRequiredParams(params_passed, params_required) returns true in th
       return this.velocity.y;
     }
   };
-  
-  Mover.prototype.className = 'mover';
-  Mover.prototype.mass = 10;  
-  Mover.prototype.maxSpeed = 10;    
-  Mover.prototype.minSpeed = 0;
-  Mover.prototype.scale = 1;    
-  Mover.prototype.angle = 0;    
-  Mover.prototype.opacity = 0.85;   
-  Mover.prototype.lifespan = -1;    
-  Mover.prototype.width = 20;
-  Mover.prototype.height = 20;    
-  Mover.prototype.colorMode = 'rgb';    
-  Mover.prototype.color = {
-    r: 197,
-    g: 177,
-    b: 115
-  };      
-  Mover.prototype.zIndex = 10;    
-  Mover.prototype.pointToDirection = true;    
-  Mover.prototype.followMouse = false;      
-  Mover.prototype.isStatic = false;   
-  Mover.prototype.checkEdges = true;    
-  Mover.prototype.wrapEdges = false;    
-  Mover.prototype.avoidEdges = false; 
-  Mover.prototype.avoidEdgesStrength = 200;   
-  Mover.prototype.bounciness = 0.75;    
-  Mover.prototype.maxSteeringForce = 10;    
-  Mover.prototype.flocking = false;   
-  Mover.prototype.desiredSeparation = Mover.prototype.width * 2;  
-  Mover.prototype.separateStrength = 1;   
-  Mover.prototype.alignStrength = 1;      
-  Mover.prototype.cohesionStrength = 1;   
-  Mover.prototype.sensors = [];
-  Mover.prototype.flowField = null; 
-  Mover.prototype.beforeStep = '';    
-  Mover.prototype.afterStep = ''; 
 
   exports.Mover = Mover;
 }(exports));
+/*global exports*/
+(function(exports) {  
+
+  /**
+   * Creates a new Walker.
+   *
+   * @constructor
+   * @extends Mover
+   *
+   * @param {Object} [opt_options] Walker options.
+   * @param {string} [opt_options.className = 'walker'] The corresponding DOM element's class name.
+   * @param {boolean} [opt_options.isPerlin = false] If set to true, object will use Perlin Noise to calculate its location.
+   * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and isPerlin = true, object will avoid world edges.
+   * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
+   * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
+   * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when isPerlin = true.
+   * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when isPerlin = true.
+   * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
+   * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
+   * @param {boolean} [opt_options.isRandom = false] Set to true for walker to move in a random direction.
+   * @param {number} [opt_options.isRandom = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
+   * @param {boolean} [opt_options.isHarmonic = false] If set to true, walker will move using harmonic motion.
+   * @param {object} [opt_options.isHarmonic = {x: 6, y: 6}] If isHarmonic = true, sets the motion's amplitude.
+   * @param {object} [opt_options.harmonicPeriod = {x: 150, y: 150}] If isHarmonic = true, sets the motion's period.
+   * @param {number} [opt_options.width = 10] Width
+   * @param {number} [opt_options.height = 10] Height
+   * @param {object} [opt_options.color = {r: 255, g: 150, b: 50}] The object's color.
+   * @param {number} [opt_options.maxSpeed = 30] Maximum speed
+   * @param {boolean} [opt_options.wrapEdges = false] Set to true to set the object's location to the opposite side of the world if the object moves outside the world's bounds.
+   * @param {boolean} [opt_options.isStatic = false] If true, object will not move.  
+   */
+  function Walker(opt_options) {
+
+    var options = opt_options || {};
+
+    exports.Mover.call(this, options);
+    
+    this.isPerlin = options.isPerlin || false;
+    this.remainsOnScreen = options.remainsOnScreen || false;
+    this.perlinSpeed = options.perlinSpeed || 0.005;
+    this.perlinTime = options.perlinTime || 0;
+    this.perlinAccelLow = options.perlinAccelLow || -0.075;
+    this.perlinAccelHigh = options.perlinAccelHigh || 0.075;
+    this.offsetX = options.offsetX || Math.random() * 10000;
+    this.offsetY = options.offsetY || Math.random() * 10000;   
+    this.isRandom = options.isRandom || false;
+    this.randomRadius = options.randomRadius || 100;
+    this.isHarmonic = options.isHarmonic || false;
+    this.harmonicAmplitude = options.harmonicAmplitude || PVector.create(6, 6);
+    this.harmonicPeriod = options.harmonicPeriod || PVector.create(150, 150);    
+    this.width = options.width || 10;
+    this.height = options.height || 10;     
+    this.color = options.color || {r: 255, g: 150, b: 50};   
+    this.maxSpeed = options.maxSpeed || 30;
+    this.wrapEdges = options.wrapEdges || false;
+    this.isStatic = options.isStatic || false;
+  };
+  exports.Utils.inherit(Walker, exports.Mover);
+
+
+  /**
+   * Called every frame, step() updates the instance's properties.
+   */     
+  Walker.prototype.step = function () {
+
+    var world = exports.World;
+
+    if (this.beforeStep) {
+      this.beforeStep.apply(this);
+    }
+
+    if (!this.isStatic && !this.isPressed) {
+
+      if (this.isPerlin) {
+        
+        this.perlinTime += this.perlinSpeed;
+
+        if (this.remainsOnScreen) {
+          this.acceleration = PVector.create(0, 0);
+          this.velocity = PVector.create(0, 0);
+          this.location.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, .1), -1, 1, 0, exports.World.width);
+          this.location.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, .1), -1, 1, 0, exports.World.height);
+        } else {
+          this.acceleration.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, .1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+          this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, .1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+        }
+
+      } else {
+        
+        // start -- APPLY FORCES
+
+        if (world.c) { // friction
+          friction = Utils.clone(this.velocity);
+          friction.mult(-1);
+          friction.normalize();
+          friction.mult(world.c);
+          this.applyForce(friction);
+        }
+
+        this.applyForce(world.wind); // wind
+        this.applyForce(world.gravity); // gravity
+      }
+      
+      if (this.isHarmonic) {
+        this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.World.clock / this.harmonicPeriod.x);
+        this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.World.clock / this.harmonicPeriod.y);
+      }
+
+      if (this.isRandom) {
+        this.target = { // find a random point and steer toward it
+          location: PVector.PVectorAdd(this.location, PVector.create(Utils.getRandomNumber(-this.randomRadius, this.randomRadius), Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
+        }
+      }
+
+      if (this.target) { // follow target
+        this.applyForce(this.seek(this.target));
+      }
+      
+      // end -- APPLY FORCES
+
+      this.velocity.add(this.acceleration); // add acceleration
+
+      if (this.maxSpeed) {
+        this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
+      }
+      
+      this.location.add(this.velocity); // add velocity
+      
+      if (this.pointToDirection) { // object rotates toward direction
+        if (this.velocity.mag() > .1) { // rotate toward direction?
+          this.angle = Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
+        }
+      }
+
+      if (this.controlCamera) { // check camera after velocity calculation
+        this.checkCameraEdges();
+      }
+
+      if (this.checkEdges || this.wrapEdges) {
+        this.checkWorldEdges(world);
+      }
+
+      if (this.lifespan > 0) {
+        this.lifespan -= 1;
+      }
+
+      this.acceleration.mult(0); // reset acceleration
+
+    }
+  };  
+
+  exports.Walker = Walker;
+}(exports));
+/*global exports*/
+(function(exports) { 	
+
+  /**
+   * Creates a new Particle.
+   *
+   * @constructor
+   * @extends Mover
+   *
+   * @param {Object} [opt_options] Particle options.
+   * @param {number} [opt_options.lifespan = 40] The number of frames before particle dies. Set to -1 for infinite life.
+   * @param {number} [opt_options.width = 10] Width
+   * @param {number} [opt_options.height = 10] Height
+   * @param {object} [opt_options.color = {r: 200, g: 200, b: 200}] The particle's color.
+   * @param {object} [opt_options.borderRadius = '100%'] The particle's border radius.  
+   */
+   function Particle(opt_options) {
+
+    var options = opt_options || {};
+
+    exports.Mover.call(this, options);
+
+    this.lifespan = options.lifespan || 40;
+    this.width = options.width || 10;
+    this.height = options.height || 10; 
+    this.color = options.color || {r: 200, g: 200, b: 200};
+    this.borderRadius = options.borderRadius || '100%';
+   }
+   exports.Utils.inherit(Particle, exports.Mover);
+
+	
+	Particle.prototype.step = function () {
+
+		var world = exports.World;
+		
+		//
+		
+		if (this.beforeStep) {
+			this.beforeStep.apply(this);
+		}
+		
+		//
+
+		if (!this.isStatic && !this.isPressed) {
+								
+			// start -- APPLY FORCES
+			
+			if (world.c) { // friction
+				friction = Utils.clone(this.velocity);
+				friction.mult(-1);
+				friction.normalize();
+				friction.mult(world.c);
+				this.applyForce(friction);
+			}
+
+			this.applyForce(world.wind); // wind
+			this.applyForce(world.gravity); // gravity
+			
+
+			if (this.checkEdges || this.wrapEdges) {
+				this.checkWorldEdges(world);
+			}
+			
+			// end -- APPLY FORCES
+
+			this.velocity.add(this.acceleration); // add acceleration
+
+			if (this.maxSpeed) {
+				this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
+			}
+			
+			this.location.add(this.velocity); // add velocity
+			
+			// opacity
+			this.opacity = Utils.map(this.lifespan, 0, 40, 0, 1);
+			
+	
+			if (this.lifespan > 0) {
+				this.lifespan -= 1;
+			} else if (this.lifespan === 0) {
+				exports.destroyElement(this.id);
+			}
+			this.acceleration.mult(0); // reset acceleration
+		}
+	};
+
+  exports.Particle = Particle;
+}(exports));    
+/*global exports*/
+(function(exports) { 	
+
+  /**
+   * Creates a new ParticleSystem.
+   *
+   * @constructor
+   * @extends Mover
+   *
+   * @param {Object} [opt_options] Particle options.
+   * @param {number} [opt_options.lifespan = -1] The number of frames before particle system dies. Set to -1 for infinite life.
+   * @param {number} [opt_options.width = 0] Width
+   * @param {number} [opt_options.height = 0] Height
+   * @param {Object} [opt_options.color = null] Color
+   * @param {number} [opt_options.burst = 1] The number of particles to create per frame.
+   * @param {Object} [opt_options.particle = A particle at the system's location w random acceleration.] The particle to create. At minimum, should have a location vector. Use this.getLocation to get location of partilce system.
+   */
+   function ParticleSystem(opt_options) {
+
+    var options = opt_options || {};
+
+    exports.Mover.call(this, options);
+    this.isStatic = true;
+    this.beforeStep = function () {
+     
+      var i, max, Particle, p;
+      
+      for (i = 0; i < this.burst; i += 1) {
+        p = new exports.Particle(this.particle());
+        //console.log(p);
+      }
+      if (this.lifespan > 0) {
+        this.lifespan -= 1;
+      } else if (this.lifespan === 0) {
+        exports.destroyElement(this.id);
+      }
+    };
+    this.lifespan = options.lifespan || -1;
+    this.width = options.width || 0;
+    this.height = options.height || 0;
+    this.color = options.color || null;
+    this.burst = options.burst || 1;
+    this.particle = options.particle || function () {
+      return {
+        location: this.getLocation(),
+        acceleration: exports.PVector.create(exports.Utils.getRandomNumber(-4, 4), exports.Utils.getRandomNumber(-4, 4))
+      };
+    };
+  }
+  exports.Utils.inherit(ParticleSystem, exports.Mover);
+  exports.ParticleSystem = ParticleSystem;
+}(exports));    

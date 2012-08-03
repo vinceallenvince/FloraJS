@@ -18,8 +18,11 @@
     var FloraSystem = exports.FloraSystem,
         system = new FloraSystem();
 
-        var mover = new Flora.Mover();
-        console.log(mover);
+        var mover = new Flora.ParticleSystem({
+          isStatic: true,
+          lifespan: -1
+        });
+
     });
   </script>
 </head>

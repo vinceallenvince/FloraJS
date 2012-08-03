@@ -18,7 +18,7 @@
     <delete dir="${build.dir}"/>
   </target>  
 
-  <target name="build.dev" depends="clean,init,validate,concatenate,minify">
+  <target name="build.dev" depends="clean,init,validate,concatenate">
   </target>
 
   <target name="build.release" depends="clean,init,validate,concatenate,document,minify,bake">
@@ -41,7 +41,7 @@
         ${license}
         */
         /* Build time: ${build.time} */</header>
-      <filelist dir="${src.dir}" files="app.js,utils.js,pvector.js,simplexnoise.js,interface.js,world.js,camera.js,obj.js,mover.js"/>
+      <filelist dir="${src.dir}" files="app.js,utils.js,pvector.js,simplexnoise.js,interface.js,world.js,camera.js,obj.js,mover.js,walker.js,particle.js,particlesystem.js"/>
     </concat>
 
   </target>

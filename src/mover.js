@@ -2,114 +2,14 @@
 (function(exports) {  
 
   /**
-   * Creates a new Mover.
+   * Creates a new Mover and appends it to Flora.elements.
    *
    * @constructor
    * @extends Obj
-   * @param {Object} options
-   * @param {string} options.id
-   * @param {Object} options.el
-   */ 
-  function Mover(opt_options) {
-    //Mover.__super__.constructor.apply(this, arguments);
-
-    var options = opt_options || {}, i, max, evt;
-
-    this.id = options.id || "m-" + Mover.idCount; // if no id, create one
-
-    if (options.view && Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-      this.el = options.view.call();
-    } else if (Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
-      this.el = options.view;
-    } else {
-      this.el = document.createElement("div");
-    }
-    
-    /* TODO
-       Provide default values here.
-    */
-    // optional
-    this.className = options.className || this.className;
-    this.mass = options.mass || this.mass;  
-    this.maxSpeed = options.maxSpeed || this.maxSpeed;
-    this.minSpeed = options.minSpeed || this.minSpeed;
-    this.scale = options.scale || this.scale;   
-    this.angle = options.angle || this.angle;   
-    this.opacity = options.opacity || this.opacity;   
-    this.lifespan = options.lifespan || this.lifespan;    
-    this.width = options.width || this.width; 
-    this.height = options.height || this.height;    
-    this.colorMode = options.colorMode || this.colorMode;     
-    this.color = options.color || this.color;
-    this.zIndex = options.zIndex || this.zIndex;  
-    this.pointToDirection = options.pointToDirection || this.pointToDirection;      
-    this.followMouse = options.followMouse || this.followMouse;     
-    this.isStatic = options.isStatic || this.isStatic;    
-    this.checkEdges = options.checkEdges || this.checkEdges;    
-    this.wrapEdges = options.wrapEdges || this.wrapEdges;   
-    this.avoidEdges = options.avoidEdges || this.avoidEdges;    
-    this.avoidEdgesStrength = options.avoidEdgesStrength || this.avoidEdgesStrength;    
-    this.bounciness = options.bounciness || this.bounciness;    
-    this.maxSteeringForce = options.maxSteeringForce || this.maxSteeringForce;  
-    this.flocking = options.flocking || this.flocking;  
-    this.desiredSeparation = options.desiredSeparation || this.desiredSeparation;
-    this.separateStrength = options.separateStrength || this.separateStrength;  
-    this.alignStrength = options.alignStrength || this.alignStrength;     
-    this.cohesionStrength = options.cohesionStrength || this.cohesionStrength;      
-    this.sensors = options.sensors || this.sensors;
-    this.flowField = options.flowField || this.flowField;
-    this.beforeStep = options.beforeStep || this.beforeStep;    
-    this.afterStep = options.afterStep || this.afterStep;   
-    this.acceleration = options.acceleration || exports.PVector.create(0, 0);
-    this.velocity = options.velocity || exports.PVector.create(0, 0);
-    this.location = options.location || exports.PVector.create(Flora.World.width/2, Flora.World.height/2);
-    this.controlCamera = options.controlCamera || false;
-
-    exports.elements.push(this); // push new instance of Mover
-
-    exports.World.el.appendChild(this.el); // append the view to the World
-    
-    Mover.idCount += 1; // increment id
-
-    /*
-      TODO:
-     *
-    /*if (inst.className === "liquid") {
-      Flora.liquids.push(inst); // push new instance of liquids to liquid list
-    } else if (inst.className === "repeller") {
-      Flora.repellers.push(inst); // push new instance of repeller to repeller list
-    } else if (inst.className === "attractor") {
-      Flora.attractors.push(inst); // push new instance of attractor to attractor list
-    } else if (inst.className === "heat") {
-      Flora.heats.push(inst);
-    } else if (inst.className === "cold") {
-      Flora.colds.push(inst);
-    } else if (inst.className === "predator") {
-      Flora.predators.push(inst);
-    } else if (inst.className === "light") {
-      Flora.lights.push(inst);
-    } else if (inst.className === "oxygen") {
-      Flora.oxygen.push(inst);
-    } else if (inst.className === "food") {
-      Flora.food.push(inst);
-    }*/
-    
-    if (this.controlCamera) { // if this object controls the camera
-
-      Flora.Camera.controlObj = this;
-      
-      // need to position world so controlObj is centered on screen
-      Flora.World.location.x = -Flora.World.width/2 + $(window).width()/2 + (Flora.World.width/2 - inst.location.x);
-      Flora.World.location.y = -Flora.World.height/2 + $(window).height()/2 + (Flora.World.height/2 - inst.location.y);
-    }    
-    
-  };
-  exports.Utils.inherit(Mover, exports.Obj);
- 
-  /**
-   * Creates a new Mover instance and appends it to Flora.elements.
    *
    * @param {Object} [opt_options] Mover options.
+   * @param {string} [opt_options.id = "m-" + Mover._idCount] An id. If an id is not provided, one is created.
+   * @param {Object|function} [opt_options.view] HTML representing the Mover instance.
    * @param {string} [opt_options.className = 'mover'] The corresponding DOM element's class name.
    * @param {number} [opt_options.mass = 10] Mass
    * @param {number} [opt_options.maxSpeed = 10] Maximum speed
@@ -149,72 +49,111 @@
    * @param {Object} [opt_options.location = The center of the world] The object's initial location.
    */
 
-  Mover.create = function(opt_options) {
-    
-    var inst, options = opt_options || {}, i, max, evt;
+   
+  function Mover(opt_options) {
 
-    options.id = options.id || "m-" + Mover.idCount; // if no id, create one
+    var options = opt_options || {}, i, max, evt;
+
+    this.id = options.id || this.constructor.name.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
     if (options.view && Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-      options.el = options.view.call();
+      this.el = options.view.call();
     } else if (Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
-      options.el = options.view;
+      this.el = options.view;
     } else {
-      options.el = document.createElement("div");
+      this.el = document.createElement("div");
     }
     
-    inst = new this(options); // create Mover instance
-    inst.el.id = options.id; // assign id to element
-    inst.el.className = inst.className; // assign className to element
+    /* TODO
+       Provide default values here.
+    */
+    // optional
+    this.className = options.className || this.constructor.name.toLowerCase();
+    this.mass = options.mass || 10;  
+    this.maxSpeed = options.maxSpeed || 10;
+    this.minSpeed = options.minSpeed || 0;
+    this.scale = options.scale || 1;   
+    this.angle = options.angle || 0;   
+    this.opacity = options.opacity || 0.85;   
+    this.lifespan = options.lifespan || -1;    
+    this.width = options.width || 20; 
+    this.height = options.height || 20;    
+    this.colorMode = options.colorMode || 'rgb';     
+    this.color = options.color || {r: 197, g: 177, b: 115};
+    this.zIndex = options.zIndex || 10;  
+    this.pointToDirection = options.pointToDirection || true;      
+    this.followMouse = options.followMouse || false;     
+    this.isStatic = options.isStatic || false;    
+    this.checkEdges = options.checkEdges || true;    
+    this.wrapEdges = options.wrapEdges || false;   
+    this.avoidEdges = options.avoidEdges || false;    
+    this.avoidEdgesStrength = options.avoidEdgesStrength || 200;    
+    this.bounciness = options.bounciness || 0.75;    
+    this.maxSteeringForce = options.maxSteeringForce || 10;  
+    this.flocking = options.flocking || false;  
+    this.desiredSeparation = options.desiredSeparation || this.width * 2;
+    this.separateStrength = options.separateStrength || 1;  
+    this.alignStrength = options.alignStrength || 1;     
+    this.cohesionStrength = options.cohesionStrength || 1;      
+    this.sensors = options.sensors || [];
+    this.flowField = options.flowField || null;
+    this.beforeStep = options.beforeStep || '';    
+    this.afterStep = options.afterStep || '';   
+    this.acceleration = options.acceleration || exports.PVector.create(0, 0);
+    this.velocity = options.velocity || exports.PVector.create(0, 0);
+    this.location = options.location || exports.PVector.create(Flora.World.width/2, Flora.World.height/2);
+    this.controlCamera = options.controlCamera || false;
 
-    Flora.elements.push(inst); // push new instance of Mover
+    exports.elements.push(this); // push new instance of Mover
+
+    exports.World.el.appendChild(this.el); // append the view to the World
+    
+    Mover._idCount += 1; // increment id
+
+    if (this.className === "liquid") {
+      Flora.liquids.push(this); // push new instance of liquids to liquid list
+    } else if (this.className === "repeller") {
+      Flora.repellers.push(this); // push new instance of repeller to repeller list
+    } else if (this.className === "attractor") {
+      Flora.attractors.push(this); // push new instance of attractor to attractor list
+    } else if (this.className === "heat") {
+      Flora.heats.push(this);
+    } else if (this.className === "cold") {
+      Flora.colds.push(this);
+    } else if (this.className === "predator") {
+      Flora.predators.push(this);
+    } else if (this.className === "light") {
+      Flora.lights.push(this);
+    } else if (this.className === "oxygen") {
+      Flora.oxygen.push(this);
+    } else if (this.className === "food") {
+      Flora.food.push(this);
+    }
+    
+    if (this.controlCamera) { // if this object controls the camera
+
+      Flora.Camera.controlObj = this;
+      
+      // need to position world so controlObj is centered on screen
+      Flora.World.location.x = -Flora.World.width/2 + $(window).width()/2 + (Flora.World.width/2 - this.location.x);
+      Flora.World.location.y = -Flora.World.height/2 + $(window).height()/2 + (Flora.World.height/2 - this.location.y);
+    }
 
     /*inst.el.addEventListener("mouseenter", function (e) { Obj.mouseenter.call(inst, e); }, false);
     inst.el.addEventListener("mousedown", function (e) { Obj.mousedown.call(inst, e); }, false);
     inst.el.addEventListener("mousemove", function (e) { Obj.mousemove.call(inst, e); }, false);
     inst.el.addEventListener("mouseup", function (e) { Obj.mouseup.call(inst, e); }, false);
-    inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/
+    inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/      
     
-    Flora.World.el.appendChild(inst.el); // append the view to the World
-    
-    if (inst.className === "liquid") {
-      Flora.liquids.push(inst); // push new instance of liquids to liquid list
-    } else if (inst.className === "repeller") {
-      Flora.repellers.push(inst); // push new instance of repeller to repeller list
-    } else if (inst.className === "attractor") {
-      Flora.attractors.push(inst); // push new instance of attractor to attractor list
-    } else if (inst.className === "heat") {
-      Flora.heats.push(inst);
-    } else if (inst.className === "cold") {
-      Flora.colds.push(inst);
-    } else if (inst.className === "predator") {
-      Flora.predators.push(inst);
-    } else if (inst.className === "light") {
-      Flora.lights.push(inst);
-    } else if (inst.className === "oxygen") {
-      Flora.oxygen.push(inst);
-    } else if (inst.className === "food") {
-      Flora.food.push(inst);
-    }
-    
-    Mover.idCount += 1; // increment id
-
-    if (inst.controlCamera) { // if this object controls the camera
-      Flora.Camera.controlObj = inst;
-      // need to position world so controlObj is centered on screen
-      Flora.World.location.x = -Flora.World.width/2 + $(window).width()/2 + (Flora.World.width/2 - inst.location.x);
-      Flora.World.location.y = -Flora.World.height/2 + $(window).height()/2 + (Flora.World.height/2 - inst.location.y);
-    }
-    
-    return Flora.elements[Flora.elements.length - 1];
   };
+  exports.Utils.inherit(Mover, exports.Obj);
   
   /**
    * Increments as each Mover is created.
    * @type number
    * @default 0
    */
-  Mover.idCount = 0;
+  Mover._idCount = 0;
   
 
   /**
@@ -786,42 +725,6 @@
       return this.velocity.y;
     }
   };
-  
-  Mover.prototype.className = 'mover';
-  Mover.prototype.mass = 10;  
-  Mover.prototype.maxSpeed = 10;    
-  Mover.prototype.minSpeed = 0;
-  Mover.prototype.scale = 1;    
-  Mover.prototype.angle = 0;    
-  Mover.prototype.opacity = 0.85;   
-  Mover.prototype.lifespan = -1;    
-  Mover.prototype.width = 20;
-  Mover.prototype.height = 20;    
-  Mover.prototype.colorMode = 'rgb';    
-  Mover.prototype.color = {
-    r: 197,
-    g: 177,
-    b: 115
-  };      
-  Mover.prototype.zIndex = 10;    
-  Mover.prototype.pointToDirection = true;    
-  Mover.prototype.followMouse = false;      
-  Mover.prototype.isStatic = false;   
-  Mover.prototype.checkEdges = true;    
-  Mover.prototype.wrapEdges = false;    
-  Mover.prototype.avoidEdges = false; 
-  Mover.prototype.avoidEdgesStrength = 200;   
-  Mover.prototype.bounciness = 0.75;    
-  Mover.prototype.maxSteeringForce = 10;    
-  Mover.prototype.flocking = false;   
-  Mover.prototype.desiredSeparation = Mover.prototype.width * 2;  
-  Mover.prototype.separateStrength = 1;   
-  Mover.prototype.alignStrength = 1;      
-  Mover.prototype.cohesionStrength = 1;   
-  Mover.prototype.sensors = [];
-  Mover.prototype.flowField = null; 
-  Mover.prototype.beforeStep = '';    
-  Mover.prototype.afterStep = ''; 
 
   exports.Mover = Mover;
 }(exports));
