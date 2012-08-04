@@ -12,13 +12,15 @@
 
   <target name="init">
     <mkdir dir="${build.dir}"/>
+    <mkdir dir="${jsdoc.output}"/>
   </target>
 
   <target name="clean">
     <delete dir="${build.dir}"/>
+    <delete dir="${jsdoc.output}"/>
   </target>  
 
-  <target name="build.dev" depends="clean,init,validate,concatenate">
+  <target name="build.dev" depends="clean,init,concatenate">
   </target>
 
   <target name="build.release" depends="clean,init,validate,concatenate,document,minify,bake">
@@ -41,7 +43,7 @@
         ${license}
         */
         /* Build time: ${build.time} */</header>
-      <filelist dir="${src.dir}" files="app.js,utils.js,pvector.js,simplexnoise.js,interface.js,world.js,camera.js,obj.js,mover.js,walker.js,particle.js,particlesystem.js"/>
+      <filelist dir="${src.dir}" files="app.js,florasystem.js,utils.js,pvector.js,simplexnoise.js,interface.js,world.js,camera.js,obj.js,mover.js,walker.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,stats.js"/>
     </concat>
 
   </target>

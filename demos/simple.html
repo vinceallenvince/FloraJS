@@ -15,15 +15,22 @@
 
     $(document).ready(function () {
 
-    var FloraSystem = exports.FloraSystem,
-        system = new FloraSystem();
+      var FloraSystem = exports.FloraSystem,
+          system = new FloraSystem();
 
-        var mover = new Flora.ParticleSystem({
-          isStatic: true,
-          lifespan: -1
+      system.start(function () {
+
+        Flora.World.update({
+          showStats: true
         });
 
+        var particles = new Flora.ParticleSystem({
+          burst: 1
+        });
+
+      });
     });
+
   </script>
 </head>
 <body>
