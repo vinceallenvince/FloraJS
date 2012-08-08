@@ -74,6 +74,7 @@ FlowField.prototype.build = function() {
             b: 50
           }
         });
+        exports.world.el.appendChild(ffm);
       }
       yoff += parseFloat(this.perlinSpeed);
     }

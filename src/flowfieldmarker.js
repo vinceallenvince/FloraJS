@@ -53,7 +53,7 @@ function FlowFieldMarker(options) {
       c: options.color
     });
 
-    exports.world.el.appendChild(el);
+    return el;
   }
 }
 

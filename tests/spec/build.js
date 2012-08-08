@@ -101,6 +101,26 @@ describe("A new FlowField", function() {
   });
 });
 
+describe("A new FlowFieldMarker", function() {
+
+  var obj;
+
+  beforeEach(function() {
+    obj = new exports.FlowField();
+  });
+
+  afterEach(function() {
+    obj = null;
+  });
+
+  it("should have its required properties.", function() {
+    expect(typeof obj.resolution).toEqual('number');
+    expect(typeof obj.perlinSpeed).toEqual('number');
+    expect(typeof obj.perlinTime).toEqual('number');            
+    expect(typeof obj.createMarkers).toEqual('boolean');
+  });
+});
+
 describe("A new Food", function() {
 
   var obj;
@@ -274,7 +294,7 @@ describe("A new Mover", function() {
     expect(typeof obj.desiredSeparation).toEqual('number');
     expect(typeof obj.separateStrength).toEqual('number');
     expect(typeof obj.alignStrength).toEqual('number');
-    expect(interfaceCheck.getDataType(obj.sensors)).toEqual('array'); // !! use interface here
+    expect(interfaceCheck.getDataType(obj.sensors)).toEqual('array');
     expect(typeof obj.flowField).toEqual('object');
     expect(typeof obj.acceleration).toEqual('object');
     expect(typeof obj.velocity).toEqual('object');
