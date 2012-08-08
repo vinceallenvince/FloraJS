@@ -1,25 +1,33 @@
-/*!
+/*ignore!
 This is the license.
 */
-/* Build time: August 4, 2012 06:50:37 */
+/* Build time: August 8, 2012 10:10:08 */
 /** @namespace */
 var Flora = {}, exports = Flora;
-/** 
-    A module representing a FloraSystem.
-    @module florasystem
- */
 
-/** global */
-window.requestAnimFrame = (function(callback){
+/**
+ * RequestAnimationFrame shim layer with setTimeout fallback
+ * @param {function} callback The function to call.
+ * @returns {function|Object} An animation frame or a timeout object. 
+ */
+Flora.requestAnimFrame = (function(callback){
+
+  'use strict';
+
   return  window.requestAnimationFrame       || 
           window.webkitRequestAnimationFrame || 
           window.mozRequestAnimationFrame    || 
           window.oRequestAnimationFrame      || 
           window.msRequestAnimationFrame     || 
-          function( callback ){
+          function(callback) {
             window.setTimeout(callback, 1000 / 60);
           };
 })();
+/*global window */
+/** 
+    A module representing a FloraSystem.
+    @module florasystem
+ */
 
 /**
  * Creates a new FloraSystem.
@@ -28,68 +36,75 @@ window.requestAnimFrame = (function(callback){
  */
 function FloraSystem(el) {
 
+  'use strict';
+
   this.el = el || null;
   
-  Flora.elements = [];
-  Flora.liquids = [];
-  Flora.repellers = [];
-  Flora.attractors = [];
-  Flora.heats = [];
-  Flora.colds = [];
-  Flora.lights = [];
-  Flora.oxygen = [];
-  Flora.food = [];
-  Flora.predators = [];
+  exports.elements = [];
+  exports.liquids = [];
+  exports.repellers = [];
+  exports.attractors = [];
+  exports.heats = [];
+  exports.colds = [];
+  exports.lights = [];
+  exports.oxygen = [];
+  exports.food = [];
+  exports.predators = [];
 
-  Flora.World = new Flora.World();
-  Flora.World.configure(); // call configure after DOM has loaded
-  Flora.elements.push(Flora.World);
+  exports.world = new exports.World();
+  exports.world.configure(); // call configure after DOM has loaded
+  exports.elements.push(exports.world);
 
-  Flora.Camera = new Flora.Camera();
+  exports.Camera = new exports.Camera();
 
-  Flora.destroyElement = function (id) {
+  exports.destroyElement = function (id) {
 
     var i, max;
 
     for (i = 0, max = this.elements.length; i < max; i += 1) {
       if (this.elements[i].id === id) {
-        Flora.World.el.removeChild(this.elements[i].el);
+        exports.world.el.removeChild(this.elements[i].el);
         this.elements.splice(i, 1);
         break;
       }
     }
-  }
+  };
   
-  Flora.animLoop = function () {
-    
+  exports.animLoop = function () {
+
     var i, max;
 
-    requestAnimFrame(Flora.animLoop);
+    exports.requestAnimFrame(exports.animLoop);
 
-    for (i = Flora.elements.length - 1; i >= 0; i -= 1) {
-      Flora.elements[i].step();
-      if (Flora.elements[i]) {
-        Flora.elements[i].draw();
+    for (i = exports.elements.length - 1; i >= 0; i -= 1) {
+      exports.elements[i].step();
+      if (exports.elements[i]) {
+        exports.elements[i].draw();
       }
-      if (Flora.World.clock) {
-        Flora.World.clock += 1;
+      if (exports.world.clock) {
+        exports.world.clock += 1;
       }
     }
   };
-
-};
+}
 
 /**
  * Starts a FloraSystem.
  * @param {function} func A list of instructions to execute when the system starts.
  */
 FloraSystem.prototype.start = function (func) {
-  var func = Flora.Interface.getDataType(func) === "function" ? func : function () {}; 
+
+  'use strict';
+
+  func = exports.Interface.getDataType(func) === "function" ? func : function () {};
+
   func.call();
-  Flora.animLoop();
+  exports.animLoop();
 };
 
 exports.FloraSystem = FloraSystem;
+/*global console */
+/*jshint supernew:true */
 /** 
     A module representing Utils.
     @module Utils
@@ -99,7 +114,9 @@ exports.FloraSystem = FloraSystem;
  * @namespace
  * @alias module:Utils
  */
-Utils = (function () {
+var Utils = (function () {
+
+  'use strict';
 
   /** @private */
   var PI = Math.PI;
@@ -150,7 +167,9 @@ Utils = (function () {
       if (typeof degrees !== 'undefined') {
         return 2 * PI * (degrees/360);
       } else {
-        Log.message('Error: Utils.degreesToRadians is missing degrees param.');
+        if (typeof console !== 'undefined') {
+          console.log('Error: Utils.degreesToRadians is missing degrees param.');
+        }
         return false;
       }
     },
@@ -164,7 +183,9 @@ Utils = (function () {
       if (typeof radians !== 'undefined') {
         return radians * (180/PI);
       } else {
-        Log.message("Error: Utils.radiansToDegrees is missing radians param.");
+        if (typeof console !== 'undefined') {
+          console.log('Error: Utils.radiansToDegrees is missing radians param.');
+        }
         return false;
       }
     },
@@ -185,7 +206,7 @@ Utils = (function () {
       return val;
     },
     /**
-     * Returns an new object with all properties and methods of the 
+     * Returns a new object with all properties and methods of the 
      * old object copied to the new object's prototype.
      *
      * @param {Object} object The object to clone.
@@ -205,28 +226,29 @@ Utils = (function () {
          var dateObj = new Date();
          return dateObj.getTime() + this.getRandomNumber(0,1000000000);
     },
-  /**
-   * Add an event listener to a DOM element.
-   *
-   * @param {Object} target The element to receive the event listener.
-   * @param {string} eventType The event type.
-   * @param {function} The function to run when the event is triggered.    
-   */     
+    /**
+     * Add an event listener to a DOM element.
+     *
+     * @param {Object} target The element to receive the event listener.
+     * @param {string} eventType The event type.
+     * @param {function} The function to run when the event is triggered.    
+     */     
     addEvent: function(target, eventType, handler) {      
       if (target.addEventListener) { // W3C
         this.addEventHandler = function(target, eventType, handler) {
           target.addEventListener(eventType, handler, false);
-        } 
+        };
       } else if (target.attachEvent) { // IE
         this.addEventHandler = function(target, eventType, handler) {
           target.attachEvent("on" + eventType, handler);
-        }
+        };
       }
       this.addEventHandler(target, eventType, handler);
     }
   };
 }());
 exports.Utils = Utils;
+/*jshint supernew:true */
 /** 
     A module representing a PVector.
     @module PVector
@@ -235,7 +257,9 @@ exports.Utils = Utils;
 /** 
  * @namespace
  */
-PVector = (function() {
+var PVector = (function() {
+
+  'use strict';
 
   /** @scope PVector */
   return {
@@ -393,7 +417,7 @@ PVector = (function() {
      * @returns {Object} This vector.
      */       
     normalize: function() {
-      m = this.mag();
+      var m = this.mag();
       if (m !== 0) {
         return this.div(m);
       }
@@ -456,6 +480,7 @@ PVector = (function() {
   };
 }());
 exports.PVector = PVector;
+/*jshint bitwise:false */
 /** 
     A module representing SimplexNoise.
     @module SimplexNoise
@@ -476,33 +501,36 @@ exports.PVector = PVector;
 /**
  * @namespace
  */
-SimplexNoise = (function (r) {
+var SimplexNoise = (function (r) {
 
-if (r == undefined) {
-  r = Math;
-}
-var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]]; 
-var p = [];
-for (var i = 0; i < 256; i += 1) {
-  p[i] = Math.floor(r.random()*256);
-}
-// To remove the need for index wrapping, double the permutation table length 
-var perm = []; 
-for(var i = 0; i < 512; i += 1) {
-  perm[i]=p[i & 255];
-} 
+  'use strict';
 
-// A lookup table to traverse the simplex around a given point in 4D. 
-// Details can be found where this table is used, in the 4D noise method. 
-var simplex = [ 
-[0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0], 
-[0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0], 
-[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
-[1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0], 
-[1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0], 
-[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
-[2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0], 
-[2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
+  if (r === undefined) {
+    r = Math;
+  }
+  var i;
+  var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]]; 
+  var p = [];
+  for (i = 0; i < 256; i += 1) {
+    p[i] = Math.floor(r.random()*256);
+  }
+  // To remove the need for index wrapping, double the permutation table length 
+  var perm = []; 
+  for(i = 0; i < 512; i += 1) {
+    perm[i] = p[i & 255];
+  } 
+
+  // A lookup table to traverse the simplex around a given point in 4D. 
+  // Details can be found where this table is used, in the 4D noise method. 
+  var simplex = [ 
+  [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0], 
+  [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0], 
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
+  [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0], 
+  [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0], 
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
+  [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0], 
+  [2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
 
 /** @scope SimplexNoise */
 return {
@@ -546,22 +574,25 @@ return {
     var gi2 = this.perm[ii+1+this.perm[jj+1]] % 12; 
     // Calculate the contribution from the three corners 
     var t0 = 0.5 - x0*x0-y0*y0; 
-    if(t0<0) n0 = 0.0; 
-    else { 
-    t0 *= t0; 
-    n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient 
+    if (t0 < 0) {
+      n0 = 0.0;
+    } else { 
+      t0 *= t0; 
+      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient 
     } 
     var t1 = 0.5 - x1*x1-y1*y1; 
-    if(t1<0) n1 = 0.0; 
-    else { 
-    t1 *= t1; 
-    n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1); 
+    if (t1 < 0) {
+      n1 = 0.0; 
+    } else { 
+      t1 *= t1; 
+      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1); 
     }
     var t2 = 0.5 - x2*x2-y2*y2; 
-    if(t2<0) n2 = 0.0; 
-    else { 
-    t2 *= t2; 
-    n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2); 
+    if (t2 < 0) {
+      n2 = 0.0; 
+    } else { 
+      t2 *= t2; 
+      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2); 
     } 
     // Add contributions from each corner to get the final noise value. 
     // The result is scaled to return values in the interval [-1,1]. 
@@ -621,28 +652,32 @@ return {
     var gi3 = this.perm[ii+1+this.perm[jj+1+this.perm[kk+1]]] % 12; 
     // Calculate the contribution from the four corners 
     var t0 = 0.6 - x0*x0 - y0*y0 - z0*z0; 
-    if(t0<0) n0 = 0.0; 
-    else { 
-    t0 *= t0; 
-    n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0, z0); 
+    if (t0 < 0) {
+      n0 = 0.0; 
+    } else { 
+      t0 *= t0; 
+      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0, z0); 
     }
     var t1 = 0.6 - x1*x1 - y1*y1 - z1*z1; 
-    if(t1<0) n1 = 0.0; 
-    else { 
-    t1 *= t1; 
-    n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1, z1); 
+    if (t1 < 0) {
+      n1 = 0.0; 
+    } else { 
+      t1 *= t1; 
+      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1, z1); 
     } 
     var t2 = 0.6 - x2*x2 - y2*y2 - z2*z2; 
-    if(t2<0) n2 = 0.0; 
-    else { 
-    t2 *= t2; 
-    n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2, z2); 
+    if(t2 < 0) {
+      n2 = 0.0; 
+    } else { 
+      t2 *= t2; 
+      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2, z2); 
     } 
     var t3 = 0.6 - x3*x3 - y3*y3 - z3*z3; 
-    if(t3<0) n3 = 0.0; 
-    else { 
-    t3 *= t3; 
-    n3 = t3 * t3 * this.dot(this.grad3[gi3], x3, y3, z3); 
+    if(t3 <0 ) {
+      n3 = 0.0; 
+    } else { 
+      t3 *= t3; 
+      n3 = t3 * t3 * this.dot(this.grad3[gi3], x3, y3, z3); 
     } 
     // Add contributions from each corner to get the final noise value. 
     // The result is scaled to stay just inside [-1,1] 
@@ -652,13 +687,19 @@ return {
 
 }({
 random: function () {
-  return .1;
+
+  'use strict';
+  
+  return 0.1;
 }
 }));
 exports.SimplexNoise = SimplexNoise;
+/*global console */
 /** @namespace */
-Interface = (function () {
-  
+var Interface = (function () {
+
+  'use strict';
+
   /** @scope Interface */
   return {
   
@@ -683,51 +724,58 @@ names: "array"
 }
 Interface.checkRequiredParams(params_passed, params_required) returns true in this case.
        */
-      checkRequiredParams: function (params_passed, params_required) {
-        var i, msg, check = true;
-        for (i in params_required) { // loop thru required params
-          if (params_required.hasOwnProperty(i)) {
-            try {
-              if (this.getDataType(params_passed[i]) !== params_required[i] || params_passed[i] === "") { // if there is not a corresponding key in the passed params; or params passed value is blank
-                check = false;
-                if (params_passed[i] === "") {
-                  msg = "Interface.checkRequiredParams: required param '" + i + "' is empty.";
-                } else if (typeof params_passed[i] === "undefined") {
-                  msg = "Interface.checkRequiredParams: required param '" + i + "' is missing from passed params.";
-                } else {
-                  msg = "Interface.checkRequiredParams: passed param '" + i + "' must be type " + params_required[i] + ". Passed as " + this.getDataType(params_passed[i]) + ".";
-                }
-                throw new Error(msg);
+    checkRequiredParams: function (params_passed, params_required) {
+      var i, msg, check = true;
+      for (i in params_required) { // loop thru required params
+        if (params_required.hasOwnProperty(i)) {
+          try {
+            if (this.getDataType(params_passed[i]) !== params_required[i] || params_passed[i] === "") { // if there is not a corresponding key in the passed params; or params passed value is blank
+              check = false;
+              if (params_passed[i] === "") {
+                msg = "Interface.checkRequiredParams: required param '" + i + "' is empty.";
+              } else if (typeof params_passed[i] === "undefined") {
+                msg = "Interface.checkRequiredParams: required param '" + i + "' is missing from passed params.";
+              } else {
+                msg = "Interface.checkRequiredParams: passed param '" + i + "' must be type " + params_required[i] + ". Passed as " + this.getDataType(params_passed[i]) + ".";
               }
-            } catch (err) {
-              if (typeof console !== "undefined") {
-                console.log("ERROR: " + err.message);
-              }
+              throw new Error(msg);
+            }
+          } catch (err) {
+            if (typeof console !== "undefined") {
+              console.log("ERROR: " + err.message);
             }
           }
         }
-        return check;
-      },
-      /**
-       * Checks for data type.
-       *
-       * @returns {string} The data type of the passed variable.
-       */
-      getDataType: function (element) {
-
-        if (Object.prototype.toString.call(element) === '[object Array]') {
-          return "array";
-        }
-
-        return typeof element;
       }
-  }
-  }());
+      return check;
+    },
+    /**
+     * Checks for data type.
+     *
+     * @returns {string} The data type of the passed variable.
+     */
+    getDataType: function (element) {
+
+      if (Object.prototype.toString.call(element) === '[object Array]') {
+        return "array";
+      }
+
+      return typeof element;
+    }
+  };
+}());
 exports.Interface = Interface;
+/*global $ */
+
+/** 
+    A module representing World.
+    @module World
+ */
+
 /**
  * Creates a new World.
  *
- * @contructor
+ * @constructor
  *
  * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
  * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
@@ -738,6 +786,8 @@ exports.Interface = Interface;
  * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location  
  */
 function World(opt_options) {
+
+  'use strict';
 
   var me = this, options = opt_options || {};
   
@@ -783,12 +833,15 @@ function World(opt_options) {
   $(window).bind("resize", function (e) { // listens for window resize
     me.resize.call(me);
   });
-};
+}
 
 /**
  * Configures a new World.
  */
 World.prototype.configure = function() { // should be called after doc ready()
+
+  'use strict';
+
   this.el = document.body;
   this.el.style.width = this.width + "px";
   this.el.style.height = this.height + "px";
@@ -801,8 +854,12 @@ World.prototype.configure = function() { // should be called after doc ready()
  *
  * @param {Object} props A hash of properties to update.
  */   
-World.prototype.update = function(props) {
-  var i, key, props = Interface.getDataType(props) === "object" ? props : {}; 
+World.prototype.update = function(opt_props) {
+
+  'use strict';
+
+  var i, key, props = exports.Interface.getDataType(opt_props) === "object" ? opt_props : {};
+
   for (key in props) {
     if (props.hasOwnProperty(key)) {
       this[key] = props[key];
@@ -810,8 +867,8 @@ World.prototype.update = function(props) {
   }
 
   if (props.el) { // if updating the element; update the width and height
-    this.width = parseInt(this.el.style.width.replace("px", ""));
-    this.height = parseInt(this.el.style.height.replace("px", ""));
+    this.width = parseInt(this.el.style.width.replace('px', ''), 10);
+    this.height = parseInt(this.el.style.height.replace('px', ''), 10);
   }
 
   if (props.style) {
@@ -833,13 +890,15 @@ World.prototype.update = function(props) {
  */ 
 World.prototype.resize = function() {
 
+  'use strict';
+
   var i, max, elementLoc, controlCamera,
     windowWidth = $(window).width(),
     windowHeight = $(window).height();
   
   // check of any elements control the camera
-  for (i = 0, max = Flora.elements.length; i < max; i += 1) {
-    if (Flora.elements[i].controlCamera) {
+  for (i = 0, max = exports.elements.length; i < max; i += 1) {
+    if (exports.elements[i].controlCamera) {
       controlCamera = true;
       break;
     }
@@ -847,9 +906,9 @@ World.prototype.resize = function() {
 
   // loop thru elements
   if (!controlCamera) {
-    for (i = 0, max = Flora.elements.length; i < max; i += 1) {
+    for (i = 0, max = exports.elements.length; i < max; i += 1) {
       
-      elementLoc = Flora.elements[i].location; // recalculate location
+      elementLoc = exports.elements[i].location; // recalculate location
       
       elementLoc.x = windowWidth * (elementLoc.x/this.width);
       elementLoc.y = windowHeight * (elementLoc.y/this.height);
@@ -868,17 +927,21 @@ World.prototype.resize = function() {
  * relative to the accelerometer's values.
  */ 
 World.prototype.devicemotion = function() {
+
+  'use strict';
+
   var e = arguments[0];
+
   if (window.orientation === 0) {
     if (this.isTopDown) {
-      this.gravity = PVector.create(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
+      this.gravity = exports.PVector.create(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
     } else {
-      this.gravity = PVector.create(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
+      this.gravity = exports.PVector.create(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
     }
   } else if (window.orientation === -90) {
-    this.gravity = PVector.create(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
+    this.gravity = exports.PVector.create(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
   } else {
-    this.gravity = PVector.create(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
+    this.gravity = exports.PVector.create(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
   }
 
   /*if (World.showDeviceOrientation) {
@@ -892,6 +955,9 @@ World.prototype.devicemotion = function() {
  * @param {Object} e An event object passed from the event listener.
  */ 
 World.prototype.deviceorientation = function(e) {
+
+  'use strict';
+
   var compassHeading = e.webkitCompassHeading,
     compassAccuracy = e.webkitCompassAccuracy;
 
@@ -907,8 +973,10 @@ World.prototype.deviceorientation = function(e) {
  * Creates a new instance of mr doob's stats monitor.
  */ 
 World.prototype.createStats = function() {
-  
-  stats = new Stats();
+
+  'use strict';
+
+  var stats = new exports.Stats();
 
   stats.getDomElement().style.position = 'absolute'; // Align top-left
   stats.getDomElement().style.left = '0px';
@@ -926,9 +994,12 @@ World.prototype.createStats = function() {
  * Destroys an instance of mr doob's stats monitor.
  */     
 World.prototype.destroyStats = function() {
+
+  'use strict';  
+
   clearInterval(this.statsInterval);
   document.body.removeChild(document.getElementById('stats'));
-}
+};
 
 /**
  * Called every frame, step() updates the world's properties.
@@ -939,6 +1010,9 @@ World.prototype.step = function() {};
  * Called every frame, draw() renders the world.
  */ 
 World.prototype.draw = function() {
+
+  'use strict';
+
   var x = this.location.x,
     y = this.location.y,
     s = 1,
@@ -973,7 +1047,6 @@ World.prototype.draw = function() {
     });
   }
 };
-
 exports.World = World;
 /** 
     A module representing a Camera.
@@ -990,13 +1063,16 @@ exports.World = World;
  */   
 function Camera(opt_options) {
 
+  'use strict';
+
   var options = opt_options || {};
 
-  this.location = options.location || Flora.PVector.create(0, 0);
+  this.location = options.location || exports.PVector.create(0, 0);
   this.controlObj = options.controlObj || null;
-};
+}
 
 exports.Camera = Camera;
+/*global $ */
 /** 
     A module representing an Obj.
     @module Obj
@@ -1007,7 +1083,11 @@ exports.Camera = Camera;
  * @constructor
  */ 
 function Obj() {
+
+  'use strict';
+
   var i, max, key, prop;
+
   for (i = 0, max = arguments.length; i < max; i += 1) {
     prop = arguments[i];
     for (key in prop) {
@@ -1016,7 +1096,7 @@ function Obj() {
       }
     }
   }
-};
+}
 
 Obj.events =[
   "mouseenter",
@@ -1032,6 +1112,9 @@ Obj.events =[
  * @param {Object} e The event object passed by the listener.
  */ 
 Obj.mouseenter = function(e) {
+
+  'use strict';
+
   this.isMouseOut = false;
   //clearInterval(this.myInterval);
 };
@@ -1042,6 +1125,8 @@ Obj.mouseenter = function(e) {
  * @param {Object} e The event object passed by the listener.
  */ 
 Obj.mousedown = function(e) {
+
+  'use strict';
 
   var target = $(e.target);
 
@@ -1058,6 +1143,8 @@ Obj.mousedown = function(e) {
  */ 
 Obj.mousemove = function(e) {
 
+  'use strict';
+
   var x, y,
     worldOffset = $(".world").offset();
 
@@ -1068,7 +1155,7 @@ Obj.mousemove = function(e) {
     x = e.pageX - worldOffset.left;
     y = e.pageY - worldOffset.top;
 
-    this.item.location = PVector.create(x, y);
+    this.item.location = exports.PVector.create(x, y);
 
     //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
       //this.draw();
@@ -1082,6 +1169,9 @@ Obj.mousemove = function(e) {
  * @param {Object} e The event object passed by the listener.
  */     
 Obj.mouseup = function(e) {
+
+  'use strict';
+
   this.isPressed = false;
   //this.item.trigger("saveCurrentPosition");
 };
@@ -1092,6 +1182,8 @@ Obj.mouseup = function(e) {
  * @param {Object} e The event object passed by the listener.
  */     
 Obj.mouseleave = function(e) {
+
+  'use strict';
 
   var me = this,
     item = this.item,
@@ -1105,10 +1197,10 @@ Obj.mouseleave = function(e) {
 
       if (me.isPressed && me.isMouseOut) {
 
-        x = Flora.World.mouseX - worldOffset.left;
-        y = Flora.World.mouseY - worldOffset.top;
+        x = exports.Flora.World.mouseX - worldOffset.left;
+        y = exports.Flora.World.mouseY - worldOffset.top;
 
-        item.location = PVector.create(x, y);
+        item.location = exports.PVector.create(x, y);
 
         //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
           //me.draw();
@@ -1128,6 +1220,8 @@ Obj.mouseleave = function(e) {
  */     
 Obj.prototype.draw = function() {
   
+  'use strict';
+
   var v = this.velocity,
     x = this.location.x - this.width/2,
     y = this.location.y - this.height/2,
@@ -1146,10 +1240,10 @@ Obj.prototype.draw = function() {
     nose = this.el.firstChild,
     i, max;
 
-    console.log(this.el.cssRule);
+  // !! try elt.setAttribute('style', '...')
 
   if (v && nose) { // if this object has a velocity; fade in nose relative to velocity
-    nose.style.opacity = Utils.map(v.mag(), 0, this.maxSpeed, 0.25, 1);
+    nose.style.opacity = exports.Utils.map(v.mag(), 0, this.maxSpeed, 0.25, 1);
   }
 
   if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
@@ -1184,8 +1278,9 @@ Obj.prototype.draw = function() {
       'height': h + 'px'
     });
   }
-}
+};
 exports.Obj = Obj;
+/*global $ */
 /** 
     A module representing a Mover.
     @module Mover
@@ -1242,7 +1337,21 @@ exports.Obj = Obj;
  
 function Mover(opt_options) {
 
-  var options = opt_options || {}, i, max, evt;
+  'use strict';
+
+  var options = opt_options || {},
+      world = exports.world || document.createElement("div"),
+      elements = exports.elements || [],
+      liquids = exports.liquids || [],
+      repellers = exports.repellers || [],
+      attractors = exports.attractors || [],
+      heats = exports.heats || [],
+      colds = exports.colds || [],
+      predators = exports.predators || [],
+      lights = exports.lights || [],
+      oxygen = exports.oxygen || [],
+      food = exports.food || [],
+      i, max, evt;
 
   for (i in options) {
     if (options.hasOwnProperty(i)) {
@@ -1252,9 +1361,9 @@ function Mover(opt_options) {
 
   this.id = options.id || this.constructor.name.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
-  if (options.view && Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
+  if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
     this.el = options.view.call();
-  } else if (Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
+  } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
     this.el = options.view;
   } else {
     this.el = document.createElement("div");
@@ -1292,47 +1401,49 @@ function Mover(opt_options) {
   this.flowField = options.flowField || null;   
   this.acceleration = options.acceleration || exports.PVector.create(0, 0);
   this.velocity = options.velocity || exports.PVector.create(0, 0);
-  this.location = options.location || exports.PVector.create(Flora.World.width/2, Flora.World.height/2);
+  this.location = options.location || exports.PVector.create(world.width/2, world.height/2);
   this.controlCamera = options.controlCamera || false;
   this.beforeStep = options.beforeStep || undefined;    
   this.afterStep = options.afterStep || undefined;
 
-  exports.elements.push(this); // push new instance of Mover
+  elements.push(this); // push new instance of Mover
 
   this.el.id = this.id;
   this.el.className = this.className;
 
-  exports.World.el.appendChild(this.el); // append the view to the World
+  if (world.el) {
+    world.el.appendChild(this.el); // append the view to the World
+  } 
   
   Mover._idCount += 1; // increment id
 
   if (this.className === "liquid") {
-    Flora.liquids.push(this); // push new instance of liquids to liquid list
+    liquids.push(this); // push new instance of liquids to liquid list
   } else if (this.className === "repeller") {
-    Flora.repellers.push(this); // push new instance of repeller to repeller list
+    repellers.push(this); // push new instance of repeller to repeller list
   } else if (this.className === "attractor") {
-    Flora.attractors.push(this); // push new instance of attractor to attractor list
+    attractors.push(this); // push new instance of attractor to attractor list
   } else if (this.className === "heat") {
-    Flora.heats.push(this);
+    heats.push(this);
   } else if (this.className === "cold") {
-    Flora.colds.push(this);
+    colds.push(this);
   } else if (this.className === "predator") {
-    Flora.predators.push(this);
+    predators.push(this);
   } else if (this.className === "light") {
-    Flora.lights.push(this);
+    lights.push(this);
   } else if (this.className === "oxygen") {
-    Flora.oxygen.push(this);
+    oxygen.push(this);
   } else if (this.className === "food") {
-    Flora.food.push(this);
+    food.push(this);
   }
   
   if (this.controlCamera) { // if this object controls the camera
 
-    Flora.Camera.controlObj = this;
+    exports.Camera.controlObj = this;
     
     // need to position world so controlObj is centered on screen
-    Flora.World.location.x = -Flora.World.width/2 + $(window).width()/2 + (Flora.World.width/2 - this.location.x);
-    Flora.World.location.y = -Flora.World.height/2 + $(window).height()/2 + (Flora.World.height/2 - this.location.y);
+    world.location.x = -world.width/2 + $(window).width()/2 + (world.width/2 - this.location.x);
+    world.location.y = -world.height/2 + $(window).height()/2 + (world.height/2 - this.location.y);
   }
 
   /*inst.el.addEventListener("mouseenter", function (e) { Obj.mouseenter.call(inst, e); }, false);
@@ -1341,7 +1452,7 @@ function Mover(opt_options) {
   inst.el.addEventListener("mouseup", function (e) { Obj.mouseup.call(inst, e); }, false);
   inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/      
   
-};
+}
 exports.Utils.inherit(Mover, exports.Obj);
 
 /**
@@ -1357,8 +1468,10 @@ Mover._idCount = 0;
  */   
 Mover.prototype.step = function() {
 
+  'use strict';
+
   var i, max, dir, friction, force, nose,
-    world = Flora.World;
+    world = exports.world;
   
   //
   
@@ -1372,28 +1485,28 @@ Mover.prototype.step = function() {
 
     // APPLY FORCES -- start
 
-    if (Flora.liquids.length > 0) { // liquid
-      for (i = 0, max = Flora.liquids.length; i < max; i += 1) {
-        if (this.id !== Flora.liquids[i].id && this.isInside(Flora.liquids[i])) {
-          force = this.drag(Flora.liquids[i]);
+    if (exports.liquids.length > 0) { // liquid
+      for (i = 0, max = exports.liquids.length; i < max; i += 1) {
+        if (this.id !== exports.liquids[i].id && this.isInside(exports.liquids[i])) {
+          force = this.drag(exports.liquids[i]);
           this.applyForce(force);
         }
       }
     }
     
-    if (Flora.repellers.length > 0) { // repeller
-      for (i = 0, max = Flora.repellers.length; i < max; i += 1) {
-        if (this.id !== Flora.repellers[i].id) {
-          force = this.attract(Flora.repellers[i]);
+    if (exports.repellers.length > 0) { // repeller
+      for (i = 0, max = exports.repellers.length; i < max; i += 1) {
+        if (this.id !== exports.repellers[i].id) {
+          force = this.attract(exports.repellers[i]);
           this.applyForce(force);
         }
       }
     }
     
-    if (Flora.attractors.length > 0) { // repeller
-      for (i = 0, max = Flora.attractors.length; i < max; i += 1) {
-        if (this.id !== Flora.attractors[i].id) {
-          force = this.attract(Flora.attractors[i]);
+    if (exports.attractors.length > 0) { // repeller
+      for (i = 0, max = exports.attractors.length; i < max; i += 1) {
+        if (this.id !== exports.attractors[i].id) {
+          force = this.attract(exports.attractors[i]);
           this.applyForce(force);
         }
       }
@@ -1405,7 +1518,7 @@ Mover.prototype.step = function() {
         var sensor = this.sensors[i];
         
         var r = sensor.length; // use angle to calculate x, y
-        var theta = Utils.degreesToRadians(this.angle + sensor.offsetAngle);
+        var theta = exports.Utils.degreesToRadians(this.angle + sensor.offsetAngle);
         var x = r * Math.cos(theta);
         var y = r * Math.sin(theta);
         
@@ -1416,14 +1529,14 @@ Mover.prototype.step = function() {
         if (sensor.activated) {
           this.applyForce(sensor.getActivationForce({
             mover: this
-          }))
+          }));
         }
         
       }
     }
     
     if (world.c) { // friction
-      friction = Utils.clone(this.velocity);
+      friction = exports.Utils.clone(this.velocity);
       friction.mult(-1);
       friction.normalize();
       friction.mult(world.c);
@@ -1468,7 +1581,7 @@ Mover.prototype.step = function() {
     }
     
     if (this.flocking) {
-      this.flock(Flora.elements);
+      this.flock(exports.elements);
     }
 
     // end -- APPLY FORCES
@@ -1486,8 +1599,8 @@ Mover.prototype.step = function() {
     this.location.add(this.velocity); // add velocity
     
     if (this.pointToDirection) { // object rotates toward direction
-      if (this.velocity.mag() > .1) {
-        this.angle = Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
+      if (this.velocity.mag() > 0.1) {
+        this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
       }
     }
     
@@ -1516,7 +1629,7 @@ Mover.prototype.step = function() {
       this.lifespan -= 1;
     }
   }
-}
+};
 
 /**
  * Applies a force to this object's acceleration.
@@ -1524,6 +1637,8 @@ Mover.prototype.step = function() {
  * @param {Object} force The force to be applied (expressed as a vector).
  */   
 Mover.prototype.applyForce = function(force) {
+
+  'use strict';
 
   // F = M * A
   var f = force.clone(); // make a copy of the force so the original force vector is not altered by dividing by mass; could also use static method
@@ -1540,15 +1655,17 @@ Mover.prototype.applyForce = function(force) {
  * @returns {Object} The force to apply.
  */       
 Mover.prototype.seek = function(target, arrive) {
-  
-  var world = Flora.World,
+
+  'use strict';
+
+  var world = exports.world,
     desiredVelocity = exports.PVector.PVectorSub(target.location, this.location),
     distanceToTarget = desiredVelocity.mag();
 
   desiredVelocity.normalize();
   
   if (distanceToTarget < world.width/2) {
-    var m = Utils.map(distanceToTarget, 0, world.width/2, 0, this.maxSpeed);
+    var m = exports.Utils.map(distanceToTarget, 0, world.width/2, 0, this.maxSpeed);
     desiredVelocity.mult(m);
   } else {
     desiredVelocity.mult(this.maxSpeed);
@@ -1566,7 +1683,9 @@ Mover.prototype.seek = function(target, arrive) {
  * @returns {Object} The force to apply.
  */ 
 Mover.prototype.follow = function(target) {
-  
+
+  'use strict';
+
   var desiredVelocity = target.location;
 
   desiredVelocity.mult(this.maxSpeed);
@@ -1580,6 +1699,9 @@ Mover.prototype.follow = function(target) {
  * Bundles flocking behaviors (separate, align, cohesion) into one call.
  */     
 Mover.prototype.flock = function(elements) {
+
+  'use strict';
+
   this.applyForce(this.separate(elements).mult(this.separateStrength)); 
   this.applyForce(this.align(elements).mult(this.alignStrength));
   this.applyForce(this.cohesion(elements).mult(this.cohesionStrength));
@@ -1593,7 +1715,9 @@ Mover.prototype.flock = function(elements) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.separate = function(elements) {
-  
+
+  'use strict';
+
   var i, max, element, diff, d,
   sum = exports.PVector.create(0, 0),
   count = 0, steer;
@@ -1632,7 +1756,9 @@ Mover.prototype.separate = function(elements) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.align = function(elements) {
-  
+
+  'use strict';
+
   var i, max, element, diff, d,
     sum = exports.PVector.create(0, 0),
     neighbordist = this.width * 2,
@@ -1669,7 +1795,9 @@ Mover.prototype.align = function(elements) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.cohesion = function(elements) {
-  
+
+  'use strict';
+
   var i, max, element, diff, d,
     sum = exports.PVector.create(0, 0),
     neighbordist = 10,
@@ -1707,7 +1835,9 @@ Mover.prototype.cohesion = function(elements) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.flee = function(target) {
-  
+
+  'use strict';
+
   var desiredVelocity = exports.PVector.PVectorSub(target.location, this.location); // find vector pointing at target
 
   desiredVelocity.normalize(); // reduce to 1
@@ -1723,15 +1853,18 @@ Mover.prototype.flee = function(target) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.drag = function(target) {
+
+  'use strict';
+
   var speed = this.velocity.mag(),
     dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
-    drag = Utils.clone(this.velocity);
+    drag = exports.Utils.clone(this.velocity);
 
   drag.normalize(); // drag direction
   drag.mult(dragMagnitude);
 
   return drag;
-}
+};
 
 /**
  * Calculates a force to apply to simulate attraction on an object.
@@ -1741,11 +1874,13 @@ Mover.prototype.drag = function(target) {
  */     
 Mover.prototype.attract = function(attractor) {
 
+  'use strict';
+
   var force = exports.PVector.PVectorSub(attractor.location, this.location),
     distance, strength;
 
   distance = force.mag(); 
-  distance = Utils.constrain(distance, this.width * this.height/8, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
+  distance = exports.Utils.constrain(distance, this.width * this.height/8, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
   force.normalize();
   strength = (attractor.G * attractor.mass * this.mass) / (distance * distance); 
   force.mult(strength);
@@ -1760,16 +1895,19 @@ Mover.prototype.attract = function(attractor) {
  * @returns {boolean} Returns true if the object is inside the container.
  */     
 Mover.prototype.isInside = function(container) {
+
+  'use strict';  
+
   if (container) {
-    if (this.location.x + this.width/2 > container.location.x - container.width/2 
-      && this.location.x - this.width/2 < container.location.x + container.width/2 
-      && this.location.y + this.height/2 > container.location.y - container.height/2 
-      && this.location.y - this.height/2 < container.location.y + container.height/2) {
+    if (this.location.x + this.width/2 > container.location.x - container.width/2 &&
+      this.location.x - this.width/2 < container.location.x + container.width/2 &&
+      this.location.y + this.height/2 > container.location.y - container.height/2 &&
+      this.location.y - this.height/2 < container.location.y + container.height/2) {
       return true;
     }
   }
   return false;
-}
+};
 
 /**
  * Determines if this object is outside the world bounds.
@@ -1778,6 +1916,8 @@ Mover.prototype.isInside = function(container) {
  * @returns {boolean} Returns true if the object is outside the world.
  */     
 Mover.prototype.checkWorldEdges = function(world) {
+
+  'use strict';
 
   var x = this.location.x,
     y = this.location.y,
@@ -1805,7 +1945,7 @@ Mover.prototype.checkWorldEdges = function(world) {
     if (this.avoidEdges) {
       if (this.location.x < this.avoidEdgesStrength) { 
         maxSpeed = this.maxSpeed;
-      } else if (this.location.x > Flora.World.width - this.avoidEdgesStrength) {
+      } else if (this.location.x > exports.world.width - this.avoidEdgesStrength) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
@@ -1845,7 +1985,7 @@ Mover.prototype.checkWorldEdges = function(world) {
     if (this.avoidEdges) {
       if (this.location.y < this.avoidEdgesStrength) { 
         maxSpeed = this.maxSpeed;
-      } else if (this.location.y > Flora.World.height - this.avoidEdgesStrength) {
+      } else if (this.location.y > exports.world.height - this.avoidEdgesStrength) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
@@ -1869,11 +2009,10 @@ Mover.prototype.checkWorldEdges = function(world) {
   }
 
   if (check && this.controlCamera) {
-    Flora.World.location.add(diff); // !! do we need this? // add the distance difference to World.location
+    exports.world.location.add(diff); // !! do we need this? // add the distance difference to World.location
   }
-
   return check;
-}
+};
 
 /**
  * Moves the world in the opposite direction of the Camera's controlObj.
@@ -1883,10 +2022,12 @@ Mover.prototype.checkWorldEdges = function(world) {
  */     
 Mover.prototype.checkCameraEdges = function() {
 
+  'use strict';
+
   var vel = this.velocity.clone();
 
-  Flora.World.location.add(vel.mult(-1));
-}
+  exports.world.location.add(vel.mult(-1));
+};
 
 /**
  * Returns this object's location.
@@ -1896,6 +2037,9 @@ Mover.prototype.checkCameraEdges = function() {
  * @returns {boolean} Returns true if the object is outside the world.
  */ 
 Mover.prototype.getLocation = function (type) {
+
+  'use strict';
+
   if (!type) {
     return exports.PVector.create(this.location.x, this.location.y);
   } else if (type === 'x') {
@@ -1913,6 +2057,9 @@ Mover.prototype.getLocation = function (type) {
  * @returns {boolean} Returns true if the object is outside the world.
  */     
 Mover.prototype.getVelocity = function (type) {
+
+  'use strict';
+
   if (!type) {
     return exports.PVector.create(this.velocity.x, this.velocity.y);
   } else if (type === "x") {
@@ -1958,6 +2105,8 @@ exports.Mover = Mover;
  */
 function Walker(opt_options) {
 
+  'use strict';
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -1973,15 +2122,15 @@ function Walker(opt_options) {
   this.isRandom = options.isRandom || false;
   this.randomRadius = options.randomRadius || 100;
   this.isHarmonic = options.isHarmonic || false;
-  this.harmonicAmplitude = options.harmonicAmplitude || PVector.create(6, 6);
-  this.harmonicPeriod = options.harmonicPeriod || PVector.create(150, 150);    
+  this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(6, 6);
+  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);    
   this.width = options.width || 10;
   this.height = options.height || 10;     
   this.color = options.color || {r: 255, g: 150, b: 50};   
   this.maxSpeed = options.maxSpeed || 30;
   this.wrapEdges = options.wrapEdges || false;
   this.isStatic = options.isStatic || false;
-};
+}
 exports.Utils.inherit(Walker, exports.Mover);
 
 
@@ -1990,7 +2139,10 @@ exports.Utils.inherit(Walker, exports.Mover);
  */     
 Walker.prototype.step = function () {
 
-  var world = exports.World;
+  'use strict';
+
+  var world = exports.world,
+      friction;
 
   if (this.beforeStep) {
     this.beforeStep.apply(this);
@@ -2003,13 +2155,13 @@ Walker.prototype.step = function () {
       this.perlinTime += this.perlinSpeed;
 
       if (this.remainsOnScreen) {
-        this.acceleration = PVector.create(0, 0);
-        this.velocity = PVector.create(0, 0);
-        this.location.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, .1), -1, 1, 0, exports.World.width);
-        this.location.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, .1), -1, 1, 0, exports.World.height);
+        this.acceleration = exports.PVector.create(0, 0);
+        this.velocity = exports.PVector.create(0, 0);
+        this.location.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, 0, exports.world.width);
+        this.location.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, 0, exports.world.height);
       } else {
-        this.acceleration.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, .1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
-        this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, .1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+        this.acceleration.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+        this.acceleration.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
       }
 
     } else {
@@ -2017,7 +2169,7 @@ Walker.prototype.step = function () {
       // start -- APPLY FORCES
 
       if (world.c) { // friction
-        friction = Utils.clone(this.velocity);
+        friction = exports.Utils.clone(this.velocity);
         friction.mult(-1);
         friction.normalize();
         friction.mult(world.c);
@@ -2029,14 +2181,14 @@ Walker.prototype.step = function () {
     }
     
     if (this.isHarmonic) {
-      this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.World.clock / this.harmonicPeriod.x);
-      this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.World.clock / this.harmonicPeriod.y);
+      this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.x);
+      this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.y);
     }
 
     if (this.isRandom) {
       this.target = { // find a random point and steer toward it
-        location: PVector.PVectorAdd(this.location, PVector.create(Utils.getRandomNumber(-this.randomRadius, this.randomRadius), Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
-      }
+        location: exports.PVector.PVectorAdd(this.location, exports.PVector.create(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
+      };
     }
 
     if (this.target) { // follow target
@@ -2054,8 +2206,8 @@ Walker.prototype.step = function () {
     this.location.add(this.velocity); // add velocity
     
     if (this.pointToDirection) { // object rotates toward direction
-      if (this.velocity.mag() > .1) { // rotate toward direction?
-        this.angle = Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
+      if (this.velocity.mag() > 0.1) { // rotate toward direction?
+        this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
       }
     }
 
@@ -2072,10 +2224,8 @@ Walker.prototype.step = function () {
     }
 
     this.acceleration.mult(0); // reset acceleration
-
   }
 };  
-
 exports.Walker = Walker;
 /** 
     A module representing a Particle.
@@ -2097,6 +2247,8 @@ exports.Walker = Walker;
  */
  function Particle(opt_options) {
 
+  'use strict';
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2112,7 +2264,10 @@ exports.Walker = Walker;
 
 Particle.prototype.step = function () {
 
-	var world = exports.World;
+  'use strict';
+
+	var world = exports.world,
+			friction;
 	
 	//
 	
@@ -2127,7 +2282,7 @@ Particle.prototype.step = function () {
 		// start -- APPLY FORCES
 		
 		if (world.c) { // friction
-			friction = Utils.clone(this.velocity);
+			friction = exports.Utils.clone(this.velocity);
 			friction.mult(-1);
 			friction.normalize();
 			friction.mult(world.c);
@@ -2153,7 +2308,7 @@ Particle.prototype.step = function () {
 		this.location.add(this.velocity); // add velocity
 		
 		// opacity
-		this.opacity = Utils.map(this.lifespan, 0, 40, 0, 1);
+		this.opacity = exports.Utils.map(this.lifespan, 0, 40, 0, 1);
 		
 
 		if (this.lifespan > 0) {
@@ -2164,7 +2319,6 @@ Particle.prototype.step = function () {
 		this.acceleration.mult(0); // reset acceleration
 	}
 };
-
 exports.Particle = Particle;    
 /** 
     A module representing a ParticleSystem.
@@ -2187,6 +2341,8 @@ exports.Particle = Particle;
  * @param {Object} [opt_options.particle = A particle at the system's location w random acceleration.] The particle to create. At minimum, should have a location vector. Use this.getLocation to get location of partilce system.
  */
  function ParticleSystem(opt_options) {
+
+  'use strict';
 
   var options = opt_options || {};
 
@@ -2242,6 +2398,8 @@ exports.ParticleSystem = ParticleSystem;
  */
 function Liquid(opt_options) {
 
+  'use strict';
+  
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2251,8 +2409,8 @@ function Liquid(opt_options) {
   this.isStatic = options.isStatic || true;
   this.width = options.width || 100;
   this.height = options.height || 100;
-  this.color = options || {r: 97, g: 210, b: 214};
-  this.opacity = options || 0.75;
+  this.color = options.color  || {r: 97, g: 210, b: 214};
+  this.opacity = options.opacity || 0.75;
 }
 exports.Utils.inherit(Liquid, exports.Mover);
 exports.Liquid = Liquid;
@@ -2277,6 +2435,8 @@ exports.Liquid = Liquid;
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.  
  */
 function Attractor(opt_options) {
+
+  'use strict';
 
   var options = opt_options || {};
 
@@ -2314,6 +2474,8 @@ exports.Attractor = Attractor;
  */
 function Repeller(opt_options) {
 
+  'use strict';
+  
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2349,6 +2511,8 @@ exports.Repeller = Repeller;
  */
 function Heat(opt_options) {
 
+  'use strict';
+  
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2383,6 +2547,8 @@ exports.Heat = Heat;
  */
 function Cold(opt_options) {
 
+  'use strict';
+  
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2417,6 +2583,8 @@ exports.Cold = Cold;
  */
 function Light(opt_options) {
 
+  'use strict';
+  
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2451,6 +2619,8 @@ exports.Light = Light;
  */
 function Oxygen(opt_options) {
 
+  'use strict';
+  
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2484,6 +2654,8 @@ exports.Oxygen = Oxygen;
  * @param {number} [opt_options.opacity = 0.5] The particle's opacity.  
  */
 function Food(opt_options) {
+
+  'use strict';
 
   var options = opt_options || {};
 
@@ -2519,6 +2691,8 @@ exports.Food = Food;
  */
 function Predator(opt_options) {
 
+  'use strict';
+  
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2545,8 +2719,8 @@ exports.Predator = Predator;
  * @extends Mover
  *
  * @param {Object} [opt_options] Options.
- * @param {string} [opt_options.type = ""] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
- * @param {string} [opt_options.behavior = "LOVE"] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
+ * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
+ * @param {string} [opt_options.behavior = 'LOVE'] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 2] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
  * @param {number} [opt_options.width = 5] Width.
  * @param {number} [opt_options.height = 5] Height. 
@@ -2566,7 +2740,7 @@ function Sensor(opt_options) {
   exports.Mover.call(this, options);
 
   this.type = options.type || '';
-  this.behavior = options.behavior || "LOVE";
+  this.behavior = options.behavior || 'LOVE';
   this.sensitivity = options.sensitivity || 2;
   this.width = options.width || 5;
   this.height = options.height || 5;
@@ -2658,7 +2832,7 @@ Sensor.prototype.getActivationForce = function(params) {
 
   'use strict';
 
-  var force, desiredVelocity, distanceToTarget, m, steer; 
+  var distanceToTarget, m, steer; 
 
   switch (this.behavior) {
     
@@ -2671,28 +2845,28 @@ Sensor.prototype.getActivationForce = function(params) {
      * Steers away from the target
      */
     case "COWARD":
-      force = this.seek(this.target);
-      return force.mult(-1);
+      var forceCoward = this.seek(this.target);
+      return forceCoward.mult(-1);
     /**
      * Arrives at target and keeps moving
      */
     case "LIKES":
-      desiredVelocity = exports.PVector.PVectorSub(this.target.location, this.location);
-      desiredVelocity.normalize();
-      desiredVelocity.mult(0.5);
-      return desiredVelocity;
+      var dvLikes = exports.PVector.PVectorSub(this.target.location, this.location); // desiredVelocity
+      dvLikes.normalize();
+      dvLikes.mult(0.5);
+      return dvLikes;
     /**
      * Arrives at target and remains
      */      
     case "LOVES":
-      desiredVelocity = exports.PVector.PVectorSub(this.target.location, this.location);
-      distanceToTarget = desiredVelocity.mag();
-      desiredVelocity.normalize();
+      var dvLoves = exports.PVector.PVectorSub(this.target.location, this.location); // desiredVelocity
+      distanceToTarget = dvLoves.mag();
+      dvLoves.normalize();
   
       if (distanceToTarget > this.width) {
         m = distanceToTarget/params.mover.maxSpeed;
-        desiredVelocity.mult(m);
-        steer = exports.PVector.PVectorSub(desiredVelocity, params.mover.velocity);
+        dvLoves.mult(m);
+        steer = exports.PVector.PVectorSub(dvLoves, params.mover.velocity);
         steer.limit(params.mover.maxSteeringForce);
         return steer;
       }
@@ -2704,13 +2878,13 @@ Sensor.prototype.getActivationForce = function(params) {
      * Arrives at target but does not stop
      */ 
     case "EXPLORER": 
-      desiredVelocity = exports.PVector.PVectorSub(this.target.location, this.location);
-      distanceToTarget = desiredVelocity.mag();
-      desiredVelocity.normalize();
+      var dvExplorer = exports.PVector.PVectorSub(this.target.location, this.location);
+      distanceToTarget = dvExplorer.mag();
+      dvExplorer.normalize();
           
       m = distanceToTarget/params.mover.maxSpeed;
-      desiredVelocity.mult(-m);
-      steer = exports.PVector.PVectorSub(desiredVelocity, params.mover.velocity);
+      dvExplorer.mult(-m);
+      steer = exports.PVector.PVectorSub(dvExplorer, params.mover.velocity);
       steer.limit(params.mover.maxSteeringForce * 0.1);
       return steer;
     /**
@@ -2720,14 +2894,14 @@ Sensor.prototype.getActivationForce = function(params) {
       return this.flee(this.target);
 
     case "ACCELERATE":
-      force = params.mover.velocity.clone();
-      force.normalize(); // get direction
-      return force.mult(params.mover.minSpeed);
+      var forceAccel = params.mover.velocity.clone();
+      forceAccel.normalize(); // get direction
+      return forceAccel.mult(params.mover.minSpeed);
 
     case "DECELERATE":
-      force = params.mover.velocity.clone();
-      force.normalize(); // get direction
-      return force.mult(-params.mover.minSpeed);            
+      var forceDecel = params.mover.velocity.clone();
+      forceDecel.normalize(); // get direction
+      return forceDecel.mult(-params.mover.minSpeed);            
 
     default:
       return exports.PVector.create(0, 0);         
@@ -2745,15 +2919,16 @@ Sensor.prototype.isInside = function(item, container, sensitivity) {
 
   'use strict';
 
-  if (item.location.x + item.width/2 > container.location.x - container.width/2 - (sensitivity * container.width)
-    && item.location.x - item.width/2 < container.location.x + container.width/2 + (sensitivity * container.width)
-    && item.location.y + item.height/2 > container.location.y - container.height/2 - (sensitivity * container.height)
-    && item.location.y - item.height/2 < container.location.y + container.height/2 + (sensitivity * container.height)) {
+  if (item.location.x + item.width/2 > container.location.x - container.width/2 - (sensitivity * container.width) &&
+    item.location.x - item.width/2 < container.location.x + container.width/2 + (sensitivity * container.width) &&
+    item.location.y + item.height/2 > container.location.y - container.height/2 - (sensitivity * container.height) &&
+    item.location.y - item.height/2 < container.location.y + container.height/2 + (sensitivity * container.height)) {
     return true;
   }
   return false;
 };
 exports.Sensor = Sensor;
+/*global console */
 /** 
     A module representing a FlowFieldMarker.
     @module FlowFieldMarker
@@ -2775,28 +2950,30 @@ exports.Sensor = Sensor;
  */    
 function FlowFieldMarker(opt_options) {
 
-  var options = opt_options || {};
+  'use strict';
 
-  var el = document.createElement("div");
+  /**
+   * TODO(vince): these should be required. Use Interface.
+   */
+  var options = opt_options || {},
+      el = document.createElement("div"),
+      nose = document.createElement("div");/*,
+      x = options.location.x - options.width/2,
+      y = options.location.y - options.height/2,
+      s = options.scale,
+      a = options.angle,
+      o = options.opacity,
+      w = options.width,
+      h = options.height,
+      cm = options.colorMode,
+      c = options.color,  
+      style = el.style;*/
+
   el.className = "flowFieldMarker";
-  
-  var nose = document.createElement("div");
   nose.className = "nose";
-  el.appendChild(nose);
-  
-  var x = options.location.x - options.width/2,
-    y = options.location.y - options.height/2,
-    s = options.scale,
-    a = options.angle,
-    o = options.opacity,
-    w = options.width,
-    h = options.height,
-    cm = options.colorMode,
-    c = options.color,  
-    style = el.style,
-    nose = el.firstChild;
+  el.appendChild(nose); 
 
-  if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
+  /*if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
     style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
     style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
     style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
@@ -2804,8 +2981,38 @@ function FlowFieldMarker(opt_options) {
     style.width = w + "px";
     style.height = h + "px";
     style.background = cm + "(" + c.r + ", " + c.g + ", " + c.b + ")";
-  }
-  Flora.World.el.appendChild(el);
+  }*/
+
+  el.style.cssText = this.getCSSText({
+    x: options.location.x - options.width/2,
+    y: options.location.y - options.height/2,
+    s: options.scale,
+    a: options.angle,
+    o: options.opacity,
+    w: options.width,
+    h: options.height,
+    cm: options.colorMode,
+    c: options.color
+  });
+
+  exports.world.el.appendChild(el);
+
+
+}
+
+FlowFieldMarker.prototype.getCSSText = function(props) {
+
+  'use strict';
+
+  return [
+    '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+    '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+    '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+    'opacity: ' + props.o,
+    'width: ' + props.w + 'px',
+    'height: ' + props.h + 'px',
+    'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')'
+  ].join(';');
 };
 
 exports.FlowFieldMarker = FlowFieldMarker;
@@ -2823,8 +3030,11 @@ exports.FlowFieldMarker = FlowFieldMarker;
  * @param {number} [opt_options.perlinSpeed = 0.01] The speed to move through the Perlin Noise space.
  * @param {number} [opt_options.perlinTime = 100] Sets the Perlin Noise time.
  * @param {Object} [opt_options.field = null] A list of vectors that define the flow field.
+ * @param {Object} [opt_options.createMarkers = false] Set to true to visualize the flow field.
  */   
 function FlowField(opt_options) {
+
+  'use strict';
 
   var options = opt_options || {};
 
@@ -2832,21 +3042,24 @@ function FlowField(opt_options) {
   this.perlinSpeed = options.perlinSpeed || 0.01;
   this.perlinTime = options.perlinTime || 100;
   this.field = options.field || null;
-  this.createMarkers = options.createMarkers || true;
-};
+  this.createMarkers = options.createMarkers || false;
+}
 
 /**
  * Builds a FlowField. 
  */ 
 FlowField.prototype.build = function() {
 
-  var i, max, col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle, xoff, yoff, vectorList = {},
-    world = Flora.World;
+  'use strict';
 
-  var cols = Math.ceil(world.width/parseFloat(this.resolution)),
-      rows = Math.ceil(world.height/parseFloat(this.resolution));
+  var i, max, col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
+      vectorList = {},
+      world = exports.world,
+      cols = Math.ceil(world.width/parseFloat(this.resolution)),
+      rows = Math.ceil(world.height/parseFloat(this.resolution)),
+      xoff = this.perlinTime, // create markers and vectors
+      yoff;
   
-  xoff = this.perlinTime; // create markers and vectors
   for (col = 0, colMax = cols; col < colMax ; col += 1) {
     yoff = this.perlinTime;
     vectorList[col] = {};
@@ -2855,19 +3068,19 @@ FlowField.prototype.build = function() {
       x = col * this.resolution + this.resolution / 2; // get location on the grid
       y = row * this.resolution + this.resolution / 2;
 
-      theta = exports.Utils.map(SimplexNoise.noise(xoff, yoff, .1), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
+      theta = exports.Utils.map(exports.SimplexNoise.noise(xoff, yoff, 0.1), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
       fieldX = Math.cos(theta);
       fieldY = Math.sin(theta);
-      field = PVector.create(fieldX, fieldY);
+      field = exports.PVector.create(fieldX, fieldY);
       vectorList[col][row] = field;
       angle = exports.Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
       
       if (this.createMarkers) {
 
         var ffm = new exports.FlowFieldMarker({ // create the marker
-          location: PVector.create(x, y),
+          location: exports.PVector.create(x, y),
           scale: 1,
-          opacity: exports.Utils.map(angle, -360, 360, .1, 1),
+          opacity: exports.Utils.map(angle, -360, 360, 0.1, 1),
           width: this.resolution,
           height: this.resolution/2,
           field: field,
@@ -2909,6 +3122,8 @@ exports.FlowField = FlowField;
  */
 function Connector(opt_options) {
 
+  'use strict';
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2920,13 +3135,15 @@ function Connector(opt_options) {
   this.height = options.height || 1;
   this.parentA = options.parentA || null;
   this.parentB = options.parentB || null;
-};
+}
 exports.Utils.inherit(Connector, exports.Mover);
 /**
  * Called every frame, step() updates the instance's properties.
  */  
 Connector.prototype.step = function() {
-  
+
+  'use strict';
+
   var a = this.parentA.location, b = this.parentB.location;
   
   this.width = Math.floor(exports.PVector.PVectorSub(this.parentA.location, this.parentB.location).mag());
@@ -2953,7 +3170,9 @@ exports.Connector = Connector;
  * @param {number} [opt_options.height = 5] Height.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  */
-function Point (opt_options) {
+function Point(opt_options) {
+
+  'use strict';
 
   var options = opt_options || {};
 
@@ -2965,7 +3184,7 @@ function Point (opt_options) {
   this.width = options.width || 5;
   this.height = options.height || 5;
   this.isStatic = options.isStatic || true;
-};
+}
 exports.Utils.inherit(Point, exports.Mover);
 exports.Point = Point;
 /**
@@ -2975,6 +3194,8 @@ exports.Point = Point;
  * @constructor
  */
 function Stats() {
+
+  'use strict';
 
   var _container, _bar, _mode = 0, _modes = 2,
   _frames = 0, _time = Date.now(), _timeLastFrame = _time, _timeLastSecond = _time,
@@ -2994,18 +3215,13 @@ function Stats() {
 
     _mode = ( _mode + 1 ) % _modes;
 
-    if ( _mode == 0 ) {
-
+    if (_mode === 0) {
       _fpsDiv.style.display = 'block';
       _msDiv.style.display = 'none';
-
     } else {
-
       _fpsDiv.style.display = 'none';
       _msDiv.style.display = 'block';
-
     }
-
   }, false );
 
   // fps
@@ -3033,14 +3249,12 @@ function Stats() {
   _fpsDiv.appendChild( _fpsGraph );
 
   while ( _fpsGraph.children.length < 74 ) {
-
     _bar = document.createElement( 'span' );
     _bar.style.width = '1px';
     _bar.style.height = '30px';
     _bar.style.cssFloat = 'left';
     _bar.style.backgroundColor = 'rgb(' + _fpsColors[ 0 ][ 0 ] + ',' + _fpsColors[ 0 ][ 1 ] + ',' + _fpsColors[ 0 ][ 2 ] + ')';
     _fpsGraph.appendChild( _bar );
-
   }
 
   // ms
@@ -3069,68 +3283,42 @@ function Stats() {
   _msDiv.appendChild( _msGraph );
 
   while ( _msGraph.children.length < 74 ) {
-
     _bar = document.createElement( 'span' );
     _bar.style.width = '1px';
     _bar.style.height = Math.random() * 30 + 'px';
     _bar.style.cssFloat = 'left';
     _bar.style.backgroundColor = 'rgb(' + _msColors[ 0 ][ 0 ] + ',' + _msColors[ 0 ][ 1 ] + ',' + _msColors[ 0 ][ 2 ] + ')';
     _msGraph.appendChild( _bar );
-
   }
 
-  var _updateGraph = function ( dom, value ) {
-
+  var _updateGraph = function (dom, value) {
     var child = dom.appendChild( dom.firstChild );
     child.style.height = value + 'px';
-
-  }
+  };
 
   return {
-
-    getDomElement: function () {
-
+    getDomElement: function() {
       return _container;
-
     },
-
-    getFps: function () {
-
+    getFps: function() {
       return _fps;
-
     },
-
-    getFpsMin: function () {
-
+    getFpsMin: function() {
       return _fpsMin;
-
     },
-
-    getFpsMax: function () {
-
+    getFpsMax: function() {
       return _fpsMax;
-
     },
-
-    getMs: function () {
-
+    getMs: function() {
       return _ms;
-
     },
-
-    getMsMin: function () {
-
+    getMsMin: function() {
       return _msMin;
-
     },
-
-    getMsMax: function () {
-
+    getMsMax: function() {
       return _msMax;
-
     },
-
-    update: function () {
+    update: function() {
 
       _time = Date.now();
 
@@ -3145,9 +3333,9 @@ function Stats() {
 
       _frames ++;
 
-      if ( _time > _timeLastSecond + 1000 ) {
+      if (_time > _timeLastSecond + 1000) {
 
-        _fps = Math.round( ( _frames * 1000 ) / ( _time - _timeLastSecond ) );
+        _fps = Math.round((_frames * 1000) / (_time - _timeLastSecond));
         _fpsMin = Math.min( _fpsMin, _fps );
         _fpsMax = Math.max( _fpsMax, _fps );
 
@@ -3159,5 +3347,5 @@ function Stats() {
       }
     }
   };
-};
+}
 exports.Stats = Stats;

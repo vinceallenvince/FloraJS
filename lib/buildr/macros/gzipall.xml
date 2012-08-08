@@ -1,0 +1,36 @@
+<project name="gzipall">
+
+    <!-- macro to minify files -->
+    <macrodef name="gzipall">
+        
+        <element name="files" implicit="true"/>
+        
+        <sequential>
+            <echo>Compressing with Gzip</echo>
+            <pathconvert pathsep=";" property="gzipall.files">
+                <files/>
+            </pathconvert>    
+        
+            <script language="javascript"><![CDATA[
+
+                importPackage(java.io);
+            
+                <!-- get the property and convert to an array -->
+                var files = project.getProperty("gzipall.files").split(";"),
+                    gzip,
+                    i,
+                    len;
+
+                for (i=0, len=files.length; i < len; i++) {
+                
+                    //create new gzip task
+                    gzip = project.createTask("gzip");
+                    gzip.setSrc(new File(files[i]));
+                    gzip.setDestfile(new File(files[i] + ".gz"));
+                    gzip.perform();
+                }
+
+            ]]> </script>                   
+        </sequential>    
+    </macrodef>        
+</project>

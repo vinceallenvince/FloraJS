@@ -1,7 +1,14 @@
+/*global $ */
+
+/** 
+    A module representing World.
+    @module World
+ */
+
 /**
  * Creates a new World.
  *
- * @contructor
+ * @constructor
  *
  * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
  * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
@@ -12,6 +19,8 @@
  * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location  
  */
 function World(opt_options) {
+
+  'use strict';
 
   var me = this, options = opt_options || {};
   
@@ -57,12 +66,15 @@ function World(opt_options) {
   $(window).bind("resize", function (e) { // listens for window resize
     me.resize.call(me);
   });
-};
+}
 
 /**
  * Configures a new World.
  */
 World.prototype.configure = function() { // should be called after doc ready()
+
+  'use strict';
+
   this.el = document.body;
   this.el.style.width = this.width + "px";
   this.el.style.height = this.height + "px";
@@ -75,8 +87,12 @@ World.prototype.configure = function() { // should be called after doc ready()
  *
  * @param {Object} props A hash of properties to update.
  */   
-World.prototype.update = function(props) {
-  var i, key, props = Interface.getDataType(props) === "object" ? props : {}; 
+World.prototype.update = function(opt_props) {
+
+  'use strict';
+
+  var i, key, props = exports.Interface.getDataType(opt_props) === "object" ? opt_props : {};
+
   for (key in props) {
     if (props.hasOwnProperty(key)) {
       this[key] = props[key];
@@ -84,8 +100,8 @@ World.prototype.update = function(props) {
   }
 
   if (props.el) { // if updating the element; update the width and height
-    this.width = parseInt(this.el.style.width.replace("px", ""));
-    this.height = parseInt(this.el.style.height.replace("px", ""));
+    this.width = parseInt(this.el.style.width.replace('px', ''), 10);
+    this.height = parseInt(this.el.style.height.replace('px', ''), 10);
   }
 
   if (props.style) {
@@ -107,13 +123,15 @@ World.prototype.update = function(props) {
  */ 
 World.prototype.resize = function() {
 
+  'use strict';
+
   var i, max, elementLoc, controlCamera,
     windowWidth = $(window).width(),
     windowHeight = $(window).height();
   
   // check of any elements control the camera
-  for (i = 0, max = Flora.elements.length; i < max; i += 1) {
-    if (Flora.elements[i].controlCamera) {
+  for (i = 0, max = exports.elements.length; i < max; i += 1) {
+    if (exports.elements[i].controlCamera) {
       controlCamera = true;
       break;
     }
@@ -121,9 +139,9 @@ World.prototype.resize = function() {
 
   // loop thru elements
   if (!controlCamera) {
-    for (i = 0, max = Flora.elements.length; i < max; i += 1) {
+    for (i = 0, max = exports.elements.length; i < max; i += 1) {
       
-      elementLoc = Flora.elements[i].location; // recalculate location
+      elementLoc = exports.elements[i].location; // recalculate location
       
       elementLoc.x = windowWidth * (elementLoc.x/this.width);
       elementLoc.y = windowHeight * (elementLoc.y/this.height);
@@ -142,17 +160,21 @@ World.prototype.resize = function() {
  * relative to the accelerometer's values.
  */ 
 World.prototype.devicemotion = function() {
+
+  'use strict';
+
   var e = arguments[0];
+
   if (window.orientation === 0) {
     if (this.isTopDown) {
-      this.gravity = PVector.create(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
+      this.gravity = exports.PVector.create(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
     } else {
-      this.gravity = PVector.create(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
+      this.gravity = exports.PVector.create(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
     }
   } else if (window.orientation === -90) {
-    this.gravity = PVector.create(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
+    this.gravity = exports.PVector.create(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
   } else {
-    this.gravity = PVector.create(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
+    this.gravity = exports.PVector.create(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
   }
 
   /*if (World.showDeviceOrientation) {
@@ -166,6 +188,9 @@ World.prototype.devicemotion = function() {
  * @param {Object} e An event object passed from the event listener.
  */ 
 World.prototype.deviceorientation = function(e) {
+
+  'use strict';
+
   var compassHeading = e.webkitCompassHeading,
     compassAccuracy = e.webkitCompassAccuracy;
 
@@ -181,8 +206,10 @@ World.prototype.deviceorientation = function(e) {
  * Creates a new instance of mr doob's stats monitor.
  */ 
 World.prototype.createStats = function() {
-  
-  stats = new Stats();
+
+  'use strict';
+
+  var stats = new exports.Stats();
 
   stats.getDomElement().style.position = 'absolute'; // Align top-left
   stats.getDomElement().style.left = '0px';
@@ -200,9 +227,12 @@ World.prototype.createStats = function() {
  * Destroys an instance of mr doob's stats monitor.
  */     
 World.prototype.destroyStats = function() {
+
+  'use strict';  
+
   clearInterval(this.statsInterval);
   document.body.removeChild(document.getElementById('stats'));
-}
+};
 
 /**
  * Called every frame, step() updates the world's properties.
@@ -213,6 +243,9 @@ World.prototype.step = function() {};
  * Called every frame, draw() renders the world.
  */ 
 World.prototype.draw = function() {
+
+  'use strict';
+
   var x = this.location.x,
     y = this.location.y,
     s = 1,
@@ -247,5 +280,4 @@ World.prototype.draw = function() {
     });
   }
 };
-
 exports.World = World;

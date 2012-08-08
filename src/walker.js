@@ -33,6 +33,8 @@
  */
 function Walker(opt_options) {
 
+  'use strict';
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -48,15 +50,15 @@ function Walker(opt_options) {
   this.isRandom = options.isRandom || false;
   this.randomRadius = options.randomRadius || 100;
   this.isHarmonic = options.isHarmonic || false;
-  this.harmonicAmplitude = options.harmonicAmplitude || PVector.create(6, 6);
-  this.harmonicPeriod = options.harmonicPeriod || PVector.create(150, 150);    
+  this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(6, 6);
+  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);    
   this.width = options.width || 10;
   this.height = options.height || 10;     
   this.color = options.color || {r: 255, g: 150, b: 50};   
   this.maxSpeed = options.maxSpeed || 30;
   this.wrapEdges = options.wrapEdges || false;
   this.isStatic = options.isStatic || false;
-};
+}
 exports.Utils.inherit(Walker, exports.Mover);
 
 
@@ -65,7 +67,10 @@ exports.Utils.inherit(Walker, exports.Mover);
  */     
 Walker.prototype.step = function () {
 
-  var world = exports.World;
+  'use strict';
+
+  var world = exports.world,
+      friction;
 
   if (this.beforeStep) {
     this.beforeStep.apply(this);
@@ -78,13 +83,13 @@ Walker.prototype.step = function () {
       this.perlinTime += this.perlinSpeed;
 
       if (this.remainsOnScreen) {
-        this.acceleration = PVector.create(0, 0);
-        this.velocity = PVector.create(0, 0);
-        this.location.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, .1), -1, 1, 0, exports.World.width);
-        this.location.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, .1), -1, 1, 0, exports.World.height);
+        this.acceleration = exports.PVector.create(0, 0);
+        this.velocity = exports.PVector.create(0, 0);
+        this.location.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, 0, exports.world.width);
+        this.location.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, 0, exports.world.height);
       } else {
-        this.acceleration.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, .1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
-        this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, .1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+        this.acceleration.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+        this.acceleration.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
       }
 
     } else {
@@ -92,7 +97,7 @@ Walker.prototype.step = function () {
       // start -- APPLY FORCES
 
       if (world.c) { // friction
-        friction = Utils.clone(this.velocity);
+        friction = exports.Utils.clone(this.velocity);
         friction.mult(-1);
         friction.normalize();
         friction.mult(world.c);
@@ -104,14 +109,14 @@ Walker.prototype.step = function () {
     }
     
     if (this.isHarmonic) {
-      this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.World.clock / this.harmonicPeriod.x);
-      this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.World.clock / this.harmonicPeriod.y);
+      this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.x);
+      this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.y);
     }
 
     if (this.isRandom) {
       this.target = { // find a random point and steer toward it
-        location: PVector.PVectorAdd(this.location, PVector.create(Utils.getRandomNumber(-this.randomRadius, this.randomRadius), Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
-      }
+        location: exports.PVector.PVectorAdd(this.location, exports.PVector.create(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
+      };
     }
 
     if (this.target) { // follow target
@@ -129,8 +134,8 @@ Walker.prototype.step = function () {
     this.location.add(this.velocity); // add velocity
     
     if (this.pointToDirection) { // object rotates toward direction
-      if (this.velocity.mag() > .1) { // rotate toward direction?
-        this.angle = Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
+      if (this.velocity.mag() > 0.1) { // rotate toward direction?
+        this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
       }
     }
 
@@ -147,8 +152,6 @@ Walker.prototype.step = function () {
     }
 
     this.acceleration.mult(0); // reset acceleration
-
   }
 };  
-
 exports.Walker = Walker;

@@ -1,3 +1,4 @@
+/*jshint bitwise:false */
 /** 
     A module representing SimplexNoise.
     @module SimplexNoise
@@ -18,33 +19,36 @@
 /**
  * @namespace
  */
-SimplexNoise = (function (r) {
+var SimplexNoise = (function (r) {
 
-if (r == undefined) {
-  r = Math;
-}
-var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]]; 
-var p = [];
-for (var i = 0; i < 256; i += 1) {
-  p[i] = Math.floor(r.random()*256);
-}
-// To remove the need for index wrapping, double the permutation table length 
-var perm = []; 
-for(var i = 0; i < 512; i += 1) {
-  perm[i]=p[i & 255];
-} 
+  'use strict';
 
-// A lookup table to traverse the simplex around a given point in 4D. 
-// Details can be found where this table is used, in the 4D noise method. 
-var simplex = [ 
-[0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0], 
-[0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0], 
-[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
-[1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0], 
-[1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0], 
-[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
-[2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0], 
-[2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
+  if (r === undefined) {
+    r = Math;
+  }
+  var i;
+  var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]]; 
+  var p = [];
+  for (i = 0; i < 256; i += 1) {
+    p[i] = Math.floor(r.random()*256);
+  }
+  // To remove the need for index wrapping, double the permutation table length 
+  var perm = []; 
+  for(i = 0; i < 512; i += 1) {
+    perm[i] = p[i & 255];
+  } 
+
+  // A lookup table to traverse the simplex around a given point in 4D. 
+  // Details can be found where this table is used, in the 4D noise method. 
+  var simplex = [ 
+  [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0], 
+  [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0], 
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
+  [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0], 
+  [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0], 
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
+  [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0], 
+  [2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
 
 /** @scope SimplexNoise */
 return {
@@ -88,22 +92,25 @@ return {
     var gi2 = this.perm[ii+1+this.perm[jj+1]] % 12; 
     // Calculate the contribution from the three corners 
     var t0 = 0.5 - x0*x0-y0*y0; 
-    if(t0<0) n0 = 0.0; 
-    else { 
-    t0 *= t0; 
-    n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient 
+    if (t0 < 0) {
+      n0 = 0.0;
+    } else { 
+      t0 *= t0; 
+      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient 
     } 
     var t1 = 0.5 - x1*x1-y1*y1; 
-    if(t1<0) n1 = 0.0; 
-    else { 
-    t1 *= t1; 
-    n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1); 
+    if (t1 < 0) {
+      n1 = 0.0; 
+    } else { 
+      t1 *= t1; 
+      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1); 
     }
     var t2 = 0.5 - x2*x2-y2*y2; 
-    if(t2<0) n2 = 0.0; 
-    else { 
-    t2 *= t2; 
-    n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2); 
+    if (t2 < 0) {
+      n2 = 0.0; 
+    } else { 
+      t2 *= t2; 
+      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2); 
     } 
     // Add contributions from each corner to get the final noise value. 
     // The result is scaled to return values in the interval [-1,1]. 
@@ -163,28 +170,32 @@ return {
     var gi3 = this.perm[ii+1+this.perm[jj+1+this.perm[kk+1]]] % 12; 
     // Calculate the contribution from the four corners 
     var t0 = 0.6 - x0*x0 - y0*y0 - z0*z0; 
-    if(t0<0) n0 = 0.0; 
-    else { 
-    t0 *= t0; 
-    n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0, z0); 
+    if (t0 < 0) {
+      n0 = 0.0; 
+    } else { 
+      t0 *= t0; 
+      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0, z0); 
     }
     var t1 = 0.6 - x1*x1 - y1*y1 - z1*z1; 
-    if(t1<0) n1 = 0.0; 
-    else { 
-    t1 *= t1; 
-    n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1, z1); 
+    if (t1 < 0) {
+      n1 = 0.0; 
+    } else { 
+      t1 *= t1; 
+      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1, z1); 
     } 
     var t2 = 0.6 - x2*x2 - y2*y2 - z2*z2; 
-    if(t2<0) n2 = 0.0; 
-    else { 
-    t2 *= t2; 
-    n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2, z2); 
+    if(t2 < 0) {
+      n2 = 0.0; 
+    } else { 
+      t2 *= t2; 
+      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2, z2); 
     } 
     var t3 = 0.6 - x3*x3 - y3*y3 - z3*z3; 
-    if(t3<0) n3 = 0.0; 
-    else { 
-    t3 *= t3; 
-    n3 = t3 * t3 * this.dot(this.grad3[gi3], x3, y3, z3); 
+    if(t3 <0 ) {
+      n3 = 0.0; 
+    } else { 
+      t3 *= t3; 
+      n3 = t3 * t3 * this.dot(this.grad3[gi3], x3, y3, z3); 
     } 
     // Add contributions from each corner to get the final noise value. 
     // The result is scaled to stay just inside [-1,1] 
@@ -194,7 +205,10 @@ return {
 
 }({
 random: function () {
-  return .1;
+
+  'use strict';
+  
+  return 0.1;
 }
 }));
 exports.SimplexNoise = SimplexNoise;

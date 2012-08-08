@@ -1,3 +1,4 @@
+/*jshint supernew:true */
 /** 
     A module representing a PVector.
     @module PVector
@@ -6,7 +7,9 @@
 /** 
  * @namespace
  */
-PVector = (function() {
+var PVector = (function() {
+
+  'use strict';
 
   /** @scope PVector */
   return {
@@ -164,7 +167,7 @@ PVector = (function() {
      * @returns {Object} This vector.
      */       
     normalize: function() {
-      m = this.mag();
+      var m = this.mag();
       if (m !== 0) {
         return this.div(m);
       }

@@ -1,0 +1,20 @@
+<project name="yuidoc">
+
+    <!-- macro to document files -->
+    <macrodef name="yuidoc">
+        
+        <attribute name="outputdir"/>
+        <attribute name="inputdir"/>
+        
+        <attribute name="failonerror" default="true" />
+        
+        <sequential>
+            <echo>Documenting with yuidoc Toolkit</echo>   
+            <exec executable="${buildr.yuidoc}" failonerror="@{failonerror}">
+                <arg path="@{inputdir}"/>
+                <arg line="-o" />
+                <arg path="@{outputdir}"/>
+            </exec>
+        </sequential>    
+    </macrodef>        
+</project>

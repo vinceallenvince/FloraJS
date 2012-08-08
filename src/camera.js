@@ -13,10 +13,12 @@
  */   
 function Camera(opt_options) {
 
+  'use strict';
+
   var options = opt_options || {};
 
-  this.location = options.location || Flora.PVector.create(0, 0);
+  this.location = options.location || exports.PVector.create(0, 0);
   this.controlObj = options.controlObj || null;
-};
+}
 
 exports.Camera = Camera;

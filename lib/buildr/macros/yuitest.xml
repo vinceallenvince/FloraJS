@@ -1,0 +1,45 @@
+<project name="yuitest">
+
+    <!-- macro to minify files -->
+    <macrodef name="yuitest">
+        
+        <attribute name="groups" default=""/>
+        <attribute name="format" default="xunit"/>
+        <attribute name="verbose" default="" />
+        <element name="files" implicit="true"/>
+        
+        <sequential>
+            <echo>Testing with YUI Test</echo>
+            <script language="javascript"><![CDATA[            
+                var format      = "@{format}",
+                    groups      = "@{groups}",
+                    verbose     = "@{verbose}",
+                    options     = "";
+                    
+                if (format) {
+                    options += " --format " + format;
+                }
+                
+                if (groups) {
+                    options += " --groups " + groups;
+                }                
+                
+                if (verbose == "true") {
+                    options += " --verbose";
+                }
+                
+                project.setProperty("buildr.yuitest.options", options);     
+            ]]></script>
+            <echo>Using: ${buildr.yuitest.options}</echo>
+            <apply executable="java" parallel="true" failonerror="@{failonerror}">
+                <files/>
+
+                <arg line="-jar"/>
+                <arg path="${buildr.rhino.path}"/>
+                <arg line="${buildr.yuitest.rhino.path}"/> 
+                <arg line="${buildr.yuitest.options}"/>
+                <srcfile/>                
+            </apply>            
+        </sequential>    
+    </macrodef>        
+</project>

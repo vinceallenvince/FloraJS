@@ -1,0 +1,57 @@
+<project name="csslint">
+
+    <property name="buildr.csslint.errors" value="" />
+    <property name="buildr.csslint.warnings" value="" />
+    <property name="buildr.csslint.format" value="text" />
+    <property name="buildr.csslint.quiet" value="false" />
+
+    <macrodef name="csslint">
+
+        <attribute name="errors" default="${buildr.csslint.errors}" />
+        <attribute name="warnings" default="${buildr.csslint.warnings}" />
+        <attribute name="format" default="${buildr.csslint.format}" />
+        <attribute name="quiet" default="${buildr.csslint.quiet}" />
+        <attribute name="failonerror" default="true" />
+        <element name="cssfiles" implicit="true"/>    
+
+        <sequential>
+            <echo>Validating with CSS Lint</echo>
+            <script language="javascript"><![CDATA[            
+                var errors      = "@{errors}",
+                    warnings    = "@{warnings}",
+                    format      = "@{format}",
+                    quiet       = "@{quiet}",
+                    options     = "";
+                    
+                if (errors) {
+                    options += " --errors=" + errors;
+                }
+                
+                if (warnings) {
+                    options += " --warnings=" + warnings;
+                }
+                
+                if (format) {
+                    options += " --format=" + format;
+                }
+                
+                if (quiet == "true") {
+                    options += " --quiet";
+                }
+                
+                project.setProperty("buildr.csslint.options", options);
+            ]]></script>
+            <echo>Using: ${buildr.csslint.options}</echo>
+            <pathconvert pathsep=" " property="csslint.cssfiles">
+                <cssfiles/>
+            </pathconvert>
+            <exec executable="java" failonerror="@{failonerror}">
+                <arg line="-jar"/>
+                <arg path="${buildr.lib.dir}/${buildr.rhino}"/>
+                <arg path="${buildr.lib.dir}/${buildr.csslint}" />        
+                <arg line="${csslint.cssfiles} ${buildr.csslint.options} " />
+            </exec>          
+        </sequential>    
+    </macrodef>
+
+</project>

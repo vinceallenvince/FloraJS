@@ -1,0 +1,54 @@
+<project name="uglifyjs">
+
+    <!-- macro to minify files -->
+    <macrodef name="uglifyjs">
+        
+        <attribute name="outputdir"/>
+        
+        <attribute name="beautify" default="" />     
+        <attribute name="no-mangle" default="" />      
+        <attribute name="no-mangle-functions" default="" />      
+        <attribute name="no-dead-code" default="" />      
+        <attribute name="failonerror" default="true" />
+        <element name="files" implicit="true"/>
+        
+        <sequential>
+            <echo>Minifying with UglifyJS</echo>   
+            <script language="javascript"><![CDATA[            
+                var beautify    = "@{beautify}",
+                    noMangle    = "@{no-mangle}",
+                    noMangleFuncs = "@{no-mangle-functions}",
+                    noDeadCode  = "@{no-dead-code}",
+                    options     = "";                    
+                
+                if (noMangle == "true") {
+                    options += " --no-mangle";
+                }
+                
+                if (noMangleFuncs == "true") {
+                    options += " --no-mangle-functions";
+                }
+                
+                if (noDeadCode == "true") {
+                    options += " --no-dead-code";
+                }
+
+                project.setProperty("buildr.uglifyjs.options", options);  
+                
+            ]]></script>
+            <echo>Using: ${buildr.uglifyjs.options}</echo>                   
+            <apply executable="uglifyjs" failonerror="@{failonerror}">
+                <files/>
+                <mapper type="regexp" from="^(.*?)\.js$$" to="@{outputdir}/\1-min.js"/>
+
+                <arg line="${buildr.uglifyjs.options}"/> 
+                
+                <arg line="-o"/>           
+                <targetfile/>  
+
+                <srcfile/>
+              
+            </apply>            
+        </sequential>    
+    </macrodef>        
+</project>

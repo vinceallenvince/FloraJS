@@ -9,18 +9,16 @@
   <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
   <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
-  <script src="lib/stats.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
 
     $(document).ready(function () {
 
-      var FloraSystem = exports.FloraSystem,
-          system = new FloraSystem();
+      var system = new exports.FloraSystem();
 
       system.start(function () {
 
-        Flora.World.update({
+        Flora.world.update({
           showStats: true
         });
 

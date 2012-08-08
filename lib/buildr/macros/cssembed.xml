@@ -1,0 +1,9 @@
+<project name="cssembed">
+
+    <taskdef
+        name="cssembed"
+        classname="net.nczonline.web.cssembed.CSSEmbedTask"
+        classpath="${buildr.lib.dir}/${buildr.cssembed}"
+    />
+
+</project>

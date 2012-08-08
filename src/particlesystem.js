@@ -20,6 +20,8 @@
  */
  function ParticleSystem(opt_options) {
 
+  'use strict';
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);

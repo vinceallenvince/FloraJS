@@ -1,0 +1,19 @@
+<project name="phantomjs">
+
+    <!-- macro to test files -->
+    <macrodef name="phantomjs">
+
+        <attribute name="driver" />
+        <attribute name="failonerror" default="true" />
+        <element name="files" implicit="true"/>
+        
+        <sequential>
+            <echo>Testing with PhantomJS</echo>   
+            <apply executable="${buildr.phantomjs}" parallel="true" failonerror="@{failonerror}">
+                <files/>
+                <arg path="@{driver}"/>
+                <srcfile/>
+            </apply>        
+        </sequential>    
+    </macrodef>        
+</project>

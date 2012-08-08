@@ -1,0 +1,28 @@
+<project name="closure">
+
+    <!-- macro to minify files -->
+    <macrodef name="closure">
+        
+        <attribute name="outputdir"/>
+        <attribute name="compilation-level" default="SIMPLE_OPTIMIZATIONS" />      
+        <attribute name="failonerror" default="true" />
+        <element name="files" implicit="true"/>
+        
+        <sequential>
+            <echo>Minifying with Closure Compiler</echo>                      
+            <apply executable="java" parallel="false" failonerror="@{failonerror}">
+                <files/>
+                <mapper type="regexp" from="^(.*?)\.js$$" to="@{outputdir}/\1-min.js"/>
+
+                <arg line="-jar"/>
+                <arg path="${buildr.closure.path}"/>
+                <arg line="--compilation_level @{compilation-level}"/> 
+                <arg line="--js"/>
+                <srcfile/>
+                
+                <arg line="--js_output_file"/>           
+                <targetfile/>                
+            </apply>            
+        </sequential>    
+    </macrodef>        
+</project>

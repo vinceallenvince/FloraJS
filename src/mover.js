@@ -1,3 +1,4 @@
+/*global $ */
 /** 
     A module representing a Mover.
     @module Mover
@@ -54,7 +55,21 @@
  
 function Mover(opt_options) {
 
-  var options = opt_options || {}, i, max, evt;
+  'use strict';
+
+  var options = opt_options || {},
+      world = exports.world || document.createElement("div"),
+      elements = exports.elements || [],
+      liquids = exports.liquids || [],
+      repellers = exports.repellers || [],
+      attractors = exports.attractors || [],
+      heats = exports.heats || [],
+      colds = exports.colds || [],
+      predators = exports.predators || [],
+      lights = exports.lights || [],
+      oxygen = exports.oxygen || [],
+      food = exports.food || [],
+      i, max, evt;
 
   for (i in options) {
     if (options.hasOwnProperty(i)) {
@@ -64,9 +79,9 @@ function Mover(opt_options) {
 
   this.id = options.id || this.constructor.name.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
-  if (options.view && Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
+  if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
     this.el = options.view.call();
-  } else if (Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
+  } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
     this.el = options.view;
   } else {
     this.el = document.createElement("div");
@@ -104,47 +119,49 @@ function Mover(opt_options) {
   this.flowField = options.flowField || null;   
   this.acceleration = options.acceleration || exports.PVector.create(0, 0);
   this.velocity = options.velocity || exports.PVector.create(0, 0);
-  this.location = options.location || exports.PVector.create(Flora.World.width/2, Flora.World.height/2);
+  this.location = options.location || exports.PVector.create(world.width/2, world.height/2);
   this.controlCamera = options.controlCamera || false;
   this.beforeStep = options.beforeStep || undefined;    
   this.afterStep = options.afterStep || undefined;
 
-  exports.elements.push(this); // push new instance of Mover
+  elements.push(this); // push new instance of Mover
 
   this.el.id = this.id;
   this.el.className = this.className;
 
-  exports.World.el.appendChild(this.el); // append the view to the World
+  if (world.el) {
+    world.el.appendChild(this.el); // append the view to the World
+  } 
   
   Mover._idCount += 1; // increment id
 
   if (this.className === "liquid") {
-    Flora.liquids.push(this); // push new instance of liquids to liquid list
+    liquids.push(this); // push new instance of liquids to liquid list
   } else if (this.className === "repeller") {
-    Flora.repellers.push(this); // push new instance of repeller to repeller list
+    repellers.push(this); // push new instance of repeller to repeller list
   } else if (this.className === "attractor") {
-    Flora.attractors.push(this); // push new instance of attractor to attractor list
+    attractors.push(this); // push new instance of attractor to attractor list
   } else if (this.className === "heat") {
-    Flora.heats.push(this);
+    heats.push(this);
   } else if (this.className === "cold") {
-    Flora.colds.push(this);
+    colds.push(this);
   } else if (this.className === "predator") {
-    Flora.predators.push(this);
+    predators.push(this);
   } else if (this.className === "light") {
-    Flora.lights.push(this);
+    lights.push(this);
   } else if (this.className === "oxygen") {
-    Flora.oxygen.push(this);
+    oxygen.push(this);
   } else if (this.className === "food") {
-    Flora.food.push(this);
+    food.push(this);
   }
   
   if (this.controlCamera) { // if this object controls the camera
 
-    Flora.Camera.controlObj = this;
+    exports.Camera.controlObj = this;
     
     // need to position world so controlObj is centered on screen
-    Flora.World.location.x = -Flora.World.width/2 + $(window).width()/2 + (Flora.World.width/2 - this.location.x);
-    Flora.World.location.y = -Flora.World.height/2 + $(window).height()/2 + (Flora.World.height/2 - this.location.y);
+    world.location.x = -world.width/2 + $(window).width()/2 + (world.width/2 - this.location.x);
+    world.location.y = -world.height/2 + $(window).height()/2 + (world.height/2 - this.location.y);
   }
 
   /*inst.el.addEventListener("mouseenter", function (e) { Obj.mouseenter.call(inst, e); }, false);
@@ -153,7 +170,7 @@ function Mover(opt_options) {
   inst.el.addEventListener("mouseup", function (e) { Obj.mouseup.call(inst, e); }, false);
   inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/      
   
-};
+}
 exports.Utils.inherit(Mover, exports.Obj);
 
 /**
@@ -169,8 +186,10 @@ Mover._idCount = 0;
  */   
 Mover.prototype.step = function() {
 
+  'use strict';
+
   var i, max, dir, friction, force, nose,
-    world = Flora.World;
+    world = exports.world;
   
   //
   
@@ -184,28 +203,28 @@ Mover.prototype.step = function() {
 
     // APPLY FORCES -- start
 
-    if (Flora.liquids.length > 0) { // liquid
-      for (i = 0, max = Flora.liquids.length; i < max; i += 1) {
-        if (this.id !== Flora.liquids[i].id && this.isInside(Flora.liquids[i])) {
-          force = this.drag(Flora.liquids[i]);
+    if (exports.liquids.length > 0) { // liquid
+      for (i = 0, max = exports.liquids.length; i < max; i += 1) {
+        if (this.id !== exports.liquids[i].id && this.isInside(exports.liquids[i])) {
+          force = this.drag(exports.liquids[i]);
           this.applyForce(force);
         }
       }
     }
     
-    if (Flora.repellers.length > 0) { // repeller
-      for (i = 0, max = Flora.repellers.length; i < max; i += 1) {
-        if (this.id !== Flora.repellers[i].id) {
-          force = this.attract(Flora.repellers[i]);
+    if (exports.repellers.length > 0) { // repeller
+      for (i = 0, max = exports.repellers.length; i < max; i += 1) {
+        if (this.id !== exports.repellers[i].id) {
+          force = this.attract(exports.repellers[i]);
           this.applyForce(force);
         }
       }
     }
     
-    if (Flora.attractors.length > 0) { // repeller
-      for (i = 0, max = Flora.attractors.length; i < max; i += 1) {
-        if (this.id !== Flora.attractors[i].id) {
-          force = this.attract(Flora.attractors[i]);
+    if (exports.attractors.length > 0) { // repeller
+      for (i = 0, max = exports.attractors.length; i < max; i += 1) {
+        if (this.id !== exports.attractors[i].id) {
+          force = this.attract(exports.attractors[i]);
           this.applyForce(force);
         }
       }
@@ -217,7 +236,7 @@ Mover.prototype.step = function() {
         var sensor = this.sensors[i];
         
         var r = sensor.length; // use angle to calculate x, y
-        var theta = Utils.degreesToRadians(this.angle + sensor.offsetAngle);
+        var theta = exports.Utils.degreesToRadians(this.angle + sensor.offsetAngle);
         var x = r * Math.cos(theta);
         var y = r * Math.sin(theta);
         
@@ -228,14 +247,14 @@ Mover.prototype.step = function() {
         if (sensor.activated) {
           this.applyForce(sensor.getActivationForce({
             mover: this
-          }))
+          }));
         }
         
       }
     }
     
     if (world.c) { // friction
-      friction = Utils.clone(this.velocity);
+      friction = exports.Utils.clone(this.velocity);
       friction.mult(-1);
       friction.normalize();
       friction.mult(world.c);
@@ -280,7 +299,7 @@ Mover.prototype.step = function() {
     }
     
     if (this.flocking) {
-      this.flock(Flora.elements);
+      this.flock(exports.elements);
     }
 
     // end -- APPLY FORCES
@@ -298,8 +317,8 @@ Mover.prototype.step = function() {
     this.location.add(this.velocity); // add velocity
     
     if (this.pointToDirection) { // object rotates toward direction
-      if (this.velocity.mag() > .1) {
-        this.angle = Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
+      if (this.velocity.mag() > 0.1) {
+        this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
       }
     }
     
@@ -328,7 +347,7 @@ Mover.prototype.step = function() {
       this.lifespan -= 1;
     }
   }
-}
+};
 
 /**
  * Applies a force to this object's acceleration.
@@ -336,6 +355,8 @@ Mover.prototype.step = function() {
  * @param {Object} force The force to be applied (expressed as a vector).
  */   
 Mover.prototype.applyForce = function(force) {
+
+  'use strict';
 
   // F = M * A
   var f = force.clone(); // make a copy of the force so the original force vector is not altered by dividing by mass; could also use static method
@@ -352,15 +373,17 @@ Mover.prototype.applyForce = function(force) {
  * @returns {Object} The force to apply.
  */       
 Mover.prototype.seek = function(target, arrive) {
-  
-  var world = Flora.World,
+
+  'use strict';
+
+  var world = exports.world,
     desiredVelocity = exports.PVector.PVectorSub(target.location, this.location),
     distanceToTarget = desiredVelocity.mag();
 
   desiredVelocity.normalize();
   
   if (distanceToTarget < world.width/2) {
-    var m = Utils.map(distanceToTarget, 0, world.width/2, 0, this.maxSpeed);
+    var m = exports.Utils.map(distanceToTarget, 0, world.width/2, 0, this.maxSpeed);
     desiredVelocity.mult(m);
   } else {
     desiredVelocity.mult(this.maxSpeed);
@@ -378,7 +401,9 @@ Mover.prototype.seek = function(target, arrive) {
  * @returns {Object} The force to apply.
  */ 
 Mover.prototype.follow = function(target) {
-  
+
+  'use strict';
+
   var desiredVelocity = target.location;
 
   desiredVelocity.mult(this.maxSpeed);
@@ -392,6 +417,9 @@ Mover.prototype.follow = function(target) {
  * Bundles flocking behaviors (separate, align, cohesion) into one call.
  */     
 Mover.prototype.flock = function(elements) {
+
+  'use strict';
+
   this.applyForce(this.separate(elements).mult(this.separateStrength)); 
   this.applyForce(this.align(elements).mult(this.alignStrength));
   this.applyForce(this.cohesion(elements).mult(this.cohesionStrength));
@@ -405,7 +433,9 @@ Mover.prototype.flock = function(elements) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.separate = function(elements) {
-  
+
+  'use strict';
+
   var i, max, element, diff, d,
   sum = exports.PVector.create(0, 0),
   count = 0, steer;
@@ -444,7 +474,9 @@ Mover.prototype.separate = function(elements) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.align = function(elements) {
-  
+
+  'use strict';
+
   var i, max, element, diff, d,
     sum = exports.PVector.create(0, 0),
     neighbordist = this.width * 2,
@@ -481,7 +513,9 @@ Mover.prototype.align = function(elements) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.cohesion = function(elements) {
-  
+
+  'use strict';
+
   var i, max, element, diff, d,
     sum = exports.PVector.create(0, 0),
     neighbordist = 10,
@@ -519,7 +553,9 @@ Mover.prototype.cohesion = function(elements) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.flee = function(target) {
-  
+
+  'use strict';
+
   var desiredVelocity = exports.PVector.PVectorSub(target.location, this.location); // find vector pointing at target
 
   desiredVelocity.normalize(); // reduce to 1
@@ -535,15 +571,18 @@ Mover.prototype.flee = function(target) {
  * @returns {Object} A force to apply.
  */     
 Mover.prototype.drag = function(target) {
+
+  'use strict';
+
   var speed = this.velocity.mag(),
     dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
-    drag = Utils.clone(this.velocity);
+    drag = exports.Utils.clone(this.velocity);
 
   drag.normalize(); // drag direction
   drag.mult(dragMagnitude);
 
   return drag;
-}
+};
 
 /**
  * Calculates a force to apply to simulate attraction on an object.
@@ -553,11 +592,13 @@ Mover.prototype.drag = function(target) {
  */     
 Mover.prototype.attract = function(attractor) {
 
+  'use strict';
+
   var force = exports.PVector.PVectorSub(attractor.location, this.location),
     distance, strength;
 
   distance = force.mag(); 
-  distance = Utils.constrain(distance, this.width * this.height/8, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
+  distance = exports.Utils.constrain(distance, this.width * this.height/8, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
   force.normalize();
   strength = (attractor.G * attractor.mass * this.mass) / (distance * distance); 
   force.mult(strength);
@@ -572,16 +613,19 @@ Mover.prototype.attract = function(attractor) {
  * @returns {boolean} Returns true if the object is inside the container.
  */     
 Mover.prototype.isInside = function(container) {
+
+  'use strict';  
+
   if (container) {
-    if (this.location.x + this.width/2 > container.location.x - container.width/2 
-      && this.location.x - this.width/2 < container.location.x + container.width/2 
-      && this.location.y + this.height/2 > container.location.y - container.height/2 
-      && this.location.y - this.height/2 < container.location.y + container.height/2) {
+    if (this.location.x + this.width/2 > container.location.x - container.width/2 &&
+      this.location.x - this.width/2 < container.location.x + container.width/2 &&
+      this.location.y + this.height/2 > container.location.y - container.height/2 &&
+      this.location.y - this.height/2 < container.location.y + container.height/2) {
       return true;
     }
   }
   return false;
-}
+};
 
 /**
  * Determines if this object is outside the world bounds.
@@ -590,6 +634,8 @@ Mover.prototype.isInside = function(container) {
  * @returns {boolean} Returns true if the object is outside the world.
  */     
 Mover.prototype.checkWorldEdges = function(world) {
+
+  'use strict';
 
   var x = this.location.x,
     y = this.location.y,
@@ -617,7 +663,7 @@ Mover.prototype.checkWorldEdges = function(world) {
     if (this.avoidEdges) {
       if (this.location.x < this.avoidEdgesStrength) { 
         maxSpeed = this.maxSpeed;
-      } else if (this.location.x > Flora.World.width - this.avoidEdgesStrength) {
+      } else if (this.location.x > exports.world.width - this.avoidEdgesStrength) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
@@ -657,7 +703,7 @@ Mover.prototype.checkWorldEdges = function(world) {
     if (this.avoidEdges) {
       if (this.location.y < this.avoidEdgesStrength) { 
         maxSpeed = this.maxSpeed;
-      } else if (this.location.y > Flora.World.height - this.avoidEdgesStrength) {
+      } else if (this.location.y > exports.world.height - this.avoidEdgesStrength) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
@@ -681,11 +727,10 @@ Mover.prototype.checkWorldEdges = function(world) {
   }
 
   if (check && this.controlCamera) {
-    Flora.World.location.add(diff); // !! do we need this? // add the distance difference to World.location
+    exports.world.location.add(diff); // !! do we need this? // add the distance difference to World.location
   }
-
   return check;
-}
+};
 
 /**
  * Moves the world in the opposite direction of the Camera's controlObj.
@@ -695,10 +740,12 @@ Mover.prototype.checkWorldEdges = function(world) {
  */     
 Mover.prototype.checkCameraEdges = function() {
 
+  'use strict';
+
   var vel = this.velocity.clone();
 
-  Flora.World.location.add(vel.mult(-1));
-}
+  exports.world.location.add(vel.mult(-1));
+};
 
 /**
  * Returns this object's location.
@@ -708,6 +755,9 @@ Mover.prototype.checkCameraEdges = function() {
  * @returns {boolean} Returns true if the object is outside the world.
  */ 
 Mover.prototype.getLocation = function (type) {
+
+  'use strict';
+
   if (!type) {
     return exports.PVector.create(this.location.x, this.location.y);
   } else if (type === 'x') {
@@ -725,6 +775,9 @@ Mover.prototype.getLocation = function (type) {
  * @returns {boolean} Returns true if the object is outside the world.
  */     
 Mover.prototype.getVelocity = function (type) {
+
+  'use strict';
+
   if (!type) {
     return exports.PVector.create(this.velocity.x, this.velocity.y);
   } else if (type === "x") {

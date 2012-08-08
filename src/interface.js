@@ -1,6 +1,9 @@
+/*global console */
 /** @namespace */
-Interface = (function () {
-  
+var Interface = (function () {
+
+  'use strict';
+
   /** @scope Interface */
   return {
   
@@ -25,44 +28,44 @@ names: "array"
 }
 Interface.checkRequiredParams(params_passed, params_required) returns true in this case.
        */
-      checkRequiredParams: function (params_passed, params_required) {
-        var i, msg, check = true;
-        for (i in params_required) { // loop thru required params
-          if (params_required.hasOwnProperty(i)) {
-            try {
-              if (this.getDataType(params_passed[i]) !== params_required[i] || params_passed[i] === "") { // if there is not a corresponding key in the passed params; or params passed value is blank
-                check = false;
-                if (params_passed[i] === "") {
-                  msg = "Interface.checkRequiredParams: required param '" + i + "' is empty.";
-                } else if (typeof params_passed[i] === "undefined") {
-                  msg = "Interface.checkRequiredParams: required param '" + i + "' is missing from passed params.";
-                } else {
-                  msg = "Interface.checkRequiredParams: passed param '" + i + "' must be type " + params_required[i] + ". Passed as " + this.getDataType(params_passed[i]) + ".";
-                }
-                throw new Error(msg);
+    checkRequiredParams: function (params_passed, params_required) {
+      var i, msg, check = true;
+      for (i in params_required) { // loop thru required params
+        if (params_required.hasOwnProperty(i)) {
+          try {
+            if (this.getDataType(params_passed[i]) !== params_required[i] || params_passed[i] === "") { // if there is not a corresponding key in the passed params; or params passed value is blank
+              check = false;
+              if (params_passed[i] === "") {
+                msg = "Interface.checkRequiredParams: required param '" + i + "' is empty.";
+              } else if (typeof params_passed[i] === "undefined") {
+                msg = "Interface.checkRequiredParams: required param '" + i + "' is missing from passed params.";
+              } else {
+                msg = "Interface.checkRequiredParams: passed param '" + i + "' must be type " + params_required[i] + ". Passed as " + this.getDataType(params_passed[i]) + ".";
               }
-            } catch (err) {
-              if (typeof console !== "undefined") {
-                console.log("ERROR: " + err.message);
-              }
+              throw new Error(msg);
+            }
+          } catch (err) {
+            if (typeof console !== "undefined") {
+              console.log("ERROR: " + err.message);
             }
           }
         }
-        return check;
-      },
-      /**
-       * Checks for data type.
-       *
-       * @returns {string} The data type of the passed variable.
-       */
-      getDataType: function (element) {
-
-        if (Object.prototype.toString.call(element) === '[object Array]') {
-          return "array";
-        }
-
-        return typeof element;
       }
-  }
-  }());
+      return check;
+    },
+    /**
+     * Checks for data type.
+     *
+     * @returns {string} The data type of the passed variable.
+     */
+    getDataType: function (element) {
+
+      if (Object.prototype.toString.call(element) === '[object Array]') {
+        return "array";
+      }
+
+      return typeof element;
+    }
+  };
+}());
 exports.Interface = Interface;

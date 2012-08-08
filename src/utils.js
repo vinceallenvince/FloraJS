@@ -1,3 +1,5 @@
+/*global console */
+/*jshint supernew:true */
 /** 
     A module representing Utils.
     @module Utils
@@ -7,7 +9,9 @@
  * @namespace
  * @alias module:Utils
  */
-Utils = (function () {
+var Utils = (function () {
+
+  'use strict';
 
   /** @private */
   var PI = Math.PI;
@@ -58,7 +62,9 @@ Utils = (function () {
       if (typeof degrees !== 'undefined') {
         return 2 * PI * (degrees/360);
       } else {
-        Log.message('Error: Utils.degreesToRadians is missing degrees param.');
+        if (typeof console !== 'undefined') {
+          console.log('Error: Utils.degreesToRadians is missing degrees param.');
+        }
         return false;
       }
     },
@@ -72,7 +78,9 @@ Utils = (function () {
       if (typeof radians !== 'undefined') {
         return radians * (180/PI);
       } else {
-        Log.message("Error: Utils.radiansToDegrees is missing radians param.");
+        if (typeof console !== 'undefined') {
+          console.log('Error: Utils.radiansToDegrees is missing radians param.');
+        }
         return false;
       }
     },
@@ -93,7 +101,7 @@ Utils = (function () {
       return val;
     },
     /**
-     * Returns an new object with all properties and methods of the 
+     * Returns a new object with all properties and methods of the 
      * old object copied to the new object's prototype.
      *
      * @param {Object} object The object to clone.
@@ -113,22 +121,22 @@ Utils = (function () {
          var dateObj = new Date();
          return dateObj.getTime() + this.getRandomNumber(0,1000000000);
     },
-  /**
-   * Add an event listener to a DOM element.
-   *
-   * @param {Object} target The element to receive the event listener.
-   * @param {string} eventType The event type.
-   * @param {function} The function to run when the event is triggered.    
-   */     
+    /**
+     * Add an event listener to a DOM element.
+     *
+     * @param {Object} target The element to receive the event listener.
+     * @param {string} eventType The event type.
+     * @param {function} The function to run when the event is triggered.    
+     */     
     addEvent: function(target, eventType, handler) {      
       if (target.addEventListener) { // W3C
         this.addEventHandler = function(target, eventType, handler) {
           target.addEventListener(eventType, handler, false);
-        } 
+        };
       } else if (target.attachEvent) { // IE
         this.addEventHandler = function(target, eventType, handler) {
           target.attachEvent("on" + eventType, handler);
-        }
+        };
       }
       this.addEventHandler(target, eventType, handler);
     }

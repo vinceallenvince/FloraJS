@@ -2,6 +2,8 @@
 
 	<loadproperties srcfile="build.properties" />
 
+  <import file="${buildr.dir}"/>
+
   <loadfile property="license" srcfile="license.txt" />
 
   <tstamp>
@@ -20,37 +22,28 @@
     <delete dir="${jsdoc.output}"/>
   </target>  
 
-  <target name="build.dev" depends="clean,init,concatenate">
+  <target name="build.dev" depends="clean,init,concatenate,validate,test">
   </target>
 
   <target name="build.release" depends="clean,init,validate,concatenate,document,minify,bake">
   </target>  
 
-	<target name="validate">
-		<apply executable="java" failonerror="true" parallel="true">
-			<fileset dir="${src.dir}" includes="**/*.js"/>
-			<arg line="-jar"/>
-			<arg path="${rhino}"/>
-			<arg path="${jshint}"/>
-			<arg line="${jshint.options}"/>
-		</apply>
-	</target>
+  <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask" 
+    classpath="${lib.dir}/jshint/ant-jshint-0.3.1-deps.jar" />
+
+  <target name="validate">
+    <jshint dir="${src.dir}" includes="**/*.js" 
+      optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true" />
+  </target>
 
   <target name="concatenate">
-
     <concat destfile="${build.dir}/build.js" fixlastline="yes" eol="lf">
-      <header trimleading="yes">/*!
+      <header trimleading="yes">/*ignore!
         ${license}
         */
         /* Build time: ${build.time} */</header>
       <filelist dir="${src.dir}" files="app.js,florasystem.js,utils.js,pvector.js,simplexnoise.js,interface.js,world.js,camera.js,obj.js,mover.js,walker.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,stats.js"/>
     </concat>
-
-  </target>
-
-  <target name="document3">
-    <taskdef name="jsdoc" classname="net.jannon.ant.tasks.JsDoc3" classpath="${jsdoc3-task-jar}:${rhino-jar}"/>
-    <jsdoc jsdochome="${jsdoc.home}" to="${jsdoc.output}" dir="${src.dir}" />
   </target>
 
   <target name="document">
@@ -90,10 +83,9 @@
 
   <target name="test">
 
-    <exec executable="phantomjs" failonerror="true">
-      <arg path="${phantomjs.driver}"/>
-      <arg path="${tests.dir}/${phantomjs.tests}"/>
-    </exec>
+    <phantomjs driver="${phantomjs.driver}">
+      <fileset dir="${tests.dir}" includes="*.html" />
+    </phantomjs>
 
   </target>
 
@@ -102,10 +94,5 @@
       <fileset dir="${build.dir}" includes="**/*"/>
     </replaceregexp>
   </target>
-
-
-
-
-
 
 </project>

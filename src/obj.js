@@ -1,3 +1,4 @@
+/*global $ */
 /** 
     A module representing an Obj.
     @module Obj
@@ -8,7 +9,11 @@
  * @constructor
  */ 
 function Obj() {
+
+  'use strict';
+
   var i, max, key, prop;
+
   for (i = 0, max = arguments.length; i < max; i += 1) {
     prop = arguments[i];
     for (key in prop) {
@@ -17,7 +22,7 @@ function Obj() {
       }
     }
   }
-};
+}
 
 Obj.events =[
   "mouseenter",
@@ -33,6 +38,9 @@ Obj.events =[
  * @param {Object} e The event object passed by the listener.
  */ 
 Obj.mouseenter = function(e) {
+
+  'use strict';
+
   this.isMouseOut = false;
   //clearInterval(this.myInterval);
 };
@@ -43,6 +51,8 @@ Obj.mouseenter = function(e) {
  * @param {Object} e The event object passed by the listener.
  */ 
 Obj.mousedown = function(e) {
+
+  'use strict';
 
   var target = $(e.target);
 
@@ -59,6 +69,8 @@ Obj.mousedown = function(e) {
  */ 
 Obj.mousemove = function(e) {
 
+  'use strict';
+
   var x, y,
     worldOffset = $(".world").offset();
 
@@ -69,7 +81,7 @@ Obj.mousemove = function(e) {
     x = e.pageX - worldOffset.left;
     y = e.pageY - worldOffset.top;
 
-    this.item.location = PVector.create(x, y);
+    this.item.location = exports.PVector.create(x, y);
 
     //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
       //this.draw();
@@ -83,6 +95,9 @@ Obj.mousemove = function(e) {
  * @param {Object} e The event object passed by the listener.
  */     
 Obj.mouseup = function(e) {
+
+  'use strict';
+
   this.isPressed = false;
   //this.item.trigger("saveCurrentPosition");
 };
@@ -93,6 +108,8 @@ Obj.mouseup = function(e) {
  * @param {Object} e The event object passed by the listener.
  */     
 Obj.mouseleave = function(e) {
+
+  'use strict';
 
   var me = this,
     item = this.item,
@@ -106,10 +123,10 @@ Obj.mouseleave = function(e) {
 
       if (me.isPressed && me.isMouseOut) {
 
-        x = Flora.World.mouseX - worldOffset.left;
-        y = Flora.World.mouseY - worldOffset.top;
+        x = exports.Flora.World.mouseX - worldOffset.left;
+        y = exports.Flora.World.mouseY - worldOffset.top;
 
-        item.location = PVector.create(x, y);
+        item.location = exports.PVector.create(x, y);
 
         //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
           //me.draw();
@@ -129,6 +146,8 @@ Obj.mouseleave = function(e) {
  */     
 Obj.prototype.draw = function() {
   
+  'use strict';
+
   var v = this.velocity,
     x = this.location.x - this.width/2,
     y = this.location.y - this.height/2,
@@ -150,7 +169,7 @@ Obj.prototype.draw = function() {
   // !! try elt.setAttribute('style', '...')
 
   if (v && nose) { // if this object has a velocity; fade in nose relative to velocity
-    nose.style.opacity = Utils.map(v.mag(), 0, this.maxSpeed, 0.25, 1);
+    nose.style.opacity = exports.Utils.map(v.mag(), 0, this.maxSpeed, 0.25, 1);
   }
 
   if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
@@ -185,5 +204,5 @@ Obj.prototype.draw = function() {
       'height': h + 'px'
     });
   }
-}
+};
 exports.Obj = Obj;

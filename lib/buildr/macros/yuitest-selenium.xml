@@ -1,0 +1,42 @@
+<project name="yuitest-selenium">
+
+    <!-- macro to minify files -->
+    <macrodef name="yuitest-selenium">
+        
+        <attribute name="port" default="${buildr.yuitest-selenium.port}"/>
+        <attribute name="host" default="${buildr.yuitest-selenium.host}"/>
+        <attribute name="browsers" default=""/>
+        <attribute name="tests"/>
+             
+        <attribute name="failonerror" default="true" />
+        
+        <sequential>
+            <echo>Testing with YUI Test Selenium Driver</echo>
+            <script language="javascript"><![CDATA[            
+                var browsers    = "@{browsers}",
+                    tests       = "@{tests}",
+                    options     = "";
+                    
+                if (browsers) {
+                    options += " --browsers " + browsers;
+                }
+                
+                if (tests) {
+                    options += " --tests " + tests;
+                }                
+
+                project.setProperty("buildr.yuitest-selenium.options", options);  
+                
+            ]]></script>
+            <echo>Using: ${buildr.yuitest-selenium.options}</echo>
+            <exec executable="java" failonerror="true">
+                <arg line="-jar"/>
+                <arg path="${buildr.yuitest-selenium.jar}"/>
+                <arg line="--host @{host}"/>
+                <arg line="--port @{port}"/>
+                <arg line="${buildr.yuitest-selenium.options}"/>
+                <arg line="--erroronfail"/>
+            </exec>    
+        </sequential>    
+    </macrodef>        
+</project>

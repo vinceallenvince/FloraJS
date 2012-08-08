@@ -1,0 +1,54 @@
+<project name="jstestdriver">
+
+    <!-- macro to minify files -->
+    <macrodef name="jstestdriver">
+        
+        <attribute name="outputdir"/>
+        <attribute name="config" />     
+        <attribute name="tests" default="${buildr.jstestdriver.tests}" />
+        <attribute name="port" default="${buildr.jstestdriver.port}" />
+        <attribute name="browser" default="${buildr.jstestdriver.browser}" />
+        <attribute name="failonerror" default="true" />
+        <element name="files" implicit="true"/>
+        
+        <sequential>
+            <echo>Testing with JsTestDriver</echo>
+            <script language="javascript"><![CDATA[            
+                var config      = "@{config}",
+                    browser     = "@{browser}",
+                    options     = "";
+                    
+                if (config) {
+                    options += " --config " + config;
+                }
+                
+                if (browser) {
+                    options += " --browser " + browser;
+                }
+                
+                project.setProperty("buildr.jstestdriver.options", options);  
+                
+            ]]></script>                        
+            <apply executable="java" parallel="false" failonerror="@{failonerror}">
+                <files/>
+                
+                <arg line="-jar"/>
+                <arg path="${buildr.jstestdriver.path}"/>
+                
+                <arg line="--testOutput"/>
+                <arg path="@{outputdir}"/>
+                
+                <arg line="--tests"/>
+                <arg path="@{tests}"/>
+                
+                <arg line="--port"/>
+                <arg path="@{port}"/>
+                
+                <arg line="${buildr.jstestdriver.options}"/>                             
+                
+                <srcfile/>
+               
+            </apply>            
+        </sequential>    
+    </macrodef>        
+</project>

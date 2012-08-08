@@ -1,0 +1,17 @@
+<project name="yeti">
+
+    <!-- macro to test files -->
+    <macrodef name="yeti">
+
+        <attribute name="failonerror" default="true" />
+        <element name="files" implicit="true"/>
+        
+        <sequential>
+            <echo>Testing with Yeti</echo>   
+            <apply executable="${buildr.yeti}" failonerror="@{failonerror}">
+                <files/>
+                <srcfile/>
+            </apply>
+        </sequential>    
+    </macrodef>        
+</project>

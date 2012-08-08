@@ -18,6 +18,8 @@
  */
  function Particle(opt_options) {
 
+  'use strict';
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -33,7 +35,10 @@
 
 Particle.prototype.step = function () {
 
-	var world = exports.World;
+  'use strict';
+
+	var world = exports.world,
+			friction;
 	
 	//
 	
@@ -48,7 +53,7 @@ Particle.prototype.step = function () {
 		// start -- APPLY FORCES
 		
 		if (world.c) { // friction
-			friction = Utils.clone(this.velocity);
+			friction = exports.Utils.clone(this.velocity);
 			friction.mult(-1);
 			friction.normalize();
 			friction.mult(world.c);
@@ -74,7 +79,7 @@ Particle.prototype.step = function () {
 		this.location.add(this.velocity); // add velocity
 		
 		// opacity
-		this.opacity = Utils.map(this.lifespan, 0, 40, 0, 1);
+		this.opacity = exports.Utils.map(this.lifespan, 0, 40, 0, 1);
 		
 
 		if (this.lifespan > 0) {
@@ -85,5 +90,4 @@ Particle.prototype.step = function () {
 		this.acceleration.mult(0); // reset acceleration
 	}
 };
-
 exports.Particle = Particle;    

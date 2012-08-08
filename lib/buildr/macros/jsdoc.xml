@@ -1,0 +1,25 @@
+<project name="jsdoc">
+
+    <!-- macro to document files -->
+    <macrodef name="jsdoc">
+        
+        <attribute name="outputdir"/>
+        
+        <attribute name="templates" default="${buildr.jsdoc.templates}" />   
+        <attribute name="failonerror" default="true" />
+        <element name="files" implicit="true"/>
+        
+        <sequential>
+            <echo>Documenting with JSDoc Toolkit</echo>   
+            <apply executable="java" failonerror="@{failonerror}" parallel="true">
+                <files />
+                <arg line="-jar"/>
+                <arg path="${buildr.jsdoc}"/>
+                <arg path="${buildr.jsdoc.run}"/>
+                <arg line="-t=@{templates}" />
+                <arg line="-d=@{outputdir}" />
+                <srcfile/>
+            </apply>
+        </sequential>    
+    </macrodef>        
+</project>

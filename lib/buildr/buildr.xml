@@ -1,0 +1,14 @@
+<project name="buildr">
+
+    <!-- set base directory -->
+    <dirname property="buildr.basedir" file="${ant.file.buildr}"/>
+
+    <!-- import all properties -->
+    <loadproperties srcfile="${buildr.basedir}/buildr.properties" />
+
+    <!-- import all macros -->
+    <import>
+        <fileset dir="${buildr.macros.dir}" includes="*.xml" />
+    </import>
+
+</project>
