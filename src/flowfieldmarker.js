@@ -18,56 +18,43 @@
  * @param {string} opt_options.colorMode Color mode. 
  * @param {Object} opt_options.color Color. 
  */    
-function FlowFieldMarker(opt_options) {
+function FlowFieldMarker(options) {
 
   'use strict';
 
-  /**
-   * TODO(vince): these should be required. Use Interface.
-   */
-  var options = opt_options || {},
-      el = document.createElement("div"),
-      nose = document.createElement("div");/*,
-      x = options.location.x - options.width/2,
-      y = options.location.y - options.height/2,
-      s = options.scale,
-      a = options.angle,
-      o = options.opacity,
-      w = options.width,
-      h = options.height,
-      cm = options.colorMode,
-      c = options.color,  
-      style = el.style;*/
+  var requiredOptions = {
+        location: 'object',
+        scale: 'number',
+        angle: 'number',
+        opacity: 'number',
+        width: 'number',
+        height: 'number',
+        colorMode: 'string',
+        color: 'object'
+      }, el, nose;
 
-  el.className = "flowFieldMarker";
-  nose.className = "nose";
-  el.appendChild(nose); 
+  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
 
-  /*if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
-    style.opacity = o;
-    style.width = w + "px";
-    style.height = h + "px";
-    style.background = cm + "(" + c.r + ", " + c.g + ", " + c.b + ")";
-  }*/
+    el = document.createElement("div");
+    nose = document.createElement("div");
+    el.className = "flowFieldMarker";
+    nose.className = "nose";
+    el.appendChild(nose); 
 
-  el.style.cssText = this.getCSSText({
-    x: options.location.x - options.width/2,
-    y: options.location.y - options.height/2,
-    s: options.scale,
-    a: options.angle,
-    o: options.opacity,
-    w: options.width,
-    h: options.height,
-    cm: options.colorMode,
-    c: options.color
-  });
+    el.style.cssText = this.getCSSText({
+      x: options.location.x - options.width/2,
+      y: options.location.y - options.height/2,
+      s: options.scale,
+      a: options.angle,
+      o: options.opacity,
+      w: options.width,
+      h: options.height,
+      cm: options.colorMode,
+      c: options.color
+    });
 
-  exports.world.el.appendChild(el);
-
-
+    exports.world.el.appendChild(el);
+  }
 }
 
 FlowFieldMarker.prototype.getCSSText = function(props) {
