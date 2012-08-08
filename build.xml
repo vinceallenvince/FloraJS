@@ -33,7 +33,7 @@
 
   <target name="validate">
     <jshint dir="${src.dir}" includes="**/*.js" 
-      optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true" />
+      optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true, console: true" />
   </target>
 
   <target name="concatenate">

@@ -105,19 +105,21 @@ describe("A new FlowFieldMarker", function() {
 
   var obj;
 
-  beforeEach(function() {
-    obj = new exports.FlowField();
-  });
-
-  afterEach(function() {
-    obj = null;
-  });
-
-  it("should have its required properties.", function() {
-    expect(typeof obj.resolution).toEqual('number');
-    expect(typeof obj.perlinSpeed).toEqual('number');
-    expect(typeof obj.perlinTime).toEqual('number');            
-    expect(typeof obj.createMarkers).toEqual('boolean');
+  it("should return a DOM element.", function() {
+    obj = new exports.FlowFieldMarker({
+        location: {x: 0, y: 0},
+        scale: 1,
+        angle: 90,
+        opacity: 0.75,
+        width: 100,
+        height: 100,
+        colorMode: 'rgb',
+        color: {r: 0, g: 0, b: 0}
+      });
+    expect(obj.className).toEqual('flowFieldMarker');
+    expect(obj.style.width).toEqual('100px');
+    expect(obj.style.height).toEqual('100px');
+    expect(typeof obj).toEqual('object');
   });
 });
 
@@ -305,7 +307,7 @@ describe("A new Mover", function() {
 
 describe("A new Obj", function() {
 
-  var obj;
+  var obj, css;
 
   beforeEach(function() {
     obj = new exports.Obj({
@@ -320,6 +322,41 @@ describe("A new Obj", function() {
   it("should accept all properties passed to the constructor.", function() {
     expect(obj.hello).toEqual('hello');
   });
+
+  it("getCSSText() should return a text string.", function() {
+    obj = new exports.Obj({
+      location: {x: 100, y: 100},
+      scale: 1,
+      angle: 90,
+      opacity: 0.75,
+      width: 100,
+      height: 100,
+      colorMode: 'rgb',
+      color: {r: 0, g: 0, b: 0},
+      zIndex: 1,
+      border: '1px solid #000',
+      borderRadius: '100%',
+      boxShadow: '1px 1px 0 0 #000'
+    });
+
+    css = obj.getCSSText({
+      x: obj.location.x - obj.width/2,
+      y: obj.location.y - obj.height/2,
+      s: obj.scale,
+      a: obj.angle,
+      o: obj.opacity,
+      w: obj.width,
+      h: obj.height,
+      cm: obj.colorMode,
+      c: obj.color,
+      z: obj.zIndex,
+      border: obj.border,
+      borderRadius: obj.borderRadius,
+      boxShadow: obj.boxShadow
+    });
+    expect(typeof css).toEqual('string');
+    expect(css.search('border')).toNotEqual(-1);
+  });  
 });
 
 describe("A new Oxygen", function() {
@@ -357,9 +394,7 @@ describe("A new Particle", function() {
   });
 
   it("should have its required properties.", function() {
-    expect(typeof obj.lifespan).toEqual('number');
-    expect(typeof obj.width).toEqual('number');
-    expect(typeof obj.height).toEqual('number');            
+    expect(typeof obj.lifespan).toEqual('number');           
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.borderRadius).toEqual('string');
   });
@@ -380,9 +415,7 @@ describe("A new ParticleSystem", function() {
   it("should have its required properties.", function() {
     expect(typeof obj.beforeStep).toEqual('function');
     expect(typeof obj.isStatic).toEqual('boolean');
-    expect(typeof obj.lifespan).toEqual('number');            
-    expect(typeof obj.width).toEqual('number');
-    expect(typeof obj.height).toEqual('number');
+    expect(typeof obj.lifespan).toEqual('number');
     expect(typeof obj.color).toEqual('string'); 
     expect(typeof obj.burst).toEqual('number');
     expect(typeof obj.particle).toEqual('function');           

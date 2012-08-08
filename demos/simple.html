@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
   <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
-  <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../build/build-min.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
 
     $(document).ready(function () {
@@ -22,9 +22,12 @@
           showStats: true
         });
 
-        var mover = new Flora.Mover({
-
-        });
+        for (var i = 0; i < 120; i++) {
+          new Flora.Mover({
+            location: Flora.PVector.create(Flora.Utils.getRandomNumber(0, Flora.world.width, true), Flora.world.height/4),
+            mass: Flora.Utils.getRandomNumber(1, 100, true)
+          });
+        }
 
       });
     });

@@ -1,4 +1,4 @@
-/*global $ */
+/*global $, console */
 /** 
     A module representing an Obj.
     @module Obj
@@ -148,61 +148,68 @@ Obj.prototype.draw = function() {
   
   'use strict';
 
-  var v = this.velocity,
-    x = this.location.x - this.width/2,
-    y = this.location.y - this.height/2,
-    s = this.scale,
-    a = this.angle,
-    o = this.opacity,
-    w = this.width,
-    h = this.height,
-    cm = this.colorMode,
-    c = this.color, 
-    z = this.zIndex,
-    border = this.border,
-    borderRadius = this.borderRadius,
-    boxShadow = this.boxShadow,
-    style = this.el.style,
-    nose = this.el.firstChild,
-    i, max;
+  this.el.style.cssText = this.getCSSText({
+    x: this.location.x - this.width/2,
+    y: this.location.y - this.height/2,
+    s: this.scale,
+    a: this.angle,
+    o: this.opacity,
+    w: this.width,
+    h: this.height,
+    cm: this.colorMode,
+    c: this.color,
+    z: this.zIndex,
+    border: this.border,
+    borderRadius: this.borderRadius,
+    boxShadow: this.boxShadow
+  });
+};
 
-  // !! try elt.setAttribute('style', '...')
+/**
+ * Builds a cssText string based on properties passed by draw().
+ *
+ * @param {Object} props Properties describing the object.
+ */  
+Obj.prototype.getCSSText = function(props) {
 
-  if (v && nose) { // if this object has a velocity; fade in nose relative to velocity
-    nose.style.opacity = exports.Utils.map(v.mag(), 0, this.maxSpeed, 0.25, 1);
-  }
+  'use strict';
 
-  if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
-    style.opacity = o;
-    style.width = w + "px";
-    style.height = h + "px";
-    if (c) {
-      style.background = cm + "(" + c.r + ", " + c.g + ", " + c.b + ")";
-    }
-    style.zIndex = z;
-    style.border = border;
-    style.borderRadius = borderRadius;
-    style.boxShadow = boxShadow;
+  if (Modernizr.csstransforms3d) {
+    return [
+      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      'opacity: ' + props.o,
+      'width: ' + props.w + 'px',
+      'height: ' + props.h + 'px',
+      'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')',
+      'z-index: ' + props.z,
+      'border: ' + props.border,
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
+    ].join(';');
   } else if (Modernizr.csstransforms) {
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
-    style.opacity = o;
-    style.width = w + 'px';
-    style.height = h + 'px';
-    style.background = cm + '(' + c.r + ', ' + c.g + ', ' + c.b + ')';
-    style.zIndex = z;
+    return [
+      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      'opacity: ' + props.o,
+      'width: ' + props.w + 'px',
+      'height: ' + props.h + 'px',
+      'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')',
+      'z-index: ' + props.z,
+      'border: ' + props.border,
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
+    ].join(';');
   } else {
-    $(this.el).css({
-      'position': 'absolute',
-      'left': x + 'px',
-      'top': y + 'px',
-      'width': w + 'px',
-      'height': h + 'px'
-    });
+    return [
+      'position: absolute',
+      'left' + props.x + 'px',
+      'top' + props.y + 'px',
+      'width' + props.w + 'px',
+      'height' + props.h + 'px'
+    ].join(';');    
   }
 };
 exports.Obj = Obj;

@@ -38,13 +38,12 @@
     } else if (this.lifespan === 0) {
       exports.destroyElement(this.id);
     }
-  };
-  this.isStatic = options.isStatic || true;
+  }; 
   this.lifespan = options.lifespan || -1;
-  this.width = options.width || 0;
-  this.height = options.height || 0;
+  this.width = options.width === 0 ? 0 : options.width || 0; 
+  this.height = options.height === 0 ? 0 : options.height || 0;   
   this.color = options.color || '';
-  this.burst = options.burst || 1;
+  this.burst = options.burst === 0 ? 0 : options.burst || 1; 
   this.particle = options.particle || function () {
     return {
       location: this.getLocation(),

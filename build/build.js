@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: August 8, 2012 10:19:31 */
+/* Build time: August 8, 2012 01:49:50 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -10,7 +10,7 @@ var Flora = {}, exports = Flora;
  * @param {function} callback The function to call.
  * @returns {function|Object} An animation frame or a timeout object. 
  */
-Flora.requestAnimFrame = (function(callback){
+window.requestAnimFrame = (function(callback){
 
   'use strict';
 
@@ -74,7 +74,7 @@ function FloraSystem(el) {
 
     var i, max;
 
-    exports.requestAnimFrame(exports.animLoop);
+    window.requestAnimFrame(exports.animLoop);
 
     for (i = exports.elements.length - 1; i >= 0; i -= 1) {
       exports.elements[i].step();
@@ -1072,7 +1072,7 @@ function Camera(opt_options) {
 }
 
 exports.Camera = Camera;
-/*global $ */
+/*global $, console */
 /** 
     A module representing an Obj.
     @module Obj
@@ -1222,61 +1222,68 @@ Obj.prototype.draw = function() {
   
   'use strict';
 
-  var v = this.velocity,
-    x = this.location.x - this.width/2,
-    y = this.location.y - this.height/2,
-    s = this.scale,
-    a = this.angle,
-    o = this.opacity,
-    w = this.width,
-    h = this.height,
-    cm = this.colorMode,
-    c = this.color, 
-    z = this.zIndex,
-    border = this.border,
-    borderRadius = this.borderRadius,
-    boxShadow = this.boxShadow,
-    style = this.el.style,
-    nose = this.el.firstChild,
-    i, max;
+  this.el.style.cssText = this.getCSSText({
+    x: this.location.x - this.width/2,
+    y: this.location.y - this.height/2,
+    s: this.scale,
+    a: this.angle,
+    o: this.opacity,
+    w: this.width,
+    h: this.height,
+    cm: this.colorMode,
+    c: this.color,
+    z: this.zIndex,
+    border: this.border,
+    borderRadius: this.borderRadius,
+    boxShadow: this.boxShadow
+  });
+};
 
-  // !! try elt.setAttribute('style', '...')
+/**
+ * Builds a cssText string based on properties passed by draw().
+ *
+ * @param {Object} props Properties describing the object.
+ */  
+Obj.prototype.getCSSText = function(props) {
 
-  if (v && nose) { // if this object has a velocity; fade in nose relative to velocity
-    nose.style.opacity = exports.Utils.map(v.mag(), 0, this.maxSpeed, 0.25, 1);
-  }
+  'use strict';
 
-  if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
-    style.opacity = o;
-    style.width = w + "px";
-    style.height = h + "px";
-    if (c) {
-      style.background = cm + "(" + c.r + ", " + c.g + ", " + c.b + ")";
-    }
-    style.zIndex = z;
-    style.border = border;
-    style.borderRadius = borderRadius;
-    style.boxShadow = boxShadow;
+  if (Modernizr.csstransforms3d) {
+    return [
+      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      'opacity: ' + props.o,
+      'width: ' + props.w + 'px',
+      'height: ' + props.h + 'px',
+      'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')',
+      'z-index: ' + props.z,
+      'border: ' + props.border,
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
+    ].join(';');
   } else if (Modernizr.csstransforms) {
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
-    style.opacity = o;
-    style.width = w + 'px';
-    style.height = h + 'px';
-    style.background = cm + '(' + c.r + ', ' + c.g + ', ' + c.b + ')';
-    style.zIndex = z;
+    return [
+      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      'opacity: ' + props.o,
+      'width: ' + props.w + 'px',
+      'height: ' + props.h + 'px',
+      'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')',
+      'z-index: ' + props.z,
+      'border: ' + props.border,
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
+    ].join(';');
   } else {
-    $(this.el).css({
-      'position': 'absolute',
-      'left': x + 'px',
-      'top': y + 'px',
-      'width': w + 'px',
-      'height': h + 'px'
-    });
+    return [
+      'position: absolute',
+      'left' + props.x + 'px',
+      'top' + props.y + 'px',
+      'width' + props.w + 'px',
+      'height' + props.h + 'px'
+    ].join(';');    
   }
 };
 exports.Obj = Obj;
@@ -1378,14 +1385,14 @@ function Mover(opt_options) {
   this.angle = options.angle || 0;   
   this.opacity = options.opacity || 0.85;   
   this.lifespan = options.lifespan || -1;    
-  this.width = options.width || 20; 
-  this.height = options.height || 20;    
+  this.width = options.width === 0 ? 0 : options.width || 20; 
+  this.height = options.height === 0 ? 0 : options.height || 20;    
   this.colorMode = options.colorMode || 'rgb';     
   this.color = options.color || {r: 197, g: 177, b: 115};
   this.zIndex = options.zIndex || 10;  
   this.pointToDirection = options.pointToDirection || true;      
   this.followMouse = options.followMouse || false;     
-  this.isStatic = options.isStatic || false;    
+  this.isStatic = options.isStatic === false ? false : options.isStatic || false;    
   this.checkEdges = options.checkEdges || true;    
   this.wrapEdges = options.wrapEdges || false;   
   this.avoidEdges = options.avoidEdges || false;    
@@ -1394,9 +1401,9 @@ function Mover(opt_options) {
   this.maxSteeringForce = options.maxSteeringForce || 10;  
   this.flocking = options.flocking || false;  
   this.desiredSeparation = options.desiredSeparation || this.width * 2;
-  this.separateStrength = options.separateStrength || 1;  
-  this.alignStrength = options.alignStrength || 1;     
-  this.cohesionStrength = options.cohesionStrength || 1;      
+  this.separateStrength = options.separateStrength || 0.3;  
+  this.alignStrength = options.alignStrength || 0.2;     
+  this.cohesionStrength = options.cohesionStrength || 0.1;      
   this.sensors = options.sensors || [];
   this.flowField = options.flowField || null;   
   this.acceleration = options.acceleration || exports.PVector.create(0, 0);
@@ -2254,8 +2261,6 @@ exports.Walker = Walker;
   exports.Mover.call(this, options);
 
   this.lifespan = options.lifespan || 40;
-  this.width = options.width || 10;
-  this.height = options.height || 10; 
   this.color = options.color || {r: 200, g: 20, b: 20};
   this.borderRadius = options.borderRadius || '100%';
  }
@@ -2360,13 +2365,12 @@ exports.Particle = Particle;
     } else if (this.lifespan === 0) {
       exports.destroyElement(this.id);
     }
-  };
-  this.isStatic = options.isStatic || true;
+  }; 
   this.lifespan = options.lifespan || -1;
-  this.width = options.width || 0;
-  this.height = options.height || 0;
+  this.width = options.width === 0 ? 0 : options.width || 0; 
+  this.height = options.height === 0 ? 0 : options.height || 0;   
   this.color = options.color || '';
-  this.burst = options.burst || 1;
+  this.burst = options.burst === 0 ? 0 : options.burst || 1; 
   this.particle = options.particle || function () {
     return {
       location: this.getLocation(),
@@ -2938,15 +2942,15 @@ exports.Sensor = Sensor;
  * Creates a new FlowFieldMarker.
  *
  * @constructor
- * @param {Object} [opt_options] Options.
- * @param {Object} opt_options.location Location.
- * @param {number} opt_options.scale Scale. 
- * @param {number} opt_options.opacity Opacity
- * @param {number} opt_options.width Width.
- * @param {number} opt_options.height Height. 
- * @param {number} opt_options.angle Angle. 
- * @param {string} opt_options.colorMode Color mode. 
- * @param {Object} opt_options.color Color. 
+ * @param {Object} options Options.
+ * @param {Object} options.location Location.
+ * @param {number} options.scale Scale. 
+ * @param {number} options.opacity Opacity
+ * @param {number} options.width Width.
+ * @param {number} options.height Height. 
+ * @param {number} options.angle Angle. 
+ * @param {string} options.colorMode Color mode. 
+ * @param {Object} options.color Color. 
  */    
 function FlowFieldMarker(options) {
 
@@ -2982,11 +2986,14 @@ function FlowFieldMarker(options) {
       cm: options.colorMode,
       c: options.color
     });
-
-    exports.world.el.appendChild(el);
+    return el;
   }
 }
-
+/**
+ * Builds a cssText string based on properties passed by the constructor.
+ *
+ * @param {Object} props Properties describing the marker.
+ */  
 FlowFieldMarker.prototype.getCSSText = function(props) {
 
   'use strict';
@@ -3079,6 +3086,7 @@ FlowField.prototype.build = function() {
             b: 50
           }
         });
+        exports.world.el.appendChild(ffm);
       }
       yoff += parseFloat(this.perlinSpeed);
     }

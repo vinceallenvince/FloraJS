@@ -8,15 +8,15 @@
  * Creates a new FlowFieldMarker.
  *
  * @constructor
- * @param {Object} [opt_options] Options.
- * @param {Object} opt_options.location Location.
- * @param {number} opt_options.scale Scale. 
- * @param {number} opt_options.opacity Opacity
- * @param {number} opt_options.width Width.
- * @param {number} opt_options.height Height. 
- * @param {number} opt_options.angle Angle. 
- * @param {string} opt_options.colorMode Color mode. 
- * @param {Object} opt_options.color Color. 
+ * @param {Object} options Options.
+ * @param {Object} options.location Location.
+ * @param {number} options.scale Scale. 
+ * @param {number} options.opacity Opacity
+ * @param {number} options.width Width.
+ * @param {number} options.height Height. 
+ * @param {number} options.angle Angle. 
+ * @param {string} options.colorMode Color mode. 
+ * @param {Object} options.color Color. 
  */    
 function FlowFieldMarker(options) {
 
@@ -52,11 +52,14 @@ function FlowFieldMarker(options) {
       cm: options.colorMode,
       c: options.color
     });
-
     return el;
   }
 }
-
+/**
+ * Builds a cssText string based on properties passed by the constructor.
+ *
+ * @param {Object} props Properties describing the marker.
+ */  
 FlowFieldMarker.prototype.getCSSText = function(props) {
 
   'use strict';

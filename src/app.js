@@ -6,7 +6,7 @@ var Flora = {}, exports = Flora;
  * @param {function} callback The function to call.
  * @returns {function|Object} An animation frame or a timeout object. 
  */
-Flora.requestAnimFrame = (function(callback){
+window.requestAnimFrame = (function(callback){
 
   'use strict';
 

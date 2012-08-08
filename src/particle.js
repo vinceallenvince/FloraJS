@@ -25,8 +25,6 @@
   exports.Mover.call(this, options);
 
   this.lifespan = options.lifespan || 40;
-  this.width = options.width || 10;
-  this.height = options.height || 10; 
   this.color = options.color || {r: 200, g: 20, b: 20};
   this.borderRadius = options.borderRadius || '100%';
  }

@@ -49,7 +49,7 @@ function FloraSystem(el) {
 
     var i, max;
 
-    exports.requestAnimFrame(exports.animLoop);
+    window.requestAnimFrame(exports.animLoop);
 
     for (i = exports.elements.length - 1; i >= 0; i -= 1) {
       exports.elements[i].step();
