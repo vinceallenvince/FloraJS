@@ -26,13 +26,13 @@ function Attractor(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.G = options.G || 1;
-  this.mass = options.mass || 100;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 50;
-  this.height = options.height || 50;
+  this.G = options.G === 0 ? 0 : options.G || 1;
+  this.mass = options.mass === 0 ? 0 : options.mass || 100;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 50;
+  this.height = options.height === 0 ? 0 : options.height || 50;
   this.color = options.color || {r: 97, g: 210, b: 214};
-  this.opacity = options.opacity || 0.75;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Attractor, exports.Mover);
 exports.Attractor = Attractor;

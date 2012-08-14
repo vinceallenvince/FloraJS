@@ -25,11 +25,11 @@ function Connector(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.color = options.color || {r: 255, g: 0, b: 0};
-  this.zIndex = options.zIndex || 0;
-  this.opacity = options.opacity || 0.25;
-  this.width = options.width || 10;
-  this.height = options.height || 1;
+  this.width = options.width === 0 ? 0 : options.width || 10;
+  this.height = options.height === 0 ? 0 : options.height || 1;
+  this.color = options.color || {r: 255, g: 0, b: 0};  
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.25;
+  this.zIndex = options.zIndex || 0;  
   this.parentA = options.parentA || null;
   this.parentB = options.parentB || null;
 }

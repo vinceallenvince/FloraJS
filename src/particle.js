@@ -25,7 +25,7 @@
   exports.Mover.call(this, options);
 
   this.lifespan = options.lifespan || 40;
-  this.color = options.color || {r: 200, g: 20, b: 20};
+  this.color = options.color === '' ? '' : options.color || {r: 200, g: 20, b: 20};
   this.borderRadius = options.borderRadius || '100%';
  }
  exports.Utils.inherit(Particle, exports.Mover);

@@ -25,12 +25,12 @@ function Predator(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 75;
-  this.height = options.height || 75;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 75;
+  this.height = options.height === 0 ? 0 : options.height || 75;
   this.color = options.color || {r: 200, g: 0, b: 0};
-  this.opacity = options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Predator, exports.Mover);
 exports.Predator = Predator;

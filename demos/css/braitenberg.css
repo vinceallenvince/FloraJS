@@ -1,3 +1,7 @@
+div {
+	position: absolute; left: 0; top: 0;
+}
+
 body {
 	background: #000;
 	background-image: -webkit-radial-gradient(circle, #444, #000);

@@ -25,12 +25,12 @@ function Food(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 20;
+  this.height = options.height === 0 ? 0 : options.height || 20;
   this.color = options.color || {r: 155, g: 231, b: 93};
-  this.opacity = options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Food, exports.Mover);
 exports.Food = Food;

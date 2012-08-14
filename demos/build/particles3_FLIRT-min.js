@@ -1,0 +1,3 @@
+var system=new Flora.FloraSystem;
+system.start(function(){Flora.world.update({c:0,showStats:!1,gravity:Flora.PVector.create(0,0),style:{backgroundImage:"-webkit-radial-gradient(circle, #444, #000)"}});new Flora.ParticleSystem({width:0,height:0,burst:1,followMouse:!0,theta:0,r:0,particle:function(){this.theta+=0.01;var a=20*Flora.SimplexNoise.noise(this.theta,100),b=Flora.SimplexNoise.noise(this.theta,-this.theta),c=a*Math.cos(b),a=a*Math.sin(b);return{parent:this,location:Flora.PVector.create(this.getLocation("x"),this.getLocation("y")),
+acceleration:Flora.PVector.create(c,a),color:{r:200,g:200,b:200},width:50,height:50,maxSpeed:30,lifespan:20,borderRadius:"50%",boxShadow:"1px 1px 20px 20px rgba(255, 255, 255, .1)"}}})});

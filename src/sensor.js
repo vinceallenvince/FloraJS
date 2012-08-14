@@ -33,13 +33,13 @@ function Sensor(opt_options) {
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
-  this.sensitivity = options.sensitivity || 2;
-  this.width = options.width || 5;
-  this.height = options.height || 5;
-  this.length = options.length || 30;
+  this.sensitivity = options.sensitivity === 0 ? 0 : options.sensitivity || 2;
+  this.width = options.width === 0 ? 0 : options.width || 5;
+  this.height = options.height === 0 ? 0 : options.height || 5;
+  this.length = options.length === 0 ? 0 : options.length|| 30;
   this.offsetAngle = options.offsetAngle || 0;
   this.color = options.color || {};
-  this.opacity = options.opacity || 1;    
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;   
   this.target = options.target || null;
   this.activated = options.activated || false;
 }

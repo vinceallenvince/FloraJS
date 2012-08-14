@@ -15,14 +15,16 @@
   <target name="init">
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${jsdoc.output}"/>
+    <mkdir dir="${DemoBuild.dir}"/>
   </target>
 
   <target name="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${jsdoc.output}"/>
+    <delete dir="${DemoBuild.dir}"/>
   </target>  
 
-  <target name="build.dev" depends="clean,init,concatenate,validate,test">
+  <target name="build.dev" depends="clean,init,concatenate,validateDemos,test,minifyDemos">
   </target>
 
   <target name="build.release" depends="clean,init,validate,concatenate,document,minify,bake">
@@ -35,6 +37,11 @@
     <jshint dir="${src.dir}" includes="**/*.js" 
       optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true, console: true" />
   </target>
+
+  <target name="validateDemos">
+    <jshint dir="${DemoSrc.dir}" includes="**/*.js" 
+      optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true, console: true" />
+  </target>  
 
   <target name="concatenate">
     <concat destfile="${build.dir}/build.js" fixlastline="yes" eol="lf">
@@ -80,6 +87,27 @@
     </apply>
 
   </target>
+
+  <target name="minifyDemos">
+
+    <apply executable="java" failonerror="true">
+      
+      <fileset dir="${DemoSrc.dir}" includes="*.js" excludes="*-min.js"/>
+      <mapper type="glob" from="*.js" to="${DemoBuild.dir}/*-min.js"/>
+
+      <arg line="-jar"/>
+      <arg path="${closure}"/>
+      <arg line="${closure.options}"/>
+
+      <arg line="--js"/>
+      <srcfile/>
+
+      <arg line="--js_output_file"/>
+      <targetfile/>
+
+    </apply>
+
+  </target>  
 
   <target name="test">
 

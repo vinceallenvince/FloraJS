@@ -5,6 +5,10 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 	
 /* */
 
+div {
+	position: absolute; left: 0; top: 0;
+}
+
 body {
 	background: #f6edd2;
 	background-image: -webkit-radial-gradient(circle, #fefefe, #f6edd2);
@@ -124,7 +128,7 @@ body {
 	width: 0; height: 0;
 	opacity: 0;
 	z-index: 1;
-	border-radius: 10px;
+	border-radius: 100%;
 	border: 1px solid rgba(0, 0, 0, 0.5);
 }
 .flowFieldMarker {

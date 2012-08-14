@@ -22,10 +22,18 @@
           showStats: true
         });
 
-        new Flora.Mover({
-          controlCamera: true
-        });
+        for (var i = 0; i < 120; i++) {
+          new Flora.Mover({
+            location: Flora.PVector.create(Flora.Utils.getRandomNumber(0, Flora.world.width, true), Flora.world.height/4),
+            mass: Flora.Utils.getRandomNumber(10, 50),
+            opacity: 1
+          });
+        }
 
+        var liquid = new Flora.Liquid({
+          width: Flora.world.width,
+          borderRadius: 0
+        });
       });
     });
 

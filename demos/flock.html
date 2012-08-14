@@ -22,9 +22,18 @@
           showStats: true
         });
 
-        new Flora.Mover({
-          controlCamera: true
+        var walker = new Flora.Walker({
+          isPerlin: true
         });
+
+        for (var i = 0; i < 70; i++) {
+          var mover = new Flora.Mover({
+            width: 20,
+            height: 4,
+            target: walker,
+            flocking: true
+          });
+        }
 
       });
     });

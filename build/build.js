@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: August 8, 2012 01:49:50 */
+/* Build time: August 14, 2012 06:58:10 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -1379,31 +1379,31 @@ function Mover(opt_options) {
   // optional
   this.className = options.className || this.constructor.name.toLowerCase();
   this.mass = options.mass || 10;  
-  this.maxSpeed = options.maxSpeed || 10;
+  this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
-  this.scale = options.scale || 1;   
-  this.angle = options.angle || 0;   
-  this.opacity = options.opacity || 0.85;   
-  this.lifespan = options.lifespan || -1;    
+  this.scale = options.scale === 0 ? 0 : options.scale || 1;   
+  this.angle = options.angle === 0 ? 0 : options.angle || 0;   
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.85;   
+  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;    
   this.width = options.width === 0 ? 0 : options.width || 20; 
   this.height = options.height === 0 ? 0 : options.height || 20;    
   this.colorMode = options.colorMode || 'rgb';     
   this.color = options.color || {r: 197, g: 177, b: 115};
-  this.zIndex = options.zIndex || 10;  
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;  
   this.pointToDirection = options.pointToDirection || true;      
   this.followMouse = options.followMouse || false;     
-  this.isStatic = options.isStatic === false ? false : options.isStatic || false;    
+  this.isStatic = options.isStatic || false;    
   this.checkEdges = options.checkEdges || true;    
   this.wrapEdges = options.wrapEdges || false;   
   this.avoidEdges = options.avoidEdges || false;    
-  this.avoidEdgesStrength = options.avoidEdgesStrength || 200;    
-  this.bounciness = options.bounciness || 0.75;    
-  this.maxSteeringForce = options.maxSteeringForce || 10;  
+  this.avoidEdgesStrength = options.avoidEdgesStrength === 0 ? 0 : options.avoidEdgesStrength || 200;    
+  this.bounciness = options.bounciness === 0 ? 0 : options.bounciness || 0.75;    
+  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : options.maxSteeringForce || 10;  
   this.flocking = options.flocking || false;  
-  this.desiredSeparation = options.desiredSeparation || this.width * 2;
-  this.separateStrength = options.separateStrength || 0.3;  
-  this.alignStrength = options.alignStrength || 0.2;     
-  this.cohesionStrength = options.cohesionStrength || 0.1;      
+  this.desiredSeparation = options.desiredSeparation === 0 ? 0 : options.desiredSeparation || this.width * 2;
+  this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;  
+  this.alignStrength = options.alignStrength === 0 ? 0 : options.alignStrength || 0.2;     
+  this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;      
   this.sensors = options.sensors || [];
   this.flowField = options.flowField || null;   
   this.acceleration = options.acceleration || exports.PVector.create(0, 0);
@@ -2261,7 +2261,7 @@ exports.Walker = Walker;
   exports.Mover.call(this, options);
 
   this.lifespan = options.lifespan || 40;
-  this.color = options.color || {r: 200, g: 20, b: 20};
+  this.color = options.color === '' ? '' : options.color || {r: 200, g: 20, b: 20};
   this.borderRadius = options.borderRadius || '100%';
  }
  exports.Utils.inherit(Particle, exports.Mover);
@@ -2408,13 +2408,13 @@ function Liquid(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.c = options.c || 1;
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 100;
-  this.height = options.height || 100;
-  this.color = options.color  || {r: 97, g: 210, b: 214};
-  this.opacity = options.opacity || 0.75;
+  this.c = options.c === 0 ? 0 : options.c || 1;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 100;
+  this.height = options.height === 0 ? 0 : options.height || 100;
+  this.color = options.color || {r: 97, g: 210, b: 214};
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Liquid, exports.Mover);
 exports.Liquid = Liquid;
@@ -2446,13 +2446,13 @@ function Attractor(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.G = options.G || 1;
-  this.mass = options.mass || 100;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 50;
-  this.height = options.height || 50;
+  this.G = options.G === 0 ? 0 : options.G || 1;
+  this.mass = options.mass === 0 ? 0 : options.mass || 100;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 50;
+  this.height = options.height === 0 ? 0 : options.height || 50;
   this.color = options.color || {r: 97, g: 210, b: 214};
-  this.opacity = options.opacity || 0.75;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Attractor, exports.Mover);
 exports.Attractor = Attractor;
@@ -2484,13 +2484,13 @@ function Repeller(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.G = options.G || -1;
-  this.mass = options.mass || 100;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 50;
-  this.height = options.height || 50;
+  this.G = options.G === 0 ? 0 : options.G || -1;
+  this.mass = options.mass === 0 ? 0 : options.mass || 100;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 50;
+  this.height = options.height === 0 ? 0 : options.height || 50;
   this.color = options.color || {r: 97, g: 210, b: 214};
-  this.opacity = options.opacity || 0.75;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Repeller, exports.Mover);
 exports.Repeller = Repeller;
@@ -2521,12 +2521,12 @@ function Heat(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 20;
+  this.height = options.height === 0 ? 0 : options.height || 20;
   this.color = options.color || {r: 255, g: 69, b: 0};
-  this.opacity = options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Heat, exports.Mover);
 exports.Heat = Heat;
@@ -2557,12 +2557,12 @@ function Cold(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 20;
+  this.height = options.height === 0 ? 0 : options.height || 20;
   this.color = options.color || {r: 132, g: 192, b: 201};
-  this.opacity = options.color || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Cold, exports.Mover);
 exports.Cold = Cold;
@@ -2593,12 +2593,12 @@ function Light(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 20;
+  this.height = options.height === 0 ? 0 : options.height || 20;
   this.color = options.color || {r: 255, g: 200, b: 0};
-  this.opacity = options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Light, exports.Mover);
 exports.Light = Light;
@@ -2629,12 +2629,12 @@ function Oxygen(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 20;
+  this.height = options.height === 0 ? 0 : options.height || 20;
   this.color = options.color || {r: 255, g: 200, b: 0};
-  this.opacity = options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Oxygen, exports.Mover);
 exports.Oxygen = Oxygen;
@@ -2665,12 +2665,12 @@ function Food(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 20;
+  this.height = options.height === 0 ? 0 : options.height || 20;
   this.color = options.color || {r: 155, g: 231, b: 93};
-  this.opacity = options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Food, exports.Mover);
 exports.Food = Food;
@@ -2701,12 +2701,12 @@ function Predator(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.mass = options.mass || 50;
-  this.isStatic = options.isStatic || true;
-  this.width = options.width || 75;
-  this.height = options.height || 75;
+  this.mass = options.mass === 0 ? 0 : options.mass || 50;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 75;
+  this.height = options.height === 0 ? 0 : options.height || 75;
   this.color = options.color || {r: 200, g: 0, b: 0};
-  this.opacity = options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Predator, exports.Mover);
 exports.Predator = Predator;
@@ -2745,13 +2745,13 @@ function Sensor(opt_options) {
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
-  this.sensitivity = options.sensitivity || 2;
-  this.width = options.width || 5;
-  this.height = options.height || 5;
-  this.length = options.length || 30;
+  this.sensitivity = options.sensitivity === 0 ? 0 : options.sensitivity || 2;
+  this.width = options.width === 0 ? 0 : options.width || 5;
+  this.height = options.height === 0 ? 0 : options.height || 5;
+  this.length = options.length === 0 ? 0 : options.length|| 30;
   this.offsetAngle = options.offsetAngle || 0;
   this.color = options.color || {};
-  this.opacity = options.opacity || 1;    
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;   
   this.target = options.target || null;
   this.activated = options.activated || false;
 }
@@ -3123,11 +3123,11 @@ function Connector(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.color = options.color || {r: 255, g: 0, b: 0};
-  this.zIndex = options.zIndex || 0;
-  this.opacity = options.opacity || 0.25;
-  this.width = options.width || 10;
-  this.height = options.height || 1;
+  this.width = options.width === 0 ? 0 : options.width || 10;
+  this.height = options.height === 0 ? 0 : options.height || 1;
+  this.color = options.color || {r: 255, g: 0, b: 0};  
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.25;
+  this.zIndex = options.zIndex || 0;  
   this.parentA = options.parentA || null;
   this.parentB = options.parentB || null;
 }
