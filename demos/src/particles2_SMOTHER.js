@@ -1,7 +1,7 @@
 /*global Flora */
 var system = new Flora.FloraSystem();
   
-system.start(function () {
+system.start(function() {
   
   'use strict';
 
