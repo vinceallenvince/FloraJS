@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
   <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
-  <script src="lib/stats.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
@@ -20,18 +19,39 @@
       system.start(function () {
 
         Flora.world.update({
-          showStats: true
+          showStats: false,
+          style: {
+            background: "#fff"
+          }
         });
 
-        var flowfield = new Flora.FlowField({
-          createMarkers: true
+        var pl = new Flora.Palette();
+        pl.addColor({
+          min: 1,
+          max: 3,
+          startColor: [255, 0, 0],
+          endColor: [100, 0, 0]
+        }).addColor({
+          min: 5,
+          max: 10,
+          startColor: [0, 0, 255],
+          endColor: [0, 0, 100]
         });
-        flowfield.build();
 
-        var vehicle = new Flora.Mover({
-          flowField: flowfield,
-          wrapEdges: true
-        });
+        function createMover() {
+
+          var x = Flora.Utils.getRandomNumber(0, Flora.world.width),
+              y = Flora.Utils.getRandomNumber(0, Flora.world.height);
+
+          new Flora.Mover({
+            isStatic: true,
+            location: Flora.PVector.create(x, y),
+            color: pl.getColor()
+          });
+        }
+
+        document.addEventListener('click', createMover, false);
+
       });
   </script>
 </body>

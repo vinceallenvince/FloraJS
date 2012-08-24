@@ -1,13 +1,13 @@
 /*global Flora */
 var system = new Flora.FloraSystem();
-  
+
 system.start(function() {
-  
+
   'use strict';
 
   Flora.world.update({
     c: 0,
-    showStats: false,
+    showStats: true,
     gravity: Flora.PVector.create(0, 0),
     style: {
       backgroundImage: "-webkit-radial-gradient(circle, #444, #000)"
@@ -20,35 +20,29 @@ system.start(function() {
     wrapEdges: true,
     maxSpeed: 20,
     opacity: 0.95,
-    color: {
-      r: 255,
-      g: 150,
-      b: 150
-    }
+    color: [255, 150, 150]
   });
-  
+
   var walker2 = new Flora.Walker({
     isPerlin: true,
     perlinTime: Flora.Utils.getRandomNumber(0, 10000),
     wrapEdges: true,
     maxSpeed: 20,
     opacity: 0.95,
-    color: {
-      r: 255,
-      g: 150,
-      b: 255
-    }
+    color: [255, 150, 255]
   });
-  
+
   var walkers = [walker1, walker2];
 
   var tail1 = new Flora.ParticleSystem({
+    isStatic: false,
     parent: walker1,
     burst: 1,
+    lifespan: -1,
     particle: function () {
-      
+
       var dir = Flora.Utils.clone(walker1.getVelocity());
-        
+
       dir.normalize();
       if (dir) {
         dir.mult(-1);
@@ -57,29 +51,25 @@ system.start(function() {
       }
 
       return {
-        parent: this,
         location: this.getLocation(),
-        acceleration: dir,
-        lifespan: 10,
+        acceleration: dir.mult(8),
+        lifespan: 8,
         checkEdges: false,
         width: 3,
         height: 3,
-        color: {
-          r: 200,
-          g: 200,
-          b: 200
-        }
+        color: [255, 255, 255]
       };
     }
   });
-        
+
   var tail2 = new Flora.ParticleSystem({
+    isStatic: false,
     parent: walker2,
     burst: 1,
     particle: function () {
-      
-      var dir = Flora.Utils.clone(walker1.getVelocity());
-        
+
+      var dir = Flora.Utils.clone(walker2.getVelocity());
+
       dir.normalize();
       if (dir) {
         dir.mult(-1);
@@ -88,24 +78,19 @@ system.start(function() {
       }
 
       return {
-        parent: this,
         location: this.getLocation(),
-        acceleration: dir,
-        lifespan: 10,
+        acceleration: dir.mult(8),
+        lifespan: 8,
         checkEdges: false,
         width: 3,
         height: 3,
-        color: {
-          r: 200,
-          g: 200,
-          b: 200
-        }
+        color: [255, 255, 255]
       };
     }
   });
 
   var fishColors = ["rgb(255, 125, 125)", "rgb(255, 125, 255)"];
-  
+
   var getMyParticleLifespan = function () {
     return this.myParticleLifespan;
   };
@@ -115,14 +100,14 @@ system.start(function() {
     var lifespan = this.getMyParticleLifespan(),
       dir = Flora.Utils.clone(this.getVelocity()),
       color = fishColors[this.myIndex];
-      
+
     dir.normalize();
     if (dir) {
       dir.mult(-Flora.Utils.map(lifespan, 8, 12, 10, 20));
     } else {
       dir = Flora.PVector.create(0, 0);
     }
-    
+
     return {
       parent: this,
       location: this.getLocation(),
@@ -135,10 +120,11 @@ system.start(function() {
   };
 
   for (var i = 0; i < (0.004 * Flora.world.width); i += 1) {
-    
+
     var myIndex = i % 2 === 0 ? 0 : 1;
-    
+
     var fish1 = new Flora.ParticleSystem({
+      isStatic: false,
       myIndex: myIndex,
       location: Flora.PVector.create(Flora.Utils.getRandomNumber(0, Flora.world.width), Flora.Utils.getRandomNumber(0, Flora.world.height)),
       flocking: true,

@@ -1,10 +1,16 @@
-div {
+/*div {
 	position: absolute; left: 0; top: 0;
-}
+}*/
 
 body {
+	position: relative;
 	background: #000;
 	background-image: -webkit-radial-gradient(circle, #444, #000);
+	background-image: -webkit-gradient(circle, #444, #000);
+	background-image: -moz-radial-gradient(circle, #444, #000);
+	background-image: -o-radial-gradient(circle, #444, #000);
+	background-image: -ms-radial-gradient(circle, #444, #000);
+	background-image: radial-gradient(circle, #444, #000);
 }
 .container-menu {
 	position: absolute;
@@ -116,6 +122,28 @@ body {
 	left: auto; top: auto;
 }
 
+.eye {
+	position: absolute;
+	top: 9px; left: 5px;
+	width: 10px; height: 2px;
+	background: #666;
+}
+
+.neutralSensor {
+	background: transparent;
+	border: 1px solid #fff;
+	border-radius: 100%;
+}
+
+/* stimulators */
+.cold {
+	background: rgb(132, 192, 201);
+}
+
+.food {
+	background: rgb(155, 231, 93);
+}
+
 .heat {
 	background: rgb(255, 69, 0);
 }
@@ -124,32 +152,10 @@ body {
 	background: rgb(255, 200, 0);
 }
 
-.cold {
-	background: rgb(132, 192, 201);
-}
-
 .oxygen {
 	background: rgb(0, 174, 239);
 }
 
-.food {
-	background: rgb(155, 231, 93);
+.predator {
+	background: rgb(200, 0, 0);
 }
-
-.eye {
-	position: absolute;
-	top: 9px; left: 5px;
-	width: 10px; height: 2px;
-	background: #666;
-}
-
-
-
-
-
-
-
-
-
-
-

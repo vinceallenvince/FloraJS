@@ -11,7 +11,7 @@
  *
  * @param {Object} [opt_options] Walker options.
  * @param {string} [opt_options.className = 'walker'] The corresponding DOM element's class name.
- * @param {boolean} [opt_options.isPerlin = false] If set to true, object will use Perlin Noise to calculate its location.
+ * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
  * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and isPerlin = true, object will avoid world edges.
  * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
  * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
@@ -26,7 +26,6 @@
  * @param {Object} [opt_options.harmonicPeriod = {x: 150, y: 150}] If isHarmonic = true, sets the motion's period.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
- * @param {Object} [opt_options.color = {r: 255, g: 150, b: 50}] The object's color.
  * @param {number} [opt_options.maxSpeed = 30] Maximum speed
  * @param {boolean} [opt_options.wrapEdges = false] Set to true to set the object's location to the opposite side of the world if the object moves outside the world's bounds.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.  
@@ -39,25 +38,24 @@ function Walker(opt_options) {
 
   exports.Mover.call(this, options);
   
-  this.isPerlin = options.isPerlin || false;
-  this.remainsOnScreen = options.remainsOnScreen || false;
+  this.isPerlin = options.isPerlin || true;
+  this.remainsOnScreen = !!options.remainsOnScreen;
   this.perlinSpeed = options.perlinSpeed || 0.005;
   this.perlinTime = options.perlinTime || 0;
   this.perlinAccelLow = options.perlinAccelLow || -0.075;
   this.perlinAccelHigh = options.perlinAccelHigh || 0.075;
   this.offsetX = options.offsetX || Math.random() * 10000;
   this.offsetY = options.offsetY || Math.random() * 10000;   
-  this.isRandom = options.isRandom || false;
+  this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
-  this.isHarmonic = options.isHarmonic || false;
+  this.isHarmonic = !!options.isHarmonic;
   this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(6, 6);
   this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);    
   this.width = options.width || 10;
-  this.height = options.height || 10;     
-  this.color = options.color || {r: 255, g: 150, b: 50};   
+  this.height = options.height || 10;        
   this.maxSpeed = options.maxSpeed || 30;
-  this.wrapEdges = options.wrapEdges || false;
-  this.isStatic = options.isStatic || false;
+  this.wrapEdges = !!options.wrapEdges;
+  this.isStatic = !!options.isStatic;
 }
 exports.Utils.inherit(Walker, exports.Mover);
 

@@ -1,5 +1,5 @@
 /*global exports */
-/** 
+/**
     A module representing a Sensor object.
     @module Sensor
  */
@@ -15,14 +15,13 @@
  * @param {string} [opt_options.behavior = 'LOVE'] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 2] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
  * @param {number} [opt_options.width = 5] Width.
- * @param {number} [opt_options.height = 5] Height. 
- * @param {number} [opt_options.length = 30] Length.
- * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the vehicle carrying the sensor.    
- * @param {Object} [opt_options.color = {}] Color.
- * @param {number} [opt_options.opacity = 1] Opacity. 
+ * @param {number} [opt_options.height = 5] Height.
+ * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the sensor's parent.
+ * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the vehicle carrying the sensor.
+ * @param {number} [opt_options.opacity = 1] Opacity.
  * @param {Object} [opt_options.target = null] A stimulator.
- * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.   
- */      
+ * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
+ */
 function Sensor(opt_options) {
 
   'use strict';
@@ -36,10 +35,9 @@ function Sensor(opt_options) {
   this.sensitivity = options.sensitivity === 0 ? 0 : options.sensitivity || 2;
   this.width = options.width === 0 ? 0 : options.width || 5;
   this.height = options.height === 0 ? 0 : options.height || 5;
-  this.length = options.length === 0 ? 0 : options.length|| 30;
+  this.offsetDistance = options.offsetDistance === 0 ? 0 : options.offsetDistance|| 30;
   this.offsetAngle = options.offsetAngle || 0;
-  this.color = options.color || {};
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;   
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.target = options.target || null;
   this.activated = options.activated || false;
 }
@@ -47,20 +45,20 @@ exports.Utils.inherit(Sensor, exports.Mover);
 
 /**
  * Called every frame, step() updates the instance's properties.
- */ 
+ */
 Sensor.prototype.step = function() {
 
   'use strict';
 
   var check = false, maxSpeed = 10, i, max;
-  
-  if (this.type === "heat" && exports.heats.length > 0) { 
+
+  if (this.type === "heat" && exports.heats.length > 0) {
     for (i = 0, max = exports.heats.length; i < max; i += 1) { // heat
       if (this.isInside(this, exports.heats[i], this.sensitivity)) {
         this.target = exports.heats[i]; // target this stimulator
         this.activated = true; // set activation
         check = true;
-        
+
       }
     }
   } else if (this.type === "cold" && exports.colds.length > 0) {
@@ -111,7 +109,7 @@ Sensor.prototype.step = function() {
   if (this.afterStep) {
     this.afterStep.apply(this);
   }
-  
+
 };
 
 /**
@@ -124,10 +122,10 @@ Sensor.prototype.getActivationForce = function(params) {
 
   'use strict';
 
-  var distanceToTarget, m, steer; 
+  var distanceToTarget, m, steer;
 
   switch (this.behavior) {
-    
+
     /**
      * Steers toward target
      */
@@ -149,12 +147,12 @@ Sensor.prototype.getActivationForce = function(params) {
       return dvLikes;
     /**
      * Arrives at target and remains
-     */      
+     */
     case "LOVES":
       var dvLoves = exports.PVector.PVectorSub(this.target.location, this.location); // desiredVelocity
       distanceToTarget = dvLoves.mag();
       dvLoves.normalize();
-  
+
       if (distanceToTarget > this.width) {
         m = distanceToTarget/params.mover.maxSpeed;
         dvLoves.mult(m);
@@ -168,12 +166,12 @@ Sensor.prototype.getActivationForce = function(params) {
       return exports.PVector.create(0, 0);
     /**
      * Arrives at target but does not stop
-     */ 
-    case "EXPLORER": 
+     */
+    case "EXPLORER":
       var dvExplorer = exports.PVector.PVectorSub(this.target.location, this.location);
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
-          
+
       m = distanceToTarget/params.mover.maxSpeed;
       dvExplorer.mult(-m);
       steer = exports.PVector.PVectorSub(dvExplorer, params.mover.velocity);
@@ -181,7 +179,7 @@ Sensor.prototype.getActivationForce = function(params) {
       return steer;
     /**
      * Moves in the opposite direction as fast as possible
-     */ 
+     */
     case "RUN":
       return this.flee(this.target);
 
@@ -193,11 +191,11 @@ Sensor.prototype.getActivationForce = function(params) {
     case "DECELERATE":
       var forceDecel = params.mover.velocity.clone();
       forceDecel.normalize(); // get direction
-      return forceDecel.mult(-params.mover.minSpeed);            
+      return forceDecel.mult(-params.mover.minSpeed);
 
     default:
-      return exports.PVector.create(0, 0);         
-  }    
+      return exports.PVector.create(0, 0);
+  }
 };
 
 /**

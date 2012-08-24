@@ -11,12 +11,11 @@
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/stats.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript" charset="utf-8">
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
 
-    $(document).ready(function () {
-
-      var FloraSystem = Flora.FloraSystem,
-          system = new FloraSystem();
+      var system = new exports.FloraSystem();
 
       system.start(function () {
 
@@ -24,15 +23,8 @@
           showStats: true
         });
 
-        var walker = new Flora.Walker({
-          isPerlin: true
-        });
-
+        var walker = new Flora.Walker();
       });
-    });
-
   </script>
-</head>
-<body>
 </body>
 </html>

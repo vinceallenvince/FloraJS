@@ -1,5 +1,5 @@
-/*global $, console */
-/** 
+/*global exports, $, console, Modernizr */
+/**
     A module representing an Obj.
     @module Obj
  */
@@ -7,7 +7,7 @@
 /**
  * Creates a new Obj. All Flora elements extend Obj.
  * @constructor
- */ 
+ */
 function Obj() {
 
   'use strict';
@@ -36,7 +36,7 @@ Obj.events =[
  * Called by a mouseenter event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */ 
+ */
 Obj.mouseenter = function(e) {
 
   'use strict';
@@ -49,7 +49,7 @@ Obj.mouseenter = function(e) {
  * Called by a mousedown event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */ 
+ */
 Obj.mousedown = function(e) {
 
   'use strict';
@@ -66,7 +66,7 @@ Obj.mousedown = function(e) {
  * Called by a mousemove event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */ 
+ */
 Obj.mousemove = function(e) {
 
   'use strict';
@@ -93,7 +93,7 @@ Obj.mousemove = function(e) {
  * Called by a mouseup event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */     
+ */
 Obj.mouseup = function(e) {
 
   'use strict';
@@ -106,7 +106,7 @@ Obj.mouseup = function(e) {
  * Called by a mouseleave event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */     
+ */
 Obj.mouseleave = function(e) {
 
   'use strict';
@@ -143,9 +143,9 @@ Obj.mouseleave = function(e) {
 
 /**
  * Renders the element to the DOM. Called every frame.
- */     
+ */
 Obj.prototype.draw = function() {
-  
+
   'use strict';
 
   this.el.style.cssText = this.getCSSText({
@@ -159,7 +159,9 @@ Obj.prototype.draw = function() {
     cm: this.colorMode,
     c: this.color,
     z: this.zIndex,
-    border: this.border,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor: this.borderColor,
     borderRadius: this.borderRadius,
     boxShadow: this.boxShadow
   });
@@ -169,10 +171,14 @@ Obj.prototype.draw = function() {
  * Builds a cssText string based on properties passed by draw().
  *
  * @param {Object} props Properties describing the object.
- */  
+ */
 Obj.prototype.getCSSText = function(props) {
 
   'use strict';
+
+  if (!props.c) {
+    props.c = [];
+  }
 
   if (Modernizr.csstransforms3d) {
     return [
@@ -182,9 +188,11 @@ Obj.prototype.getCSSText = function(props) {
       'opacity: ' + props.o,
       'width: ' + props.w + 'px',
       'height: ' + props.h + 'px',
-      'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')',
+      'background: ' + props.cm + '(' + props.c[0] + ', ' + props.c[1] + ', ' + props.c[2] + ')',
       'z-index: ' + props.z,
-      'border: ' + props.border,
+      'border-width: ' + props.borderWidth,
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.borderColor,
       'border-radius: ' + props.borderRadius,
       'box-shadow: ' + props.boxShadow
     ].join(';');
@@ -196,7 +204,7 @@ Obj.prototype.getCSSText = function(props) {
       'opacity: ' + props.o,
       'width: ' + props.w + 'px',
       'height: ' + props.h + 'px',
-      'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')',
+      'background: ' + props.cm + '(' + props.c[0] + ', ' + props.c[1] + ', ' + props.c[2] + ')',
       'z-index: ' + props.z,
       'border: ' + props.border,
       'border-radius: ' + props.borderRadius,
@@ -208,8 +216,10 @@ Obj.prototype.getCSSText = function(props) {
       'left' + props.x + 'px',
       'top' + props.y + 'px',
       'width' + props.w + 'px',
-      'height' + props.h + 'px'
-    ].join(';');    
+      'height' + props.h + 'px',
+      'opacity' + props.o,
+      'z-index'+ props.z
+    ].join(';');
   }
 };
 exports.Obj = Obj;

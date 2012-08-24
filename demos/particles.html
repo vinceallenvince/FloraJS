@@ -10,27 +10,24 @@
   <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript" charset="utf-8">
-
-    $(document).ready(function () {
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
 
       var system = new exports.FloraSystem();
 
       system.start(function () {
 
         Flora.world.update({
-          showStats: true
+          showStats: true,
+          style: {
+            backgroundImage: "-webkit-radial-gradient(circle, #fff, #eee)"
+          }
         });
 
-        var particles = new Flora.ParticleSystem({
-          burst: 1
-        });
+        var particles = new Flora.ParticleSystem();
 
       });
-    });
-
   </script>
-</head>
-<body>
 </body>
 </html>

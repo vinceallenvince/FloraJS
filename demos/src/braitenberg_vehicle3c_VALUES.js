@@ -1,8 +1,8 @@
 /*global Flora */
 var system = new Flora.FloraSystem();
-  
-system.start(function() {
-  
+
+var elements = function() {
+
   'use strict';
 
   Flora.world.update({
@@ -17,9 +17,9 @@ system.start(function() {
     type: "heat",
     behavior: "COWARD",
     sensitivity: 3,
-    length: 40,
-    opacity: 1,
-    offsetAngle: 7.5,
+    offsetDistance: 40,
+    opacity: 0,
+    offsetAngle: 0,
     border: "1px solid rgb(255, 69, 0)",
     afterStep: function () {
       if (this.activated) {
@@ -27,17 +27,19 @@ system.start(function() {
           this.connector = new Flora.Connector({
             parentA: this,
             parentB: this.target,
-            color: null
+            color: [255, 69, 0]
           });
         } else {
           this.connector.parentA = this;
           this.connector.parentB = this.target;
         }
+        this.opacity = 1;
       } else {
         if (this.connector) {
           Flora.destroyElement(this.connector.id);
           this.connector = null;
         }
+        this.opacity = 0;
       }
     }
   });
@@ -46,9 +48,9 @@ system.start(function() {
     type: "light",
     behavior: "AGGRESSIVE",
     sensitivity: 3,
-    length: 40,
-    opacity: 1,
-    offsetAngle: -7.5,
+    offsetDistance: 40,
+    opacity: 0,
+    offsetAngle: 0,
     border: "1px solid rgb(255, 200, 0)",
     afterStep: function () {
       if (this.activated) {
@@ -56,17 +58,19 @@ system.start(function() {
           this.connector = new Flora.Connector({
             parentA: this,
             parentB: this.target,
-            color: null
+            color: [255, 200, 0]
           });
         } else {
           this.connector.parentA = this;
           this.connector.parentB = this.target;
         }
+        this.opacity = 1;
       } else {
         if (this.connector) {
           Flora.destroyElement(this.connector.id);
           this.connector = null;
         }
+        this.opacity = 0;
       }
     }
   });
@@ -75,9 +79,9 @@ system.start(function() {
     type: "oxygen",
     behavior: "LIKES",
     sensitivity: 3,
-    length: 40,
-    opacity: 1,
-    offsetAngle: 22.5,
+    offsetDistance: 40,
+    opacity: 0,
+    offsetAngle: 0,
     border: "1px solid rgb(0, 174, 239)",
     afterStep: function () {
       if (this.activated) {
@@ -85,28 +89,30 @@ system.start(function() {
           this.connector = new Flora.Connector({
             parentA: this,
             parentB: this.target,
-            color: null
+            color: [0, 174, 239]
           });
         } else {
           this.connector.parentA = this;
           this.connector.parentB = this.target;
         }
+        this.opacity = 1;
       } else {
         if (this.connector) {
           Flora.destroyElement(this.connector.id);
           this.connector = null;
         }
+        this.opacity = 0;
       }
-    }         
+    }
   });
 
   var sensor4 = new Flora.Sensor({
     type: "food",
     behavior: "LIKES",
     sensitivity: 3,
-    length: 40,
-    opacity: 1,
-    offsetAngle: -22.5,
+    offsetDistance: 40,
+    opacity: 0,
+    offsetAngle: 0,
     border: "1px solid rgb(155, 231, 93)",
     afterStep: function () {
       if (this.activated) {
@@ -114,19 +120,21 @@ system.start(function() {
           this.connector = new Flora.Connector({
             parentA: this,
             parentB: this.target,
-            color: null
+            color: [155, 231, 93]
           });
         } else {
           this.connector.parentA = this;
           this.connector.parentB = this.target;
         }
+        this.opacity = 1;
       } else {
         if (this.connector) {
           Flora.destroyElement(this.connector.id);
           this.connector = null;
         }
+        this.opacity = 0;
       }
-    }         
+    }
   });
 
   var vehicle = new Flora.Mover({
@@ -139,11 +147,7 @@ system.start(function() {
     wrapEdges: true,
     sensors: [sensor1, sensor2, sensor3, sensor4],
     velocity: Flora.PVector.create(1, 0),
-    color: {
-      r: 255,
-      g: 255,
-      b: 255
-    },
+    color: [255, 255, 255],
     borderRadius: "100%",
     boxShadow: "0 0 10px 10px rgba(255, 255, 255, 0.15)",
     eyeRotation: 0,
@@ -156,9 +160,9 @@ system.start(function() {
       return obj;
     },
     beforeStep: function () { // constant force, ie. motor
-      
+
       var i, max, check, alpha;
-      
+
       for (i = 0, max = this.sensors.length; i < max; i += 1) {
         if (this.sensors[i].activated) {
           check = true;
@@ -166,7 +170,7 @@ system.start(function() {
           this.boxShadow = "0 0 10px 10px rgba(255, 255, 255, " + alpha + ")";
         }
       }
-      
+
       // motor always maintains a minimum speed
 
       if (!check) { // if sensor is not activated, apply a constant force in the vehicle's current direction
@@ -179,15 +183,16 @@ system.start(function() {
           dir.mult(this.defaultSpeed); // maintain default speed
           this.applyForce(dir);
         }
-        
+
         this.boxShadow = "0 0 10px 10px rgba(255, 255, 255, 0.15)";
       }
 
       // need random force
-      if (Flora.Utils.getRandomNumber(0, 500) === 1) { 
+      if (Flora.Utils.getRandomNumber(0, 500) === 1) {
         this.randomRadius = 100;
         this.target = { // find a random point and steer toward it
-          location: Flora.PVector.PVectorAdd(this.location, Flora.PVector.create(Flora.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), Flora.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
+          location: Flora.PVector.PVectorAdd(this.location, Flora.PVector.create(Flora.Utils.getRandomNumber(-this.randomRadius, this.randomRadius),
+            Flora.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
         };
         var me = this;
         setTimeout(function () {
@@ -204,11 +209,7 @@ system.start(function() {
           checkEdges: false,
           width: d,
           height: d,
-          color: {
-            r: 255,
-            g: 255,
-            b: 150
-          }
+          color: [255, 255, 150]
         };
       };
 
@@ -260,11 +261,27 @@ system.start(function() {
           a = this.eyeRotation;
 
       eye.style.webkitTransform = "rotate(" + a + "deg)";
-      this.eyeRotation += Flora.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 0.01, 50);
+      this.eyeRotation += Flora.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 3, 50);
     }
   });
-  
+
+  var point = new Flora.Point({
+    className: 'neutralSensor',
+    isStatic: false,
+    parent: vehicle,
+    offsetDistance: 40,
+    color: null
+  });
+
   var i, max, w, h, d;
+
+  var pl = new Flora.Palette();
+  pl.addColor({
+    min: 5,
+    max: 12,
+    startColor: [255, 132, 86],
+    endColor: [175, 47, 0]
+  });
 
   for (i = 0, max = (0.015 * Flora.world.width); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
@@ -272,6 +289,7 @@ system.start(function() {
     d = Flora.Utils.getRandomNumber(15, 25);
 
     var heat = new Flora.Heat({
+      color: pl.getColor(),
       width: d,
       height: d,
       scale: 1,
@@ -279,6 +297,14 @@ system.start(function() {
       location: Flora.PVector.create(w, h)
     });
   }
+
+  pl = new Flora.Palette();
+  pl.addColor({
+    min: 5,
+    max: 12,
+    startColor: [255, 227, 127],
+    endColor: [189, 148, 0]
+  });
 
   for (i = 0, max = (0.015 * Flora.world.width); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
@@ -286,6 +312,7 @@ system.start(function() {
     d = Flora.Utils.getRandomNumber(15, 25);
 
     var light = new Flora.Light({
+      color: pl.getColor(),
       width: d,
       height: d,
       scale: 1,
@@ -293,6 +320,14 @@ system.start(function() {
       location: Flora.PVector.create(w, h)
     });
   }
+
+  pl = new Flora.Palette();
+  pl.addColor({
+    min: 5,
+    max: 12,
+    startColor: [109, 215, 255],
+    endColor: [0, 140, 192]
+  });
 
   for (i = 0, max = (0.005 * Flora.world.width); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
@@ -300,6 +335,7 @@ system.start(function() {
     d = Flora.Utils.getRandomNumber(20, 40);
 
     var air = new Flora.Oxygen({
+      color: pl.getColor(),
       width: d,
       height: d,
       scale: 1,
@@ -307,6 +343,14 @@ system.start(function() {
       location: Flora.PVector.create(w, h)
     });
   }
+
+  pl = new Flora.Palette();
+  pl.addColor({
+    min: 5,
+    max: 12,
+    startColor: [186, 255, 130],
+    endColor: [84, 187, 0]
+  });
 
   for (i = 0, max = (0.005 * Flora.world.width); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
@@ -314,6 +358,7 @@ system.start(function() {
     d = Flora.Utils.getRandomNumber(20, 40);
 
     var food = new Flora.Food({
+      color: pl.getColor(),
       width: d,
       height: d,
       scale: 1,
@@ -321,4 +366,10 @@ system.start(function() {
       location: Flora.PVector.create(w, h)
     });
   }
+};
+
+Flora.Utils.addEvent(document.getElementById("buttonStart"), "mouseup", function() {
+  'use strict';
+  document.getElementById("containerMenu").removeChild(document.getElementById("containerButton"));
+  system.start(elements);
 });

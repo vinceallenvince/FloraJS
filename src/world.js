@@ -1,6 +1,6 @@
-/*global $ */
+/*global exports, $, Modernizr */
 
-/** 
+/**
     A module representing World.
     @module World
  */
@@ -15,42 +15,46 @@
  * @param {number} [opt_options.clock = 0] Increments each frame.
  * @param {number} [opt_options.c = 0.01] Coefficient of friction.
  * @param {Object} [opt_options.gravity = {x: 0, y: 1}] Gravity
- * @param {Object} [opt_options.wind = {x: 0, y: 0}] Wind 
- * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location  
+ * @param {Object} [opt_options.wind = {x: 0, y: 0}] Wind
+ * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location
+ * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
  */
 function World(opt_options) {
 
   'use strict';
 
   var me = this, options = opt_options || {};
-  
-  this.showStats = options.showStats || false;
+
+  this.showStats = !!options.showStats;
   this.statsInterval = options.statsInterval || 0;
   this.clock = options.clock || 0;
   this.c = options.c || 0.01;
   this.gravity = options.gravity || exports.PVector.create(0, 1);
   this.wind =  options.wind || exports.PVector.create(0, 0);
   this.location = options.location || exports.PVector.create(0, 0);
-  
+  this.zSorted = !!options.zSorted;
+
 
   this.width = $(window).width();
   this.height = $(window).height();
+  this.zIndex = 0;
   this.mouseX = this.width/2;
   this.mouseY = this.height/2;
   this.isTopDown = true;
   this.compassHeading = 0;
   this.compassAccuracy = 0;
   this.isDeviceMotion = false;
-  
+  this.isPlaying = true;
+
   if (this.showStats) {
     this.createStats();
   }
 
   $(document).mousemove(function(e) {
     me.mouseX = e.pageX;
-    me.mouseY = e.pageY;        
+    me.mouseY = e.pageY;
   });
-  
+
   if (window.addEventListener && this.isDeviceMotion) {
     window.addEventListener("devicemotion", function(e) { // listens for device motion events
       me.devicemotion.call(me, e);
@@ -86,7 +90,7 @@ World.prototype.configure = function() { // should be called after doc ready()
  * change the world's style.
  *
  * @param {Object} props A hash of properties to update.
- */   
+ */
 World.prototype.update = function(opt_props) {
 
   'use strict';
@@ -119,8 +123,8 @@ World.prototype.update = function(opt_props) {
 /**
  * Called from a window resize event, resize() repositions all Flora elements relative
  * to the new window size. Also, if the world is the document.body, resets the body's
- * width and height attributes. 
- */ 
+ * width and height attributes.
+ */
 World.prototype.resize = function() {
 
   'use strict';
@@ -128,7 +132,7 @@ World.prototype.resize = function() {
   var i, max, elementLoc, controlCamera,
     windowWidth = $(window).width(),
     windowHeight = $(window).height();
-  
+
   // check of any elements control the camera
   for (i = 0, max = exports.elements.length; i < max; i += 1) {
     if (exports.elements[i].controlCamera) {
@@ -140,12 +144,12 @@ World.prototype.resize = function() {
   // loop thru elements
   if (!controlCamera) {
     for (i = 0, max = exports.elements.length; i < max; i += 1) {
-      
+
       elementLoc = exports.elements[i].location; // recalculate location
-      
+
       elementLoc.x = windowWidth * (elementLoc.x/this.width);
       elementLoc.y = windowHeight * (elementLoc.y/this.height);
-      
+
     }
 
     if (this.el === document.body) {
@@ -158,7 +162,7 @@ World.prototype.resize = function() {
 /**
  * Called from a window devicemotion event, updates the world's gravity
  * relative to the accelerometer's values.
- */ 
+ */
 World.prototype.devicemotion = function() {
 
   'use strict';
@@ -186,7 +190,7 @@ World.prototype.devicemotion = function() {
  * Called from a window deviceorientation event, updates the world's compass values.
  *
  * @param {Object} e An event object passed from the event listener.
- */ 
+ */
 World.prototype.deviceorientation = function(e) {
 
   'use strict';
@@ -204,7 +208,7 @@ World.prototype.deviceorientation = function(e) {
 
 /**
  * Creates a new instance of mr doob's stats monitor.
- */ 
+ */
 World.prototype.createStats = function() {
 
   'use strict';
@@ -225,10 +229,10 @@ World.prototype.createStats = function() {
 
 /**
  * Destroys an instance of mr doob's stats monitor.
- */     
+ */
 World.prototype.destroyStats = function() {
 
-  'use strict';  
+  'use strict';
 
   clearInterval(this.statsInterval);
   document.body.removeChild(document.getElementById('stats'));
@@ -236,12 +240,12 @@ World.prototype.destroyStats = function() {
 
 /**
  * Called every frame, step() updates the world's properties.
- */ 
+ */
 World.prototype.step = function() {};
 
 /**
  * Called every frame, draw() renders the world.
- */ 
+ */
 World.prototype.draw = function() {
 
   'use strict';
@@ -253,22 +257,25 @@ World.prototype.draw = function() {
     o = 1,
     w = this.width,
     h = this.height,
+    z = this.zIndex,
     style = this.el.style;
 
-  if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
+  if (Modernizr.csstransforms3d) { //  && Modernizr.touch
     style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
+    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
+    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
     style.opacity = o;
     style.width = w + 'px';
     style.height = h + 'px';
+    style.zIndex = z;
   } else if (Modernizr.csstransforms) {
     style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
+    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
+    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
     style.opacity = o;
     style.width = w + 'px';
     style.height = h + 'px';
+    style.zIndex = z;
   } else {
     $(this.el).css({
       'position': 'absolute',
@@ -276,7 +283,8 @@ World.prototype.draw = function() {
       'top': y + 'px',
       'width': w + 'px',
       'height': h + 'px',
-      'opacity': o
+      'opacity': o,
+      'zIndex': z
     });
   }
 };

@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
   <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
-  <script src="lib/stats.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
@@ -23,14 +22,33 @@
           showStats: true
         });
 
-        var flowfield = new Flora.FlowField({
-          createMarkers: true
-        });
-        flowfield.build();
+        var particles = new Flora.ParticleSystem({
+          particle: function () {
 
-        var vehicle = new Flora.Mover({
-          flowField: flowfield,
-          wrapEdges: true
+            var dir = Flora.mouse.loc.PVectorSub(Flora.mouse.loc, this.getLocation());
+
+            dir.normalize();
+            if (dir) {
+              dir.mult(-1);
+            } else {
+              dir = Flora.PVector.create(0, 0);
+            }
+
+            var pl = new Flora.Palette();
+            pl.addColor({
+              min: 1,
+              max: 1,
+              startColor: [255, 132, 86],
+              endColor: [175, 47, 0]
+            });
+
+            return {
+              color: pl.getColor(),
+              location: this.getLocation(),
+              acceleration: dir.mult(10),
+              checkEdges: false
+            };
+          }
         });
       });
   </script>

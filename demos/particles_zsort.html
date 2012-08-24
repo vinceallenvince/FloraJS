@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0; maximum-scale=1.0;" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Flora</title>
+  <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
+  <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
+
+      /**
+       * Particles will render in the order of their z-index... meaning
+       * the particles will appear stacked in order bottom to top: red, green, blue
+       */
+
+      var system = new exports.FloraSystem();
+
+      system.start(function () {
+
+        Flora.world.update({
+          showStats: true,
+          zSorted: true,
+          style: {
+            backgroundImage: "-webkit-radial-gradient(circle, #333, #000)"
+          }
+        });
+
+
+
+        // light
+        var cLight = Flora.defaultColors.getColor('light'),
+            plLight = new Flora.ColorPalette(),
+            brdrLight = new Flora.BorderPalette();
+
+        plLight.addColor({
+          min: 12,
+          max: 24,
+          startColor: cLight.startColor,
+          endColor: cLight.endColor
+        });
+
+        brdrLight.addBorder({
+          min: 1,
+          max: 4,
+          style: 'ridge'
+        }).addBorder({
+          min: 1,
+          max: 4,
+          style: 'groove'
+        });
+
+        var particles5 = new Flora.ParticleSystem({
+          burstRate: 4,
+          burst: 1,
+          particle: function() {
+
+            return {
+              color: plLight.getColor(),
+              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderStyle: brdrLight.getBorder(),
+              borderColor: 'rgb(' + plLight.getColor() + ') ',
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plLight.getColor() + ')',
+              zIndex: Flora.Utils.getRandomNumber(401, 500),
+              location: this.getLocation().mult(1.15),
+              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+            };
+          }
+        });
+
+        // oxygen
+        var cOxygen = Flora.defaultColors.getColor('oxygen'),
+            plOxygen = new Flora.ColorPalette(),
+            brdrOxygen = new Flora.BorderPalette();
+
+        plOxygen.addColor({
+          min: 6,
+          max: 12,
+          startColor: cOxygen.startColor,
+          endColor: cOxygen.endColor
+        });
+
+        brdrOxygen.addBorder({
+          min: 1,
+          max: 4,
+          style: 'dotted'
+        }).addBorder({
+          min: 1,
+          max: 4,
+          style: 'double'
+        });
+
+        var particles4 = new Flora.ParticleSystem({
+          particle: function() {
+            return {
+              color: plOxygen.getColor(),
+              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderStyle: brdrOxygen.getBorder(),
+              borderColor: 'rgb(' + plOxygen.getColor() + ') ',
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plOxygen.getColor() + ')',
+              zIndex: Flora.Utils.getRandomNumber(301, 400),
+              location: this.getLocation().mult(0.85),
+              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+            };
+          }
+        });
+
+        // green
+        var cFood = Flora.defaultColors.getColor('food'),
+            plFood = new Flora.ColorPalette(),
+            brdrFood = new Flora.BorderPalette();
+
+        plFood.addColor({
+          min: 6,
+          max: 12,
+          startColor: cFood.startColor,
+          endColor: cFood.endColor
+        });
+
+        brdrFood.addBorder({
+          min: 1,
+          max: 4,
+          style: 'dotted'
+        }).addBorder({
+          min: 1,
+          max: 4,
+          style: 'dashed'
+        });
+
+        var particles2 = new Flora.ParticleSystem({
+          particle: function() {
+            return {
+              color: plFood.getColor(),
+              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderStyle: brdrFood.getBorder(),
+              borderColor: 'rgb(' + plFood.getColor() + ') ',
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plFood.getColor() + ')',
+              zIndex: Flora.Utils.getRandomNumber(101, 200),
+              location: this.getLocation().mult(0.95),
+              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+            };
+          }
+        });
+
+        // blue
+        var cCold = Flora.defaultColors.getColor('cold'),
+            plCold = new Flora.ColorPalette(),
+            brdrCold = new Flora.BorderPalette();
+
+        plCold.addColor({
+          min: 6,
+          max: 12,
+          startColor: cCold.startColor,
+          endColor: cCold.endColor
+        });
+
+        brdrCold.addBorder({
+          min: 1,
+          max: 4,
+          style: 'inset'
+        }).addBorder({
+          min: 1,
+          max: 4,
+          style: 'double'
+        });
+
+        var particles3 = new Flora.ParticleSystem({
+          particle: function() {
+            return {
+              color: plCold.getColor(),
+              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderStyle: brdrCold.getBorder(),
+              borderColor: 'rgb(' + plCold.getColor() + ') ',
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plCold.getColor() + ')',
+              zIndex: Flora.Utils.getRandomNumber(201, 300),
+              location: this.getLocation().mult(1.05),
+              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+            };
+          }
+        });
+
+        // heat
+        var cHeat = Flora.defaultColors.getColor('heat'),
+            plHeat = new Flora.ColorPalette(),
+            brdrHeat = new Flora.BorderPalette();
+
+        plHeat.addColor({
+          min: 1,
+          max: 10,
+          startColor: cHeat.startColor,
+          endColor: cHeat.endColor
+        });
+
+        brdrHeat.addBorder({
+          min: 1,
+          max: 4,
+          style: 'outset'
+        }).addBorder({
+          min: 1,
+          max: 4,
+          style: 'double'
+        });
+
+        var particles1 = new Flora.ParticleSystem({
+          particle: function() {
+            return {
+              color: plHeat.getColor(),
+              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderStyle: brdrHeat.getBorder(),
+              borderColor: 'rgb(' + plHeat.getColor() + ') ',
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plHeat.getColor() + ')',
+              zIndex: Flora.Utils.getRandomNumber(1, 100),
+              location: this.getLocation(),
+              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+            };
+          }
+        });
+      });
+  </script>
+</body>
+</html>

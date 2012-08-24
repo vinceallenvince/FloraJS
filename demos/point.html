@@ -12,6 +12,13 @@
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-   <script src="src/particles1_CURIOUS.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+
+    var system = new exports.FloraSystem();
+
+    system.start(function() {
+      var pt = new Flora.Point();
+    });
+  </script>  
 </body>
 </html>

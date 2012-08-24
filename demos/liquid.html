@@ -10,35 +10,31 @@
   <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript" charset="utf-8">
-
-    $(document).ready(function () {
-
-      var system = new exports.FloraSystem();
-
-      system.start(function () {
-
-        Flora.world.update({
-          showStats: true
-        });
-
-        for (var i = 0; i < 120; i++) {
-          new Flora.Mover({
-            location: Flora.PVector.create(Flora.Utils.getRandomNumber(0, Flora.world.width, true), Flora.world.height/4),
-            mass: Flora.Utils.getRandomNumber(10, 50),
-            opacity: 1
-          });
-        }
-
-        var liquid = new Flora.Liquid({
-          width: Flora.world.width,
-          borderRadius: 0
-        });
-      });
-    });
-
-  </script>
 </head>
 <body>
+  <script type="text/javascript" charset="utf-8">
+  
+    var system = new exports.FloraSystem();
+
+    system.start(function () {
+
+      Flora.world.update({
+        showStats: true
+      });
+
+      for (var i = 0; i < 120; i++) {
+        new Flora.Mover({
+          location: Flora.PVector.create(Flora.Utils.getRandomNumber(0, Flora.world.width, true), Flora.world.height/4),
+          mass: Flora.Utils.getRandomNumber(10, 50),
+          opacity: 1
+        });
+      }
+
+      var liquid = new Flora.Liquid({
+        width: Flora.world.width,
+        borderRadius: 0
+      });
+    });
+  </script>  
 </body>
 </html>

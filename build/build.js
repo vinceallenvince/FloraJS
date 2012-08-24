@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: August 14, 2012 01:28:38 */
+/* Build time: August 24, 2012 08:38:29 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -23,8 +23,52 @@ window.requestAnimFrame = (function(callback){
             window.setTimeout(callback, 1000 / 60);
           };
 })();
-/*global window */
-/** 
+var config = {
+  borderStyles: [
+    'none',
+    'solid',
+    'dotted',
+    'dashed',
+    'double',
+    'inset',
+    'outset',
+    'groove',
+    'ridge'
+  ],
+  defaultColorList: [
+    {
+      name: 'heat',
+      startColor: [255, 132, 86],
+      endColor: [175, 47, 0]
+    },
+    {
+      name: 'cold',
+      startColor: [88, 129, 135],
+      endColor: [171, 244, 255]
+    },
+    {
+      name: 'food',
+      startColor: [186, 255, 130],
+      endColor: [84, 187, 0]
+    },
+    {
+      name: 'oxygen',
+      startColor: [109, 215, 255],
+      endColor: [0, 140, 192]
+    },
+    {
+      name: 'light',
+      startColor: [255, 227, 127],
+      endColor: [189, 148, 0]
+    }
+  ],
+  keyMap: {
+    toggleWorldPlaystate: 80
+  }
+};
+exports.config = config;
+/*global exports, window */
+/**
     A module representing a FloraSystem.
     @module florasystem
  */
@@ -38,8 +82,11 @@ function FloraSystem(el) {
 
   'use strict';
 
+  var i, max,
+      defaultColorList = exports.config.defaultColorList;
+
   this.el = el || null;
-  
+
   exports.elements = [];
   exports.liquids = [];
   exports.repellers = [];
@@ -51,11 +98,42 @@ function FloraSystem(el) {
   exports.food = [];
   exports.predators = [];
 
+  exports.mouse = {
+    loc: exports.PVector.create(0, 0),
+    locLast: exports.PVector.create(0, 0)
+  };
+
   exports.world = new exports.World();
   exports.world.configure(); // call configure after DOM has loaded
   exports.elements.push(exports.world);
 
   exports.Camera = new exports.Camera();
+
+  // save the current and last mouse position
+  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
+    exports.mouse.locLast = exports.mouse.loc.clone();
+    exports.mouse.loc = exports.PVector.create(e.pageX, e.pageY);
+  });
+
+  // toggle the world playstate
+  exports.Utils.addEvent(document, 'keyup', function(e) {
+    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
+      exports.world.isPlaying = !exports.world.isPlaying;
+      if (exports.world.isPlaying) {
+        window.requestAnimFrame(exports.animLoop);
+      }
+    }
+  });
+
+  // add default colors
+  exports.defaultColors = new exports.ColorTable();
+  for (i = 0, max = defaultColorList.length; i < max; i++) {
+    exports.defaultColors.addColor({
+      name: defaultColorList[i].name,
+      startColor: defaultColorList[i].startColor,
+      endColor: defaultColorList[i].endColor
+    });
+  }
 
   exports.destroyElement = function (id) {
 
@@ -69,21 +147,27 @@ function FloraSystem(el) {
       }
     }
   };
-  
+
   exports.animLoop = function () {
 
-    var i, max;
+    var i, max,
+        world = exports.world,
+        elements = exports.elements;
 
-    window.requestAnimFrame(exports.animLoop);
+    if (exports.world.isPlaying) {
+      window.requestAnimFrame(exports.animLoop);
 
-    for (i = exports.elements.length - 1; i >= 0; i -= 1) {
-      exports.elements[i].step();
-      if (exports.elements[i]) {
-        exports.elements[i].draw();
+      if (world.zSorted) {
+        elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
       }
-      if (exports.world.clock) {
-        exports.world.clock += 1;
+
+      for (i = elements.length - 1; i >= 0; i -= 1) {
+        elements[i].step();
+        if (elements[i]) {
+          elements[i].draw();
+        }
       }
+      world.clock += 1;
     }
   };
 }
@@ -480,6 +564,260 @@ var PVector = (function() {
   };
 }());
 exports.PVector = PVector;
+var defaultColorList = [
+  {
+    name: 'heat',
+    startColor: [255, 132, 86],
+    endColor: [175, 47, 0]
+  },
+  {
+    name: 'cold',
+    startColor: [88, 129, 135],
+    endColor: [171, 244, 255]
+  },
+  {
+    name: 'food',
+    startColor: [186, 255, 130],
+    endColor: [84, 187, 0]
+  },
+  {
+    name: 'oxygen',
+    startColor: [109, 215, 255],
+    endColor: [0, 140, 192]
+  },
+  {
+    name: 'light',
+    startColor: [255, 227, 127],
+    endColor: [189, 148, 0]
+  }
+];
+
+exports.defaultColorList = defaultColorList;
+/*global exports */
+/**
+    A module representing a ColorPalette.
+    @module ColorPalette
+ */
+
+function ColorPalette(opt_options) {
+
+  'use strict';
+
+  this.gradients = [];
+  this.colors = [];
+}
+
+ColorPalette.createColorRange = function(startColor, endColor, totalColors) {
+
+  'use strict';
+
+  var i, colors = [],
+      startRed = startColor[0],
+      startGreen = startColor[1],
+      startBlue = startColor[2],
+      endRed = endColor[0],
+      endGreen = endColor[1],
+      endBlue = endColor[2],
+      diffRed, diffGreen, diffBlue,
+      newRed, newGreen, newBlue;
+
+  diffRed = endRed - startRed;
+  diffGreen = endGreen - startGreen;
+  diffBlue = endBlue - startBlue;
+
+  for (i = 0; i < totalColors; i++) {
+    newRed = parseInt(diffRed * i/totalColors, 10) + startRed;
+    newGreen = parseInt(diffGreen * i/totalColors, 10) + startGreen;
+    newBlue = parseInt(diffBlue * i/totalColors, 10) + startBlue;
+    colors.push([newRed, newGreen, newBlue]);
+  }
+  return colors;
+};
+
+ColorPalette.prototype.createGradient = function(options) {
+
+  'use strict';
+
+  var requiredOptions = {
+    startColor: 'array',
+    endColor: 'array'
+  };
+
+  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+
+    this.startColor = options.startColor;
+    this.endColor = options.endColor;
+    this.totalColors = options.totalColors || 255;
+    if (this.totalColors > 0) {
+      this.gradients.push(ColorPalette.createColorRange(this.startColor, this.endColor, this.totalColors));
+    } else {
+      throw new Error('ColorPalette: total colors must be greater than zero.');
+    }
+  }
+};
+
+ColorPalette.prototype.addColor = function(options) {
+
+  'use strict';
+
+  var requiredOptions = {
+    min: 'number',
+    max: 'number',
+    startColor: 'array',
+    endColor: 'array'
+  }, i, ln, colors;
+
+  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+
+    ln = exports.Utils.getRandomNumber(options.min, options.max);
+    colors = ColorPalette.createColorRange(options.startColor, options.endColor, 255);
+
+    for (i = 0; i < ln; i++) {
+      this.colors.push(colors[exports.Utils.getRandomNumber(0, colors.length)]);
+    }
+  }
+  return this;
+};
+
+ColorPalette.prototype.getColor = function() {
+
+  'use strict';
+  if (this.colors.length > 0) {
+    return this.colors[exports.Utils.getRandomNumber(0, this.colors.length - 1)];
+  } else {
+    throw new Error('ColorPalette.getColor: You must add colors via addColor() before using getColor().');
+  }
+};
+
+ColorPalette.prototype.createSampleStrip = function(parent) {
+
+  'use strict';
+
+  var i, max, div;
+
+  for (i = 0, max = this.colors.length; i < max; i++) {
+    div = document.createElement('div');
+    div.className = 'color-sample-strip';
+    div.style.background = 'rgb(' + this.colors[i].toString() + ')';
+    parent.appendChild(div);
+  }
+};
+
+exports.ColorPalette = ColorPalette;
+/*global exports */
+/**
+    A module representing a ColorTable.
+    @module ColorTable
+ */
+
+function ColorTable() {
+  'use strict';
+}
+
+ColorTable.prototype.addColor = function(options) {
+
+  'use strict';
+
+  var requiredOptions = {
+    name: 'string',
+    startColor: 'array',
+    endColor: 'array'
+  };
+
+  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+    this[options.name] = {
+      startColor: options.startColor,
+      endColor: options.endColor
+    };
+  }
+  return this;
+};
+
+ColorTable.prototype.getColor = function(name, startColor, endColor) {
+
+  'use strict';
+
+  var color, startCol, endCol;
+
+  if (exports.Interface.getDataType(name) === 'string') {
+
+    if (this[name]) {
+
+      color = this[name];
+
+      if (startColor) {
+        startCol = color.startColor;
+      }
+      if (endColor) {
+        endCol = color.endColor;
+      }
+      if (startCol && endCol || !startCol && !endCol) {
+        return {
+          startColor: color.startColor,
+          endColor: color.endColor
+        };
+      } else if (startCol) {
+        return startCol;
+      } else if (endCol) {
+        return endCol;
+      }
+    } else {
+      throw new Error('ColorTable: ' + name + ' does not exist. Add colors to the ColorTable via addColor().');
+    }
+  } else {
+    throw new Error('ColorTable: You must pass a name (string) for the color entry in the table.');
+  }
+};
+
+exports.ColorTable = ColorTable;
+/*global exports */
+/**
+    A module representing a BorderPalette.
+    @module BorderPalette
+ */
+
+function BorderPalette(opt_options) {
+
+  'use strict';
+
+  this.borders = [];
+}
+
+
+BorderPalette.prototype.addBorder = function(options) {
+
+  'use strict';
+
+  var requiredOptions = {
+    min: 'number',
+    max: 'number',
+    style: 'string'
+  }, i, ln, colors;
+
+  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+
+    ln = exports.Utils.getRandomNumber(options.min, options.max);
+
+    for (i = 0; i < ln; i++) {
+      this.borders.push(options.style);
+    }
+  }
+  return this;
+};
+
+BorderPalette.prototype.getBorder = function() {
+
+  'use strict';
+
+  if (this.borders.length > 0) {
+    return this.borders[exports.Utils.getRandomNumber(0, this.borders.length - 1)];
+  } else {
+    throw new Error('BorderPalette.getBorder: You must add borders via addBorder() before using getBorder().');
+  }
+};
+
+
+exports.BorderPalette = BorderPalette;
 /*jshint bitwise:false */
 /** 
     A module representing SimplexNoise.
@@ -765,9 +1103,9 @@ Interface.checkRequiredParams(params_passed, params_required) returns true in th
   };
 }());
 exports.Interface = Interface;
-/*global $ */
+/*global exports, $, Modernizr */
 
-/** 
+/**
     A module representing World.
     @module World
  */
@@ -782,42 +1120,46 @@ exports.Interface = Interface;
  * @param {number} [opt_options.clock = 0] Increments each frame.
  * @param {number} [opt_options.c = 0.01] Coefficient of friction.
  * @param {Object} [opt_options.gravity = {x: 0, y: 1}] Gravity
- * @param {Object} [opt_options.wind = {x: 0, y: 0}] Wind 
- * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location  
+ * @param {Object} [opt_options.wind = {x: 0, y: 0}] Wind
+ * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location
+ * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
  */
 function World(opt_options) {
 
   'use strict';
 
   var me = this, options = opt_options || {};
-  
-  this.showStats = options.showStats || false;
+
+  this.showStats = !!options.showStats;
   this.statsInterval = options.statsInterval || 0;
   this.clock = options.clock || 0;
   this.c = options.c || 0.01;
   this.gravity = options.gravity || exports.PVector.create(0, 1);
   this.wind =  options.wind || exports.PVector.create(0, 0);
   this.location = options.location || exports.PVector.create(0, 0);
-  
+  this.zSorted = !!options.zSorted;
+
 
   this.width = $(window).width();
   this.height = $(window).height();
+  this.zIndex = 0;
   this.mouseX = this.width/2;
   this.mouseY = this.height/2;
   this.isTopDown = true;
   this.compassHeading = 0;
   this.compassAccuracy = 0;
   this.isDeviceMotion = false;
-  
+  this.isPlaying = true;
+
   if (this.showStats) {
     this.createStats();
   }
 
   $(document).mousemove(function(e) {
     me.mouseX = e.pageX;
-    me.mouseY = e.pageY;        
+    me.mouseY = e.pageY;
   });
-  
+
   if (window.addEventListener && this.isDeviceMotion) {
     window.addEventListener("devicemotion", function(e) { // listens for device motion events
       me.devicemotion.call(me, e);
@@ -853,7 +1195,7 @@ World.prototype.configure = function() { // should be called after doc ready()
  * change the world's style.
  *
  * @param {Object} props A hash of properties to update.
- */   
+ */
 World.prototype.update = function(opt_props) {
 
   'use strict';
@@ -886,8 +1228,8 @@ World.prototype.update = function(opt_props) {
 /**
  * Called from a window resize event, resize() repositions all Flora elements relative
  * to the new window size. Also, if the world is the document.body, resets the body's
- * width and height attributes. 
- */ 
+ * width and height attributes.
+ */
 World.prototype.resize = function() {
 
   'use strict';
@@ -895,7 +1237,7 @@ World.prototype.resize = function() {
   var i, max, elementLoc, controlCamera,
     windowWidth = $(window).width(),
     windowHeight = $(window).height();
-  
+
   // check of any elements control the camera
   for (i = 0, max = exports.elements.length; i < max; i += 1) {
     if (exports.elements[i].controlCamera) {
@@ -907,12 +1249,12 @@ World.prototype.resize = function() {
   // loop thru elements
   if (!controlCamera) {
     for (i = 0, max = exports.elements.length; i < max; i += 1) {
-      
+
       elementLoc = exports.elements[i].location; // recalculate location
-      
+
       elementLoc.x = windowWidth * (elementLoc.x/this.width);
       elementLoc.y = windowHeight * (elementLoc.y/this.height);
-      
+
     }
 
     if (this.el === document.body) {
@@ -925,7 +1267,7 @@ World.prototype.resize = function() {
 /**
  * Called from a window devicemotion event, updates the world's gravity
  * relative to the accelerometer's values.
- */ 
+ */
 World.prototype.devicemotion = function() {
 
   'use strict';
@@ -953,7 +1295,7 @@ World.prototype.devicemotion = function() {
  * Called from a window deviceorientation event, updates the world's compass values.
  *
  * @param {Object} e An event object passed from the event listener.
- */ 
+ */
 World.prototype.deviceorientation = function(e) {
 
   'use strict';
@@ -971,7 +1313,7 @@ World.prototype.deviceorientation = function(e) {
 
 /**
  * Creates a new instance of mr doob's stats monitor.
- */ 
+ */
 World.prototype.createStats = function() {
 
   'use strict';
@@ -992,10 +1334,10 @@ World.prototype.createStats = function() {
 
 /**
  * Destroys an instance of mr doob's stats monitor.
- */     
+ */
 World.prototype.destroyStats = function() {
 
-  'use strict';  
+  'use strict';
 
   clearInterval(this.statsInterval);
   document.body.removeChild(document.getElementById('stats'));
@@ -1003,12 +1345,12 @@ World.prototype.destroyStats = function() {
 
 /**
  * Called every frame, step() updates the world's properties.
- */ 
+ */
 World.prototype.step = function() {};
 
 /**
  * Called every frame, draw() renders the world.
- */ 
+ */
 World.prototype.draw = function() {
 
   'use strict';
@@ -1020,22 +1362,25 @@ World.prototype.draw = function() {
     o = 1,
     w = this.width,
     h = this.height,
+    z = this.zIndex,
     style = this.el.style;
 
-  if (Modernizr.csstransforms3d) { //  && Modernizr.touch 
+  if (Modernizr.csstransforms3d) { //  && Modernizr.touch
     style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
+    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
+    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
     style.opacity = o;
     style.width = w + 'px';
     style.height = h + 'px';
+    style.zIndex = z;
   } else if (Modernizr.csstransforms) {
     style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';  
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';        
+    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
+    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
     style.opacity = o;
     style.width = w + 'px';
     style.height = h + 'px';
+    style.zIndex = z;
   } else {
     $(this.el).css({
       'position': 'absolute',
@@ -1043,7 +1388,8 @@ World.prototype.draw = function() {
       'top': y + 'px',
       'width': w + 'px',
       'height': h + 'px',
-      'opacity': o
+      'opacity': o,
+      'zIndex': z
     });
   }
 };
@@ -1072,8 +1418,8 @@ function Camera(opt_options) {
 }
 
 exports.Camera = Camera;
-/*global $, console */
-/** 
+/*global exports, $, console, Modernizr */
+/**
     A module representing an Obj.
     @module Obj
  */
@@ -1081,7 +1427,7 @@ exports.Camera = Camera;
 /**
  * Creates a new Obj. All Flora elements extend Obj.
  * @constructor
- */ 
+ */
 function Obj() {
 
   'use strict';
@@ -1110,7 +1456,7 @@ Obj.events =[
  * Called by a mouseenter event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */ 
+ */
 Obj.mouseenter = function(e) {
 
   'use strict';
@@ -1123,7 +1469,7 @@ Obj.mouseenter = function(e) {
  * Called by a mousedown event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */ 
+ */
 Obj.mousedown = function(e) {
 
   'use strict';
@@ -1140,7 +1486,7 @@ Obj.mousedown = function(e) {
  * Called by a mousemove event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */ 
+ */
 Obj.mousemove = function(e) {
 
   'use strict';
@@ -1167,7 +1513,7 @@ Obj.mousemove = function(e) {
  * Called by a mouseup event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */     
+ */
 Obj.mouseup = function(e) {
 
   'use strict';
@@ -1180,7 +1526,7 @@ Obj.mouseup = function(e) {
  * Called by a mouseleave event listener.
  *
  * @param {Object} e The event object passed by the listener.
- */     
+ */
 Obj.mouseleave = function(e) {
 
   'use strict';
@@ -1217,9 +1563,9 @@ Obj.mouseleave = function(e) {
 
 /**
  * Renders the element to the DOM. Called every frame.
- */     
+ */
 Obj.prototype.draw = function() {
-  
+
   'use strict';
 
   this.el.style.cssText = this.getCSSText({
@@ -1233,7 +1579,9 @@ Obj.prototype.draw = function() {
     cm: this.colorMode,
     c: this.color,
     z: this.zIndex,
-    border: this.border,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor: this.borderColor,
     borderRadius: this.borderRadius,
     boxShadow: this.boxShadow
   });
@@ -1243,10 +1591,14 @@ Obj.prototype.draw = function() {
  * Builds a cssText string based on properties passed by draw().
  *
  * @param {Object} props Properties describing the object.
- */  
+ */
 Obj.prototype.getCSSText = function(props) {
 
   'use strict';
+
+  if (!props.c) {
+    props.c = [];
+  }
 
   if (Modernizr.csstransforms3d) {
     return [
@@ -1256,9 +1608,11 @@ Obj.prototype.getCSSText = function(props) {
       'opacity: ' + props.o,
       'width: ' + props.w + 'px',
       'height: ' + props.h + 'px',
-      'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')',
+      'background: ' + props.cm + '(' + props.c[0] + ', ' + props.c[1] + ', ' + props.c[2] + ')',
       'z-index: ' + props.z,
-      'border: ' + props.border,
+      'border-width: ' + props.borderWidth,
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.borderColor,
       'border-radius: ' + props.borderRadius,
       'box-shadow: ' + props.boxShadow
     ].join(';');
@@ -1270,7 +1624,7 @@ Obj.prototype.getCSSText = function(props) {
       'opacity: ' + props.o,
       'width: ' + props.w + 'px',
       'height: ' + props.h + 'px',
-      'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')',
+      'background: ' + props.cm + '(' + props.c[0] + ', ' + props.c[1] + ', ' + props.c[2] + ')',
       'z-index: ' + props.z,
       'border: ' + props.border,
       'border-radius: ' + props.borderRadius,
@@ -1282,13 +1636,15 @@ Obj.prototype.getCSSText = function(props) {
       'left' + props.x + 'px',
       'top' + props.y + 'px',
       'width' + props.w + 'px',
-      'height' + props.h + 'px'
-    ].join(';');    
+      'height' + props.h + 'px',
+      'opacity' + props.o,
+      'z-index'+ props.z
+    ].join(';');
   }
 };
 exports.Obj = Obj;
-/*global $ */
-/** 
+/*global exports, $ */
+/**
     A module representing a Mover.
     @module Mover
  */
@@ -1312,8 +1668,10 @@ exports.Obj = Obj;
  * @param {number} [opt_options.lifespan = -1] Life span. Set to -1 to live forever.
  * @param {number} [opt_options.width = 20] Width
  * @param {number} [opt_options.height = 20] Height
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode
- * @param {Object} [opt_options.color = {r: 197, g: 177, b: 115}] The object's color.
+ * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the mover's parent.
+ * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the mover.
+ * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
+ * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
  * @param {number} [opt_options.zIndex = 10] z-index
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
@@ -1324,7 +1682,7 @@ exports.Obj = Obj;
  * @param {boolean} [opt_options.avoidEdges = false] Set to true to calculate a steering force away from the
  * world's bounds.
  * @param {number} [opt_options.avoidEdgesStrength = 200] Sets the strength of the steering force when avoidEdges = true.
- * @param {number} [opt_options.bounciness = 0.75] Set the strength of the rebound when an object is outside the 
+ * @param {number} [opt_options.bounciness = 0.75] Set the strength of the rebound when an object is outside the
  * world's bounds and wrapEdges = false.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
  * @param {boolean} [opt_options.flocking = false] Set to true to apply flocking forces to this object.
@@ -1341,7 +1699,7 @@ exports.Obj = Obj;
  * @param {Object} [opt_options.location = The center of the world] The object's initial location.
  */
 
- 
+
 function Mover(opt_options) {
 
   'use strict';
@@ -1375,42 +1733,44 @@ function Mover(opt_options) {
   } else {
     this.el = document.createElement("div");
   }
-  
+
   // optional
   this.className = options.className || this.constructor.name.toLowerCase();
-  this.mass = options.mass || 10;  
+  this.mass = options.mass || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
-  this.scale = options.scale === 0 ? 0 : options.scale || 1;   
-  this.angle = options.angle === 0 ? 0 : options.angle || 0;   
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.85;   
-  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;    
-  this.width = options.width === 0 ? 0 : options.width || 20; 
-  this.height = options.height === 0 ? 0 : options.height || 20;    
-  this.colorMode = options.colorMode || 'rgb';     
-  this.color = options.color || {r: 197, g: 177, b: 115};
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;  
-  this.pointToDirection = options.pointToDirection || true;      
-  this.followMouse = options.followMouse || false;     
-  this.isStatic = options.isStatic || false;    
-  this.checkEdges = options.checkEdges || true;    
-  this.wrapEdges = options.wrapEdges || false;   
-  this.avoidEdges = options.avoidEdges || false;    
-  this.avoidEdgesStrength = options.avoidEdgesStrength === 0 ? 0 : options.avoidEdgesStrength || 200;    
-  this.bounciness = options.bounciness === 0 ? 0 : options.bounciness || 0.75;    
-  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : options.maxSteeringForce || 10;  
-  this.flocking = options.flocking || false;  
+  this.scale = options.scale === 0 ? 0 : options.scale || 1;
+  this.angle = options.angle === 0 ? 0 : options.angle || 0;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.85;
+  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
+  this.width = options.width === 0 ? 0 : options.width || 20;
+  this.height = options.height === 0 ? 0 : options.height || 20;
+  this.offsetDistance = options.offsetDistance === 0 ? 0 : options.offsetDistance|| 30;
+  this.offsetAngle = options.offsetAngle || 0;
+  this.colorMode = options.colorMode || 'rgb';
+  this.color = options.color || null;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
+  this.followMouse = !!options.followMouse;
+  this.isStatic = !!options.isStatic;
+  this.checkEdges = options.checkEdges === false ? false : options.checkEdges || true;
+  this.wrapEdges = !!options.wrapEdges;
+  this.avoidEdges = !!options.avoidEdges;
+  this.avoidEdgesStrength = options.avoidEdgesStrength === 0 ? 0 : options.avoidEdgesStrength || 200;
+  this.bounciness = options.bounciness === 0 ? 0 : options.bounciness || 0.75;
+  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : options.maxSteeringForce || 10;
+  this.flocking = !!options.flocking;
   this.desiredSeparation = options.desiredSeparation === 0 ? 0 : options.desiredSeparation || this.width * 2;
-  this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;  
-  this.alignStrength = options.alignStrength === 0 ? 0 : options.alignStrength || 0.2;     
-  this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;      
+  this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;
+  this.alignStrength = options.alignStrength === 0 ? 0 : options.alignStrength || 0.2;
+  this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;
   this.sensors = options.sensors || [];
-  this.flowField = options.flowField || null;   
+  this.flowField = options.flowField || null;
   this.acceleration = options.acceleration || exports.PVector.create(0, 0);
   this.velocity = options.velocity || exports.PVector.create(0, 0);
   this.location = options.location || exports.PVector.create(world.width/2, world.height/2);
-  this.controlCamera = options.controlCamera || false;
-  this.beforeStep = options.beforeStep || undefined;    
+  this.controlCamera = !!options.controlCamera;
+  this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
 
   elements.push(this); // push new instance of Mover
@@ -1420,8 +1780,8 @@ function Mover(opt_options) {
 
   if (world.el) {
     world.el.appendChild(this.el); // append the view to the World
-  } 
-  
+  }
+
   Mover._idCount += 1; // increment id
 
   if (this.className === "liquid") {
@@ -1443,11 +1803,11 @@ function Mover(opt_options) {
   } else if (this.className === "food") {
     food.push(this);
   }
-  
+
   if (this.controlCamera) { // if this object controls the camera
 
     exports.Camera.controlObj = this;
-    
+
     // need to position world so controlObj is centered on screen
     world.location.x = -world.width/2 + $(window).width()/2 + (world.width/2 - this.location.x);
     world.location.y = -world.height/2 + $(window).height()/2 + (world.height/2 - this.location.y);
@@ -1457,8 +1817,8 @@ function Mover(opt_options) {
   inst.el.addEventListener("mousedown", function (e) { Obj.mousedown.call(inst, e); }, false);
   inst.el.addEventListener("mousemove", function (e) { Obj.mousemove.call(inst, e); }, false);
   inst.el.addEventListener("mouseup", function (e) { Obj.mouseup.call(inst, e); }, false);
-  inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/      
-  
+  inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/
+
 }
 exports.Utils.inherit(Mover, exports.Obj);
 
@@ -1472,22 +1832,22 @@ Mover._idCount = 0;
 
 /**
  * Called every frame, step() updates the instance's properties.
- */   
+ */
 Mover.prototype.step = function() {
 
   'use strict';
 
-  var i, max, dir, friction, force, nose,
+  var i, max, dir, friction, force, nose, r, theta, x, y, sensor,
     world = exports.world;
-  
+
   //
-  
+
   if (this.beforeStep) {
     this.beforeStep.apply(this);
   }
-  
+
   //
-    
+
   if (!this.isStatic && !this.isPressed) {
 
     // APPLY FORCES -- start
@@ -1500,7 +1860,7 @@ Mover.prototype.step = function() {
         }
       }
     }
-    
+
     if (exports.repellers.length > 0) { // repeller
       for (i = 0, max = exports.repellers.length; i < max; i += 1) {
         if (this.id !== exports.repellers[i].id) {
@@ -1509,7 +1869,7 @@ Mover.prototype.step = function() {
         }
       }
     }
-    
+
     if (exports.attractors.length > 0) { // repeller
       for (i = 0, max = exports.attractors.length; i < max; i += 1) {
         if (this.id !== exports.attractors[i].id) {
@@ -1518,30 +1878,30 @@ Mover.prototype.step = function() {
         }
       }
     }
-    
+
     if (this.sensors.length > 0) { // Sensors
       for (i = 0, max = this.sensors.length; i < max; i += 1) {
-        
-        var sensor = this.sensors[i];
-        
-        var r = sensor.length; // use angle to calculate x, y
-        var theta = exports.Utils.degreesToRadians(this.angle + sensor.offsetAngle);
-        var x = r * Math.cos(theta);
-        var y = r * Math.sin(theta);
-        
+
+        sensor = this.sensors[i];
+
+        r = sensor.offsetDistance; // use angle to calculate x, y
+        theta = exports.Utils.degreesToRadians(this.angle + sensor.offsetAngle);
+        x = r * Math.cos(theta);
+        y = r * Math.sin(theta);
+
         sensor.location.x = this.location.x;
         sensor.location.y = this.location.y;
         sensor.location.add(exports.PVector.create(x, y)); // position the sensor
-        
+
         if (sensor.activated) {
           this.applyForce(sensor.getActivationForce({
             mover: this
           }));
         }
-        
+
       }
     }
-    
+
     if (world.c) { // friction
       friction = exports.Utils.clone(this.velocity);
       friction.mult(-1);
@@ -1549,29 +1909,29 @@ Mover.prototype.step = function() {
       friction.mult(world.c);
       this.applyForce(friction);
     }
-    
+
     this.applyForce(world.wind); // wind
-          
+
     this.applyForce(world.gravity); // gravity
-    
+
     if (this.followMouse) { // follow mouse
       var t = {
         location: exports.PVector.create(world.mouseX, world.mouseY)
       };
-      this.applyForce(this.seek(t));      
+      this.applyForce(this.seek(t));
     }
-    
+
     if (this.target) { // follow target
       this.applyForce(this.seek(this.target));
     }
-    
+
     if (this.flowField) { // follow flow field
       var res = this.flowField.resolution,
         col = Math.floor(this.location.x/res),
         row = Math.floor(this.location.y/res),
         loc, target;
-      
-      if (this.flowField.field[col]) {  
+
+      if (this.flowField.field[col]) {
         loc = this.flowField.field[col][row];
         if (loc) { // !! sometimes loc is not available for edge cases; need to fix
           target = {
@@ -1580,13 +1940,13 @@ Mover.prototype.step = function() {
         } else {
           target = {
             location: exports.PVector.create(this.location.x, this.location.y)
-          };              
+          };
         }
         this.applyForce(this.follow(target));
       }
-      
+
     }
-    
+
     if (this.flocking) {
       this.flock(exports.elements);
     }
@@ -1597,20 +1957,20 @@ Mover.prototype.step = function() {
 
     if (this.maxSpeed) {
       this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
-    }     
-    
+    }
+
     if (this.minSpeed) {
       this.velocity.limitLow(this.minSpeed); // check if velocity < minSpeed
     }
 
     this.location.add(this.velocity); // add velocity
-    
+
     if (this.pointToDirection) { // object rotates toward direction
       if (this.velocity.mag() > 0.1) {
         this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
       }
     }
-    
+
     if (this.controlCamera) { // check camera after velocity calculation
       this.checkCameraEdges();
     }
@@ -1621,15 +1981,30 @@ Mover.prototype.step = function() {
 
 
     if (this.parent) { // parenting
-      this.location = this.parent.location;
+
+        if (this.offsetDistance) { // !! change to offsetDistance
+
+          r = this.offsetDistance; // use angle to calculate x, y
+          theta = exports.Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
+          x = r * Math.cos(theta);
+          y = r * Math.sin(theta);
+
+          this.location.x = this.parent.location.x;
+          this.location.y = this.parent.location.y;
+          this.location.add(exports.PVector.create(x, y)); // position the sensor
+
+        } else {
+          this.location = this.parent.location;
+        }
+
     }
-    
+
     //
-    
+
     if (this.afterStep) {
       this.afterStep.apply(this);
     }
-    
+
     this.acceleration.mult(0); // reset acceleration
 
     if (this.lifespan > 0) {
@@ -1642,7 +2017,7 @@ Mover.prototype.step = function() {
  * Applies a force to this object's acceleration.
  *
  * @param {Object} force The force to be applied (expressed as a vector).
- */   
+ */
 Mover.prototype.applyForce = function(force) {
 
   'use strict';
@@ -1660,7 +2035,7 @@ Mover.prototype.applyForce = function(force) {
  * @param {Object} target The object to seek.
  * @param {boolean} arrive Set to true to for this object to arrive and stop at the target.
  * @returns {Object} The force to apply.
- */       
+ */
 Mover.prototype.seek = function(target, arrive) {
 
   'use strict';
@@ -1670,14 +2045,14 @@ Mover.prototype.seek = function(target, arrive) {
     distanceToTarget = desiredVelocity.mag();
 
   desiredVelocity.normalize();
-  
+
   if (distanceToTarget < world.width/2) {
     var m = exports.Utils.map(distanceToTarget, 0, world.width/2, 0, this.maxSpeed);
     desiredVelocity.mult(m);
   } else {
     desiredVelocity.mult(this.maxSpeed);
   }
-  
+
   var steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
   steer.limit(this.maxSteeringForce);
   return steer;
@@ -1688,7 +2063,7 @@ Mover.prototype.seek = function(target, arrive) {
  *
  * @param {Object} target The object to seek.
  * @returns {Object} The force to apply.
- */ 
+ */
 Mover.prototype.follow = function(target) {
 
   'use strict';
@@ -1704,23 +2079,23 @@ Mover.prototype.follow = function(target) {
 
 /**
  * Bundles flocking behaviors (separate, align, cohesion) into one call.
- */     
+ */
 Mover.prototype.flock = function(elements) {
 
   'use strict';
 
-  this.applyForce(this.separate(elements).mult(this.separateStrength)); 
+  this.applyForce(this.separate(elements).mult(this.separateStrength));
   this.applyForce(this.align(elements).mult(this.alignStrength));
   this.applyForce(this.cohesion(elements).mult(this.cohesionStrength));
 };
 
 /**
- * Loops through a passed elements array and calculates a force to apply 
+ * Loops through a passed elements array and calculates a force to apply
  * to avoid all elements.
  *
  * @param {array} elements An array of Flora elements.
  * @returns {Object} A force to apply.
- */     
+ */
 Mover.prototype.separate = function(elements) {
 
   'use strict';
@@ -1728,13 +2103,13 @@ Mover.prototype.separate = function(elements) {
   var i, max, element, diff, d,
   sum = exports.PVector.create(0, 0),
   count = 0, steer;
-  
+
   for (i = 0, max = elements.length; i < max; i += 1) {
     element = elements[i];
     if (this.className === element.className && this.id !== element.id) {
-      
+
       d = this.location.distance(element.location);
-      
+
       if ((d > 0) && (d < this.desiredSeparation)) {
         diff = exports.PVector.PVectorSub(this.location, element.location);
         diff.normalize();
@@ -1742,47 +2117,8 @@ Mover.prototype.separate = function(elements) {
         sum.add(diff);
         count += 1;
       }
-    } 
-  }
-  if (count > 0) {
-    sum.div(count);
-    sum.normalize();
-    sum.mult(this.maxSpeed);
-    steer = exports.PVector.PVectorSub(sum, this.velocity);
-    steer.limit(this.maxSteeringForce);
-    return steer;
-  }
-  return exports.PVector.create(0, 0);
-};    
-
-/**
- * Loops through a passed elements array and calculates a force to apply 
- * to align with all elements.
- *
- * @param {array} elements An array of Flora elements.
- * @returns {Object} A force to apply.
- */     
-Mover.prototype.align = function(elements) {
-
-  'use strict';
-
-  var i, max, element, diff, d,
-    sum = exports.PVector.create(0, 0),
-    neighbordist = this.width * 2,
-    count = 0, steer; 
-  
-  for (i = 0, max = elements.length; i < max; i += 1) {
-    element = elements[i];
-    d = this.location.distance(element.location);
-    
-    if ((d > 0) && (d < neighbordist)) {
-      if (this.className === element.className && this.id !== element.id) {
-        sum.add(element.velocity);
-        count += 1;
-      }
     }
   }
-  
   if (count > 0) {
     sum.div(count);
     sum.normalize();
@@ -1795,12 +2131,51 @@ Mover.prototype.align = function(elements) {
 };
 
 /**
- * Loops through a passed elements array and calculates a force to apply 
+ * Loops through a passed elements array and calculates a force to apply
+ * to align with all elements.
+ *
+ * @param {array} elements An array of Flora elements.
+ * @returns {Object} A force to apply.
+ */
+Mover.prototype.align = function(elements) {
+
+  'use strict';
+
+  var i, max, element, diff, d,
+    sum = exports.PVector.create(0, 0),
+    neighbordist = this.width * 2,
+    count = 0, steer;
+
+  for (i = 0, max = elements.length; i < max; i += 1) {
+    element = elements[i];
+    d = this.location.distance(element.location);
+
+    if ((d > 0) && (d < neighbordist)) {
+      if (this.className === element.className && this.id !== element.id) {
+        sum.add(element.velocity);
+        count += 1;
+      }
+    }
+  }
+
+  if (count > 0) {
+    sum.div(count);
+    sum.normalize();
+    sum.mult(this.maxSpeed);
+    steer = exports.PVector.PVectorSub(sum, this.velocity);
+    steer.limit(this.maxSteeringForce);
+    return steer;
+  }
+  return exports.PVector.create(0, 0);
+};
+
+/**
+ * Loops through a passed elements array and calculates a force to apply
  * to stay close to all elements.
  *
  * @param {array} elements An array of Flora elements.
  * @returns {Object} A force to apply.
- */     
+ */
 Mover.prototype.cohesion = function(elements) {
 
   'use strict';
@@ -1809,11 +2184,11 @@ Mover.prototype.cohesion = function(elements) {
     sum = exports.PVector.create(0, 0),
     neighbordist = 10,
     count = 0, desiredVelocity, steer;
-  
+
   for (i = 0, max = elements.length; i < max; i += 1) {
     element = elements[i];
     d = this.location.distance(element.location);
-    
+
     if ((d > 0) && (d < neighbordist)) {
       if (this.className === element.className && this.id !== element.id) {
         sum.add(element.location);
@@ -1821,7 +2196,7 @@ Mover.prototype.cohesion = function(elements) {
       }
     }
   }
-  
+
   if (count > 0) {
     sum.div(count);
     desiredVelocity = exports.PVector.PVectorSub(sum, this.location);
@@ -1840,7 +2215,7 @@ Mover.prototype.cohesion = function(elements) {
  *
  * @param {Object} target The object to flee from.
  * @returns {Object} A force to apply.
- */     
+ */
 Mover.prototype.flee = function(target) {
 
   'use strict';
@@ -1858,7 +2233,7 @@ Mover.prototype.flee = function(target) {
  *
  * @param {Object} target The object that is applying the drag force.
  * @returns {Object} A force to apply.
- */     
+ */
 Mover.prototype.drag = function(target) {
 
   'use strict';
@@ -1878,7 +2253,7 @@ Mover.prototype.drag = function(target) {
  *
  * @param {Object} attractor The attracting object.
  * @returns {Object} A force to apply.
- */     
+ */
 Mover.prototype.attract = function(attractor) {
 
   'use strict';
@@ -1886,10 +2261,10 @@ Mover.prototype.attract = function(attractor) {
   var force = exports.PVector.PVectorSub(attractor.location, this.location),
     distance, strength;
 
-  distance = force.mag(); 
+  distance = force.mag();
   distance = exports.Utils.constrain(distance, this.width * this.height/8, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
   force.normalize();
-  strength = (attractor.G * attractor.mass * this.mass) / (distance * distance); 
+  strength = (attractor.G * attractor.mass * this.mass) / (distance * distance);
   force.mult(strength);
 
   return force;
@@ -1900,10 +2275,10 @@ Mover.prototype.attract = function(attractor) {
  *
  * @param {Object} container The containing object.
  * @returns {boolean} Returns true if the object is inside the container.
- */     
+ */
 Mover.prototype.isInside = function(container) {
 
-  'use strict';  
+  'use strict';
 
   if (container) {
     if (this.location.x + this.width/2 > container.location.x - container.width/2 &&
@@ -1921,7 +2296,7 @@ Mover.prototype.isInside = function(container) {
  *
  * @param {Object} world The world object.
  * @returns {boolean} Returns true if the object is outside the world.
- */     
+ */
 Mover.prototype.checkWorldEdges = function(world) {
 
   'use strict';
@@ -1937,7 +2312,7 @@ Mover.prototype.checkWorldEdges = function(world) {
     diff;
 
   // transform origin is at the center of the object
-  
+
   if (this.wrapEdges) {
     if (this.location.x > world.width) {
       this.location = exports.PVector.create(0, this.location.y);
@@ -1950,7 +2325,7 @@ Mover.prototype.checkWorldEdges = function(world) {
     }
   } else {
     if (this.avoidEdges) {
-      if (this.location.x < this.avoidEdgesStrength) { 
+      if (this.location.x < this.avoidEdgesStrength) {
         maxSpeed = this.maxSpeed;
       } else if (this.location.x > exports.world.width - this.avoidEdgesStrength) {
         maxSpeed = -this.maxSpeed;
@@ -1962,19 +2337,19 @@ Mover.prototype.checkWorldEdges = function(world) {
         this.applyForce(steer);
       }
     }
-    if (this.location.x + this.width/2 > world.width) {         
+    if (this.location.x + this.width/2 > world.width) {
       this.location = exports.PVector.create(world.width - this.width/2, this.location.y);
       diff = exports.PVector.create(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
-      this.velocity.x *= -1 * this.bounciness;    
+      this.velocity.x *= -1 * this.bounciness;
       check = true;
-     } else if (this.location.x < this.width/2) {       
+     } else if (this.location.x < this.width/2) {
       this.location = exports.PVector.create(this.width/2, this.location.y);
       diff = exports.PVector.create(x - this.location.x, 0);
-      this.velocity.x *= -1 * this.bounciness;      
-      check = true; 
+      this.velocity.x *= -1 * this.bounciness;
+      check = true;
     }
   }
-   
+
   ////
 
   maxSpeed = null;
@@ -1990,7 +2365,7 @@ Mover.prototype.checkWorldEdges = function(world) {
     }
   } else {
     if (this.avoidEdges) {
-      if (this.location.y < this.avoidEdgesStrength) { 
+      if (this.location.y < this.avoidEdgesStrength) {
         maxSpeed = this.maxSpeed;
       } else if (this.location.y > exports.world.height - this.avoidEdgesStrength) {
         maxSpeed = -this.maxSpeed;
@@ -2001,13 +2376,13 @@ Mover.prototype.checkWorldEdges = function(world) {
         steer.limit(this.maxSteeringForce);
         this.applyForce(steer);
       }
-    } 
+    }
     if (this.location.y + this.height/2 > world.height) {
       this.location = exports.PVector.create(this.location.x, world.height - this.height/2);
       diff = exports.PVector.create(0, y - this.location.y);
       this.velocity.y *= -1 * this.bounciness;
       check = true;
-      } else if (this.location.y < this.height/2) {       
+      } else if (this.location.y < this.height/2) {
       this.location = exports.PVector.create(this.location.x, this.height/2);
       diff = exports.PVector.create(0, y - this.location.y);
       this.velocity.y *= -1 * this.bounciness;
@@ -2026,7 +2401,7 @@ Mover.prototype.checkWorldEdges = function(world) {
  *
  * @param {Object} world The world object.
  * @returns {boolean} Returns true if the object is outside the world.
- */     
+ */
 Mover.prototype.checkCameraEdges = function() {
 
   'use strict';
@@ -2042,7 +2417,7 @@ Mover.prototype.checkCameraEdges = function() {
  * @param {string} [type] If no type is supplied, returns a clone of this object's location.
                           Accepts 'x', 'y' to return their respective values.
  * @returns {boolean} Returns true if the object is outside the world.
- */ 
+ */
 Mover.prototype.getLocation = function (type) {
 
   'use strict';
@@ -2062,7 +2437,7 @@ Mover.prototype.getLocation = function (type) {
  * @param {string} [type] If no type is supplied, returns a clone of this object's velocity.
                           Accepts 'x', 'y' to return their respective values.
  * @returns {boolean} Returns true if the object is outside the world.
- */     
+ */
 Mover.prototype.getVelocity = function (type) {
 
   'use strict';
@@ -2090,7 +2465,7 @@ exports.Mover = Mover;
  *
  * @param {Object} [opt_options] Walker options.
  * @param {string} [opt_options.className = 'walker'] The corresponding DOM element's class name.
- * @param {boolean} [opt_options.isPerlin = false] If set to true, object will use Perlin Noise to calculate its location.
+ * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
  * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and isPerlin = true, object will avoid world edges.
  * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
  * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
@@ -2105,7 +2480,6 @@ exports.Mover = Mover;
  * @param {Object} [opt_options.harmonicPeriod = {x: 150, y: 150}] If isHarmonic = true, sets the motion's period.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
- * @param {Object} [opt_options.color = {r: 255, g: 150, b: 50}] The object's color.
  * @param {number} [opt_options.maxSpeed = 30] Maximum speed
  * @param {boolean} [opt_options.wrapEdges = false] Set to true to set the object's location to the opposite side of the world if the object moves outside the world's bounds.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.  
@@ -2118,25 +2492,24 @@ function Walker(opt_options) {
 
   exports.Mover.call(this, options);
   
-  this.isPerlin = options.isPerlin || false;
-  this.remainsOnScreen = options.remainsOnScreen || false;
+  this.isPerlin = options.isPerlin || true;
+  this.remainsOnScreen = !!options.remainsOnScreen;
   this.perlinSpeed = options.perlinSpeed || 0.005;
   this.perlinTime = options.perlinTime || 0;
   this.perlinAccelLow = options.perlinAccelLow || -0.075;
   this.perlinAccelHigh = options.perlinAccelHigh || 0.075;
   this.offsetX = options.offsetX || Math.random() * 10000;
   this.offsetY = options.offsetY || Math.random() * 10000;   
-  this.isRandom = options.isRandom || false;
+  this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
-  this.isHarmonic = options.isHarmonic || false;
+  this.isHarmonic = !!options.isHarmonic;
   this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(6, 6);
   this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);    
   this.width = options.width || 10;
-  this.height = options.height || 10;     
-  this.color = options.color || {r: 255, g: 150, b: 50};   
+  this.height = options.height || 10;        
   this.maxSpeed = options.maxSpeed || 30;
-  this.wrapEdges = options.wrapEdges || false;
-  this.isStatic = options.isStatic || false;
+  this.wrapEdges = !!options.wrapEdges;
+  this.isStatic = !!options.isStatic;
 }
 exports.Utils.inherit(Walker, exports.Mover);
 
@@ -2234,7 +2607,8 @@ Walker.prototype.step = function () {
   }
 };  
 exports.Walker = Walker;
-/** 
+/*global exports */
+/**
     A module representing a Particle.
     @module Particle
  */
@@ -2249,8 +2623,7 @@ exports.Walker = Walker;
  * @param {number} [opt_options.lifespan = 40] The number of frames before particle dies. Set to -1 for infinite life.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
- * @param {Object} [opt_options.color = {r: 200, g: 200, b: 200}] The particle's color.
- * @param {string} [opt_options.borderRadius = '100%'] The particle's border radius.  
+ * @param {string} [opt_options.borderRadius = '100%'] The particle's border radius.
  */
  function Particle(opt_options) {
 
@@ -2261,7 +2634,6 @@ exports.Walker = Walker;
   exports.Mover.call(this, options);
 
   this.lifespan = options.lifespan || 40;
-  this.color = options.color === '' ? '' : options.color || {r: 200, g: 20, b: 20};
   this.borderRadius = options.borderRadius || '100%';
  }
  exports.Utils.inherit(Particle, exports.Mover);
@@ -2273,19 +2645,19 @@ Particle.prototype.step = function () {
 
 	var world = exports.world,
 			friction;
-	
+
 	//
-	
+
 	if (this.beforeStep) {
 		this.beforeStep.apply(this);
 	}
-	
+
 	//
 
 	if (!this.isStatic && !this.isPressed) {
-							
+
 		// start -- APPLY FORCES
-		
+
 		if (world.c) { // friction
 			friction = exports.Utils.clone(this.velocity);
 			friction.mult(-1);
@@ -2296,12 +2668,12 @@ Particle.prototype.step = function () {
 
 		this.applyForce(world.wind); // wind
 		this.applyForce(world.gravity); // gravity
-		
+
 
 		if (this.checkEdges || this.wrapEdges) {
 			this.checkWorldEdges(world);
 		}
-		
+
 		// end -- APPLY FORCES
 
 		this.velocity.add(this.acceleration); // add acceleration
@@ -2309,12 +2681,12 @@ Particle.prototype.step = function () {
 		if (this.maxSpeed) {
 			this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
 		}
-		
+
 		this.location.add(this.velocity); // add velocity
-		
+
 		// opacity
 		this.opacity = exports.Utils.map(this.lifespan, 0, 40, 0, 1);
-		
+
 
 		if (this.lifespan > 0) {
 			this.lifespan -= 1;
@@ -2324,12 +2696,13 @@ Particle.prototype.step = function () {
 		this.acceleration.mult(0); // reset acceleration
 	}
 };
-exports.Particle = Particle;    
-/** 
+exports.Particle = Particle;
+/*global exports */
+/**
     A module representing a ParticleSystem.
     @module ParticleSystem
  */
- 
+
 /**
  * Creates a new ParticleSystem.
  *
@@ -2337,11 +2710,10 @@ exports.Particle = Particle;
  * @extends Mover
  *
  * @param {Object} [opt_options] Particle options.
- * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move. 
+ * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move.
  * @param {number} [opt_options.lifespan = -1] The number of frames before particle system dies. Set to -1 for infinite life.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
- * @param {Object} [opt_options.color = null] Color
  * @param {number} [opt_options.burst = 1] The number of particles to create per frame.
  * @param {Object} [opt_options.particle = A particle at the system's location w random acceleration.] The particle to create. At minimum, should have a location vector. Use this.getLocation to get location of partilce system.
  */
@@ -2349,37 +2721,70 @@ exports.Particle = Particle;
 
   'use strict';
 
-  var options = opt_options || {};
+  var options = opt_options || {},
+      c = exports.defaultColors.getColor('heat'), // gets the heat start and end colors
+      f = exports.defaultColors.getColor('food'), // gets the food start and end colors
+      pl = new exports.ColorPalette();
 
   exports.Mover.call(this, options);
 
+  pl.addColor({ // adds a random sampling of colors to palette
+    min: 12,
+    max: 24,
+    startColor: c.startColor,
+    endColor: c.endColor
+  }).addColor({ // adds a random sampling of colors to palette
+    min: 12,
+    max: 24,
+    startColor: f.startColor,
+    endColor: f.endColor
+  });
+
   this.beforeStep = function () {
-   
+
     var i, max, p;
-    
-    for (i = 0; i < this.burst; i += 1) {
-      p = new exports.Particle(this.particle());
+
+    if (exports.world.clock % this.burstRate === 0) {
+      for (i = 0; i < this.burst; i += 1) {
+        p = new exports.Particle(this.particle());
+      }
     }
     if (this.lifespan > 0) {
       this.lifespan -= 1;
     } else if (this.lifespan === 0) {
       exports.destroyElement(this.id);
     }
-  }; 
+  };
   this.lifespan = options.lifespan || -1;
-  this.width = options.width === 0 ? 0 : options.width || 0; 
-  this.height = options.height === 0 ? 0 : options.height || 0;   
-  this.color = options.color || '';
-  this.burst = options.burst === 0 ? 0 : options.burst || 1; 
-  this.particle = options.particle || function () {
+  this.width = options.width === 0 ? 0 : options.width || 0;
+  this.height = options.height === 0 ? 0 : options.height || 0;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.burst = options.burst === 0 ? 0 : options.burst || 1;
+  this.burstRate = options.burstRate === 0 ? 0 : options.burstRate || 3;
+  this.particle = options.particle || function() {
+
+    var i, borderStyles = exports.config.borderStyles,
+        borderStr = borderStyles[exports.Utils.getRandomNumber(0, borderStyles.length - 1)],
+        colorStr = '';
+
+    for (i = 0; i < 4; i++) {
+      colorStr = colorStr + 'rgb(' + pl.getColor() + ') ';
+    }
+
     return {
+      color: pl.getColor(),
+      borderWidth: exports.Utils.getRandomNumber(1, 12) + 'px',
+      borderStyle: borderStr,
+      borderColor: colorStr,
+      boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + pl.getColor() + ')',
+      zIndex: exports.Utils.getRandomNumber(1, 100),
       location: this.getLocation(),
       acceleration: exports.PVector.create(exports.Utils.getRandomNumber(-4, 4), exports.Utils.getRandomNumber(-4, 4))
     };
   };
 }
 exports.Utils.inherit(ParticleSystem, exports.Mover);
-exports.ParticleSystem = ParticleSystem;    
+exports.ParticleSystem = ParticleSystem;
 /** 
     A module representing a Liquid object.
     @module Liquid
@@ -2397,7 +2802,6 @@ exports.ParticleSystem = ParticleSystem;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height. 
- * @param {Object} [opt_options.color = {r: 97, g: 210, b: 214}] The liquid's color.
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.  
  */
 function Liquid(opt_options) {
@@ -2413,7 +2817,6 @@ function Liquid(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 100;
   this.height = options.height === 0 ? 0 : options.height || 100;
-  this.color = options.color || {r: 97, g: 210, b: 214};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Liquid, exports.Mover);
@@ -2435,7 +2838,6 @@ exports.Liquid = Liquid;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 10] Width.
  * @param {number} [opt_options.height = 10] Height. 
- * @param {Object} [opt_options.color = {r: 97, g: 210, b: 214}] Color.
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.  
  */
 function Attractor(opt_options) {
@@ -2451,7 +2853,6 @@ function Attractor(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 50;
   this.height = options.height === 0 ? 0 : options.height || 50;
-  this.color = options.color || {r: 97, g: 210, b: 214};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Attractor, exports.Mover);
@@ -2473,7 +2874,6 @@ exports.Attractor = Attractor;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height. 
- * @param {Object} [opt_options.color = {r: 97, g: 210, b: 214}] Color.
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.  
  */
 function Repeller(opt_options) {
@@ -2489,7 +2889,6 @@ function Repeller(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 50;
   this.height = options.height === 0 ? 0 : options.height || 50;
-  this.color = options.color || {r: 97, g: 210, b: 214};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Repeller, exports.Mover);
@@ -2510,7 +2909,6 @@ exports.Repeller = Repeller;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 20] Width.
  * @param {number} [opt_options.height = 20] Height. 
- * @param {Object} [opt_options.color = {r: 255, g: 69, b: 0}] Color.
  * @param {number} [opt_options.opacity = 0.5] Opacity.  
  */
 function Heat(opt_options) {
@@ -2525,7 +2923,6 @@ function Heat(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 20;
   this.height = options.height === 0 ? 0 : options.height || 20;
-  this.color = options.color || {r: 255, g: 69, b: 0};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Heat, exports.Mover);
@@ -2546,7 +2943,6 @@ exports.Heat = Heat;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 20] Width.
  * @param {number} [opt_options.height = 20] Height. 
- * @param {Object} [opt_options.color = {r: 132, g: 192, b: 201}] Color.
  * @param {number} [opt_options.opacity = 0.5] Opacity.  
  */
 function Cold(opt_options) {
@@ -2561,7 +2957,6 @@ function Cold(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 20;
   this.height = options.height === 0 ? 0 : options.height || 20;
-  this.color = options.color || {r: 132, g: 192, b: 201};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Cold, exports.Mover);
@@ -2582,7 +2977,6 @@ exports.Cold = Cold;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 20] Width.
  * @param {number} [opt_options.height = 20] Height. 
- * @param {Object} [opt_options.color = {r: 255, g: 200, b: 0}] Color.
  * @param {number} [opt_options.opacity = 0.5] Opacity.  
  */
 function Light(opt_options) {
@@ -2597,7 +2991,6 @@ function Light(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 20;
   this.height = options.height === 0 ? 0 : options.height || 20;
-  this.color = options.color || {r: 255, g: 200, b: 0};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Light, exports.Mover);
@@ -2618,7 +3011,6 @@ exports.Light = Light;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 20] Width.
  * @param {number} [opt_options.height = 20] Height. 
- * @param {Object} [opt_options.color = {r: 255, g: 200, b: 0}] Color.
  * @param {number} [opt_options.opacity = 0.5] The particle's opacity.  
  */
 function Oxygen(opt_options) {
@@ -2633,7 +3025,6 @@ function Oxygen(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 20;
   this.height = options.height === 0 ? 0 : options.height || 20;
-  this.color = options.color || {r: 255, g: 200, b: 0};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Oxygen, exports.Mover);
@@ -2654,7 +3045,6 @@ exports.Oxygen = Oxygen;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 20] Width.
  * @param {number} [opt_options.height = 20] Height. 
- * @param {Object} [opt_options.color = {r: 155, g: 231, b: 93}] Color.
  * @param {number} [opt_options.opacity = 0.5] The particle's opacity.  
  */
 function Food(opt_options) {
@@ -2669,7 +3059,6 @@ function Food(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 20;
   this.height = options.height === 0 ? 0 : options.height || 20;
-  this.color = options.color || {r: 155, g: 231, b: 93};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Food, exports.Mover);
@@ -2690,7 +3079,6 @@ exports.Food = Food;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  * @param {number} [opt_options.width = 75] Width.
  * @param {number} [opt_options.height = 75] Height. 
- * @param {Object} [opt_options.color = {r: 200, g: 0, b: 0}] Color.
  * @param {number} [opt_options.opacity = 0.5] The particle's opacity.  
  */
 function Predator(opt_options) {
@@ -2705,13 +3093,12 @@ function Predator(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 75;
   this.height = options.height === 0 ? 0 : options.height || 75;
-  this.color = options.color || {r: 200, g: 0, b: 0};
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Predator, exports.Mover);
 exports.Predator = Predator;
 /*global exports */
-/** 
+/**
     A module representing a Sensor object.
     @module Sensor
  */
@@ -2727,14 +3114,13 @@ exports.Predator = Predator;
  * @param {string} [opt_options.behavior = 'LOVE'] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 2] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
  * @param {number} [opt_options.width = 5] Width.
- * @param {number} [opt_options.height = 5] Height. 
- * @param {number} [opt_options.length = 30] Length.
- * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the vehicle carrying the sensor.    
- * @param {Object} [opt_options.color = {}] Color.
- * @param {number} [opt_options.opacity = 1] Opacity. 
+ * @param {number} [opt_options.height = 5] Height.
+ * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the sensor's parent.
+ * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the vehicle carrying the sensor.
+ * @param {number} [opt_options.opacity = 1] Opacity.
  * @param {Object} [opt_options.target = null] A stimulator.
- * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.   
- */      
+ * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
+ */
 function Sensor(opt_options) {
 
   'use strict';
@@ -2748,10 +3134,9 @@ function Sensor(opt_options) {
   this.sensitivity = options.sensitivity === 0 ? 0 : options.sensitivity || 2;
   this.width = options.width === 0 ? 0 : options.width || 5;
   this.height = options.height === 0 ? 0 : options.height || 5;
-  this.length = options.length === 0 ? 0 : options.length|| 30;
+  this.offsetDistance = options.offsetDistance === 0 ? 0 : options.offsetDistance|| 30;
   this.offsetAngle = options.offsetAngle || 0;
-  this.color = options.color || {};
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;   
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.target = options.target || null;
   this.activated = options.activated || false;
 }
@@ -2759,20 +3144,20 @@ exports.Utils.inherit(Sensor, exports.Mover);
 
 /**
  * Called every frame, step() updates the instance's properties.
- */ 
+ */
 Sensor.prototype.step = function() {
 
   'use strict';
 
   var check = false, maxSpeed = 10, i, max;
-  
-  if (this.type === "heat" && exports.heats.length > 0) { 
+
+  if (this.type === "heat" && exports.heats.length > 0) {
     for (i = 0, max = exports.heats.length; i < max; i += 1) { // heat
       if (this.isInside(this, exports.heats[i], this.sensitivity)) {
         this.target = exports.heats[i]; // target this stimulator
         this.activated = true; // set activation
         check = true;
-        
+
       }
     }
   } else if (this.type === "cold" && exports.colds.length > 0) {
@@ -2823,7 +3208,7 @@ Sensor.prototype.step = function() {
   if (this.afterStep) {
     this.afterStep.apply(this);
   }
-  
+
 };
 
 /**
@@ -2836,10 +3221,10 @@ Sensor.prototype.getActivationForce = function(params) {
 
   'use strict';
 
-  var distanceToTarget, m, steer; 
+  var distanceToTarget, m, steer;
 
   switch (this.behavior) {
-    
+
     /**
      * Steers toward target
      */
@@ -2861,12 +3246,12 @@ Sensor.prototype.getActivationForce = function(params) {
       return dvLikes;
     /**
      * Arrives at target and remains
-     */      
+     */
     case "LOVES":
       var dvLoves = exports.PVector.PVectorSub(this.target.location, this.location); // desiredVelocity
       distanceToTarget = dvLoves.mag();
       dvLoves.normalize();
-  
+
       if (distanceToTarget > this.width) {
         m = distanceToTarget/params.mover.maxSpeed;
         dvLoves.mult(m);
@@ -2880,12 +3265,12 @@ Sensor.prototype.getActivationForce = function(params) {
       return exports.PVector.create(0, 0);
     /**
      * Arrives at target but does not stop
-     */ 
-    case "EXPLORER": 
+     */
+    case "EXPLORER":
       var dvExplorer = exports.PVector.PVectorSub(this.target.location, this.location);
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
-          
+
       m = distanceToTarget/params.mover.maxSpeed;
       dvExplorer.mult(-m);
       steer = exports.PVector.PVectorSub(dvExplorer, params.mover.velocity);
@@ -2893,7 +3278,7 @@ Sensor.prototype.getActivationForce = function(params) {
       return steer;
     /**
      * Moves in the opposite direction as fast as possible
-     */ 
+     */
     case "RUN":
       return this.flee(this.target);
 
@@ -2905,11 +3290,11 @@ Sensor.prototype.getActivationForce = function(params) {
     case "DECELERATE":
       var forceDecel = params.mover.velocity.clone();
       forceDecel.normalize(); // get direction
-      return forceDecel.mult(-params.mover.minSpeed);            
+      return forceDecel.mult(-params.mover.minSpeed);
 
     default:
-      return exports.PVector.create(0, 0);         
-  }    
+      return exports.PVector.create(0, 0);
+  }
 };
 
 /**
@@ -3107,7 +3492,6 @@ exports.FlowField = FlowField;
  * @constructor
  * @extends Mover 
  * @param {Object} [opt_options] Options.
- * @param {Object} [opt_options.color = {r: 255, g: 0, b: 0}] Color.
  * @param {number} [opt_options.zIndex = 0] zIndex.
  * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {number} [opt_options.width = 10] Width.
@@ -3124,8 +3508,7 @@ function Connector(opt_options) {
   exports.Mover.call(this, options);
 
   this.width = options.width === 0 ? 0 : options.width || 10;
-  this.height = options.height === 0 ? 0 : options.height || 1;
-  this.color = options.color || {r: 255, g: 0, b: 0};  
+  this.height = options.height === 0 ? 0 : options.height || 1;  
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.25;
   this.zIndex = options.zIndex || 0;  
   this.parentA = options.parentA || null;
@@ -3158,11 +3541,10 @@ exports.Connector = Connector;
  * @constructor
  * @extends Mover 
  * @param {Object} [opt_options] Options.
- * @param {Object} [opt_options.color = {r: 0, g: 255, b: 0}] Color.
  * @param {number} [opt_options.zIndex = 0] zIndex.
- * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {number} [opt_options.width = 5] Width.
- * @param {number} [opt_options.height = 5] Height.
+ * @param {number} [opt_options.height = 5] Height. 
+ * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
  */
 function Point(opt_options) {
@@ -3173,12 +3555,13 @@ function Point(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.color = {r: 0, g: 255, b: 0};
-  this.zIndex = options.zIndex || 0;
-  this.opacity = options.opacity || 0.25;
-  this.width = options.width || 5;
-  this.height = options.height || 5;
-  this.isStatic = options.isStatic || true;
+  this.width = options.width === 0 ? 0 : options.width || 10;
+  this.height = options.height === 0 ? 0 : options.height || 10;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
+  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 0;
+  this.offsetAngle = options.offsetAngle || 0;
+  this.length = options.length === 0 ? 0 : options.length|| 30;
 }
 exports.Utils.inherit(Point, exports.Mover);
 exports.Point = Point;

@@ -1,5 +1,5 @@
-/*global window */
-/** 
+/*global exports, window */
+/**
     A module representing a FloraSystem.
     @module florasystem
  */
@@ -13,8 +13,11 @@ function FloraSystem(el) {
 
   'use strict';
 
+  var i, max,
+      defaultColorList = exports.config.defaultColorList;
+
   this.el = el || null;
-  
+
   exports.elements = [];
   exports.liquids = [];
   exports.repellers = [];
@@ -26,11 +29,42 @@ function FloraSystem(el) {
   exports.food = [];
   exports.predators = [];
 
+  exports.mouse = {
+    loc: exports.PVector.create(0, 0),
+    locLast: exports.PVector.create(0, 0)
+  };
+
   exports.world = new exports.World();
   exports.world.configure(); // call configure after DOM has loaded
   exports.elements.push(exports.world);
 
   exports.Camera = new exports.Camera();
+
+  // save the current and last mouse position
+  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
+    exports.mouse.locLast = exports.mouse.loc.clone();
+    exports.mouse.loc = exports.PVector.create(e.pageX, e.pageY);
+  });
+
+  // toggle the world playstate
+  exports.Utils.addEvent(document, 'keyup', function(e) {
+    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
+      exports.world.isPlaying = !exports.world.isPlaying;
+      if (exports.world.isPlaying) {
+        window.requestAnimFrame(exports.animLoop);
+      }
+    }
+  });
+
+  // add default colors
+  exports.defaultColors = new exports.ColorTable();
+  for (i = 0, max = defaultColorList.length; i < max; i++) {
+    exports.defaultColors.addColor({
+      name: defaultColorList[i].name,
+      startColor: defaultColorList[i].startColor,
+      endColor: defaultColorList[i].endColor
+    });
+  }
 
   exports.destroyElement = function (id) {
 
@@ -44,21 +78,27 @@ function FloraSystem(el) {
       }
     }
   };
-  
+
   exports.animLoop = function () {
 
-    var i, max;
+    var i, max,
+        world = exports.world,
+        elements = exports.elements;
 
-    window.requestAnimFrame(exports.animLoop);
+    if (exports.world.isPlaying) {
+      window.requestAnimFrame(exports.animLoop);
 
-    for (i = exports.elements.length - 1; i >= 0; i -= 1) {
-      exports.elements[i].step();
-      if (exports.elements[i]) {
-        exports.elements[i].draw();
+      if (world.zSorted) {
+        elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
       }
-      if (exports.world.clock) {
-        exports.world.clock += 1;
+
+      for (i = elements.length - 1; i >= 0; i -= 1) {
+        elements[i].step();
+        if (elements[i]) {
+          elements[i].draw();
+        }
       }
+      world.clock += 1;
     }
   };
 }

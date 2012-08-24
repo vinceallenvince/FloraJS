@@ -1,8 +1,8 @@
 /*global Flora */
 var system = new Flora.FloraSystem();
-  
-system.start(function() {
-  
+
+var elements = function() {
+
   'use strict';
 
   Flora.world.update({
@@ -17,27 +17,29 @@ system.start(function() {
     type: "cold",
     behavior: "AGGRESSIVE",
     sensitivity: 2,
-    length: 40,
-    opacity: 1,
+    offsetDistance: 40,
+    opacity: 0,
     offsetAngle: 0,
-    border: "1px solid #fff",
+    border: "1px solid rgb(132, 192, 201)",
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
           this.connector = new Flora.Connector({
             parentA: this,
             parentB: this.target,
-            color: null
+            color: [132, 192, 201]
           });
         } else {
           this.connector.parentA = this;
           this.connector.parentB = this.target;
         }
+        this.opacity = 1;
       } else {
         if (this.connector) {
           Flora.destroyElement(this.connector.id);
           this.connector = null;
         }
+        this.opacity = 0;
       }
     }
   });
@@ -52,11 +54,7 @@ system.start(function() {
     wrapEdges: true,
     sensors: [sensor1],
     velocity: Flora.PVector.create(1, 0),
-    color: {
-      r: 255,
-      g: 255,
-      b: 255
-    },
+    color: [255, 255, 255],
     borderRadius: "100%",
     boxShadow: "0 0 10px 10px rgba(255, 255, 255, 0.15)",
     eyeRotation: 0,
@@ -69,9 +67,9 @@ system.start(function() {
       return obj;
     },
     beforeStep: function () { // constant force, ie. motor
-      
+
       var i, max, check, alpha;
-      
+
       for (i = 0, max = this.sensors.length; i < max; i += 1) {
         if (this.sensors[i].activated) {
           check = true;
@@ -79,7 +77,7 @@ system.start(function() {
           this.boxShadow = "0 0 10px 10px rgba(255, 255, 255, " + alpha + ")";
         }
       }
-      
+
       // motor always maintains a minimum speed
 
       if (!check) { // if sensor is not activated, apply a constant force in the vehicle's current direction
@@ -92,12 +90,12 @@ system.start(function() {
           dir.mult(this.defaultSpeed); // maintain default speed
           this.applyForce(dir);
         }
-        
+
         this.boxShadow = "0 0 10px 10px rgba(255, 255, 255, 0.15)";
       }
 
       // need random force
-      if (Flora.Utils.getRandomNumber(0, 500) === 1) { 
+      if (Flora.Utils.getRandomNumber(0, 500) === 1) {
         this.randomRadius = 100;
         this.target = { // find a random point and steer toward it
           location: Flora.PVector.PVectorAdd(this.location, Flora.PVector.create(Flora.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), Flora.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
@@ -113,10 +111,18 @@ system.start(function() {
           a = this.eyeRotation;
 
       eye.style.webkitTransform = "rotate(" + a + "deg)";
-      this.eyeRotation += Flora.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 0.01, 50);
+      this.eyeRotation += Flora.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 3, 50);
     }
   });
-  
+
+  var point = new Flora.Point({
+    className: 'neutralSensor',
+    isStatic: false,
+    parent: vehicle,
+    offsetDistance: 40,
+    color: null
+  });
+
   var i, max, w, h, d;
 
   for (i = 0, max = (0.05 * Flora.world.width); i < max; i += 1) {
@@ -132,4 +138,10 @@ system.start(function() {
       location: Flora.PVector.create(w, h)
     });
   }
+};
+
+Flora.Utils.addEvent(document.getElementById("buttonStart"), "mouseup", function() {
+  'use strict';
+  document.getElementById("containerMenu").removeChild(document.getElementById("containerButton"));
+  system.start(elements);
 });

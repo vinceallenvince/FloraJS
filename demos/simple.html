@@ -10,9 +10,9 @@
   <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript" charset="utf-8">
-
-    $(document).ready(function () {
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
 
       var system = new exports.FloraSystem();
 
@@ -22,15 +22,8 @@
           showStats: true
         });
 
-        new Flora.Mover({
-          controlCamera: true
-        });
-
+        new Flora.Mover();
       });
-    });
-
   </script>
-</head>
-<body>
 </body>
 </html>

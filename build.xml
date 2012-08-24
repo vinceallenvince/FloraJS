@@ -1,6 +1,6 @@
 <project name="hellojs" default="build.dev">
 
-	<loadproperties srcfile="build.properties" />
+  <loadproperties srcfile="build.properties" />
 
   <import file="${buildr.dir}"/>
 
@@ -22,26 +22,32 @@
     <delete dir="${build.dir}"/>
     <delete dir="${jsdoc.output}"/>
     <delete dir="${DemoBuild.dir}"/>
-  </target>  
+  </target>
 
-  <target name="build.dev" depends="clean,init,concatenate,validateDemos,test,minifyDemos">
+  <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos">
   </target>
 
   <target name="build.release" depends="clean,init,validate,concatenate,document,minify,bake">
-  </target>  
+  </target>
 
-  <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask" 
+  <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask"
     classpath="${lib.dir}/jshint/ant-jshint-0.3.1-deps.jar" />
 
   <target name="validate">
-    <jshint dir="${src.dir}" includes="**/*.js" 
+    <jshint dir="${src.dir}" includes="**/*.js"
       optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true, console: true" />
   </target>
 
   <target name="validateDemos">
-    <jshint dir="${DemoSrc.dir}" includes="**/*.js" 
+    <jshint dir="${DemoSrc.dir}" includes="**/*.js"
       optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true, console: true" />
-  </target>  
+  </target>
+
+  <target name="CSSLintDemos">
+    <csslint>
+      <fileset dir="${DemoCSS.dir}" includes="**/*.css" />
+    </csslint>
+  </target>
 
   <target name="concatenate">
     <concat destfile="${build.dir}/build.js" fixlastline="yes" eol="lf">
@@ -49,7 +55,7 @@
         ${license}
         */
         /* Build time: ${build.time} */</header>
-      <filelist dir="${src.dir}" files="app.js,florasystem.js,utils.js,pvector.js,simplexnoise.js,interface.js,world.js,camera.js,obj.js,mover.js,walker.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,stats.js"/>
+      <filelist dir="${src.dir}" files="app.js,config.js,florasystem.js,utils.js,pvector.js,defaultColorList.js,colorpalette.js,colortable.js,borderpalette.js,simplexnoise.js,interface.js,world.js,camera.js,obj.js,mover.js,walker.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,stats.js"/>
     </concat>
   </target>
 
@@ -70,7 +76,7 @@
   <target name="minify">
 
     <apply executable="java" failonerror="true">
-      
+
       <fileset dir="${build.dir}" includes="*.js" excludes="*-min.js"/>
       <mapper type="glob" from="*.js" to="${build.dir}/*-min.js"/>
 
@@ -91,7 +97,7 @@
   <target name="minifyDemos">
 
     <apply executable="java" failonerror="true">
-      
+
       <fileset dir="${DemoSrc.dir}" includes="*.js" excludes="*-min.js"/>
       <mapper type="glob" from="*.js" to="${DemoBuild.dir}/*-min.js"/>
 
@@ -107,7 +113,7 @@
 
     </apply>
 
-  </target>  
+  </target>
 
   <target name="test">
 

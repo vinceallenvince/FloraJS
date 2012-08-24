@@ -9,7 +9,6 @@
  * @constructor
  * @extends Mover 
  * @param {Object} [opt_options] Options.
- * @param {Object} [opt_options.color = {r: 255, g: 0, b: 0}] Color.
  * @param {number} [opt_options.zIndex = 0] zIndex.
  * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {number} [opt_options.width = 10] Width.
@@ -26,8 +25,7 @@ function Connector(opt_options) {
   exports.Mover.call(this, options);
 
   this.width = options.width === 0 ? 0 : options.width || 10;
-  this.height = options.height === 0 ? 0 : options.height || 1;
-  this.color = options.color || {r: 255, g: 0, b: 0};  
+  this.height = options.height === 0 ? 0 : options.height || 1;  
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.25;
   this.zIndex = options.zIndex || 0;  
   this.parentA = options.parentA || null;
