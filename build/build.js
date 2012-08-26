@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: August 24, 2012 08:38:29 */
+/* Build time: August 26, 2012 02:35:54 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -67,7 +67,7 @@ var config = {
   }
 };
 exports.config = config;
-/*global exports, window */
+/*global exports, window, Modernizr */
 /**
     A module representing a FloraSystem.
     @module florasystem
@@ -171,6 +171,11 @@ function FloraSystem(el) {
     }
   };
 }
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+FloraSystem.name = 'florasystem';
 
 /**
  * Starts a FloraSystem.
@@ -599,6 +604,14 @@ exports.defaultColorList = defaultColorList;
     @module ColorPalette
  */
 
+/**
+ * Creates a new ColorPalette object.
+ *
+ * ColorPalette instances have a 'colors' array that stores
+ * arrays of color RGB values.
+ *
+ * @constructor
+ */
 function ColorPalette(opt_options) {
 
   'use strict';
@@ -607,6 +620,20 @@ function ColorPalette(opt_options) {
   this.colors = [];
 }
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+ColorPalette.name = 'colorpalette';
+
+/**
+ * Creates an array of RGB color values interpolated between
+ * a passed startColor and endColor.
+ *
+ * @param {Array} startColor The beginning of the color array.
+ * @param {Array} startColor The end of the color array.
+ * @param {number} totalColors The total numnber of colors to create.
+ * @returns {Array} An array of color values.
+ */
 ColorPalette.createColorRange = function(startColor, endColor, totalColors) {
 
   'use strict';
@@ -634,6 +661,14 @@ ColorPalette.createColorRange = function(startColor, endColor, totalColors) {
   return colors;
 };
 
+/**
+ * Adds color arrays representing a color range to the gradients property.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.startColor {Array} The beginning color of the color range.
+ *    options.endColor {Array} The end color of the color range.
+ */
 ColorPalette.prototype.createGradient = function(options) {
 
   'use strict';
@@ -656,6 +691,18 @@ ColorPalette.prototype.createGradient = function(options) {
   }
 };
 
+/**
+ * Creates a color range of 255 colors from the passed start and end colors.
+ * Adds a random selection of these colors to the color property of
+ * the color palette.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.min {number} The minimum number of colors to add.
+ *    options.max {number} The maximum number of color to add.
+ *    options.startColor {Array} The beginning color of the color range.
+ *    options.endColor {Array} The end color of the color range.
+ */
 ColorPalette.prototype.addColor = function(options) {
 
   'use strict';
@@ -673,12 +720,17 @@ ColorPalette.prototype.addColor = function(options) {
     colors = ColorPalette.createColorRange(options.startColor, options.endColor, 255);
 
     for (i = 0; i < ln; i++) {
-      this.colors.push(colors[exports.Utils.getRandomNumber(0, colors.length)]);
+      this.colors.push(colors[exports.Utils.getRandomNumber(0, colors.length - 1)]);
     }
   }
   return this;
 };
 
+/**
+ * @returns An array representing a randomly selected color
+ *    from the colors property.
+ * @throws {Error} If the colors property is empty.
+ */
 ColorPalette.prototype.getColor = function() {
 
   'use strict';
@@ -689,6 +741,12 @@ ColorPalette.prototype.getColor = function() {
   }
 };
 
+/**
+ * Renders a strip of colors representing the color range
+ * in the colors property.
+ *
+ * @param {Object} parent A DOM object to contain the color strip.
+ */
 ColorPalette.prototype.createSampleStrip = function(parent) {
 
   'use strict';
@@ -733,6 +791,11 @@ ColorTable.prototype.addColor = function(options) {
   return this;
 };
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+ColorTable.name = 'colortable';
+
 ColorTable.prototype.getColor = function(name, startColor, endColor) {
 
   'use strict';
@@ -776,13 +839,22 @@ exports.ColorTable = ColorTable;
     @module BorderPalette
  */
 
-function BorderPalette(opt_options) {
+/**
+ * Creates a new BorderPalette object.
+ *
+ * @constructor
+ */
+function BorderPalette() {
 
   'use strict';
 
   this.borders = [];
 }
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+BorderPalette.name = 'borderpalette';
 
 BorderPalette.prototype.addBorder = function(options) {
 
@@ -1178,6 +1250,11 @@ function World(opt_options) {
 }
 
 /**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+World.name = 'world';
+
+/**
  * Configures a new World.
  */
 World.prototype.configure = function() { // should be called after doc ready()
@@ -1200,7 +1277,8 @@ World.prototype.update = function(opt_props) {
 
   'use strict';
 
-  var i, key, props = exports.Interface.getDataType(opt_props) === "object" ? opt_props : {};
+  var i, key, cssText = '',
+      props = exports.Interface.getDataType(opt_props) === "object" ? opt_props : {};
 
   for (key in props) {
     if (props.hasOwnProperty(key)) {
@@ -1213,14 +1291,27 @@ World.prototype.update = function(opt_props) {
     this.height = parseInt(this.el.style.height.replace('px', ''), 10);
   }
 
-  if (props.style) {
-    for (i in props.style) {
-      if (props.style.hasOwnProperty(i)) {
-        this.el.style[i] = props.style[i];
+  if (!this.el.style.setAttribute) { // WC3
+    if (props.style) {
+      for (i in props.style) {
+        if (props.style.hasOwnProperty(i)) {
+          this.el.style[i] = props.style[i];
+          cssText = cssText + i + ': ' + props.style[i] + ';';
+        }
       }
     }
+  } else { // IE
+    if (props.style) {
+      for (i in props.style) {
+        if (props.style.hasOwnProperty(i)) {
+          cssText = cssText + i + ': ' + props.style[i] + ';';
+        }
+      }
+    }
+    this.el.style.setAttribute('cssText', cssText, 0);
   }
-  if (props.showStats) {
+
+  if (props.showStats && window.addEventListener) {
     this.createStats();
   }
 };
@@ -1394,7 +1485,8 @@ World.prototype.draw = function() {
   }
 };
 exports.World = World;
-/** 
+/*global exports */
+/**
     A module representing a Camera.
     @module camera
  */
@@ -1406,7 +1498,7 @@ exports.World = World;
  * @param {Object} [opt_options]
  * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location.
  * @param {Object} [opt_options.controlObj = null] The object that controls the camera.
- */   
+ */
 function Camera(opt_options) {
 
   'use strict';
@@ -1416,6 +1508,11 @@ function Camera(opt_options) {
   this.location = options.location || exports.PVector.create(0, 0);
   this.controlObj = options.controlObj || null;
 }
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Camera.name = 'camera';
 
 exports.Camera = Camera;
 /*global exports, $, console, Modernizr */
@@ -1451,6 +1548,11 @@ Obj.events =[
   "mouseup",
   "mouseleave"
 ];
+
+/**
+ * Define a name property.
+ */
+Obj.name = 'obj';
 
 /**
  * Called by a mouseenter event listener.
@@ -1577,7 +1679,7 @@ Obj.prototype.draw = function() {
     w: this.width,
     h: this.height,
     cm: this.colorMode,
-    c: this.color,
+    color: this.color,
     z: this.zIndex,
     borderWidth: this.borderWidth,
     borderStyle: this.borderStyle,
@@ -1596,8 +1698,15 @@ Obj.prototype.getCSSText = function(props) {
 
   'use strict';
 
-  if (!props.c) {
-    props.c = [];
+  if (!props.color) {
+    props.color = [];
+    props.background = null;
+  } else {
+    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
+  }
+
+  if (!props.borderColor) {
+    props.borderColor = [];
   }
 
   if (Modernizr.csstransforms3d) {
@@ -1608,11 +1717,11 @@ Obj.prototype.getCSSText = function(props) {
       'opacity: ' + props.o,
       'width: ' + props.w + 'px',
       'height: ' + props.h + 'px',
-      'background: ' + props.cm + '(' + props.c[0] + ', ' + props.c[1] + ', ' + props.c[2] + ')',
+      'background: ' + props.background,
       'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth,
+      'border-width: ' + props.borderWidth + 'px',
       'border-style: ' + props.borderStyle,
-      'border-color: ' + props.borderColor,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
       'border-radius: ' + props.borderRadius,
       'box-shadow: ' + props.boxShadow
     ].join(';');
@@ -1621,24 +1730,33 @@ Obj.prototype.getCSSText = function(props) {
       '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       'opacity: ' + props.o,
       'width: ' + props.w + 'px',
       'height: ' + props.h + 'px',
-      'background: ' + props.cm + '(' + props.c[0] + ', ' + props.c[1] + ', ' + props.c[2] + ')',
+      'background: ' + props.background,
       'z-index: ' + props.z,
-      'border: ' + props.border,
+      'border-width: ' + props.borderWidth + 'px',
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
       'border-radius: ' + props.borderRadius,
       'box-shadow: ' + props.boxShadow
     ].join(';');
   } else {
     return [
       'position: absolute',
-      'left' + props.x + 'px',
-      'top' + props.y + 'px',
-      'width' + props.w + 'px',
-      'height' + props.h + 'px',
-      'opacity' + props.o,
-      'z-index'+ props.z
+      'left: ' + props.x + 'px',
+      'top: ' + props.y + 'px',
+      'width: ' + props.w + 'px',
+      'height: ' + props.h + 'px',
+      'background: ' + props.background,
+      'opacity: ' + props.o,
+      'z-index: '+ props.z,
+      'border-width: ' + props.borderWidth + 'px',
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
     ].join(';');
   }
 };
@@ -1716,7 +1834,8 @@ function Mover(opt_options) {
       lights = exports.lights || [],
       oxygen = exports.oxygen || [],
       food = exports.food || [],
-      i, max, evt;
+      i, max, evt,
+      constructorName = this.constructor.name || 'anon';
 
   for (i in options) {
     if (options.hasOwnProperty(i)) {
@@ -1724,7 +1843,7 @@ function Mover(opt_options) {
     }
   }
 
-  this.id = options.id || this.constructor.name.toLowerCase() + "-" + Mover._idCount; // if no id, create one
+  this.id = options.id || constructorName.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
     this.el = options.view.call();
@@ -1735,7 +1854,7 @@ function Mover(opt_options) {
   }
 
   // optional
-  this.className = options.className || this.constructor.name.toLowerCase();
+  this.className = options.className || constructorName.toLowerCase(); // constructorName.toLowerCase()
   this.mass = options.mass || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
@@ -1821,6 +1940,11 @@ function Mover(opt_options) {
 
 }
 exports.Utils.inherit(Mover, exports.Obj);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Mover.name = 'mover';
 
 /**
  * Increments as each Mover is created.
@@ -1982,7 +2106,7 @@ Mover.prototype.step = function() {
 
     if (this.parent) { // parenting
 
-        if (this.offsetDistance) { // !! change to offsetDistance
+        if (this.offsetDistance) {
 
           r = this.offsetDistance; // use angle to calculate x, y
           theta = exports.Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
@@ -2452,7 +2576,8 @@ Mover.prototype.getVelocity = function (type) {
 };
 
 exports.Mover = Mover;
-/** 
+/*global exports */
+/**
     A module representing Walker.
     @module Walker
  */
@@ -2482,7 +2607,7 @@ exports.Mover = Mover;
  * @param {number} [opt_options.height = 10] Height
  * @param {number} [opt_options.maxSpeed = 30] Maximum speed
  * @param {boolean} [opt_options.wrapEdges = false] Set to true to set the object's location to the opposite side of the world if the object moves outside the world's bounds.
- * @param {boolean} [opt_options.isStatic = false] If true, object will not move.  
+ * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
  */
 function Walker(opt_options) {
 
@@ -2491,7 +2616,7 @@ function Walker(opt_options) {
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
-  
+
   this.isPerlin = options.isPerlin || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
   this.perlinSpeed = options.perlinSpeed || 0.005;
@@ -2499,24 +2624,28 @@ function Walker(opt_options) {
   this.perlinAccelLow = options.perlinAccelLow || -0.075;
   this.perlinAccelHigh = options.perlinAccelHigh || 0.075;
   this.offsetX = options.offsetX || Math.random() * 10000;
-  this.offsetY = options.offsetY || Math.random() * 10000;   
+  this.offsetY = options.offsetY || Math.random() * 10000;
   this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
   this.isHarmonic = !!options.isHarmonic;
   this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(6, 6);
-  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);    
+  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);
   this.width = options.width || 10;
-  this.height = options.height || 10;        
+  this.height = options.height || 10;
   this.maxSpeed = options.maxSpeed || 30;
   this.wrapEdges = !!options.wrapEdges;
   this.isStatic = !!options.isStatic;
 }
 exports.Utils.inherit(Walker, exports.Mover);
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Walker.name = 'walker';
 
 /**
  * Called every frame, step() updates the instance's properties.
- */     
+ */
 Walker.prototype.step = function () {
 
   'use strict';
@@ -2531,7 +2660,7 @@ Walker.prototype.step = function () {
   if (!this.isStatic && !this.isPressed) {
 
     if (this.isPerlin) {
-      
+
       this.perlinTime += this.perlinSpeed;
 
       if (this.remainsOnScreen) {
@@ -2545,7 +2674,7 @@ Walker.prototype.step = function () {
       }
 
     } else {
-      
+
       // start -- APPLY FORCES
 
       if (world.c) { // friction
@@ -2559,7 +2688,7 @@ Walker.prototype.step = function () {
       this.applyForce(world.wind); // wind
       this.applyForce(world.gravity); // gravity
     }
-    
+
     if (this.isHarmonic) {
       this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.x);
       this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.y);
@@ -2574,7 +2703,7 @@ Walker.prototype.step = function () {
     if (this.target) { // follow target
       this.applyForce(this.seek(this.target));
     }
-    
+
     // end -- APPLY FORCES
 
     this.velocity.add(this.acceleration); // add acceleration
@@ -2582,9 +2711,9 @@ Walker.prototype.step = function () {
     if (this.maxSpeed) {
       this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
     }
-    
+
     this.location.add(this.velocity); // add velocity
-    
+
     if (this.pointToDirection) { // object rotates toward direction
       if (this.velocity.mag() > 0.1) { // rotate toward direction?
         this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
@@ -2605,7 +2734,7 @@ Walker.prototype.step = function () {
 
     this.acceleration.mult(0); // reset acceleration
   }
-};  
+};
 exports.Walker = Walker;
 /*global exports */
 /**
@@ -2625,19 +2754,23 @@ exports.Walker = Walker;
  * @param {number} [opt_options.height = 10] Height
  * @param {string} [opt_options.borderRadius = '100%'] The particle's border radius.
  */
- function Particle(opt_options) {
+function Particle(opt_options) {
 
-  'use strict';
+'use strict';
 
-  var options = opt_options || {};
+var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+exports.Mover.call(this, options);
 
-  this.lifespan = options.lifespan || 40;
-  this.borderRadius = options.borderRadius || '100%';
- }
- exports.Utils.inherit(Particle, exports.Mover);
+this.lifespan = options.lifespan || 40;
+this.borderRadius = options.borderRadius || '100%';
+}
+exports.Utils.inherit(Particle, exports.Mover);
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Particle.name = 'particle';
 
 Particle.prototype.step = function () {
 
@@ -2714,7 +2847,8 @@ exports.Particle = Particle;
  * @param {number} [opt_options.lifespan = -1] The number of frames before particle system dies. Set to -1 for infinite life.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
- * @param {number} [opt_options.burst = 1] The number of particles to create per frame.
+ * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
+ * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
  * @param {Object} [opt_options.particle = A particle at the system's location w random acceleration.] The particle to create. At minimum, should have a location vector. Use this.getLocation to get location of partilce system.
  */
  function ParticleSystem(opt_options) {
@@ -2763,20 +2897,15 @@ exports.Particle = Particle;
   this.burstRate = options.burstRate === 0 ? 0 : options.burstRate || 3;
   this.particle = options.particle || function() {
 
-    var i, borderStyles = exports.config.borderStyles,
-        borderStr = borderStyles[exports.Utils.getRandomNumber(0, borderStyles.length - 1)],
-        colorStr = '';
-
-    for (i = 0; i < 4; i++) {
-      colorStr = colorStr + 'rgb(' + pl.getColor() + ') ';
-    }
+    var borderStyles = exports.config.borderStyles,
+        borderStr = borderStyles[exports.Utils.getRandomNumber(0, borderStyles.length - 1)];
 
     return {
       color: pl.getColor(),
-      borderWidth: exports.Utils.getRandomNumber(1, 12) + 'px',
+      borderWidth: exports.Utils.getRandomNumber(2, 12),
       borderStyle: borderStr,
-      borderColor: colorStr,
-      boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + pl.getColor() + ')',
+      borderColor: pl.getColor(),
+      boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')',
       zIndex: exports.Utils.getRandomNumber(1, 100),
       location: this.getLocation(),
       acceleration: exports.PVector.create(exports.Utils.getRandomNumber(-4, 4), exports.Utils.getRandomNumber(-4, 4))
@@ -2784,8 +2913,15 @@ exports.Particle = Particle;
   };
 }
 exports.Utils.inherit(ParticleSystem, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+ParticleSystem.name = 'particlesystem';
+
 exports.ParticleSystem = ParticleSystem;
-/** 
+/*global exports */
+/**
     A module representing a Liquid object.
     @module Liquid
  */
@@ -2799,15 +2935,15 @@ exports.ParticleSystem = ParticleSystem;
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.c = 1] Drag coefficient.
  * @param {number} [opt_options.mass = 50] Mass.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 100] Width.
- * @param {number} [opt_options.height = 100] Height. 
- * @param {number} [opt_options.opacity = 0.75] The particle's opacity.  
+ * @param {number} [opt_options.height = 100] Height.
+ * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
  */
 function Liquid(opt_options) {
 
   'use strict';
-  
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2820,8 +2956,15 @@ function Liquid(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Liquid, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Liquid.name = 'liquid';
+
 exports.Liquid = Liquid;
-/** 
+/*global exports */
+/**
     A module representing a Attractor object.
     @module Attractor
  */
@@ -2835,10 +2978,10 @@ exports.Liquid = Liquid;
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.G = -1] Universal Gravitational Constant.
  * @param {number} [opt_options.mass = 100] Mass. Increase for a greater gravitational effect.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 10] Width.
- * @param {number} [opt_options.height = 10] Height. 
- * @param {number} [opt_options.opacity = 0.75] The particle's opacity.  
+ * @param {number} [opt_options.height = 10] Height.
+ * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
  */
 function Attractor(opt_options) {
 
@@ -2856,8 +2999,15 @@ function Attractor(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Attractor, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Attractor.name = 'attractor';
+
 exports.Attractor = Attractor;
-/** 
+/*global exports */
+/**
     A module representing a Repeller object.
     @module Repeller
  */
@@ -2871,15 +3021,15 @@ exports.Attractor = Attractor;
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.G = -1] Universal Gravitational Constant.
  * @param {number} [opt_options.mass = 100] Mass.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 50] Width.
- * @param {number} [opt_options.height = 50] Height. 
- * @param {number} [opt_options.opacity = 0.75] The particle's opacity.  
+ * @param {number} [opt_options.height = 50] Height.
+ * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
  */
 function Repeller(opt_options) {
 
   'use strict';
-  
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2892,8 +3042,15 @@ function Repeller(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
 exports.Utils.inherit(Repeller, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Repeller.name = 'repeller';
+
 exports.Repeller = Repeller;
-/** 
+/*global exports */
+/**
     A module representing a Heat object.
     @module Heat
  */
@@ -2906,15 +3063,15 @@ exports.Repeller = Repeller;
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height. 
- * @param {number} [opt_options.opacity = 0.5] Opacity.  
+ * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.opacity = 0.5] Opacity.
  */
 function Heat(opt_options) {
 
   'use strict';
-  
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2926,8 +3083,15 @@ function Heat(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Heat, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Heat.name = 'heat';
+
 exports.Heat = Heat;
-/** 
+/*global exports */
+/**
     A module representing a Cold object.
     @module Cold
  */
@@ -2940,15 +3104,15 @@ exports.Heat = Heat;
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height. 
- * @param {number} [opt_options.opacity = 0.5] Opacity.  
+ * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.opacity = 0.5] Opacity.
  */
 function Cold(opt_options) {
 
   'use strict';
-  
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2960,8 +3124,15 @@ function Cold(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Cold, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Cold.name = 'cold';
+
 exports.Cold = Cold;
-/** 
+/*global exports */
+/**
     A module representing a Light object.
     @module Light
  */
@@ -2974,15 +3145,15 @@ exports.Cold = Cold;
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height. 
- * @param {number} [opt_options.opacity = 0.5] Opacity.  
+ * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.opacity = 0.5] Opacity.
  */
 function Light(opt_options) {
 
   'use strict';
-  
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -2994,8 +3165,15 @@ function Light(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Light, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Light.name = 'light';
+
 exports.Light = Light;
-/** 
+/*global exports */
+/**
     A module representing an Oxygen object.
     @module Oxygen
  */
@@ -3008,15 +3186,15 @@ exports.Light = Light;
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height. 
- * @param {number} [opt_options.opacity = 0.5] The particle's opacity.  
+ * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.opacity = 0.5] The particle's opacity.
  */
 function Oxygen(opt_options) {
 
   'use strict';
-  
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -3028,8 +3206,15 @@ function Oxygen(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Oxygen, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Oxygen.name = 'oxygen';
+
 exports.Oxygen = Oxygen;
-/** 
+/*global exports */
+/**
     A module representing a Food object.
     @module Food
  */
@@ -3042,10 +3227,10 @@ exports.Oxygen = Oxygen;
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height. 
- * @param {number} [opt_options.opacity = 0.5] The particle's opacity.  
+ * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.opacity = 0.5] The particle's opacity.
  */
 function Food(opt_options) {
 
@@ -3062,8 +3247,15 @@ function Food(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Food, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Food.name = 'food';
+
 exports.Food = Food;
-/** 
+/*global exports */
+/**
     A module representing a Predator object.
     @module Predator
  */
@@ -3076,15 +3268,15 @@ exports.Food = Food;
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 75] Width.
- * @param {number} [opt_options.height = 75] Height. 
- * @param {number} [opt_options.opacity = 0.5] The particle's opacity.  
+ * @param {number} [opt_options.height = 75] Height.
+ * @param {number} [opt_options.opacity = 0.5] The particle's opacity.
  */
 function Predator(opt_options) {
 
   'use strict';
-  
+
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
@@ -3096,6 +3288,12 @@ function Predator(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.inherit(Predator, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Predator.name = 'predator';
+
 exports.Predator = Predator;
 /*global exports */
 /**
@@ -3138,9 +3336,14 @@ function Sensor(opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.target = options.target || null;
-  this.activated = options.activated || false;
+  this.activated = !!options.activated;
 }
 exports.Utils.inherit(Sensor, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Sensor.name = 'sensor';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -3317,8 +3520,8 @@ Sensor.prototype.isInside = function(item, container, sensitivity) {
   return false;
 };
 exports.Sensor = Sensor;
-/*global console */
-/** 
+/*global console, exports, Modernizr */
+/**
     A module representing a FlowFieldMarker.
     @module FlowFieldMarker
  */
@@ -3329,14 +3532,14 @@ exports.Sensor = Sensor;
  * @constructor
  * @param {Object} options Options.
  * @param {Object} options.location Location.
- * @param {number} options.scale Scale. 
+ * @param {number} options.scale Scale.
  * @param {number} options.opacity Opacity
  * @param {number} options.width Width.
- * @param {number} options.height Height. 
- * @param {number} options.angle Angle. 
- * @param {string} options.colorMode Color mode. 
- * @param {Object} options.color Color. 
- */    
+ * @param {number} options.height Height.
+ * @param {number} options.angle Angle.
+ * @param {string} options.colorMode Color mode.
+ * @param {Object} options.color Color.
+ */
 function FlowFieldMarker(options) {
 
   'use strict';
@@ -3349,7 +3552,7 @@ function FlowFieldMarker(options) {
         width: 'number',
         height: 'number',
         colorMode: 'string',
-        color: 'object'
+        color: 'array'
       }, el, nose;
 
   if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
@@ -3358,7 +3561,7 @@ function FlowFieldMarker(options) {
     nose = document.createElement("div");
     el.className = "flowFieldMarker";
     nose.className = "nose";
-    el.appendChild(nose); 
+    el.appendChild(nose);
 
     el.style.cssText = this.getCSSText({
       x: options.location.x - options.width/2,
@@ -3369,33 +3572,99 @@ function FlowFieldMarker(options) {
       w: options.width,
       h: options.height,
       cm: options.colorMode,
-      c: options.color
+      color: options.color,
+      z: options.zIndex,
+      borderWidth: options.borderWidth,
+      borderStyle: options.borderStyle,
+      borderColor: options.borderColor,
+      borderRadius: options.borderRadius,
+      boxShadow: options.boxShadow
     });
+
     return el;
   }
 }
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+FlowFieldMarker.name = 'flowfieldmarker';
+
 /**
  * Builds a cssText string based on properties passed by the constructor.
  *
  * @param {Object} props Properties describing the marker.
- */  
+ */
 FlowFieldMarker.prototype.getCSSText = function(props) {
 
   'use strict';
 
-  return [
-    '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-    '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-    '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-    'opacity: ' + props.o,
-    'width: ' + props.w + 'px',
-    'height: ' + props.h + 'px',
-    'background: ' + props.cm + '(' + props.c.r + ', ' + props.c.g + ', ' + props.c.b + ')'
-  ].join(';');
+  if (!props.color) {
+    props.color = [];
+    props.background = null;
+  } else {
+    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
+  }
+
+  if (!props.borderColor) {
+    props.borderColor = [];
+  }
+
+  if (Modernizr.csstransforms3d) {
+    return [
+      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      'opacity: ' + props.o,
+      'width: ' + props.w + 'px',
+      'height: ' + props.h + 'px',
+      'background: ' + props.background,
+      'z-index: ' + props.z,
+      'border-width: ' + props.borderWidth + 'px',
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
+    ].join(';');
+  } else if (Modernizr.csstransforms) {
+    return [
+      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      'opacity: ' + props.o,
+      'width: ' + props.w + 'px',
+      'height: ' + props.h + 'px',
+      'background: ' + props.background,
+      'z-index: ' + props.z,
+      'border-width: ' + props.borderWidth + 'px',
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
+    ].join(';');
+  } else {
+    return [
+      'position: absolute',
+      'left' + props.x + 'px',
+      'top' + props.y + 'px',
+      'width' + props.w + 'px',
+      'height' + props.h + 'px',
+      'background: ' + props.background,
+      'opacity' + props.o,
+      'z-index'+ props.z,
+      'border-width: ' + props.borderWidth + 'px',
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
+    ].join(';');
+  }
 };
 
 exports.FlowFieldMarker = FlowFieldMarker;
-/** 
+/*global exports */
+/**
     A module representing a FlowField.
     @module FlowField
  */
@@ -3410,7 +3679,7 @@ exports.FlowFieldMarker = FlowFieldMarker;
  * @param {number} [opt_options.perlinTime = 100] Sets the Perlin Noise time.
  * @param {Object} [opt_options.field = null] A list of vectors that define the flow field.
  * @param {Object} [opt_options.createMarkers = false] Set to true to visualize the flow field.
- */   
+ */
 function FlowField(opt_options) {
 
   'use strict';
@@ -3425,8 +3694,13 @@ function FlowField(opt_options) {
 }
 
 /**
- * Builds a FlowField. 
- */ 
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+FlowField.name = 'flowfield';
+
+/**
+ * Builds a FlowField.
+ */
 FlowField.prototype.build = function() {
 
   'use strict';
@@ -3438,7 +3712,7 @@ FlowField.prototype.build = function() {
       rows = Math.ceil(world.height/parseFloat(this.resolution)),
       xoff = this.perlinTime, // create markers and vectors
       yoff;
-  
+
   for (col = 0, colMax = cols; col < colMax ; col += 1) {
     yoff = this.perlinTime;
     vectorList[col] = {};
@@ -3453,7 +3727,7 @@ FlowField.prototype.build = function() {
       field = exports.PVector.create(fieldX, fieldY);
       vectorList[col][row] = field;
       angle = exports.Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
-      
+
       if (this.createMarkers) {
 
         var ffm = new exports.FlowFieldMarker({ // create the marker
@@ -3464,12 +3738,8 @@ FlowField.prototype.build = function() {
           height: this.resolution/2,
           field: field,
           angle: angle,
-          colorMode: "rgb",
-          color: {
-            r: 200,
-            g: 100,
-            b: 50
-          }
+          colorMode: 'rgb',
+          color: [200, 100, 50]
         });
         exports.world.el.appendChild(ffm);
       }
@@ -3481,7 +3751,8 @@ FlowField.prototype.build = function() {
 };
 
 exports.FlowField = FlowField;
-/** 
+/*global exports */
+/**
     A module representing a Connector.
     @module Connector
  */
@@ -3490,14 +3761,14 @@ exports.FlowField = FlowField;
  * Creates a new Connector.
  *
  * @constructor
- * @extends Mover 
+ * @extends Mover
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.zIndex = 0] zIndex.
  * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {number} [opt_options.width = 10] Width.
  * @param {number} [opt_options.height = 1] Height.
  * @param {Object} [opt_options.parentA = null] The parent A object.
- * @param {Object} [opt_options.parentB = null] The parent B object. 
+ * @param {Object} [opt_options.parentB = null] The parent B object.
  */
 function Connector(opt_options) {
 
@@ -3508,29 +3779,36 @@ function Connector(opt_options) {
   exports.Mover.call(this, options);
 
   this.width = options.width === 0 ? 0 : options.width || 10;
-  this.height = options.height === 0 ? 0 : options.height || 1;  
+  this.height = options.height === 0 ? 0 : options.height || 1;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.25;
-  this.zIndex = options.zIndex || 0;  
+  this.zIndex = options.zIndex || 0;
   this.parentA = options.parentA || null;
   this.parentB = options.parentB || null;
 }
 exports.Utils.inherit(Connector, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Connector.name = 'connector';
+
 /**
  * Called every frame, step() updates the instance's properties.
- */  
+ */
 Connector.prototype.step = function() {
 
   'use strict';
 
   var a = this.parentA.location, b = this.parentB.location;
-  
+
   this.width = Math.floor(exports.PVector.PVectorSub(this.parentA.location, this.parentB.location).mag());
   this.location = exports.PVector.PVectorAdd(this.parentA.location, this.parentB.location).div(2); // midpoint = (v1 + v2)/2
   this.angle = exports.Utils.radiansToDegrees(Math.atan2(b.y - a.y, b.x - a.x) );
 };
 
-exports.Connector = Connector;  
-/** 
+exports.Connector = Connector;
+/*global exports */
+/**
     A module representing a Point.
     @module Point
  */
@@ -3539,13 +3817,13 @@ exports.Connector = Connector;
  * Creates a new Point.
  *
  * @constructor
- * @extends Mover 
+ * @extends Mover
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.zIndex = 0] zIndex.
  * @param {number} [opt_options.width = 5] Width.
- * @param {number} [opt_options.height = 5] Height. 
+ * @param {number} [opt_options.height = 5] Height.
  * @param {number} [opt_options.opacity = 0.25] Opacity.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move. 
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  */
 function Point(opt_options) {
 
@@ -3564,6 +3842,12 @@ function Point(opt_options) {
   this.length = options.length === 0 ? 0 : options.length|| 30;
 }
 exports.Utils.inherit(Point, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Point.name = 'point';
+
 exports.Point = Point;
 /**
  * Creates a new Stats object.
@@ -3576,11 +3860,17 @@ function Stats() {
   'use strict';
 
   var _container, _bar, _mode = 0, _modes = 2,
-  _frames = 0, _time = Date.now(), _timeLastFrame = _time, _timeLastSecond = _time,
+  _frames = 0, _time = 0, _timeLastFrame = _time, _timeLastSecond = _time,
   _fps = 0, _fpsMin = 1000, _fpsMax = 0, _fpsDiv, _fpsText, _fpsGraph,
   _fpsColors = [ [ 16, 16, 48 ], [ 0, 255, 255 ] ],
   _ms = 0, _msMin = 1000, _msMax = 0, _msDiv, _msText, _msGraph,
   _msColors = [ [ 16, 48, 16 ], [ 0, 255, 0 ] ];
+
+  if (Date.now) {
+    _time = Date.now();
+  }
+  _timeLastFrame = _time;
+  _timeLastSecond = _time;
 
   _container = document.createElement( 'div' );
   _container.style.cursor = 'pointer';

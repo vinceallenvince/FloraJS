@@ -9,11 +9,17 @@ function Stats() {
   'use strict';
 
   var _container, _bar, _mode = 0, _modes = 2,
-  _frames = 0, _time = Date.now(), _timeLastFrame = _time, _timeLastSecond = _time,
+  _frames = 0, _time = 0, _timeLastFrame = _time, _timeLastSecond = _time,
   _fps = 0, _fpsMin = 1000, _fpsMax = 0, _fpsDiv, _fpsText, _fpsGraph,
   _fpsColors = [ [ 16, 16, 48 ], [ 0, 255, 255 ] ],
   _ms = 0, _msMin = 1000, _msMax = 0, _msDiv, _msText, _msGraph,
   _msColors = [ [ 16, 48, 16 ], [ 0, 255, 0 ] ];
+
+  if (Date.now) {
+    _time = Date.now();
+  }
+  _timeLastFrame = _time;
+  _timeLastSecond = _time;
 
   _container = document.createElement( 'div' );
   _container.style.cursor = 'pointer';

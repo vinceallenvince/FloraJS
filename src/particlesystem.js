@@ -15,7 +15,8 @@
  * @param {number} [opt_options.lifespan = -1] The number of frames before particle system dies. Set to -1 for infinite life.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
- * @param {number} [opt_options.burst = 1] The number of particles to create per frame.
+ * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
+ * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
  * @param {Object} [opt_options.particle = A particle at the system's location w random acceleration.] The particle to create. At minimum, should have a location vector. Use this.getLocation to get location of partilce system.
  */
  function ParticleSystem(opt_options) {
@@ -64,20 +65,15 @@
   this.burstRate = options.burstRate === 0 ? 0 : options.burstRate || 3;
   this.particle = options.particle || function() {
 
-    var i, borderStyles = exports.config.borderStyles,
-        borderStr = borderStyles[exports.Utils.getRandomNumber(0, borderStyles.length - 1)],
-        colorStr = '';
-
-    for (i = 0; i < 4; i++) {
-      colorStr = colorStr + 'rgb(' + pl.getColor() + ') ';
-    }
+    var borderStyles = exports.config.borderStyles,
+        borderStr = borderStyles[exports.Utils.getRandomNumber(0, borderStyles.length - 1)];
 
     return {
       color: pl.getColor(),
-      borderWidth: exports.Utils.getRandomNumber(1, 12) + 'px',
+      borderWidth: exports.Utils.getRandomNumber(2, 12),
       borderStyle: borderStr,
-      borderColor: colorStr,
-      boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + pl.getColor() + ')',
+      borderColor: pl.getColor(),
+      boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')',
       zIndex: exports.Utils.getRandomNumber(1, 100),
       location: this.getLocation(),
       acceleration: exports.PVector.create(exports.Utils.getRandomNumber(-4, 4), exports.Utils.getRandomNumber(-4, 4))
@@ -85,4 +81,10 @@
   };
 }
 exports.Utils.inherit(ParticleSystem, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+ParticleSystem.name = 'particlesystem';
+
 exports.ParticleSystem = ParticleSystem;

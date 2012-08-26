@@ -10,7 +10,9 @@ system.start(function() {
     showStats: true,
     gravity: Flora.PVector.create(0, 0),
     style: {
-      backgroundImage: "-webkit-radial-gradient(circle, #444, #000)"
+      background: '#000',
+      backgroundImage: '-webkit-radial-gradient(circle, #333, #000)',
+      border: 0
     }
   });
 
@@ -37,7 +39,9 @@ system.start(function() {
   var tail1 = new Flora.ParticleSystem({
     isStatic: false,
     parent: walker1,
+    offsetDistance: 0,
     burst: 1,
+    burstRate: 1,
     lifespan: -1,
     particle: function () {
 
@@ -65,7 +69,9 @@ system.start(function() {
   var tail2 = new Flora.ParticleSystem({
     isStatic: false,
     parent: walker2,
+    offsetDistance: 0,
     burst: 1,
+    burstRate: 1,
     particle: function () {
 
       var dir = Flora.Utils.clone(walker2.getVelocity());
@@ -89,7 +95,8 @@ system.start(function() {
     }
   });
 
-  var fishColors = ["rgb(255, 125, 125)", "rgb(255, 125, 255)"];
+  var fishColors = [[255, 125, 125], [255, 125, 255]];
+  var fishBorders = ['solid', 'solid'];
 
   var getMyParticleLifespan = function () {
     return this.myParticleLifespan;
@@ -99,7 +106,8 @@ system.start(function() {
 
     var lifespan = this.getMyParticleLifespan(),
       dir = Flora.Utils.clone(this.getVelocity()),
-      color = fishColors[this.myIndex];
+      color = fishColors[this.myIndex],
+      border = fishBorders[this.myIndex];
 
     dir.normalize();
     if (dir) {
@@ -107,15 +115,21 @@ system.start(function() {
     } else {
       dir = Flora.PVector.create(0, 0);
     }
-
+    var opacity = 1;
     return {
       parent: this,
+      width: 10,
+      height: 10,
+      opacity: opacity,
       location: this.getLocation(),
       acceleration: dir,
       lifespan: lifespan,
-      border: "10px solid " + color,
+      color: [255, 255, 255],
+      borderWidth: 10,
+      borderColor: color,
+      borderStyle: border,
       borderRadius: "100%",
-      boxShadow: "1px 1px 20px 20px rgba(255, 255, 255, .5)"
+      boxShadow: "1px 1px 20px 20px rgba(255, 255, 255, 0.25)"
     };
   };
 
@@ -132,13 +146,12 @@ system.start(function() {
       separateStrength: 1,
       alignStrength: 0.5,
       cohesionStrength: 1,
-      width: 20,
-      height: 20,
       target: walkers[myIndex],
       burst: 1,
+      burstRate: 1,
       lifespan: -1,
       mass: Flora.Utils.getRandomNumber(2, 12),
-      myParticleLifespan: Flora.Utils.getRandomNumber(8, 12),
+      myParticleLifespan: Flora.Utils.getRandomNumber(10, 14),
       getMyParticleLifespan: getMyParticleLifespan,
       particle: particle
     });

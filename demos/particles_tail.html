@@ -23,6 +23,7 @@
         });
 
         var particles = new Flora.ParticleSystem({
+          burstRate: 1,
           particle: function () {
 
             var dir = Flora.mouse.loc.PVectorSub(Flora.mouse.loc, this.getLocation());
@@ -34,7 +35,7 @@
               dir = Flora.PVector.create(0, 0);
             }
 
-            var pl = new Flora.Palette();
+            var pl = new Flora.ColorPalette();
             pl.addColor({
               min: 1,
               max: 1,

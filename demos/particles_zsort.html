@@ -27,11 +27,11 @@
           showStats: true,
           zSorted: true,
           style: {
-            backgroundImage: "-webkit-radial-gradient(circle, #333, #000)"
+            background: '#000',
+            backgroundImage: '-webkit-radial-gradient(circle, #333, #000)',
+            border: 0
           }
         });
-
-
 
         // light
         var cLight = Flora.defaultColors.getColor('light'),
@@ -62,10 +62,10 @@
 
             return {
               color: plLight.getColor(),
-              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderWidth: exports.Utils.getRandomNumber(2, 12),
               borderStyle: brdrLight.getBorder(),
-              borderColor: 'rgb(' + plLight.getColor() + ') ',
-              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plLight.getColor() + ')',
+              borderColor: plLight.getColor(),
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 12) + 'px rgb(' + plLight.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(401, 500),
               location: this.getLocation().mult(1.15),
               acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
@@ -99,10 +99,10 @@
           particle: function() {
             return {
               color: plOxygen.getColor(),
-              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderWidth: exports.Utils.getRandomNumber(2, 12),
               borderStyle: brdrOxygen.getBorder(),
-              borderColor: 'rgb(' + plOxygen.getColor() + ') ',
-              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plOxygen.getColor() + ')',
+              borderColor: plOxygen.getColor(),
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 12) + 'px rgb(' + plOxygen.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(301, 400),
               location: this.getLocation().mult(0.85),
               acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
@@ -136,10 +136,10 @@
           particle: function() {
             return {
               color: plFood.getColor(),
-              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderWidth: exports.Utils.getRandomNumber(2, 12),
               borderStyle: brdrFood.getBorder(),
-              borderColor: 'rgb(' + plFood.getColor() + ') ',
-              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plFood.getColor() + ')',
+              borderColor: plFood.getColor(),
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 12) + 'px rgb(' + plFood.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(101, 200),
               location: this.getLocation().mult(0.95),
               acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
@@ -173,10 +173,10 @@
           particle: function() {
             return {
               color: plCold.getColor(),
-              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderWidth: exports.Utils.getRandomNumber(2, 12),
               borderStyle: brdrCold.getBorder(),
-              borderColor: 'rgb(' + plCold.getColor() + ') ',
-              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plCold.getColor() + ')',
+              borderColor: plCold.getColor(),
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 12) + 'px rgb(' + plCold.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(201, 300),
               location: this.getLocation().mult(1.05),
               acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
@@ -210,10 +210,10 @@
           particle: function() {
             return {
               color: plHeat.getColor(),
-              borderWidth: exports.Utils.getRandomNumber(2, 12) + 'px',
+              borderWidth: exports.Utils.getRandomNumber(2, 12),
               borderStyle: brdrHeat.getBorder(),
-              borderColor: 'rgb(' + plHeat.getColor() + ') ',
-              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plHeat.getColor() + ')',
+              borderColor: plHeat.getColor(),
+              boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plHeat.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(1, 100),
               location: this.getLocation(),
               acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))

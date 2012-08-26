@@ -10,7 +10,9 @@ system.start(function() {
     showStats: false,
     gravity: Flora.PVector.create(0, 0),
     style: {
-      backgroundImage: "-webkit-radial-gradient(circle, #444, #000)"
+      background: '#000',
+      backgroundImage: '-webkit-radial-gradient(circle, #333, #000)',
+      border: 0
     }
   });
 
@@ -19,6 +21,7 @@ system.start(function() {
     width: 0,
     height: 0,
     burst: 1,
+    burstRate: 1,
     followMouse: true,
     theta: 0,
     r: 0,
@@ -32,15 +35,15 @@ system.start(function() {
 
       return {
         parent: this,
-        location: Flora.PVector.create(this.getLocation("x"), this.getLocation("y")),
+        location: this.getLocation(),
         acceleration: Flora.PVector.create(x, y),
         color: [200, 200, 200],
         width: 50,
         height: 50,
         maxSpeed: 30,
         lifespan: 20,
-        borderRadius: "50%",
-        boxShadow: "1px 1px 20px 20px rgba(255, 255, 255, .1)"
+        borderRadius: '50%',
+        boxShadow: '1px 1px 20px 20px rgba(255, 255, 255, .1)'
       };
     }
   });

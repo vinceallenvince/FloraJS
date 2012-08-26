@@ -14,20 +14,22 @@ var elements = function() {
   });
 
   var sensor1 = new Flora.Sensor({
-    type: "cold",
-    behavior: "AGGRESSIVE",
-    sensitivity: 2,
+    type: 'light',
+    behavior: 'AGGRESSIVE',
+    sensitivity: 3,
     offsetDistance: 40,
     opacity: 0,
     offsetAngle: 0,
-    border: "1px solid rgb(132, 192, 201)",
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: [255, 200, 0],
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
           this.connector = new Flora.Connector({
             parentA: this,
             parentB: this.target,
-            color: [132, 192, 201]
+            color: [255, 200, 0]
           });
         } else {
           this.connector.parentA = this;
@@ -106,6 +108,42 @@ var elements = function() {
         }, 10);
       }
 
+      var particle = function () {
+        var d = Flora.Utils.getRandomNumber(1, 5);
+        return {
+          location: Flora.PVector.create(x, y),
+          acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-2, 2), Flora.Utils.getRandomNumber(-2, 2)),
+          lifespan: 20,
+          checkEdges: false,
+          width: d,
+          height: d,
+          color: [255, 255, 150]
+        };
+      };
+
+      // check if mover intersects w stimulators
+      for (i = 0, max = Flora.lights.length; i < max; i += 1) {
+        if (this.isInside(Flora.lights[i])) {
+
+          var x = Flora.lights[i].location.x,
+          y = Flora.lights[i].location.y;
+
+          Flora.destroyElement(Flora.lights[i].id);
+          Flora.lights.splice(i, 1);
+
+          var ps = new Flora.ParticleSystem({
+            burst: 1,
+            lifespan: 10,
+            particle: particle
+          });
+
+          var w = Flora.Utils.getRandomNumber(0, Flora.World.width);
+          var h = Flora.Utils.getRandomNumber(0, Flora.World.height);
+          var d = Flora.Utils.getRandomNumber(15, 25);
+
+        }
+      }
+
       // eye
       var eye = document.getElementById("eye"),
           a = this.eyeRotation;
@@ -125,12 +163,22 @@ var elements = function() {
 
   var i, max, w, h, d;
 
+  var clr = Flora.defaultColors.getColor('light');
+  var pl = new Flora.ColorPalette();
+  pl.addColor({
+    min: 5,
+    max: 12,
+    startColor: clr.startColor,
+    endColor: clr.endColor
+  });
+
   for (i = 0, max = (0.05 * Flora.world.width); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
     h = Flora.Utils.getRandomNumber(0, Flora.world.height);
-    d = Flora.Utils.getRandomNumber(15, 35);
+    d = Flora.Utils.getRandomNumber(15, 75);
 
-    var cold = new Flora.Cold({
+    var light = new Flora.Light({
+      color: pl.getColor(),
       width: d,
       height: d,
       scale: 1,

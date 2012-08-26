@@ -27,7 +27,7 @@
   <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos">
   </target>
 
-  <target name="build.release" depends="clean,init,validate,concatenate,document,minify,bake">
+  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,document,minify,bake">
   </target>
 
   <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask"

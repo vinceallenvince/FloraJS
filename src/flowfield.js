@@ -1,4 +1,5 @@
-/** 
+/*global exports */
+/**
     A module representing a FlowField.
     @module FlowField
  */
@@ -13,7 +14,7 @@
  * @param {number} [opt_options.perlinTime = 100] Sets the Perlin Noise time.
  * @param {Object} [opt_options.field = null] A list of vectors that define the flow field.
  * @param {Object} [opt_options.createMarkers = false] Set to true to visualize the flow field.
- */   
+ */
 function FlowField(opt_options) {
 
   'use strict';
@@ -28,8 +29,13 @@ function FlowField(opt_options) {
 }
 
 /**
- * Builds a FlowField. 
- */ 
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+FlowField.name = 'flowfield';
+
+/**
+ * Builds a FlowField.
+ */
 FlowField.prototype.build = function() {
 
   'use strict';
@@ -41,7 +47,7 @@ FlowField.prototype.build = function() {
       rows = Math.ceil(world.height/parseFloat(this.resolution)),
       xoff = this.perlinTime, // create markers and vectors
       yoff;
-  
+
   for (col = 0, colMax = cols; col < colMax ; col += 1) {
     yoff = this.perlinTime;
     vectorList[col] = {};
@@ -56,7 +62,7 @@ FlowField.prototype.build = function() {
       field = exports.PVector.create(fieldX, fieldY);
       vectorList[col][row] = field;
       angle = exports.Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
-      
+
       if (this.createMarkers) {
 
         var ffm = new exports.FlowFieldMarker({ // create the marker
@@ -67,12 +73,8 @@ FlowField.prototype.build = function() {
           height: this.resolution/2,
           field: field,
           angle: angle,
-          colorMode: "rgb",
-          color: {
-            r: 200,
-            g: 100,
-            b: 50
-          }
+          colorMode: 'rgb',
+          color: [200, 100, 50]
         });
         exports.world.el.appendChild(ffm);
       }

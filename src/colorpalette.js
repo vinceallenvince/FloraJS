@@ -4,6 +4,14 @@
     @module ColorPalette
  */
 
+/**
+ * Creates a new ColorPalette object.
+ *
+ * ColorPalette instances have a 'colors' array that stores
+ * arrays of color RGB values.
+ *
+ * @constructor
+ */
 function ColorPalette(opt_options) {
 
   'use strict';
@@ -12,6 +20,20 @@ function ColorPalette(opt_options) {
   this.colors = [];
 }
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+ColorPalette.name = 'colorpalette';
+
+/**
+ * Creates an array of RGB color values interpolated between
+ * a passed startColor and endColor.
+ *
+ * @param {Array} startColor The beginning of the color array.
+ * @param {Array} startColor The end of the color array.
+ * @param {number} totalColors The total numnber of colors to create.
+ * @returns {Array} An array of color values.
+ */
 ColorPalette.createColorRange = function(startColor, endColor, totalColors) {
 
   'use strict';
@@ -39,6 +61,14 @@ ColorPalette.createColorRange = function(startColor, endColor, totalColors) {
   return colors;
 };
 
+/**
+ * Adds color arrays representing a color range to the gradients property.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.startColor {Array} The beginning color of the color range.
+ *    options.endColor {Array} The end color of the color range.
+ */
 ColorPalette.prototype.createGradient = function(options) {
 
   'use strict';
@@ -61,6 +91,18 @@ ColorPalette.prototype.createGradient = function(options) {
   }
 };
 
+/**
+ * Creates a color range of 255 colors from the passed start and end colors.
+ * Adds a random selection of these colors to the color property of
+ * the color palette.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.min {number} The minimum number of colors to add.
+ *    options.max {number} The maximum number of color to add.
+ *    options.startColor {Array} The beginning color of the color range.
+ *    options.endColor {Array} The end color of the color range.
+ */
 ColorPalette.prototype.addColor = function(options) {
 
   'use strict';
@@ -78,12 +120,17 @@ ColorPalette.prototype.addColor = function(options) {
     colors = ColorPalette.createColorRange(options.startColor, options.endColor, 255);
 
     for (i = 0; i < ln; i++) {
-      this.colors.push(colors[exports.Utils.getRandomNumber(0, colors.length)]);
+      this.colors.push(colors[exports.Utils.getRandomNumber(0, colors.length - 1)]);
     }
   }
   return this;
 };
 
+/**
+ * @returns An array representing a randomly selected color
+ *    from the colors property.
+ * @throws {Error} If the colors property is empty.
+ */
 ColorPalette.prototype.getColor = function() {
 
   'use strict';
@@ -94,6 +141,12 @@ ColorPalette.prototype.getColor = function() {
   }
 };
 
+/**
+ * Renders a strip of colors representing the color range
+ * in the colors property.
+ *
+ * @param {Object} parent A DOM object to contain the color strip.
+ */
 ColorPalette.prototype.createSampleStrip = function(parent) {
 
   'use strict';

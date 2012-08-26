@@ -3,21 +3,22 @@ describe("A new Attractor", function() {
   var attractor;
 
   beforeEach(function() {
-    attractor = new exports.Attractor();
+    obj = new exports.Attractor();
   });
 
   afterEach(function() {
-    attractor = null;
+    obj = null;
   });
 
   it("should have its required properties.", function() {
-    expect(typeof attractor.G).toEqual('number');
-    expect(typeof attractor.mass).toEqual('number');
-    expect(typeof attractor.isStatic).toEqual('boolean');
-    expect(typeof attractor.width).toEqual('number');
-    expect(typeof attractor.height).toEqual('number');
-    expect(typeof attractor.color).toEqual('object');
-    expect(typeof attractor.opacity).toEqual('number');
+    expect(typeof obj.G).toEqual('number');
+    expect(typeof obj.mass).toEqual('number');
+    expect(typeof obj.isStatic).toEqual('boolean');
+    expect(typeof obj.width).toEqual('number');
+    expect(typeof obj.height).toEqual('number');
+    expect(typeof obj.color).toEqual('object');
+    expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -35,6 +36,7 @@ describe("A new BorderPalette", function() {
 
   it("should have its required properties.", function() {
     expect(interfaceCheck.getDataType(obj.borders)).toEqual('array');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 
   it("should have an addBorder() method that pushed border styles (strings) on to a borders property.", function() {
@@ -80,6 +82,7 @@ describe("A new Camera", function() {
 
   it("should have its required properties.", function() {
     expect(typeof obj.location).toEqual('object');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -101,6 +104,7 @@ describe("A new Cold", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -119,6 +123,7 @@ describe("A new ColorPalette", function() {
   it("should have its required properties.", function() {
     expect(interfaceCheck.getDataType(obj.gradients)).toEqual('array');
     expect(interfaceCheck.getDataType(obj.colors)).toEqual('array');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 
   it("should have a createGradient() method that pushes an array of color arrays on to a gradients property.", function() {
@@ -187,6 +192,10 @@ describe("A new ColorTable", function() {
     obj = null;
   });
 
+  it("should have its required properties.", function() {
+    expect(typeof obj.constructor.name).toEqual('string');
+  });
+
   it("should have a method that adds an object representing a color range to a 'colors' property.", function() {
     expect(interfaceCheck.getDataType(obj.addColor)).toEqual('function');
 
@@ -250,6 +259,7 @@ describe("A new Connector", function() {
     expect(typeof obj.opacity).toEqual('number');
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -270,6 +280,7 @@ describe("A new FlowField", function() {
     expect(typeof obj.perlinSpeed).toEqual('number');
     expect(typeof obj.perlinTime).toEqual('number');
     expect(typeof obj.createMarkers).toEqual('boolean');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -286,7 +297,7 @@ describe("A new FlowFieldMarker", function() {
         width: 100,
         height: 100,
         colorMode: 'rgb',
-        color: {r: 0, g: 0, b: 0}
+        color: [0, 0, 0]
       });
     expect(obj.className).toEqual('flowFieldMarker');
     expect(obj.style.width).toEqual('100px');
@@ -313,6 +324,7 @@ describe("A new Food", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -334,6 +346,7 @@ describe("A new Heat", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -400,6 +413,7 @@ describe("A new Light", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -423,6 +437,7 @@ describe("A new Liquid", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -471,6 +486,7 @@ describe("A new Mover", function() {
     expect(typeof obj.velocity).toEqual('object');
     expect(typeof obj.location).toEqual('object');
     expect(typeof obj.controlCamera).toEqual('boolean');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -490,6 +506,7 @@ describe("A new Obj", function() {
 
   it("should accept all properties passed to the constructor.", function() {
     expect(obj.hello).toEqual('hello');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 
   it("getCSSText() should return a text string.", function() {
@@ -503,7 +520,9 @@ describe("A new Obj", function() {
       colorMode: 'rgb',
       color: {r: 0, g: 0, b: 0},
       zIndex: 1,
-      border: '1px solid #000',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: [255, 69, 0],
       borderRadius: '100%',
       boxShadow: '1px 1px 0 0 #000'
     });
@@ -517,14 +536,16 @@ describe("A new Obj", function() {
       w: obj.width,
       h: obj.height,
       cm: obj.colorMode,
-      c: obj.color,
+      color: obj.color,
       z: obj.zIndex,
-      border: obj.border,
+      borderWidth: obj.borderWidth,
+      borderStyle: obj.borderStyle,
+      borderColor: obj.borderColor,
       borderRadius: obj.borderRadius,
       boxShadow: obj.boxShadow
     });
     expect(typeof css).toEqual('string');
-    expect(css.search('border')).toNotEqual(-1);
+    expect(css.search('border-width')).toNotEqual(-1);
   });
 });
 
@@ -546,6 +567,7 @@ describe("A new Oxygen", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -566,6 +588,7 @@ describe("A new Particle", function() {
     expect(typeof obj.lifespan).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.borderRadius).toEqual('string');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -587,6 +610,7 @@ describe("A new ParticleSystem", function() {
     expect(typeof obj.lifespan).toEqual('number');
     expect(typeof obj.burst).toEqual('number');
     expect(typeof obj.particle).toEqual('function');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -612,6 +636,7 @@ describe("A new Point", function() {
     expect(typeof obj.zIndex).toEqual('number');
     expect(typeof obj.offsetAngle).toEqual('number');
     expect(typeof obj.length).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -633,6 +658,7 @@ describe("A new Predator", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -674,6 +700,7 @@ describe("A new Repeller", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -700,6 +727,7 @@ describe("A new Sensor", function() {
     expect(typeof obj.opacity).toEqual('number');
     expect(typeof obj.target).toEqual('object');
     expect(typeof obj.activated).toEqual('boolean');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
@@ -797,39 +825,41 @@ describe("A new Walker", function() {
     expect(typeof obj.maxSpeed).toEqual('number');
     expect(typeof obj.wrapEdges).toEqual('boolean');
     expect(typeof obj.isStatic).toEqual('boolean');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 });
 
 describe("A new World", function() {
 
-  var world;
+  var obj;
 
   beforeEach(function() {
-    world = new exports.World();
+    obj = new exports.World();
   });
 
   afterEach(function() {
     system = null;
-    world = null;
+    obj = null;
   });
 
   it("should have its required properties.", function() {
-    expect(typeof world.showStats).toEqual('boolean');
-    expect(typeof world.statsInterval).toEqual('number');
-    expect(typeof world.clock).toEqual('number');
-    expect(typeof world.c).toEqual('number');
-    expect(typeof world.gravity).toEqual('object');
-    expect(typeof world.wind).toEqual('object');
-    expect(typeof world.location).toEqual('object');
-    expect(typeof world.width).toEqual('number');
-    expect(typeof world.height).toEqual('number');
-    expect(typeof world.mouseX).toEqual('number');
-    expect(typeof world.mouseY).toEqual('number');
-    expect(typeof world.isPlaying).toEqual('boolean');
+    expect(typeof obj.showStats).toEqual('boolean');
+    expect(typeof obj.statsInterval).toEqual('number');
+    expect(typeof obj.clock).toEqual('number');
+    expect(typeof obj.c).toEqual('number');
+    expect(typeof obj.gravity).toEqual('object');
+    expect(typeof obj.wind).toEqual('object');
+    expect(typeof obj.location).toEqual('object');
+    expect(typeof obj.width).toEqual('number');
+    expect(typeof obj.height).toEqual('number');
+    expect(typeof obj.mouseX).toEqual('number');
+    expect(typeof obj.mouseY).toEqual('number');
+    expect(typeof obj.isPlaying).toEqual('boolean');
+    expect(typeof obj.constructor.name).toEqual('string');
   });
 
   it("should have a DOM element", function() {
-    world.configure();
-    expect(typeof world.el).toEqual('object');
+    obj.configure();
+    expect(typeof obj.el).toEqual('object');
   });
 });

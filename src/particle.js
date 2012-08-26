@@ -16,19 +16,23 @@
  * @param {number} [opt_options.height = 10] Height
  * @param {string} [opt_options.borderRadius = '100%'] The particle's border radius.
  */
- function Particle(opt_options) {
+function Particle(opt_options) {
 
-  'use strict';
+'use strict';
 
-  var options = opt_options || {};
+var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+exports.Mover.call(this, options);
 
-  this.lifespan = options.lifespan || 40;
-  this.borderRadius = options.borderRadius || '100%';
- }
- exports.Utils.inherit(Particle, exports.Mover);
+this.lifespan = options.lifespan || 40;
+this.borderRadius = options.borderRadius || '100%';
+}
+exports.Utils.inherit(Particle, exports.Mover);
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Particle.name = 'particle';
 
 Particle.prototype.step = function () {
 

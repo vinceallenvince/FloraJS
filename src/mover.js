@@ -71,7 +71,8 @@ function Mover(opt_options) {
       lights = exports.lights || [],
       oxygen = exports.oxygen || [],
       food = exports.food || [],
-      i, max, evt;
+      i, max, evt,
+      constructorName = this.constructor.name || 'anon';
 
   for (i in options) {
     if (options.hasOwnProperty(i)) {
@@ -79,7 +80,7 @@ function Mover(opt_options) {
     }
   }
 
-  this.id = options.id || this.constructor.name.toLowerCase() + "-" + Mover._idCount; // if no id, create one
+  this.id = options.id || constructorName.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
     this.el = options.view.call();
@@ -90,7 +91,7 @@ function Mover(opt_options) {
   }
 
   // optional
-  this.className = options.className || this.constructor.name.toLowerCase();
+  this.className = options.className || constructorName.toLowerCase(); // constructorName.toLowerCase()
   this.mass = options.mass || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
@@ -176,6 +177,11 @@ function Mover(opt_options) {
 
 }
 exports.Utils.inherit(Mover, exports.Obj);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Mover.name = 'mover';
 
 /**
  * Increments as each Mover is created.
@@ -337,7 +343,7 @@ Mover.prototype.step = function() {
 
     if (this.parent) { // parenting
 
-        if (this.offsetDistance) { // !! change to offsetDistance
+        if (this.offsetDistance) {
 
           r = this.offsetDistance; // use angle to calculate x, y
           theta = exports.Utils.degreesToRadians(this.parent.angle + this.offsetAngle);

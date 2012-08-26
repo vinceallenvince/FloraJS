@@ -16,11 +16,13 @@ var elements = function() {
   var sensor1 = new Flora.Sensor({
     type: "heat",
     behavior: "ACCELERATE",
-    sensitivity: 2,
+    sensitivity: 3,
     offsetDistance: 40,
     opacity: 0,
     offsetAngle: 0,
-    border: "1px solid rgb(255, 69, 0)",
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: [255, 69, 0],
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
@@ -47,11 +49,13 @@ var elements = function() {
   var sensor2 = new Flora.Sensor({
     type: "cold",
     behavior: "DECELERATE",
-    sensitivity: 2,
+    sensitivity: 3,
     offsetDistance: 40,
     opacity: 0,
     offsetAngle: 0,
-    border: "1px solid rgb(132, 192, 201)",
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: [132, 192, 201],
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
@@ -156,12 +160,22 @@ var elements = function() {
 
   var i, max, w, h, d;
 
+  var clr = Flora.defaultColors.getColor('heat');
+  var pl = new Flora.ColorPalette();
+  pl.addColor({
+    min: 6,
+    max: 24,
+    startColor: clr.startColor,
+    endColor: clr.endColor
+  });
+
   for (i = 0, max = (0.025 * Flora.world.width); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
     h = Flora.Utils.getRandomNumber(0, Flora.world.height);
-    d = Flora.Utils.getRandomNumber(15, 35);
+    d = Flora.Utils.getRandomNumber(15, 45);
 
     var heat = new Flora.Heat({
+      color: pl.getColor(),
       width: d,
       height: d,
       scale: 1,
@@ -170,12 +184,22 @@ var elements = function() {
     });
   }
 
+  clr = Flora.defaultColors.getColor('cold');
+  pl = new Flora.ColorPalette();
+  pl.addColor({
+    min: 6,
+    max: 24,
+    startColor: clr.startColor,
+    endColor: clr.endColor
+  });
+
   for (i = 0, max = (0.025 * Flora.world.width); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
     h = Flora.Utils.getRandomNumber(0, Flora.world.height);
-    d = Flora.Utils.getRandomNumber(15, 35);
+    d = Flora.Utils.getRandomNumber(15, 45);
 
     var cold = new Flora.Cold({
+      color: pl.getColor(),
       width: d,
       height: d,
       scale: 1,

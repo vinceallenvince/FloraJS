@@ -1,4 +1,5 @@
-/** 
+/*global exports */
+/**
     A module representing a Camera.
     @module camera
  */
@@ -10,7 +11,7 @@
  * @param {Object} [opt_options]
  * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location.
  * @param {Object} [opt_options.controlObj = null] The object that controls the camera.
- */   
+ */
 function Camera(opt_options) {
 
   'use strict';
@@ -20,5 +21,10 @@ function Camera(opt_options) {
   this.location = options.location || exports.PVector.create(0, 0);
   this.controlObj = options.controlObj || null;
 }
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Camera.name = 'camera';
 
 exports.Camera = Camera;

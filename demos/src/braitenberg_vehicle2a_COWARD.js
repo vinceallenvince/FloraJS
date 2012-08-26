@@ -16,11 +16,13 @@ var elements = function() {
   var sensor1 = new Flora.Sensor({
     type: "cold",
     behavior: "COWARD",
-    sensitivity: 2,
+    sensitivity: 3,
     offsetDistance: 40,
     opacity: 0,
     offsetAngle: 0,
-    border: "1px solid rgb(132, 192, 201)",
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: [132, 192, 201],
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
@@ -125,12 +127,13 @@ var elements = function() {
 
   var i, max, w, h, d;
 
-  var pl = new Flora.Palette();
+  var clr = Flora.defaultColors.getColor('cold');
+  var pl = new Flora.ColorPalette();
     pl.addColor({
     min: 5,
     max: 12,
-    startColor: [88, 129, 135],
-    endColor: [171, 244, 255]
+    startColor: clr.startColor,
+    endColor: clr.endColor
   });
 
   for (i = 0, max = (0.05 * Flora.world.width); i < max; i += 1) {

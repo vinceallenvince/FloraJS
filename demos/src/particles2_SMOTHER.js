@@ -10,7 +10,9 @@ system.start(function() {
     showStats: false,
     gravity: Flora.PVector.create(0, 0),
     style: {
-      backgroundImage: "-webkit-radial-gradient(circle, #444, #000)"
+      background: '#000',
+      backgroundImage: '-webkit-radial-gradient(circle, #333, #000)',
+      border: 0
     }
   });
 
@@ -22,14 +24,13 @@ system.start(function() {
   });
 
   var smoke = new Flora.ParticleSystem({
+    burstRate: 1,
     target: walker,
-    width: "10px",
-    height: "10px",
     color: [200, 200, 200],
     isStatic: false,
     particle: function () {
 
-      var pl = new Flora.Palette();
+      var pl = new Flora.ColorPalette();
 
       pl.addColor({
         min: 1,
@@ -43,8 +44,8 @@ system.start(function() {
         acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4)),
         width: 0,
         height: 0,
-        borderRadius: "100%",
-        boxShadow: "1px 1px 20px 20px rgba(" + pl.getColor() + ", .5)"
+        borderRadius: '100%',
+        boxShadow: '1px 1px 20px 20px rgba(' + pl.getColor().toString() + ', .5)'
       };
     }
   });

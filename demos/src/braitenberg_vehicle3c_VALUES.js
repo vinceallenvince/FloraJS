@@ -14,13 +14,15 @@ var elements = function() {
   });
 
   var sensor1 = new Flora.Sensor({
-    type: "heat",
-    behavior: "COWARD",
+    type: 'heat',
+    behavior: 'COWARD',
     sensitivity: 3,
     offsetDistance: 40,
     opacity: 0,
     offsetAngle: 0,
-    border: "1px solid rgb(255, 69, 0)",
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: [255, 69, 0],
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
@@ -45,13 +47,15 @@ var elements = function() {
   });
 
   var sensor2 = new Flora.Sensor({
-    type: "light",
-    behavior: "AGGRESSIVE",
+    type: 'light',
+    behavior: 'AGGRESSIVE',
     sensitivity: 3,
     offsetDistance: 40,
     opacity: 0,
     offsetAngle: 0,
-    border: "1px solid rgb(255, 200, 0)",
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: [255, 200, 0],
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
@@ -76,13 +80,15 @@ var elements = function() {
   });
 
   var sensor3 = new Flora.Sensor({
-    type: "oxygen",
-    behavior: "LIKES",
+    type: 'oxygen',
+    behavior: 'LIKES',
     sensitivity: 3,
     offsetDistance: 40,
     opacity: 0,
     offsetAngle: 0,
-    border: "1px solid rgb(0, 174, 239)",
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: [0, 174, 239],
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
@@ -107,13 +113,15 @@ var elements = function() {
   });
 
   var sensor4 = new Flora.Sensor({
-    type: "food",
-    behavior: "LIKES",
+    type: 'food',
+    behavior: 'LIKES',
     sensitivity: 3,
     offsetDistance: 40,
     opacity: 0,
     offsetAngle: 0,
-    border: "1px solid rgb(155, 231, 93)",
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: [155, 231, 93],
     afterStep: function () {
       if (this.activated) {
         if (!this.connector) {
@@ -148,14 +156,14 @@ var elements = function() {
     sensors: [sensor1, sensor2, sensor3, sensor4],
     velocity: Flora.PVector.create(1, 0),
     color: [255, 255, 255],
-    borderRadius: "100%",
-    boxShadow: "0 0 10px 10px rgba(255, 255, 255, 0.15)",
+    borderRadius: '100%',
+    boxShadow: '0 0 10px 10px rgba(255, 255, 255, 0.15)',
     eyeRotation: 0,
     view: function () {
-      var obj = document.createElement("div"),
-      eye = document.createElement("div");
-      eye.id = "eye";
-      eye.className = "eye";
+      var obj = document.createElement('div'),
+      eye = document.createElement('div');
+      eye.id = 'eye';
+      eye.className = 'eye';
       obj.appendChild(eye);
       return obj;
     },
@@ -167,7 +175,7 @@ var elements = function() {
         if (this.sensors[i].activated) {
           check = true;
           alpha = 0.25;
-          this.boxShadow = "0 0 10px 10px rgba(255, 255, 255, " + alpha + ")";
+          this.boxShadow = '0 0 10px 10px rgba(255, 255, 255, ' + alpha + ')';
         }
       }
 
@@ -184,7 +192,7 @@ var elements = function() {
           this.applyForce(dir);
         }
 
-        this.boxShadow = "0 0 10px 10px rgba(255, 255, 255, 0.15)";
+        this.boxShadow = '0 0 10px 10px rgba(255, 255, 255, 0.15)';
       }
 
       // need random force
@@ -257,10 +265,10 @@ var elements = function() {
       }
 
       // eye
-      var eye = document.getElementById("eye"),
+      var eye = document.getElementById('eye'),
           a = this.eyeRotation;
 
-      eye.style.webkitTransform = "rotate(" + a + "deg)";
+      eye.style.webkitTransform = 'rotate(' + a + 'deg)';
       this.eyeRotation += Flora.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 3, 50);
     }
   });
@@ -275,12 +283,13 @@ var elements = function() {
 
   var i, max, w, h, d;
 
-  var pl = new Flora.Palette();
+  var clr = Flora.defaultColors.getColor('heat');
+  var pl = new Flora.ColorPalette();
   pl.addColor({
-    min: 5,
-    max: 12,
-    startColor: [255, 132, 86],
-    endColor: [175, 47, 0]
+    min: 6,
+    max: 24,
+    startColor: clr.startColor,
+    endColor: clr.endColor
   });
 
   for (i = 0, max = (0.015 * Flora.world.width); i < max; i += 1) {
@@ -298,12 +307,13 @@ var elements = function() {
     });
   }
 
-  pl = new Flora.Palette();
+  clr = Flora.defaultColors.getColor('light');
+  pl = new Flora.ColorPalette();
   pl.addColor({
     min: 5,
     max: 12,
-    startColor: [255, 227, 127],
-    endColor: [189, 148, 0]
+    startColor: clr.startColor,
+    endColor: clr.endColor
   });
 
   for (i = 0, max = (0.015 * Flora.world.width); i < max; i += 1) {
@@ -321,12 +331,13 @@ var elements = function() {
     });
   }
 
-  pl = new Flora.Palette();
+  clr = Flora.defaultColors.getColor('oxygen');
+  pl = new Flora.ColorPalette();
   pl.addColor({
     min: 5,
     max: 12,
-    startColor: [109, 215, 255],
-    endColor: [0, 140, 192]
+    startColor: clr.startColor,
+    endColor: clr.endColor
   });
 
   for (i = 0, max = (0.005 * Flora.world.width); i < max; i += 1) {
@@ -344,12 +355,13 @@ var elements = function() {
     });
   }
 
-  pl = new Flora.Palette();
+  clr = Flora.defaultColors.getColor('food');
+  pl = new Flora.ColorPalette();
   pl.addColor({
     min: 5,
     max: 12,
-    startColor: [186, 255, 130],
-    endColor: [84, 187, 0]
+    startColor: clr.startColor,
+    endColor: clr.endColor
   });
 
   for (i = 0, max = (0.005 * Flora.world.width); i < max; i += 1) {
@@ -368,8 +380,8 @@ var elements = function() {
   }
 };
 
-Flora.Utils.addEvent(document.getElementById("buttonStart"), "mouseup", function() {
+Flora.Utils.addEvent(document.getElementById('buttonStart'), "mouseup", function() {
   'use strict';
-  document.getElementById("containerMenu").removeChild(document.getElementById("containerButton"));
+  document.getElementById('containerMenu').removeChild(document.getElementById('containerButton'));
   system.start(elements);
 });

@@ -1,4 +1,4 @@
-/*global exports, window */
+/*global exports, window, Modernizr */
 /**
     A module representing a FloraSystem.
     @module florasystem
@@ -102,6 +102,11 @@ function FloraSystem(el) {
     }
   };
 }
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+FloraSystem.name = 'florasystem';
 
 /**
  * Starts a FloraSystem.

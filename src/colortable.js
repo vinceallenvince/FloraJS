@@ -27,6 +27,11 @@ ColorTable.prototype.addColor = function(options) {
   return this;
 };
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+ColorTable.name = 'colortable';
+
 ColorTable.prototype.getColor = function(name, startColor, endColor) {
 
   'use strict';

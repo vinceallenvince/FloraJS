@@ -4,13 +4,22 @@
     @module BorderPalette
  */
 
-function BorderPalette(opt_options) {
+/**
+ * Creates a new BorderPalette object.
+ *
+ * @constructor
+ */
+function BorderPalette() {
 
   'use strict';
 
   this.borders = [];
 }
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+BorderPalette.name = 'borderpalette';
 
 BorderPalette.prototype.addBorder = function(options) {
 

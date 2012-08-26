@@ -33,6 +33,11 @@ Obj.events =[
 ];
 
 /**
+ * Define a name property.
+ */
+Obj.name = 'obj';
+
+/**
  * Called by a mouseenter event listener.
  *
  * @param {Object} e The event object passed by the listener.
@@ -157,7 +162,7 @@ Obj.prototype.draw = function() {
     w: this.width,
     h: this.height,
     cm: this.colorMode,
-    c: this.color,
+    color: this.color,
     z: this.zIndex,
     borderWidth: this.borderWidth,
     borderStyle: this.borderStyle,
@@ -176,8 +181,15 @@ Obj.prototype.getCSSText = function(props) {
 
   'use strict';
 
-  if (!props.c) {
-    props.c = [];
+  if (!props.color) {
+    props.color = [];
+    props.background = null;
+  } else {
+    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
+  }
+
+  if (!props.borderColor) {
+    props.borderColor = [];
   }
 
   if (Modernizr.csstransforms3d) {
@@ -188,11 +200,11 @@ Obj.prototype.getCSSText = function(props) {
       'opacity: ' + props.o,
       'width: ' + props.w + 'px',
       'height: ' + props.h + 'px',
-      'background: ' + props.cm + '(' + props.c[0] + ', ' + props.c[1] + ', ' + props.c[2] + ')',
+      'background: ' + props.background,
       'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth,
+      'border-width: ' + props.borderWidth + 'px',
       'border-style: ' + props.borderStyle,
-      'border-color: ' + props.borderColor,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
       'border-radius: ' + props.borderRadius,
       'box-shadow: ' + props.boxShadow
     ].join(';');
@@ -201,24 +213,33 @@ Obj.prototype.getCSSText = function(props) {
       '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       'opacity: ' + props.o,
       'width: ' + props.w + 'px',
       'height: ' + props.h + 'px',
-      'background: ' + props.cm + '(' + props.c[0] + ', ' + props.c[1] + ', ' + props.c[2] + ')',
+      'background: ' + props.background,
       'z-index: ' + props.z,
-      'border: ' + props.border,
+      'border-width: ' + props.borderWidth + 'px',
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
       'border-radius: ' + props.borderRadius,
       'box-shadow: ' + props.boxShadow
     ].join(';');
   } else {
     return [
       'position: absolute',
-      'left' + props.x + 'px',
-      'top' + props.y + 'px',
-      'width' + props.w + 'px',
-      'height' + props.h + 'px',
-      'opacity' + props.o,
-      'z-index'+ props.z
+      'left: ' + props.x + 'px',
+      'top: ' + props.y + 'px',
+      'width: ' + props.w + 'px',
+      'height: ' + props.h + 'px',
+      'background: ' + props.background,
+      'opacity: ' + props.o,
+      'z-index: '+ props.z,
+      'border-width: ' + props.borderWidth + 'px',
+      'border-style: ' + props.borderStyle,
+      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
+      'border-radius: ' + props.borderRadius,
+      'box-shadow: ' + props.boxShadow
     ].join(';');
   }
 };

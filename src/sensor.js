@@ -39,9 +39,14 @@ function Sensor(opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.target = options.target || null;
-  this.activated = options.activated || false;
+  this.activated = !!options.activated;
 }
 exports.Utils.inherit(Sensor, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Sensor.name = 'sensor';
 
 /**
  * Called every frame, step() updates the instance's properties.

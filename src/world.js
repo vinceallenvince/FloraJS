@@ -73,6 +73,11 @@ function World(opt_options) {
 }
 
 /**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+World.name = 'world';
+
+/**
  * Configures a new World.
  */
 World.prototype.configure = function() { // should be called after doc ready()
@@ -95,7 +100,8 @@ World.prototype.update = function(opt_props) {
 
   'use strict';
 
-  var i, key, props = exports.Interface.getDataType(opt_props) === "object" ? opt_props : {};
+  var i, key, cssText = '',
+      props = exports.Interface.getDataType(opt_props) === "object" ? opt_props : {};
 
   for (key in props) {
     if (props.hasOwnProperty(key)) {
@@ -108,14 +114,27 @@ World.prototype.update = function(opt_props) {
     this.height = parseInt(this.el.style.height.replace('px', ''), 10);
   }
 
-  if (props.style) {
-    for (i in props.style) {
-      if (props.style.hasOwnProperty(i)) {
-        this.el.style[i] = props.style[i];
+  if (!this.el.style.setAttribute) { // WC3
+    if (props.style) {
+      for (i in props.style) {
+        if (props.style.hasOwnProperty(i)) {
+          this.el.style[i] = props.style[i];
+          cssText = cssText + i + ': ' + props.style[i] + ';';
+        }
       }
     }
+  } else { // IE
+    if (props.style) {
+      for (i in props.style) {
+        if (props.style.hasOwnProperty(i)) {
+          cssText = cssText + i + ': ' + props.style[i] + ';';
+        }
+      }
+    }
+    this.el.style.setAttribute('cssText', cssText, 0);
   }
-  if (props.showStats) {
+
+  if (props.showStats && window.addEventListener) {
     this.createStats();
   }
 };

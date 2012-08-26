@@ -1,4 +1,5 @@
-/** 
+/*global exports */
+/**
     A module representing Walker.
     @module Walker
  */
@@ -28,7 +29,7 @@
  * @param {number} [opt_options.height = 10] Height
  * @param {number} [opt_options.maxSpeed = 30] Maximum speed
  * @param {boolean} [opt_options.wrapEdges = false] Set to true to set the object's location to the opposite side of the world if the object moves outside the world's bounds.
- * @param {boolean} [opt_options.isStatic = false] If true, object will not move.  
+ * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
  */
 function Walker(opt_options) {
 
@@ -37,7 +38,7 @@ function Walker(opt_options) {
   var options = opt_options || {};
 
   exports.Mover.call(this, options);
-  
+
   this.isPerlin = options.isPerlin || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
   this.perlinSpeed = options.perlinSpeed || 0.005;
@@ -45,24 +46,28 @@ function Walker(opt_options) {
   this.perlinAccelLow = options.perlinAccelLow || -0.075;
   this.perlinAccelHigh = options.perlinAccelHigh || 0.075;
   this.offsetX = options.offsetX || Math.random() * 10000;
-  this.offsetY = options.offsetY || Math.random() * 10000;   
+  this.offsetY = options.offsetY || Math.random() * 10000;
   this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
   this.isHarmonic = !!options.isHarmonic;
   this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(6, 6);
-  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);    
+  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);
   this.width = options.width || 10;
-  this.height = options.height || 10;        
+  this.height = options.height || 10;
   this.maxSpeed = options.maxSpeed || 30;
   this.wrapEdges = !!options.wrapEdges;
   this.isStatic = !!options.isStatic;
 }
 exports.Utils.inherit(Walker, exports.Mover);
 
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Walker.name = 'walker';
 
 /**
  * Called every frame, step() updates the instance's properties.
- */     
+ */
 Walker.prototype.step = function () {
 
   'use strict';
@@ -77,7 +82,7 @@ Walker.prototype.step = function () {
   if (!this.isStatic && !this.isPressed) {
 
     if (this.isPerlin) {
-      
+
       this.perlinTime += this.perlinSpeed;
 
       if (this.remainsOnScreen) {
@@ -91,7 +96,7 @@ Walker.prototype.step = function () {
       }
 
     } else {
-      
+
       // start -- APPLY FORCES
 
       if (world.c) { // friction
@@ -105,7 +110,7 @@ Walker.prototype.step = function () {
       this.applyForce(world.wind); // wind
       this.applyForce(world.gravity); // gravity
     }
-    
+
     if (this.isHarmonic) {
       this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.x);
       this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.y);
@@ -120,7 +125,7 @@ Walker.prototype.step = function () {
     if (this.target) { // follow target
       this.applyForce(this.seek(this.target));
     }
-    
+
     // end -- APPLY FORCES
 
     this.velocity.add(this.acceleration); // add acceleration
@@ -128,9 +133,9 @@ Walker.prototype.step = function () {
     if (this.maxSpeed) {
       this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
     }
-    
+
     this.location.add(this.velocity); // add velocity
-    
+
     if (this.pointToDirection) { // object rotates toward direction
       if (this.velocity.mag() > 0.1) { // rotate toward direction?
         this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
@@ -151,5 +156,5 @@ Walker.prototype.step = function () {
 
     this.acceleration.mult(0); // reset acceleration
   }
-};  
+};
 exports.Walker = Walker;
