@@ -35,7 +35,7 @@ function FloraSystem(el) {
   };
 
   exports.world = new exports.World();
-  exports.world.configure(); // call configure after DOM has loaded
+  exports.world.configure(this.el); // call configure after DOM has loaded
   exports.elements.push(exports.world);
 
   exports.Camera = new exports.Camera();

@@ -9,11 +9,7 @@ system.start(function() {
     c: 0,
     showStats: false,
     gravity: Flora.PVector.create(0, 0),
-    style: {
-      background: '#000',
-      backgroundImage: '-webkit-radial-gradient(circle, #333, #000)',
-      border: 0
-    }
+    borderWidth: 0
   });
 
   var ps = new Flora.ParticleSystem({

@@ -34,6 +34,16 @@ function World(opt_options) {
   this.location = options.location || exports.PVector.create(0, 0);
   this.zSorted = !!options.zSorted;
 
+  this.scale = options.scale || 1;
+  this.angle = options.angle || 0;
+  this.opacity = options.opacity || 1;
+  this.colorMode = options.colorMode || 'rgb';
+  this.color = options.color || [0, 0, 0];
+  this.borderWidth = options.borderWidth || 1;
+  this.borderStyle = options.borderStyle || 'solid';
+  this.borderColor = options.borderColor || [100, 100, 100];
+  this.borderRadius = options.borderRadius || 0;
+  this.boxShadow = options.boxShadow || 0;
 
   this.width = $(window).width();
   this.height = $(window).height();
@@ -80,13 +90,13 @@ World.name = 'world';
 /**
  * Configures a new World.
  */
-World.prototype.configure = function() { // should be called after doc ready()
+World.prototype.configure = function(el) { // should be called after doc ready()
 
   'use strict';
 
-  this.el = document.body;
-  this.el.style.width = this.width + "px";
-  this.el.style.height = this.height + "px";
+  this.el = el || document.body;
+  this.el.style.width = this.width + 'px';
+  this.el.style.height = this.height + 'px';
 };
 
 /**
@@ -101,7 +111,7 @@ World.prototype.update = function(opt_props) {
   'use strict';
 
   var i, key, cssText = '',
-      props = exports.Interface.getDataType(opt_props) === "object" ? opt_props : {};
+      props = exports.Interface.getDataType(opt_props) === 'object' ? opt_props : {};
 
   for (key in props) {
     if (props.hasOwnProperty(key)) {
@@ -114,7 +124,7 @@ World.prototype.update = function(opt_props) {
     this.height = parseInt(this.el.style.height.replace('px', ''), 10);
   }
 
-  if (!this.el.style.setAttribute) { // WC3
+  /*if (!this.el.style.setAttribute) { // WC3
     if (props.style) {
       for (i in props.style) {
         if (props.style.hasOwnProperty(i)) {
@@ -132,7 +142,7 @@ World.prototype.update = function(opt_props) {
       }
     }
     this.el.style.setAttribute('cssText', cssText, 0);
-  }
+  }*/
 
   if (props.showStats && window.addEventListener) {
     this.createStats();
@@ -269,42 +279,22 @@ World.prototype.draw = function() {
 
   'use strict';
 
-  var x = this.location.x,
-    y = this.location.y,
-    s = 1,
-    a = 0,
-    o = 1,
-    w = this.width,
-    h = this.height,
-    z = this.zIndex,
-    style = this.el.style;
-
-  if (Modernizr.csstransforms3d) { //  && Modernizr.touch
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.opacity = o;
-    style.width = w + 'px';
-    style.height = h + 'px';
-    style.zIndex = z;
-  } else if (Modernizr.csstransforms) {
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.opacity = o;
-    style.width = w + 'px';
-    style.height = h + 'px';
-    style.zIndex = z;
-  } else {
-    $(this.el).css({
-      'position': 'absolute',
-      'left': x + 'px',
-      'top': y + 'px',
-      'width': w + 'px',
-      'height': h + 'px',
-      'opacity': o,
-      'zIndex': z
-    });
-  }
+  this.el.style.cssText = exports.Utils.getCSSText({
+    x: this.location.x,
+    y: this.location.y,
+    s: this.scale,
+    a: this.angle,
+    o: this.opacity,
+    w: this.width,
+    h: this.height,
+    cm: this.colorMode,
+    color: this.color,
+    z: this.zIndex,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor: this.borderColor,
+    borderRadius: this.borderRadius,
+    boxShadow: this.boxShadow
+  });
 };
 exports.World = World;

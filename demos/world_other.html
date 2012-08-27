@@ -12,18 +12,19 @@
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-    <script type="text/javascript" charset="utf-8">
+  <div id='otherWorld'></div>
+  <script type="text/javascript" charset="utf-8">
 
-      var system = new exports.FloraSystem();
+    var system = new exports.FloraSystem(document.getElementById('otherWorld'));
 
-      system.start(function () {
-
-         Flora.world.update({
-          showStats: true
-        });
-
-        new Flora.Mover();
+    system.start(function () {
+       Flora.world.update({
+        showStats: true,
+        width: 300,
+        height: 300
       });
+      new Flora.Mover();
+    });
   </script>
 </body>
 </html>

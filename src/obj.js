@@ -1,4 +1,4 @@
-/*global exports, $, console, Modernizr */
+/*global exports, $, console */
 /**
     A module representing an Obj.
     @module Obj
@@ -153,7 +153,7 @@ Obj.prototype.draw = function() {
 
   'use strict';
 
-  this.el.style.cssText = this.getCSSText({
+  this.el.style.cssText = exports.Utils.getCSSText({
     x: this.location.x - this.width/2,
     y: this.location.y - this.height/2,
     s: this.scale,
@@ -172,75 +172,4 @@ Obj.prototype.draw = function() {
   });
 };
 
-/**
- * Builds a cssText string based on properties passed by draw().
- *
- * @param {Object} props Properties describing the object.
- */
-Obj.prototype.getCSSText = function(props) {
-
-  'use strict';
-
-  if (!props.color) {
-    props.color = [];
-    props.background = null;
-  } else {
-    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
-  }
-
-  if (!props.borderColor) {
-    props.borderColor = [];
-  }
-
-  if (Modernizr.csstransforms3d) {
-    return [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      'opacity: ' + props.o,
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  } else if (Modernizr.csstransforms) {
-    return [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      'opacity: ' + props.o,
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  } else {
-    return [
-      'position: absolute',
-      'left: ' + props.x + 'px',
-      'top: ' + props.y + 'px',
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'opacity: ' + props.o,
-      'z-index: '+ props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  }
-};
 exports.Obj = Obj;
