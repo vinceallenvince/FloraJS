@@ -41,7 +41,7 @@ function FlowFieldMarker(options) {
     nose.className = "nose";
     el.appendChild(nose);
 
-    el.style.cssText = this.getCSSText({
+    el.style.cssText = exports.Utils.getCSSText({
       x: options.location.x - options.width/2,
       y: options.location.y - options.height/2,
       s: options.scale,
@@ -67,77 +67,5 @@ function FlowFieldMarker(options) {
  * Define a name property. Used to assign a class name and prefix an id.
  */
 FlowFieldMarker.name = 'flowfieldmarker';
-
-/**
- * Builds a cssText string based on properties passed by the constructor.
- *
- * @param {Object} props Properties describing the marker.
- */
-FlowFieldMarker.prototype.getCSSText = function(props) {
-
-  'use strict';
-
-  if (!props.color) {
-    props.color = [];
-    props.background = null;
-  } else {
-    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
-  }
-
-  if (!props.borderColor) {
-    props.borderColor = [];
-  }
-
-  if (Modernizr.csstransforms3d) {
-    return [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      'opacity: ' + props.o,
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  } else if (Modernizr.csstransforms) {
-    return [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      'opacity: ' + props.o,
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  } else {
-    return [
-      'position: absolute',
-      'left' + props.x + 'px',
-      'top' + props.y + 'px',
-      'width' + props.w + 'px',
-      'height' + props.h + 'px',
-      'background: ' + props.background,
-      'opacity' + props.o,
-      'z-index'+ props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  }
-};
 
 exports.FlowFieldMarker = FlowFieldMarker;

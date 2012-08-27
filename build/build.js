@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: August 26, 2012 02:35:54 */
+/* Build time: August 27, 2012 03:52:21 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -104,7 +104,7 @@ function FloraSystem(el) {
   };
 
   exports.world = new exports.World();
-  exports.world.configure(); // call configure after DOM has loaded
+  exports.world.configure(this.el); // call configure after DOM has loaded
   exports.elements.push(exports.world);
 
   exports.Camera = new exports.Camera();
@@ -192,9 +192,9 @@ FloraSystem.prototype.start = function (func) {
 };
 
 exports.FloraSystem = FloraSystem;
-/*global console */
+/*global console, Modernizr */
 /*jshint supernew:true */
-/** 
+/**
     A module representing Utils.
     @module Utils
  */
@@ -209,7 +209,7 @@ var Utils = (function () {
 
   /** @private */
   var PI = Math.PI;
-  
+
   /** @scope Utils */
   return {
     inherit: function(cls, superclass) {
@@ -227,7 +227,7 @@ var Utils = (function () {
      * @param {number} min2 Lower bound of the value's target range.
      * @param {number} max2 Upper bound of the value's target range.
      * @returns {number} A number.
-     */     
+     */
     map: function(value, min1, max1, min2, max2) { // returns a new value relative to a new rangee
       var unitratio = (value - min1) / (max1 - min1);
       return (unitratio * (max2 - min2)) + min2;
@@ -251,7 +251,7 @@ var Utils = (function () {
      *
      * @param {number} degrees The degrees value to be converted.
      * @returns {number} A number in radians.
-     */       
+     */
     degreesToRadians: function(degrees) {
       if (typeof degrees !== 'undefined') {
         return 2 * PI * (degrees/360);
@@ -267,7 +267,7 @@ var Utils = (function () {
      *
      * @param {number} radians The radians value to be converted.
      * @returns {number} A number in degrees.
-     */       
+     */
     radiansToDegrees: function(radians) {
       if (typeof radians !== 'undefined') {
         return radians * (180/PI);
@@ -285,7 +285,7 @@ var Utils = (function () {
      * @param {number} low The lower bound of the range.
      * @param {number} high The upper bound of the range.
      * @returns {number} A number.
-     */     
+     */
     constrain: function(val, low, high) {
       if (val > high) {
         return high;
@@ -295,12 +295,12 @@ var Utils = (function () {
       return val;
     },
     /**
-     * Returns a new object with all properties and methods of the 
+     * Returns a new object with all properties and methods of the
      * old object copied to the new object's prototype.
      *
      * @param {Object} object The object to clone.
      * @returns {Object} An object.
-     */       
+     */
     clone: function(object) {
         function F() {}
         F.prototype = object;
@@ -310,7 +310,7 @@ var Utils = (function () {
      * Generate a unique id based on the current time in milliseconds + a random number.
      *
      * @returns {number} A number.
-     */     
+     */
     getUniqueId: function() {
          var dateObj = new Date();
          return dateObj.getTime() + this.getRandomNumber(0,1000000000);
@@ -320,9 +320,9 @@ var Utils = (function () {
      *
      * @param {Object} target The element to receive the event listener.
      * @param {string} eventType The event type.
-     * @param {function} The function to run when the event is triggered.    
-     */     
-    addEvent: function(target, eventType, handler) {      
+     * @param {function} The function to run when the event is triggered.
+     */
+    addEvent: function(target, eventType, handler) {
       if (target.addEventListener) { // W3C
         this.addEventHandler = function(target, eventType, handler) {
           target.addEventListener(eventType, handler, false);
@@ -333,6 +333,58 @@ var Utils = (function () {
         };
       }
       this.addEventHandler(target, eventType, handler);
+    },
+    getCSSText: function(props) {
+
+      var positionStr = '';
+
+      if (!props.color) {
+        props.color = [];
+        props.background = null;
+      } else {
+        props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
+      }
+
+      if (!props.borderColor) {
+        props.borderColor = [];
+        props.borderColorStr = '';
+      } else {
+        props.borderColorStr = props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')';
+      }
+
+      if (Modernizr.csstransforms3d) {
+        positionStr = [
+          '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+          '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+          '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
+        ].join(';');
+      } else if (Modernizr.csstransforms) {
+        positionStr = [
+          '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+          '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+          '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
+        ].join(';');
+      } else {
+        positionStr = [
+          'position: absolute',
+          'left: ' + props.x + 'px',
+          'top: ' + props.y + 'px'
+        ].join(';');
+      }
+
+      return [
+        positionStr,
+        'opacity: ' + props.o,
+        'width: ' + props.w + 'px',
+        'height: ' + props.h + 'px',
+        'background: ' + props.background,
+        'z-index: ' + props.z,
+        'border-width: ' + props.borderWidth + 'px',
+        'border-style: ' + props.borderStyle,
+        'border-color: ' + props.borderColorStr,
+        'border-radius: ' + props.borderRadius,
+        'box-shadow: ' + props.boxShadow
+      ].join(';');
     }
   };
 }());
@@ -1211,6 +1263,16 @@ function World(opt_options) {
   this.location = options.location || exports.PVector.create(0, 0);
   this.zSorted = !!options.zSorted;
 
+  this.scale = options.scale || 1;
+  this.angle = options.angle || 0;
+  this.opacity = options.opacity || 1;
+  this.colorMode = options.colorMode || 'rgb';
+  this.color = options.color || [0, 0, 0];
+  this.borderWidth = options.borderWidth || 1;
+  this.borderStyle = options.borderStyle || 'solid';
+  this.borderColor = options.borderColor || [100, 100, 100];
+  this.borderRadius = options.borderRadius || 0;
+  this.boxShadow = options.boxShadow || 0;
 
   this.width = $(window).width();
   this.height = $(window).height();
@@ -1257,13 +1319,13 @@ World.name = 'world';
 /**
  * Configures a new World.
  */
-World.prototype.configure = function() { // should be called after doc ready()
+World.prototype.configure = function(el) { // should be called after doc ready()
 
   'use strict';
 
-  this.el = document.body;
-  this.el.style.width = this.width + "px";
-  this.el.style.height = this.height + "px";
+  this.el = el || document.body;
+  this.el.style.width = this.width + 'px';
+  this.el.style.height = this.height + 'px';
 };
 
 /**
@@ -1278,7 +1340,7 @@ World.prototype.update = function(opt_props) {
   'use strict';
 
   var i, key, cssText = '',
-      props = exports.Interface.getDataType(opt_props) === "object" ? opt_props : {};
+      props = exports.Interface.getDataType(opt_props) === 'object' ? opt_props : {};
 
   for (key in props) {
     if (props.hasOwnProperty(key)) {
@@ -1291,7 +1353,7 @@ World.prototype.update = function(opt_props) {
     this.height = parseInt(this.el.style.height.replace('px', ''), 10);
   }
 
-  if (!this.el.style.setAttribute) { // WC3
+  /*if (!this.el.style.setAttribute) { // WC3
     if (props.style) {
       for (i in props.style) {
         if (props.style.hasOwnProperty(i)) {
@@ -1309,7 +1371,7 @@ World.prototype.update = function(opt_props) {
       }
     }
     this.el.style.setAttribute('cssText', cssText, 0);
-  }
+  }*/
 
   if (props.showStats && window.addEventListener) {
     this.createStats();
@@ -1446,43 +1508,23 @@ World.prototype.draw = function() {
 
   'use strict';
 
-  var x = this.location.x,
-    y = this.location.y,
-    s = 1,
-    a = 0,
-    o = 1,
-    w = this.width,
-    h = this.height,
-    z = this.zIndex,
-    style = this.el.style;
-
-  if (Modernizr.csstransforms3d) { //  && Modernizr.touch
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) translateZ(0) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.opacity = o;
-    style.width = w + 'px';
-    style.height = h + 'px';
-    style.zIndex = z;
-  } else if (Modernizr.csstransforms) {
-    style.webkitTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.MozTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.OTransform = 'translateX(' + x + 'px) translateY(' + y + 'px) rotate(' + a + 'deg) scaleX(' + s + ') scaleY(' + s + ')';
-    style.opacity = o;
-    style.width = w + 'px';
-    style.height = h + 'px';
-    style.zIndex = z;
-  } else {
-    $(this.el).css({
-      'position': 'absolute',
-      'left': x + 'px',
-      'top': y + 'px',
-      'width': w + 'px',
-      'height': h + 'px',
-      'opacity': o,
-      'zIndex': z
-    });
-  }
+  this.el.style.cssText = exports.Utils.getCSSText({
+    x: this.location.x,
+    y: this.location.y,
+    s: this.scale,
+    a: this.angle,
+    o: this.opacity,
+    w: this.width,
+    h: this.height,
+    cm: this.colorMode,
+    color: this.color,
+    z: this.zIndex,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor: this.borderColor,
+    borderRadius: this.borderRadius,
+    boxShadow: this.boxShadow
+  });
 };
 exports.World = World;
 /*global exports */
@@ -1515,7 +1557,7 @@ function Camera(opt_options) {
 Camera.name = 'camera';
 
 exports.Camera = Camera;
-/*global exports, $, console, Modernizr */
+/*global exports, $, console */
 /**
     A module representing an Obj.
     @module Obj
@@ -1670,7 +1712,7 @@ Obj.prototype.draw = function() {
 
   'use strict';
 
-  this.el.style.cssText = this.getCSSText({
+  this.el.style.cssText = exports.Utils.getCSSText({
     x: this.location.x - this.width/2,
     y: this.location.y - this.height/2,
     s: this.scale,
@@ -1689,77 +1731,6 @@ Obj.prototype.draw = function() {
   });
 };
 
-/**
- * Builds a cssText string based on properties passed by draw().
- *
- * @param {Object} props Properties describing the object.
- */
-Obj.prototype.getCSSText = function(props) {
-
-  'use strict';
-
-  if (!props.color) {
-    props.color = [];
-    props.background = null;
-  } else {
-    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
-  }
-
-  if (!props.borderColor) {
-    props.borderColor = [];
-  }
-
-  if (Modernizr.csstransforms3d) {
-    return [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      'opacity: ' + props.o,
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  } else if (Modernizr.csstransforms) {
-    return [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      'opacity: ' + props.o,
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  } else {
-    return [
-      'position: absolute',
-      'left: ' + props.x + 'px',
-      'top: ' + props.y + 'px',
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'opacity: ' + props.o,
-      'z-index: '+ props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  }
-};
 exports.Obj = Obj;
 /*global exports, $ */
 /**
@@ -3563,7 +3534,7 @@ function FlowFieldMarker(options) {
     nose.className = "nose";
     el.appendChild(nose);
 
-    el.style.cssText = this.getCSSText({
+    el.style.cssText = exports.Utils.getCSSText({
       x: options.location.x - options.width/2,
       y: options.location.y - options.height/2,
       s: options.scale,
@@ -3589,78 +3560,6 @@ function FlowFieldMarker(options) {
  * Define a name property. Used to assign a class name and prefix an id.
  */
 FlowFieldMarker.name = 'flowfieldmarker';
-
-/**
- * Builds a cssText string based on properties passed by the constructor.
- *
- * @param {Object} props Properties describing the marker.
- */
-FlowFieldMarker.prototype.getCSSText = function(props) {
-
-  'use strict';
-
-  if (!props.color) {
-    props.color = [];
-    props.background = null;
-  } else {
-    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
-  }
-
-  if (!props.borderColor) {
-    props.borderColor = [];
-  }
-
-  if (Modernizr.csstransforms3d) {
-    return [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      'opacity: ' + props.o,
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  } else if (Modernizr.csstransforms) {
-    return [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      'opacity: ' + props.o,
-      'width: ' + props.w + 'px',
-      'height: ' + props.h + 'px',
-      'background: ' + props.background,
-      'z-index: ' + props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  } else {
-    return [
-      'position: absolute',
-      'left' + props.x + 'px',
-      'top' + props.y + 'px',
-      'width' + props.w + 'px',
-      'height' + props.h + 'px',
-      'background: ' + props.background,
-      'opacity' + props.o,
-      'z-index'+ props.z,
-      'border-width: ' + props.borderWidth + 'px',
-      'border-style: ' + props.borderStyle,
-      'border-color: ' + props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')',
-      'border-radius: ' + props.borderRadius,
-      'box-shadow: ' + props.boxShadow
-    ].join(';');
-  }
-};
 
 exports.FlowFieldMarker = FlowFieldMarker;
 /*global exports */
