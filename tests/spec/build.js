@@ -508,45 +508,6 @@ describe("A new Obj", function() {
     expect(obj.hello).toEqual('hello');
     expect(typeof obj.constructor.name).toEqual('string');
   });
-
-  it("getCSSText() should return a text string.", function() {
-    obj = new exports.Obj({
-      location: {x: 100, y: 100},
-      scale: 1,
-      angle: 90,
-      opacity: 0.75,
-      width: 100,
-      height: 100,
-      colorMode: 'rgb',
-      color: {r: 0, g: 0, b: 0},
-      zIndex: 1,
-      borderWidth: 1,
-      borderStyle: 'solid',
-      borderColor: [255, 69, 0],
-      borderRadius: '100%',
-      boxShadow: '1px 1px 0 0 #000'
-    });
-
-    css = obj.getCSSText({
-      x: obj.location.x - obj.width/2,
-      y: obj.location.y - obj.height/2,
-      s: obj.scale,
-      a: obj.angle,
-      o: obj.opacity,
-      w: obj.width,
-      h: obj.height,
-      cm: obj.colorMode,
-      color: obj.color,
-      z: obj.zIndex,
-      borderWidth: obj.borderWidth,
-      borderStyle: obj.borderStyle,
-      borderColor: obj.borderColor,
-      borderRadius: obj.borderRadius,
-      boxShadow: obj.boxShadow
-    });
-    expect(typeof css).toEqual('string');
-    expect(css.search('border-width')).toNotEqual(-1);
-  });
 });
 
 describe("A new Oxygen", function() {
@@ -790,6 +751,44 @@ describe("Utils", function() {
         clonedObj = utils.clone(newObj);
     expect(clonedObj.hello).toEqual('hello');
     expect(clonedObj.sayHi()).toEqual('hi');
+  });
+  it("getCSSText() should return a text string.", function() {
+    var obj = new exports.Obj({
+      location: {x: 100, y: 100},
+      scale: 1,
+      angle: 90,
+      opacity: 0.75,
+      width: 100,
+      height: 100,
+      colorMode: 'rgb',
+      color: {r: 0, g: 0, b: 0},
+      zIndex: 1,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: [255, 69, 0],
+      borderRadius: '100%',
+      boxShadow: '1px 1px 0 0 #000'
+    });
+
+    css = utils.getCSSText({
+      x: obj.location.x - obj.width/2,
+      y: obj.location.y - obj.height/2,
+      s: obj.scale,
+      a: obj.angle,
+      o: obj.opacity,
+      w: obj.width,
+      h: obj.height,
+      cm: obj.colorMode,
+      color: obj.color,
+      z: obj.zIndex,
+      borderWidth: obj.borderWidth,
+      borderStyle: obj.borderStyle,
+      borderColor: obj.borderColor,
+      borderRadius: obj.borderRadius,
+      boxShadow: obj.boxShadow
+    });
+    expect(typeof css).toEqual('string');
+    expect(css.search('border-width')).toNotEqual(-1);
   });
 });
 
