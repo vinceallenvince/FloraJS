@@ -40,6 +40,8 @@
  * @param {number} [opt_options.bounciness = 0.75] Set the strength of the rebound when an object is outside the
  * world's bounds and wrapEdges = false.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
+ * @param {number} [opt_options.turningRadius = 60] Used to calculate steering force with key control.
+ * @param {number} [opt_options.thrust = 5] Used to apply forward motion with key control.
  * @param {boolean} [opt_options.flocking = false] Set to true to apply flocking forces to this object.
  * @param {number} [opt_options.desiredSeparation = Twice the object's default width] Sets the desired separation from other objects when flocking = true.
  * @param {number} [opt_options.separateStrength = 1] The strength of the force to apply to separating when flocking = true.
@@ -83,7 +85,7 @@ function Mover(opt_options) {
   this.id = options.id || constructorName.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-    this.el = options.view.call();
+    this.el = options.view.call(this);
   } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
     this.el = options.view;
   } else {
@@ -114,7 +116,9 @@ function Mover(opt_options) {
   this.avoidEdges = !!options.avoidEdges;
   this.avoidEdgesStrength = options.avoidEdgesStrength === 0 ? 0 : options.avoidEdgesStrength || 200;
   this.bounciness = options.bounciness === 0 ? 0 : options.bounciness || 0.75;
-  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : options.maxSteeringForce || 10;
+  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : options.maxSteeringForce || 100;
+  this.turningRadius = options.turningRadius === 0 ? 0 : options.turningRadius || 90;
+  this.thrust = options.thrust === 0 ? 0 : options.thrust || 5;
   this.flocking = !!options.flocking;
   this.desiredSeparation = options.desiredSeparation === 0 ? 0 : options.desiredSeparation || this.width * 2;
   this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;

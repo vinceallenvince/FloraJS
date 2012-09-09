@@ -39,7 +39,7 @@ function Walker(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.isPerlin = options.isPerlin || true;
+  this.isPerlin = options.isPerlin === false ? false : options.isPerline || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
   this.perlinSpeed = options.perlinSpeed || 0.005;
   this.perlinTime = options.perlinTime || 0;
@@ -50,11 +50,11 @@ function Walker(opt_options) {
   this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
   this.isHarmonic = !!options.isHarmonic;
-  this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(6, 6);
-  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);
-  this.width = options.width || 10;
-  this.height = options.height || 10;
-  this.maxSpeed = options.maxSpeed || 30;
+  this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(4, 0);
+  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(300, 1);
+  this.width = options.width === 0 ? 0 : options.width || 10;
+  this.height = options.height === 0 ? 0 : options.height || 10;
+  this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 30;
   this.wrapEdges = !!options.wrapEdges;
   this.isStatic = !!options.isStatic;
 }
@@ -152,6 +152,10 @@ Walker.prototype.step = function () {
 
     if (this.lifespan > 0) {
       this.lifespan -= 1;
+    }
+
+    if (this.afterStep) {
+      this.afterStep.apply(this);
     }
 
     this.acceleration.mult(0); // reset acceleration

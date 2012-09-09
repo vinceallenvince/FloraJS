@@ -752,6 +752,12 @@ describe("Utils", function() {
     expect(clonedObj.hello).toEqual('hello');
     expect(clonedObj.sayHi()).toEqual('hi');
   });
+  it("getWindowSize() should return the current window width and height", function() {
+    expect(typeof utils.getWindowSize()).toEqual('object');
+    expect(typeof utils.getWindowSize().width).toEqual('number');
+    expect(typeof utils.getWindowSize().height).toEqual('number');
+
+  });
   it("getCSSText() should return a text string.", function() {
     var obj = new exports.Obj({
       location: {x: 100, y: 100},

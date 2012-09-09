@@ -38,7 +38,11 @@ var config = {
     }
   ],
   keyMap: {
-    toggleWorldPlaystate: 80
+    toggleWorldPlaystate: 80,
+    thrustLeft: 37,
+    thrustUp: 38,
+    thrustRight: 39,
+    thrustDown: 40
   }
 };
 exports.config = config;

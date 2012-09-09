@@ -6,52 +6,89 @@ var Interface = (function () {
 
   /** @scope Interface */
   return {
-  
-      /**
-        @description Compares passed parameters to a set of required parameters.
-        @param {Object} params_passed An object containing parameters passed to a function.
-        @param {Object} params_required An object containing a function's required parameters.
-        @returns {Boolean} Returns true if all required params are present and of the right data type.
-            Returns false if any required params are missing or are the wrong data type. Also returns false if any of the passed params are empty.
-        @example
-params_passed = {
-form: document.getElementById("form"),
-color: "blue",
-total: 100,
-names: ["jimmy", "joey"]
-}
-params_required = {
-form: "object",
-color: "string",
-total: "number",
-names: "array"
-}
-Interface.checkRequiredParams(params_passed, params_required) returns true in this case.
-       */
-    checkRequiredParams: function (params_passed, params_required) {
+
+    /**
+     * @description Compares passed options to a set of required options.
+     * @param {Object} optionsPassed An object containing options passed to a function.
+     * @param {Object} optionsRequired An object containing a function's required options.
+     * @param {string=} opt_from A message or identifier from the calling function.
+     * @returns {boolean} Returns true if all required options are present and of the right data type.
+     *     Returns false if any required options are missing or are the wrong data type. Also returns false
+     *     if any of the passed options are empty.
+     * @example
+     * optionsPassed = {
+     *  form: document.getElementById("form"),
+     *    color: "blue",
+     *  total: "a whole bunch",
+     *   names: ["jimmy", "joey"]
+     * }
+     * optionsRequired = {
+     *   form: "object",
+     *   color: "string",
+     *   total: "number|string",
+     *   names: "array"
+     * }
+     * checkRequiredOptions(optionsPassed, optionsRequired) returns true in this case.
+     *
+     * Notice you can separate required options data types with a pipe character to allow multiple data types.
+     */
+    checkRequiredParams: function (optionsPassed, optionsRequired, opt_from) {
+
       var i, msg, check = true;
-      for (i in params_required) { // loop thru required params
-        if (params_required.hasOwnProperty(i)) {
+
+      for (i in optionsRequired) { // loop thru required options
+
+        if (optionsRequired.hasOwnProperty(i)) {
+
           try {
-            if (this.getDataType(params_passed[i]) !== params_required[i] || params_passed[i] === "") { // if there is not a corresponding key in the passed params; or params passed value is blank
+
+            // if no options were passed
+            if (typeof optionsPassed === "undefined") {
+              throw new Error('checkRequiredOptions: No options were passed.');
+            }
+
+            // if there is not a corresponding key in the passed options; or options passed value is blank
+            if (!this.checkDataType(this.getDataType(optionsPassed[i]), optionsRequired[i].split('|')) || optionsPassed[i] === "") {
+
               check = false;
-              if (params_passed[i] === "") {
-                msg = "Interface.checkRequiredParams: required param '" + i + "' is empty.";
-              } else if (typeof params_passed[i] === "undefined") {
-                msg = "Interface.checkRequiredParams: required param '" + i + "' is missing from passed params.";
+
+              if (optionsPassed[i] === '') {
+                msg = 'checkRequiredOptions: required option "' + i + '" is empty.';
+              } else if (typeof optionsPassed[i] === 'undefined') {
+                msg = 'checkRequiredOptions: required option "' + i + '" is missing from passed options.';
               } else {
-                msg = "Interface.checkRequiredParams: passed param '" + i + "' must be type " + params_required[i] + ". Passed as " + this.getDataType(params_passed[i]) + ".";
+                msg = 'checkRequiredOptions: passed option "' + i + '" must be type ' + optionsRequired[i] +
+                '. Passed as ' + this.getDataType(optionsPassed[i]) + '.';
               }
+
               throw new Error(msg);
             }
           } catch (err) {
-            if (typeof console !== "undefined") {
-              console.log("ERROR: " + err.message);
-            }
+            console.log('ERROR: ' + err.message + (opt_from ? ' from: ' + opt_from : ''));
           }
         }
       }
       return check;
+    },
+    /**
+     * Loops through an array of data types and checks if the
+     * passed option matches any entry.
+     *
+     * @param {string} option The data type to check.
+     * @param {array} typesToMatch An array of data types to check option against.
+     * @returns {boolean} If option matches any entry in typesToMatch,
+     * return true. Else, returns false.
+     */
+    checkDataType: function(option, typesToMatch) {
+
+      var i, max;
+
+      for (i = 0, max = typesToMatch.length; i < max; i++) {
+        if (option === typesToMatch[i]) {
+          return true;
+        }
+      }
+      return false;
     },
     /**
      * Checks for data type.
@@ -61,7 +98,11 @@ Interface.checkRequiredParams(params_passed, params_required) returns true in th
     getDataType: function (element) {
 
       if (Object.prototype.toString.call(element) === '[object Array]') {
-        return "array";
+        return 'array';
+      }
+
+      if (Object.prototype.toString.call(element) === '[object NodeList]') {
+        return 'nodeList';
       }
 
       return typeof element;

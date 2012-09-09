@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0; maximum-scale=1.0;" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Flora</title>
+  <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
+  <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
+
+      var system = new exports.FloraSystem();
+
+      system.start(function () {
+
+         Flora.world.update({
+          showStats: true,
+          c: 1,
+          gravity: PVector.create(0, 0)
+        });
+
+        // create walker; cyclone targets this walker
+        var walker = new Flora.Walker({
+          isPerlin: true,
+          wrapEdges: true,
+          maxSpeed: 10,
+          opacity: 0,
+          remainsOnScreen: false,
+          afterStep: function() {
+            this.location.y = Flora.world.height - 1;
+          }
+        });
+
+        // create color palette
+        var pl = new Flora.ColorPalette();
+
+        pl.addColor({
+          min: 12,
+          max: 48,
+          startColor: [220, 220, 220],
+          endColor: [60, 60, 60]
+        });
+
+        // cycle body
+        var winHeight = exports.Utils.getWindowSize().height;
+        var ballSize = 20;
+        var totalBalls = 26;
+
+        for (var i = 0; i < totalBalls; i++) {
+          var ball = new Flora.Walker({
+            className: 'cyclone',
+            width: 10,
+            height: 10,
+            location: Flora.PVector.create(Flora.world.width/2, Flora.world.height - (Math.pow(i, 2.05))),
+            isHarmonic: true,
+            maxSpeed: false,
+            isPerlin: false,
+            perlinTime: 0,
+            perlinSpeed: 0.001,
+            harmonicAmpX: 10,
+            harmonicPeriodX: Math.sqrt(i) * 6,
+            borderRadius: '100%',
+            color: pl.getColor(),
+            boxShadow: '0 0 ' + (ballSize * (i + 0) * 0.25) + 'px ' + (ballSize * (i + 0) * 0.25) + 'px rgba(' + pl.getColor().toString() + ', .5)',
+            beforeStep: function() {
+              this.opacity = Flora.Utils.map(this.velocity.mag(), 0, this.maxSpeed, 1, 0);
+              this.perlinTime += this.perlinSpeed;
+              var noise = Flora.SimplexNoise.noise(this.perlinTime, 0);
+              this.harmonicPeriod = Flora.PVector.create(this.harmonicPeriodX, 1);
+              this.harmonicAmplitude = Flora.PVector.create(this.harmonicAmpX + noise, 0);
+            },
+            afterStep: function() {
+              // get new x loc
+            }
+          });
+        }
+
+        // cycle base
+        var smoke = new Flora.ParticleSystem({
+          location: Flora.PVector.create(Flora.world.width/2, Flora.world.height),
+          burstRate: 1,
+          isStatic: false,
+          parent: walker,
+          particle: function () {
+
+            pl.addColor({
+              min: 12,
+              max: 48,
+              startColor: [200, 200, 200],
+              endColor: [80, 80, 80]
+            });
+
+            return {
+              location: this.getLocation(),
+              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-8, 8), 0),
+              width: 0,
+              height: 0,
+              lifespan: 40,
+              borderRadius: '100%',
+              boxShadow: '1px 1px 40px 40px rgba(' + pl.getColor().toString() + ', 0.25)'
+            };
+          }
+        });
+
+      });
+  </script>
+</body>
+</html>

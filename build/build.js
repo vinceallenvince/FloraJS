@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: August 27, 2012 03:52:21 */
+/* Build time: September 8, 2012 06:37:17 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -63,7 +63,11 @@ var config = {
     }
   ],
   keyMap: {
-    toggleWorldPlaystate: 80
+    toggleWorldPlaystate: 80,
+    thrustLeft: 37,
+    thrustUp: 38,
+    thrustRight: 39,
+    thrustDown: 40
   }
 };
 exports.config = config;
@@ -108,22 +112,6 @@ function FloraSystem(el) {
   exports.elements.push(exports.world);
 
   exports.Camera = new exports.Camera();
-
-  // save the current and last mouse position
-  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
-    exports.mouse.locLast = exports.mouse.loc.clone();
-    exports.mouse.loc = exports.PVector.create(e.pageX, e.pageY);
-  });
-
-  // toggle the world playstate
-  exports.Utils.addEvent(document, 'keyup', function(e) {
-    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
-      exports.world.isPlaying = !exports.world.isPlaying;
-      if (exports.world.isPlaying) {
-        window.requestAnimFrame(exports.animLoop);
-      }
-    }
-  });
 
   // add default colors
   exports.defaultColors = new exports.ColorTable();
@@ -334,6 +322,40 @@ var Utils = (function () {
       }
       this.addEventHandler(target, eventType, handler);
     },
+    /**
+     * @returns {Object} The current window width and height.
+     * @example getWindowDim() returns {width: 1024, height: 768}
+     */
+    getWindowSize: function() {
+      var d = {
+        'width' : false,
+        'height' : false
+      };
+      if (typeof(window.innerWidth) !== "undefined") {
+        d.width = window.innerWidth;
+      } else if (typeof(document.documentElement) !== "undefined" &&
+          typeof(document.documentElement.clientWidth) !== "undefined") {
+        d.width = document.documentElement.clientWidth;
+      } else if (typeof(document.body) !== "undefined") {
+        d.width = document.body.clientWidth;
+      }
+      if (typeof(window.innerHeight) !== "undefined") {
+        d.height = window.innerHeight;
+      } else if (typeof(document.documentElement) !== "undefined" &&
+          typeof(document.documentElement.clientHeight) !== "undefined") {
+        d.height = document.documentElement.clientHeight;
+      } else if (typeof(document.body) !== "undefined") {
+        d.height = document.body.clientHeight;
+      }
+      return d;
+    },
+    /**
+     * Concatenates several properties into a single list
+     * representing the style properties of an object.
+     *
+     * @param [Object] props A map of properties.
+     * @returns {string} A list of style properties.
+     */
     getCSSText: function(props) {
 
       var positionStr = '';
@@ -1164,52 +1186,89 @@ var Interface = (function () {
 
   /** @scope Interface */
   return {
-  
-      /**
-        @description Compares passed parameters to a set of required parameters.
-        @param {Object} params_passed An object containing parameters passed to a function.
-        @param {Object} params_required An object containing a function's required parameters.
-        @returns {Boolean} Returns true if all required params are present and of the right data type.
-            Returns false if any required params are missing or are the wrong data type. Also returns false if any of the passed params are empty.
-        @example
-params_passed = {
-form: document.getElementById("form"),
-color: "blue",
-total: 100,
-names: ["jimmy", "joey"]
-}
-params_required = {
-form: "object",
-color: "string",
-total: "number",
-names: "array"
-}
-Interface.checkRequiredParams(params_passed, params_required) returns true in this case.
-       */
-    checkRequiredParams: function (params_passed, params_required) {
+
+    /**
+     * @description Compares passed options to a set of required options.
+     * @param {Object} optionsPassed An object containing options passed to a function.
+     * @param {Object} optionsRequired An object containing a function's required options.
+     * @param {string=} opt_from A message or identifier from the calling function.
+     * @returns {boolean} Returns true if all required options are present and of the right data type.
+     *     Returns false if any required options are missing or are the wrong data type. Also returns false
+     *     if any of the passed options are empty.
+     * @example
+     * optionsPassed = {
+     *  form: document.getElementById("form"),
+     *    color: "blue",
+     *  total: "a whole bunch",
+     *   names: ["jimmy", "joey"]
+     * }
+     * optionsRequired = {
+     *   form: "object",
+     *   color: "string",
+     *   total: "number|string",
+     *   names: "array"
+     * }
+     * checkRequiredOptions(optionsPassed, optionsRequired) returns true in this case.
+     *
+     * Notice you can separate required options data types with a pipe character to allow multiple data types.
+     */
+    checkRequiredParams: function (optionsPassed, optionsRequired, opt_from) {
+
       var i, msg, check = true;
-      for (i in params_required) { // loop thru required params
-        if (params_required.hasOwnProperty(i)) {
+
+      for (i in optionsRequired) { // loop thru required options
+
+        if (optionsRequired.hasOwnProperty(i)) {
+
           try {
-            if (this.getDataType(params_passed[i]) !== params_required[i] || params_passed[i] === "") { // if there is not a corresponding key in the passed params; or params passed value is blank
+
+            // if no options were passed
+            if (typeof optionsPassed === "undefined") {
+              throw new Error('checkRequiredOptions: No options were passed.');
+            }
+
+            // if there is not a corresponding key in the passed options; or options passed value is blank
+            if (!this.checkDataType(this.getDataType(optionsPassed[i]), optionsRequired[i].split('|')) || optionsPassed[i] === "") {
+
               check = false;
-              if (params_passed[i] === "") {
-                msg = "Interface.checkRequiredParams: required param '" + i + "' is empty.";
-              } else if (typeof params_passed[i] === "undefined") {
-                msg = "Interface.checkRequiredParams: required param '" + i + "' is missing from passed params.";
+
+              if (optionsPassed[i] === '') {
+                msg = 'checkRequiredOptions: required option "' + i + '" is empty.';
+              } else if (typeof optionsPassed[i] === 'undefined') {
+                msg = 'checkRequiredOptions: required option "' + i + '" is missing from passed options.';
               } else {
-                msg = "Interface.checkRequiredParams: passed param '" + i + "' must be type " + params_required[i] + ". Passed as " + this.getDataType(params_passed[i]) + ".";
+                msg = 'checkRequiredOptions: passed option "' + i + '" must be type ' + optionsRequired[i] +
+                '. Passed as ' + this.getDataType(optionsPassed[i]) + '.';
               }
+
               throw new Error(msg);
             }
           } catch (err) {
-            if (typeof console !== "undefined") {
-              console.log("ERROR: " + err.message);
-            }
+            console.log('ERROR: ' + err.message + (opt_from ? ' from: ' + opt_from : ''));
           }
         }
       }
       return check;
+    },
+    /**
+     * Loops through an array of data types and checks if the
+     * passed option matches any entry.
+     *
+     * @param {string} option The data type to check.
+     * @param {array} typesToMatch An array of data types to check option against.
+     * @returns {boolean} If option matches any entry in typesToMatch,
+     * return true. Else, returns false.
+     */
+    checkDataType: function(option, typesToMatch) {
+
+      var i, max;
+
+      for (i = 0, max = typesToMatch.length; i < max; i++) {
+        if (option === typesToMatch[i]) {
+          return true;
+        }
+      }
+      return false;
     },
     /**
      * Checks for data type.
@@ -1219,7 +1278,11 @@ Interface.checkRequiredParams(params_passed, params_required) returns true in th
     getDataType: function (element) {
 
       if (Object.prototype.toString.call(element) === '[object Array]') {
-        return "array";
+        return 'array';
+      }
+
+      if (Object.prototype.toString.call(element) === '[object NodeList]') {
+        return 'nodeList';
       }
 
       return typeof element;
@@ -1239,6 +1302,7 @@ exports.Interface = Interface;
  *
  * @constructor
  *
+ * @param {boolean} [opt_options.isStatic = true] Set to false if transforming the world every frame.
  * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
  * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
  * @param {number} [opt_options.clock = 0] Increments each frame.
@@ -1247,13 +1311,37 @@ exports.Interface = Interface;
  * @param {Object} [opt_options.wind = {x: 0, y: 0}] Wind
  * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location
  * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
+ * @param {number} [opt_options.scale = 1] Scale
+ * @param {number} [opt_options.angle = 0] Angle
+ * @param {number} [opt_options.opacity = 0.85] Opacity
+ * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
+ * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
+ * @param {number} [opt_options.borderWidth = 0] The border width.
+ * @param {number} [opt_options.borderStyle = 0] The border style. Possible values: 'none', 'solid', 'dotted', 'dashed', 'double', 'inset', 'outset', 'groove', 'ridge'
+ * @param {number} [opt_options.borderColor = null] The border color.
+ * @param {number} [opt_options.borderRadius = 0] The border radius.
+ * @param {number|string} [opt_options.boxShadow = 0] The box shadow.
+ * @param {number} [opt_options.width = window.width] The world width.
+ * @param {number} [opt_options.height = window.height] The world height.
+ * @param {number} [opt_options.zIndex = 0] The world z-index.
+ * @param {number} [opt_options.mouseX = window.width/2] The x coordinate of the mouse location.
+ * @param {number} [opt_options.mouseY = window.height/2] The y coordinate of the mouse location.
+ * @param {boolean} [opt_options.isTopDown = true] Set to true to orient the gravity vector when listening to the devicemotion event.
+ * @param {number} [opt_options.compassHeading = 0] The compass heading. Value is set via the deviceorientation event.
+ * @param {number} [opt_options.compassAccuracy = 0] The compass accuracy. Value is set via the deviceorientation event.
+ * @param {boolean} [opt_options.isDeviceMotion = false] Set to true add the devicemotion event listener. Typically use with accelerometer equipped devices.
+ * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
+ * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
+ * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
  */
 function World(opt_options) {
 
   'use strict';
 
-  var me = this, options = opt_options || {};
+  var me = this, options = opt_options || {},
+      winSize = exports.Utils.getWindowSize();
 
+  this.isStatic = options.isStatic || true;
   this.showStats = !!options.showStats;
   this.statsInterval = options.statsInterval || 0;
   this.clock = options.clock || 0;
@@ -1268,27 +1356,31 @@ function World(opt_options) {
   this.opacity = options.opacity || 1;
   this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || [0, 0, 0];
-  this.borderWidth = options.borderWidth || 1;
-  this.borderStyle = options.borderStyle || 'solid';
-  this.borderColor = options.borderColor || [100, 100, 100];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || null;
   this.borderRadius = options.borderRadius || 0;
   this.boxShadow = options.boxShadow || 0;
 
-  this.width = $(window).width();
-  this.height = $(window).height();
+  this.width = winSize.width;
+  this.height = winSize.height;
   this.zIndex = 0;
   this.mouseX = this.width/2;
   this.mouseY = this.height/2;
   this.isTopDown = true;
   this.compassHeading = 0;
   this.compassAccuracy = 0;
-  this.isDeviceMotion = false;
+  this.isDeviceMotion = !options.isDeviceMotion;
   this.isPlaying = true;
+
+  this.beforeStep = options.beforeStep || undefined;
+  this.afterStep = options.afterStep || undefined;
 
   if (this.showStats) {
     this.createStats();
   }
 
+  // events
   $(document).mousemove(function(e) {
     me.mouseX = e.pageX;
     me.mouseY = e.pageY;
@@ -1306,9 +1398,109 @@ function World(opt_options) {
     }, false);
   }
 
-  $(window).bind("resize", function (e) { // listens for window resize
+  /*$(window).bind("resize", function (e) { // listens for window resize
+    me.resize.call(me);
+  });*/
+  exports.Utils.addEvent(window, 'resize', function(e) {
     me.resize.call(me);
   });
+
+  // save the current and last mouse position
+  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
+    exports.mouse.locLast = exports.mouse.loc.clone();
+    exports.mouse.loc = exports.PVector.create(e.pageX, e.pageY);
+  });
+
+  // toggle the world playstate
+  exports.Utils.addEvent(document, 'keyup', function(e) {
+    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
+      me.isPlaying = !me.isPlaying;
+      if (me.isPlaying) {
+        window.requestAnimFrame(exports.animLoop);
+      }
+    }
+  });
+
+  exports.Utils.addEvent(document.body, 'keydown', function(e) {
+    var i, max, elements = exports.elements,
+        obj, desired, steer, target,
+        r, theta, x, y;
+
+    switch(e.keyCode) {
+      case exports.config.keyMap.thrustLeft:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = exports.world.width/2; // use angle to calculate x, y
+            theta = exports.Utils.degreesToRadians(obj.angle - obj.turningRadius);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+
+            target = exports.PVector.PVectorAdd(exports.PVector.create(x, y), obj.location);
+
+            desired = exports.PVector.PVectorSub(target, obj.location);
+            desired.normalize();
+            desired.mult(obj.velocity.mag() * 2);
+
+            steer = desired.PVectorSub(desired, obj.velocity);
+
+            elements[i].applyForce(steer);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustUp:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = exports.world.width/2;
+            theta = exports.Utils.degreesToRadians(obj.angle);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+            desired = exports.PVector.create(x, y);
+            desired.normalize();
+            desired.mult(obj.thrust);
+            desired.limit(obj.maxSpeed);
+            elements[i].applyForce(desired);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustRight:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = exports.world.width/2; // use angle to calculate x, y
+            theta = exports.Utils.degreesToRadians(obj.angle + obj.turningRadius);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+
+            target = exports.PVector.PVectorAdd(exports.PVector.create(x, y), obj.location);
+
+            desired = exports.PVector.PVectorSub(target, obj.location);
+            desired.normalize();
+            desired.mult(obj.velocity.mag() * 2);
+
+            steer = desired.PVectorSub(desired, obj.velocity);
+
+            elements[i].applyForce(steer);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustDown:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+            elements[i].velocity.mult(0.5);
+          }
+        }
+      break;
+    }
+  });
+
 }
 
 /**
@@ -1317,11 +1509,15 @@ function World(opt_options) {
 World.name = 'world';
 
 /**
- * Configures a new World.
+ * Configures a new World by setting the DOM element and the element's width/height.
+ *
+ * @param {Object} opt_el The DOM element representing the world.
  */
-World.prototype.configure = function(el) { // should be called after doc ready()
+World.prototype.configure = function(opt_el) { // should be called after doc ready()
 
   'use strict';
+
+  var el = opt_el || null;
 
   this.el = el || document.body;
   this.el.style.width = this.width + 'px';
@@ -1387,9 +1583,9 @@ World.prototype.resize = function() {
 
   'use strict';
 
-  var i, max, elementLoc, controlCamera,
-    windowWidth = $(window).width(),
-    windowHeight = $(window).height();
+  var i, max, elementLoc, controlCamera, winSize = exports.Utils.getWindowSize(),
+    windowWidth = winSize.width,
+    windowHeight = winSize.height;
 
   // check of any elements control the camera
   for (i = 0, max = exports.elements.length; i < max; i += 1) {
@@ -1499,7 +1695,17 @@ World.prototype.destroyStats = function() {
 /**
  * Called every frame, step() updates the world's properties.
  */
-World.prototype.step = function() {};
+World.prototype.step = function() {
+
+  'use strict';
+
+  if (this.beforeStep) {
+    this.beforeStep.apply(this);
+  }
+  if (this.afterStep) {
+    this.afterStep.apply(this);
+  }
+};
 
 /**
  * Called every frame, draw() renders the world.
@@ -1507,6 +1713,14 @@ World.prototype.step = function() {};
 World.prototype.draw = function() {
 
   'use strict';
+
+  /**
+   * If there's not an object controlling the camera,
+   * we want to draw the world once.
+   */
+  if (!exports.Camera.controlObj && this.isStatic && exports.world.clock > 0) {
+    return;
+  }
 
   this.el.style.cssText = exports.Utils.getCSSText({
     x: this.location.x,
@@ -1774,6 +1988,8 @@ exports.Obj = Obj;
  * @param {number} [opt_options.bounciness = 0.75] Set the strength of the rebound when an object is outside the
  * world's bounds and wrapEdges = false.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
+ * @param {number} [opt_options.turningRadius = 60] Used to calculate steering force with key control.
+ * @param {number} [opt_options.thrust = 5] Used to apply forward motion with key control.
  * @param {boolean} [opt_options.flocking = false] Set to true to apply flocking forces to this object.
  * @param {number} [opt_options.desiredSeparation = Twice the object's default width] Sets the desired separation from other objects when flocking = true.
  * @param {number} [opt_options.separateStrength = 1] The strength of the force to apply to separating when flocking = true.
@@ -1817,7 +2033,7 @@ function Mover(opt_options) {
   this.id = options.id || constructorName.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-    this.el = options.view.call();
+    this.el = options.view.call(this);
   } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
     this.el = options.view;
   } else {
@@ -1848,7 +2064,9 @@ function Mover(opt_options) {
   this.avoidEdges = !!options.avoidEdges;
   this.avoidEdgesStrength = options.avoidEdgesStrength === 0 ? 0 : options.avoidEdgesStrength || 200;
   this.bounciness = options.bounciness === 0 ? 0 : options.bounciness || 0.75;
-  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : options.maxSteeringForce || 10;
+  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : options.maxSteeringForce || 100;
+  this.turningRadius = options.turningRadius === 0 ? 0 : options.turningRadius || 90;
+  this.thrust = options.thrust === 0 ? 0 : options.thrust || 5;
   this.flocking = !!options.flocking;
   this.desiredSeparation = options.desiredSeparation === 0 ? 0 : options.desiredSeparation || this.width * 2;
   this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;
@@ -2588,7 +2806,7 @@ function Walker(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.isPerlin = options.isPerlin || true;
+  this.isPerlin = options.isPerlin === false ? false : options.isPerline || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
   this.perlinSpeed = options.perlinSpeed || 0.005;
   this.perlinTime = options.perlinTime || 0;
@@ -2599,11 +2817,11 @@ function Walker(opt_options) {
   this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
   this.isHarmonic = !!options.isHarmonic;
-  this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(6, 6);
-  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(150, 150);
-  this.width = options.width || 10;
-  this.height = options.height || 10;
-  this.maxSpeed = options.maxSpeed || 30;
+  this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(4, 0);
+  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(300, 1);
+  this.width = options.width === 0 ? 0 : options.width || 10;
+  this.height = options.height === 0 ? 0 : options.height || 10;
+  this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 30;
   this.wrapEdges = !!options.wrapEdges;
   this.isStatic = !!options.isStatic;
 }
@@ -2703,6 +2921,10 @@ Walker.prototype.step = function () {
       this.lifespan -= 1;
     }
 
+    if (this.afterStep) {
+      this.afterStep.apply(this);
+    }
+
     this.acceleration.mult(0); // reset acceleration
   }
 };
@@ -2789,8 +3011,11 @@ Particle.prototype.step = function () {
 		this.location.add(this.velocity); // add velocity
 
 		// opacity
-		this.opacity = exports.Utils.map(this.lifespan, 0, 40, 0, 1);
+		this.opacity = exports.Utils.map(this.lifespan, 0, this.maxSpeed, 0, 1);
 
+		if (this.afterStep) {
+			this.afterStep.apply(this);
+		}
 
 		if (this.lifespan > 0) {
 			this.lifespan -= 1;

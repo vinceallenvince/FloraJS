@@ -80,8 +80,11 @@ Particle.prototype.step = function () {
 		this.location.add(this.velocity); // add velocity
 
 		// opacity
-		this.opacity = exports.Utils.map(this.lifespan, 0, 40, 0, 1);
+		this.opacity = exports.Utils.map(this.lifespan, 0, this.maxSpeed, 0, 1);
 
+		if (this.afterStep) {
+			this.afterStep.apply(this);
+		}
 
 		if (this.lifespan > 0) {
 			this.lifespan -= 1;

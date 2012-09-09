@@ -10,278 +10,267 @@ var elements = function() {
     showStats: false,
     gravity: Flora.PVector.create(0, 0),
     width: 3000,
-    height: 3000
-  });
-
-  var sensor1 = new Flora.Sensor({
-    type: 'heat',
-    behavior: 'COWARD',
-    sensitivity: 3,
-    offsetDistance: 40,
-    opacity: 0,
-    offsetAngle: 0,
+    height: 1500,
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: [255, 69, 0],
-    afterStep: function () {
-      if (this.activated) {
-        if (!this.connector) {
-          this.connector = new Flora.Connector({
-            parentA: this,
-            parentB: this.target,
-            color: [255, 69, 0]
-          });
-        } else {
-          this.connector.parentA = this;
-          this.connector.parentB = this.target;
-        }
-        this.opacity = 1;
-      } else {
-        if (this.connector) {
-          Flora.destroyElement(this.connector.id);
-          this.connector = null;
-        }
-        this.opacity = 0;
-      }
-    }
+    borderColor: [100, 100, 100]
   });
 
-  var sensor2 = new Flora.Sensor({
-    type: 'light',
-    behavior: 'AGGRESSIVE',
-    sensitivity: 3,
-    offsetDistance: 40,
-    opacity: 0,
-    offsetAngle: 0,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: [255, 200, 0],
-    afterStep: function () {
+  function BVehicleVALUES(exports, opt_options) {
+
+    var PVector = exports.PVector,
+        getRandomNumber = exports.Utils.getRandomNumber,
+        defaultColors = exports.defaultColors,
+        options = opt_options || {},
+        controlCamera = !!options.controlCamera,
+        location = options.location || null,
+        angle = options.angle || 0,
+        color = options.color || [255, 100, 0],
+        eyeColor = options.eyeColor || [255, 255, 255];
+
+    var clrCold = defaultColors.getColor('cold').startColor,
+        clrLight = defaultColors.getColor('light').startColor,
+        clrOxygen = defaultColors.getColor('oxygen').startColor,
+        clrFood = defaultColors.getColor('food').startColor;
+
+    var afterStep = function() {
+
       if (this.activated) {
-        if (!this.connector) {
-          this.connector = new Flora.Connector({
-            parentA: this,
-            parentB: this.target,
-            color: [255, 200, 0]
-          });
+          if (!this.connector) {
+            this.connector = new exports.Connector({
+              parentA: this,
+              parentB: this.target,
+              color: this.borderColor
+            });
+          } else {
+            this.connector.parentA = this;
+            this.connector.parentB = this.target;
+          }
+          this.opacity = 1;
         } else {
-          this.connector.parentA = this;
-          this.connector.parentB = this.target;
+          if (this.connector) {
+            exports.destroyElement(this.connector.id);
+            this.connector = null;
+          }
+          this.opacity = 0;
         }
-        this.opacity = 1;
-      } else {
-        if (this.connector) {
-          Flora.destroyElement(this.connector.id);
-          this.connector = null;
-        }
-        this.opacity = 0;
-      }
-    }
-  });
+    };
 
-  var sensor3 = new Flora.Sensor({
-    type: 'oxygen',
-    behavior: 'LIKES',
-    sensitivity: 3,
-    offsetDistance: 40,
-    opacity: 0,
-    offsetAngle: 0,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: [0, 174, 239],
-    afterStep: function () {
-      if (this.activated) {
-        if (!this.connector) {
-          this.connector = new Flora.Connector({
-            parentA: this,
-            parentB: this.target,
-            color: [0, 174, 239]
-          });
-        } else {
-          this.connector.parentA = this;
-          this.connector.parentB = this.target;
-        }
-        this.opacity = 1;
-      } else {
-        if (this.connector) {
-          Flora.destroyElement(this.connector.id);
-          this.connector = null;
-        }
-        this.opacity = 0;
-      }
-    }
-  });
+    this.sensorHeat = new exports.Sensor({
+      type: 'heat',
+      behavior: 'EXPLORER',
+      sensitivity: 2,
+      offsetDistance: 40,
+      opacity: 0,
+      offsetAngle: 0,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: clrCold,
+      afterStep: afterStep
+    });
+    this.sensorCold = new exports.Sensor({
+      type: 'light',
+      behavior: 'AGGRESSIVE',
+      sensitivity: 2,
+      offsetDistance: 40,
+      opacity: 0,
+      offsetAngle: 0,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: clrLight,
+      afterStep: afterStep
+    });
+    this.sensorOxygen = new exports.Sensor({
+      type: 'oxygen',
+      behavior: 'LIKES',
+      sensitivity: 2,
+      offsetDistance: 40,
+      opacity: 0,
+      offsetAngle: 0,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: clrOxygen,
+      afterStep: afterStep
+    });
+    this.sensorFood = new exports.Sensor({
+      type: 'food',
+      behavior: 'LIKES',
+      sensitivity: 2,
+      offsetDistance: 40,
+      opacity: 0,
+      offsetAngle: 0,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: clrFood,
+      afterStep: afterStep
+    });
 
-  var sensor4 = new Flora.Sensor({
-    type: 'food',
-    behavior: 'LIKES',
-    sensitivity: 3,
-    offsetDistance: 40,
-    opacity: 0,
-    offsetAngle: 0,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: [155, 231, 93],
-    afterStep: function () {
-      if (this.activated) {
-        if (!this.connector) {
-          this.connector = new Flora.Connector({
-            parentA: this,
-            parentB: this.target,
-            color: [155, 231, 93]
-          });
-        } else {
-          this.connector.parentA = this;
-          this.connector.parentB = this.target;
-        }
-        this.opacity = 1;
-      } else {
-        if (this.connector) {
-          Flora.destroyElement(this.connector.id);
-          this.connector = null;
-        }
-        this.opacity = 0;
-      }
-    }
-  });
+    this.vehicle = new exports.Mover({
+      controlCamera: controlCamera,
+      location: location,
+      angle: angle,
+      color: color,
+      mass: 5,
+      minSpeed: 0.5,
+      defaultSpeed: 2,
+      maxSpeed: 8,
+      maxSteeringForce: 1,
+      wrapEdges: true,
+      sensors: [this.sensorHeat, this.sensorCold, this.sensorOxygen, this.sensorFood],
+      velocity: PVector.create(1, 0),
+      borderRadius: '100%',
+      boxShadow: '0 0 10px 10px rgba(' + color.toString() + ', 0.15)',
+      eyeRotation: 0,
+      view: function() {
+        var obj = document.createElement('div'),
+        eye = document.createElement('div');
+        eye.id = 'eye' + this.id;
+        eye.className = 'eye';
+        eye.style.background = 'rgba(' + eyeColor.toString() + ', 1)';
+        obj.appendChild(eye);
+        return obj;
+      },
+      beforeStep: function () { // constant force, ie. motor
 
-  var vehicle = new Flora.Mover({
-    controlCamera: true,
-    mass: 5,
-    minSpeed: 0.5,
-    defaultSpeed: 2,
-    maxSpeed: 8,
-    maxSteeringForce: 1,
-    wrapEdges: true,
-    sensors: [sensor1, sensor2, sensor3, sensor4],
-    velocity: Flora.PVector.create(1, 0),
-    color: [255, 255, 255],
-    borderRadius: '100%',
-    boxShadow: '0 0 10px 10px rgba(255, 255, 255, 0.15)',
-    eyeRotation: 0,
-    view: function () {
-      var obj = document.createElement('div'),
-      eye = document.createElement('div');
-      eye.id = 'eye';
-      eye.className = 'eye';
-      obj.appendChild(eye);
-      return obj;
-    },
-    beforeStep: function () { // constant force, ie. motor
+        var i, max, check, alpha;
 
-      var i, max, check, alpha;
-
-      for (i = 0, max = this.sensors.length; i < max; i += 1) {
-        if (this.sensors[i].activated) {
-          check = true;
-          alpha = 0.25;
-          this.boxShadow = '0 0 10px 10px rgba(255, 255, 255, ' + alpha + ')';
-        }
-      }
-
-      // motor always maintains a minimum speed
-
-      if (!check) { // if sensor is not activated, apply a constant force in the vehicle's current direction
-        var dir = Flora.Utils.clone(this.velocity);
-        dir.normalize(); // get direction
-        if (this.velocity.mag() > this.defaultSpeed) { // decelerate to defaultSpeed
-          dir.mult(-this.minSpeed);
-          this.applyForce(dir);
-        } else {
-          dir.mult(this.defaultSpeed); // maintain default speed
-          this.applyForce(dir);
-        }
-
-        this.boxShadow = '0 0 10px 10px rgba(255, 255, 255, 0.15)';
-      }
-
-      // need random force
-      if (Flora.Utils.getRandomNumber(0, 500) === 1) {
-        this.randomRadius = 100;
-        this.target = { // find a random point and steer toward it
-          location: Flora.PVector.PVectorAdd(this.location, Flora.PVector.create(Flora.Utils.getRandomNumber(-this.randomRadius, this.randomRadius),
-            Flora.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
-        };
-        var me = this;
-        setTimeout(function () {
-          me.target = null;
-        }, 10);
-      }
-
-      var particle = function () {
-        var d = Flora.Utils.getRandomNumber(1, 5);
-        return {
-          location: Flora.PVector.create(x, y),
-          acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-2, 2), Flora.Utils.getRandomNumber(-2, 2)),
-          lifespan: 20,
-          checkEdges: false,
-          width: d,
-          height: d,
-          color: [255, 255, 150]
-        };
-      };
-
-      // check if mover intersects w stimulators
-      for (i = 0, max = Flora.lights.length; i < max; i += 1) {
-        if (this.isInside(Flora.lights[i])) {
-
-          var x = Flora.lights[i].location.x,
-          y = Flora.lights[i].location.y;
-
-          Flora.destroyElement(Flora.lights[i].id);
-          Flora.lights.splice(i, 1);
-
-          var ps = new Flora.ParticleSystem({
-            burst: 1,
-            lifespan: 10,
-            particle: particle
-          });
-
-          var w = Flora.Utils.getRandomNumber(0, Flora.World.width);
-          var h = Flora.Utils.getRandomNumber(0, Flora.World.height);
-          var d = Flora.Utils.getRandomNumber(15, 25);
-
-        }
-      }
-
-      for (i = 0, max = Flora.oxygen.length; i < max; i += 1) {
-        if (this.isInside(Flora.oxygen[i])) {
-          Flora.oxygen[i].scale -= 0.025;
-          if (Flora.oxygen[i].scale < 0.25) {
-            Flora.destroyElement(Flora.oxygen[i].id);
-            Flora.oxygen.splice(i, 1);
+        for (i = 0, max = this.sensors.length; i < max; i += 1) {
+          if (this.sensors[i].activated) {
+            check = true;
+            alpha = 0.25;
+            this.boxShadow = '0 0 10px 10px rgba(' + color.toString() + ', ' + alpha + ')';
           }
         }
-      }
 
-      for (i = 0, max = Flora.food.length; i < max; i += 1) {
-        if (this.isInside(Flora.food[i])) {
-          Flora.food[i].scale -= 0.025;
-          if (Flora.food[i].scale < 0.25) {
-            Flora.destroyElement(Flora.food[i].id);
-            Flora.food.splice(i, 1);
+        // motor always maintains a minimum speed
+
+        if (!check) { // if sensor is not activated, apply a constant force in the vehicle's current direction
+          var dir = exports.Utils.clone(this.velocity);
+          dir.normalize(); // get direction
+          if (this.velocity.mag() > this.defaultSpeed) { // decelerate to defaultSpeed
+            dir.mult(-this.minSpeed);
+            this.applyForce(dir);
+          } else {
+            dir.mult(this.defaultSpeed); // maintain default speed
+            this.applyForce(dir);
+          }
+
+          this.boxShadow = '0 0 10px 10px rgba(' + color.toString() + ', 0.15)';
+        }
+
+        // need random force
+        if (getRandomNumber(0, 500) === 1) {
+          this.randomRadius = 100;
+          this.target = { // find a random point and steer toward it
+            location: PVector.PVectorAdd(this.location, PVector.create(getRandomNumber(-this.randomRadius, this.randomRadius), getRandomNumber(-this.randomRadius, this.randomRadius)))
+          };
+          var me = this;
+          setTimeout(function () {
+            me.target = null;
+          }, 10);
+        }
+
+        var particle = function () {
+          var d = getRandomNumber(1, 5);
+          return {
+            location: exports.PVector.create(x, y),
+            acceleration: exports.PVector.create(getRandomNumber(-2, 2), getRandomNumber(-2, 2)),
+            lifespan: 20,
+            checkEdges: false,
+            width: d,
+            height: d,
+            color: [255, 255, 150]
+          };
+        };
+
+        // check if mover intersects w stimulators
+        for (i = 0, max = exports.lights.length; i < max; i += 1) {
+          if (this.isInside(exports.lights[i])) {
+
+            var x = exports.lights[i].location.x,
+            y = exports.lights[i].location.y;
+
+            exports.destroyElement(exports.lights[i].id);
+            exports.lights.splice(i, 1);
+
+            var ps = new exports.ParticleSystem({
+              burst: 1,
+              lifespan: 10,
+              particle: particle
+            });
+
+            var w = getRandomNumber(0, exports.world.width);
+            var h = getRandomNumber(0, exports.world.height);
+            var d = getRandomNumber(15, 25);
+
           }
         }
+
+        for (i = 0, max = exports.oxygen.length; i < max; i += 1) {
+          if (this.isInside(exports.oxygen[i])) {
+            exports.oxygen[i].scale -= 0.025;
+            if (exports.oxygen[i].scale < 0.25) {
+              exports.destroyElement(exports.oxygen[i].id);
+              exports.oxygen.splice(i, 1);
+            }
+          }
+        }
+
+        for (i = 0, max = exports.food.length; i < max; i += 1) {
+          if (this.isInside(exports.food[i])) {
+            exports.food[i].scale -= 0.025;
+            if (exports.food[i].scale < 0.25) {
+              exports.destroyElement(exports.food[i].id);
+              exports.food.splice(i, 1);
+            }
+          }
+        }
+
+        // eye
+        var eye = document.getElementById('eye' + this.id),
+            a = this.eyeRotation;
+
+        eye.style.webkitTransform = 'rotate(' + a + 'deg)';
+        this.eyeRotation += exports.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 3, 50);
       }
-
-      // eye
-      var eye = document.getElementById('eye'),
-          a = this.eyeRotation;
-
-      eye.style.webkitTransform = 'rotate(' + a + 'deg)';
-      this.eyeRotation += Flora.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 3, 50);
-    }
-  });
-
-  var point = new Flora.Point({
-    className: 'neutralSensor',
-    isStatic: false,
-    parent: vehicle,
-    offsetDistance: 40,
-    color: null
-  });
+    });
+    this.point = new exports.Point({
+      className: 'neutralSensor',
+      isStatic: false,
+      parent: this.vehicle,
+      offsetDistance: 40,
+      color: null
+    });
+  }
 
   var i, max, w, h, d;
+
+  var bv1 = new BVehicleVALUES(Flora, {
+    controlCamera: true,
+    color: [255, 255, 255],
+    eyeColor: [90, 90, 90]
+  });
+
+  for (i = 0; i < 10; i++) {
+    var x = Flora.Utils.getRandomNumber(0, Flora.world.width),
+        y = Flora.Utils.getRandomNumber(0, Flora.world.height),
+        a = Flora.Utils.getRandomNumber(0, 360),
+        bv2 = new BVehicleVALUES(Flora, {
+          controlCamera: false,
+          location: Flora.PVector.create(x, y),
+          angle: a
+        });
+  }
+
+  //
+
+  var borderStylesStimulators = [
+    'none',
+    'solid',
+    'dotted',
+    'dashed',
+    'double'
+  ], borderStr;
 
   var clr = Flora.defaultColors.getColor('heat');
   var pl = new Flora.ColorPalette();
@@ -292,10 +281,12 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.015 * Flora.world.width); i < max; i += 1) {
+  for (i = 0, max = (0.000006 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
     h = Flora.Utils.getRandomNumber(0, Flora.world.height);
-    d = Flora.Utils.getRandomNumber(15, 25);
+    d = Flora.Utils.getRandomNumber(15, 45);
+
+    borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];
 
     var heat = new Flora.Heat({
       color: pl.getColor(),
@@ -303,7 +294,12 @@ var elements = function() {
       height: d,
       scale: 1,
       isStatic: true,
-      location: Flora.PVector.create(w, h)
+      location: Flora.PVector.create(w, h),
+      borderRadius: '100%',
+      borderWidth: Flora.Utils.getRandomNumber(2, 6),
+      borderStyle: borderStr,
+      borderColor: pl.getColor(),
+      boxShadow: '0 0 0 ' + Flora.Utils.getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')'
     });
   }
 
@@ -316,10 +312,12 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.015 * Flora.world.width); i < max; i += 1) {
+  for (i = 0, max = (0.000006 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
     h = Flora.Utils.getRandomNumber(0, Flora.world.height);
-    d = Flora.Utils.getRandomNumber(15, 25);
+    d = Flora.Utils.getRandomNumber(15, 45);
+
+    borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];
 
     var light = new Flora.Light({
       color: pl.getColor(),
@@ -327,7 +325,12 @@ var elements = function() {
       height: d,
       scale: 1,
       isStatic: true,
-      location: Flora.PVector.create(w, h)
+      location: Flora.PVector.create(w, h),
+      borderRadius: '100%',
+      borderWidth: Flora.Utils.getRandomNumber(2, 6),
+      borderStyle: borderStr,
+      borderColor: pl.getColor(),
+      boxShadow: '0 0 0 ' + Flora.Utils.getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')'
     });
   }
 
@@ -340,10 +343,12 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.005 * Flora.world.width); i < max; i += 1) {
+  for (i = 0, max = (0.000006 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
     h = Flora.Utils.getRandomNumber(0, Flora.world.height);
-    d = Flora.Utils.getRandomNumber(20, 40);
+    d = Flora.Utils.getRandomNumber(20, 80);
+
+    borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];
 
     var air = new Flora.Oxygen({
       color: pl.getColor(),
@@ -351,7 +356,12 @@ var elements = function() {
       height: d,
       scale: 1,
       isStatic: true,
-      location: Flora.PVector.create(w, h)
+      location: Flora.PVector.create(w, h),
+      borderRadius: '100%',
+      borderWidth: Flora.Utils.getRandomNumber(2, 6),
+      borderStyle: borderStr,
+      borderColor: pl.getColor(),
+      boxShadow: '0 0 0 ' + Flora.Utils.getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')'
     });
   }
 
@@ -364,10 +374,12 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.005 * Flora.world.width); i < max; i += 1) {
+  for (i = 0, max = (0.000006 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
     w = Flora.Utils.getRandomNumber(0, Flora.world.width);
     h = Flora.Utils.getRandomNumber(0, Flora.world.height);
-    d = Flora.Utils.getRandomNumber(20, 40);
+    d = Flora.Utils.getRandomNumber(20, 80);
+
+    borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];
 
     var food = new Flora.Food({
       color: pl.getColor(),
@@ -375,7 +387,12 @@ var elements = function() {
       height: d,
       scale: 1,
       isStatic: true,
-      location: Flora.PVector.create(w, h)
+      location: Flora.PVector.create(w, h),
+      borderRadius: '100%',
+      borderWidth: Flora.Utils.getRandomNumber(2, 6),
+      borderStyle: borderStr,
+      borderColor: pl.getColor(),
+      boxShadow: '0 0 0 ' + Flora.Utils.getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')'
     });
   }
 };

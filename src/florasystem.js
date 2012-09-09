@@ -40,22 +40,6 @@ function FloraSystem(el) {
 
   exports.Camera = new exports.Camera();
 
-  // save the current and last mouse position
-  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
-    exports.mouse.locLast = exports.mouse.loc.clone();
-    exports.mouse.loc = exports.PVector.create(e.pageX, e.pageY);
-  });
-
-  // toggle the world playstate
-  exports.Utils.addEvent(document, 'keyup', function(e) {
-    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
-      exports.world.isPlaying = !exports.world.isPlaying;
-      if (exports.world.isPlaying) {
-        window.requestAnimFrame(exports.animLoop);
-      }
-    }
-  });
-
   // add default colors
   exports.defaultColors = new exports.ColorTable();
   for (i = 0, max = defaultColorList.length; i < max; i++) {

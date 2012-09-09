@@ -12,27 +12,28 @@
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-  <div id='otherWorld'></div>
-  <script type="text/javascript" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
 
-    var system = new exports.FloraSystem(document.getElementById('otherWorld'));
+      var system = new exports.FloraSystem();
 
-    system.start(function () {
-       Flora.world.update({
-        isStatic: false,
-        showStats: true,
-        width: 300,
-        height: 300,
-        angle: 45,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: [100, 100, 100],
-        beforeStep: function() {
-          //this.angle += 1;
-        }
+      system.start(function () {
+
+        Flora.world.update({
+          gravity: Flora.PVector.create(0, 0)
+        });
+
+        new Flora.Mover({
+          keyControl: true,
+          view: function() {
+            var d = document.createElement('div'),
+                n = document.createElement('div');
+
+            n.className = 'nose';
+            d.appendChild(n);
+            return d;
+          }
+        });
       });
-      new Flora.Mover();
-    });
   </script>
 </body>
 </html>
