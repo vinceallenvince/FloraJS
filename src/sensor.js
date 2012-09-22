@@ -146,7 +146,7 @@ Sensor.prototype.getActivationForce = function(params) {
      * Arrives at target and keeps moving
      */
     case "LIKES":
-      var dvLikes = exports.PVector.PVectorSub(this.target.location, this.location); // desiredVelocity
+      var dvLikes = exports.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
       dvLikes.normalize();
       dvLikes.mult(0.5);
       return dvLikes;
@@ -154,32 +154,32 @@ Sensor.prototype.getActivationForce = function(params) {
      * Arrives at target and remains
      */
     case "LOVES":
-      var dvLoves = exports.PVector.PVectorSub(this.target.location, this.location); // desiredVelocity
+      var dvLoves = exports.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
       distanceToTarget = dvLoves.mag();
       dvLoves.normalize();
 
       if (distanceToTarget > this.width) {
         m = distanceToTarget/params.mover.maxSpeed;
         dvLoves.mult(m);
-        steer = exports.PVector.PVectorSub(dvLoves, params.mover.velocity);
+        steer = exports.Vector.VectorSub(dvLoves, params.mover.velocity);
         steer.limit(params.mover.maxSteeringForce);
         return steer;
       }
-      params.mover.velocity = exports.PVector.create(0, 0);
-      params.mover.acceleration = exports.PVector.create(0, 0);
+      params.mover.velocity = new exports.Vector();
+      params.mover.acceleration = new exports.Vector();
       params.mover.isStatic = true;
-      return exports.PVector.create(0, 0);
+      return new exports.Vector();
     /**
      * Arrives at target but does not stop
      */
     case "EXPLORER":
-      var dvExplorer = exports.PVector.PVectorSub(this.target.location, this.location);
+      var dvExplorer = exports.Vector.VectorSub(this.target.location, this.location);
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
 
       m = distanceToTarget/params.mover.maxSpeed;
       dvExplorer.mult(-m);
-      steer = exports.PVector.PVectorSub(dvExplorer, params.mover.velocity);
+      steer = exports.Vector.VectorSub(dvExplorer, params.mover.velocity);
       steer.limit(params.mover.maxSteeringForce * 0.1);
       return steer;
     /**
@@ -199,7 +199,7 @@ Sensor.prototype.getActivationForce = function(params) {
       return forceDecel.mult(-params.mover.minSpeed);
 
     default:
-      return exports.PVector.create(0, 0);
+      return new exports.Vector();
   }
 };
 

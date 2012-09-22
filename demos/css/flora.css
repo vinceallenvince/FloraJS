@@ -51,12 +51,22 @@ body {
 	width: 20%; height: 20%;
 	background: rgb(255, 255, 255);
 }
-
 .walker {
 	position: absolute; left: 0; top: 0;
 	width: 0; height: 0;
 	background: rgb(255, 150, 50); opacity: 0;
-	border-radius: 5px;
+	border-radius: 100%;
+}
+.oscillator {
+	position: absolute; left: 0; top: 0;
+	width: 0; height: 0;
+	background: rgb(200, 100, 0); opacity: 0;
+	border-bottom-right-radius: 100%;
+	border-top-right-radius: 100%;
+	border-style: solid;
+	border-width: thick;
+	border-color: rgb(255, 150, 50);
+	box-shadow: 0 0 0 .5em rgba(255, 255, 255, 1);
 }
 .particle {
 	position: absolute; left: 0; top: 0;

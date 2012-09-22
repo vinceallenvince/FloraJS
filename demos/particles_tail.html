@@ -26,13 +26,13 @@
           burstRate: 1,
           particle: function () {
 
-            var dir = Flora.mouse.loc.PVectorSub(Flora.mouse.loc, this.getLocation());
+            var dir = Flora.Vector.VectorSub(Flora.mouse.loc, this.getLocation());
 
             dir.normalize();
             if (dir) {
               dir.mult(-1);
             } else {
-              dir = Flora.PVector.create(0, 0);
+              dir = new Flora.PVector();
             }
 
             var pl = new Flora.ColorPalette();

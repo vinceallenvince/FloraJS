@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0; maximum-scale=1.0;" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Flora</title>
+  <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
+  <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
+
+      var system = new exports.FloraSystem();
+
+      system.start(function () {
+
+        var max,
+            c = exports.defaultColors.getColor('heat'), // gets the heat start and end colors
+            f = exports.defaultColors.getColor('food'), // gets the food start and end colors
+            pl = new Flora.ColorPalette(),
+            borderColor, color;
+
+        pl.addColor({ // adds a random sampling of colors to palette
+          min: 12,
+          max: 24,
+          startColor: c.startColor,
+          endColor: c.endColor
+        }).addColor({ // adds a random sampling of colors to palette
+          min: 12,
+          max: 24,
+          startColor: f.startColor,
+          endColor: f.endColor
+        });
+
+        max = 6;
+        borderColor = pl.getColor();
+        color = pl.getColor();
+
+        for (var i = 0; i < max; i++) {
+
+          var osc = new Flora.Oscillator({
+            amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
+            pointToDirection: true,
+            width: Flora.Utils.map(i, 0, max, 1, 20),
+            height: Flora.Utils.map(i, 0, max, 1, 5),
+            opacity: Flora.Utils.map(i, 0, max, .1, 1),
+            isPerlin: true,
+            perlinOffsetX: Flora.Utils.map(i, 0, max, -1.1, -1),
+            perlinOffsetY: Flora.Utils.map(i, 0, max, 1, 1.1),
+            borderColor: borderColor,
+            color: color
+          });
+        }
+
+        max = 6;
+        borderColor = pl.getColor();
+        color = pl.getColor();
+
+        for (var i = 0; i < max; i++) {
+
+          var osc = new Flora.Oscillator({
+            amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
+            pointToDirection: true,
+            width: Flora.Utils.map(i, 0, max, 1, 20),
+            height: Flora.Utils.map(i, 0, max, 1, 5),
+            opacity: Flora.Utils.map(i, 0, max, .1, 1),
+            isPerlin: true,
+            perlinOffsetX: Flora.Utils.map(i, 0, max, -5.1, -5),
+            perlinOffsetY: Flora.Utils.map(i, 0, max, 5, 5.1),
+            borderColor: borderColor,
+            color: color
+          });
+        }
+
+        max = 6;
+        borderColor = pl.getColor();
+        color = pl.getColor();
+
+        for (var i = 0; i < max; i++) {
+
+          var osc = new Flora.Oscillator({
+            amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
+            pointToDirection: true,
+            width: Flora.Utils.map(i, 0, max, 1, 20),
+            height: Flora.Utils.map(i, 0, max, 1, 5),
+            opacity: Flora.Utils.map(i, 0, max, .1, 1),
+            isPerlin: true,
+            perlinOffsetX: Flora.Utils.map(i, 0, max, -10.1, -10),
+            perlinOffsetY: Flora.Utils.map(i, 0, max, 10, 10.1),
+            borderColor: borderColor,
+            color: color
+          });
+        }
+      });
+  </script>
+</body>
+</html>

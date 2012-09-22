@@ -39,7 +39,7 @@ function Walker(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.isPerlin = options.isPerlin === false ? false : options.isPerline || true;
+  this.isPerlin = options.isPerlin === false ? false : options.isPerlin || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
   this.perlinSpeed = options.perlinSpeed || 0.005;
   this.perlinTime = options.perlinTime || 0;
@@ -50,8 +50,8 @@ function Walker(opt_options) {
   this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
   this.isHarmonic = !!options.isHarmonic;
-  this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(4, 0);
-  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(300, 1);
+  this.harmonicAmplitude = options.harmonicAmplitude || new exports.Vector(4, 0);
+  this.harmonicPeriod = options.harmonicPeriod || new exports.Vector(300, 1);
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 30;
@@ -86,8 +86,8 @@ Walker.prototype.step = function () {
       this.perlinTime += this.perlinSpeed;
 
       if (this.remainsOnScreen) {
-        this.acceleration = exports.PVector.create(0, 0);
-        this.velocity = exports.PVector.create(0, 0);
+        this.acceleration = new exports.Vector();
+        this.velocity = new exports.Vector.create();
         this.location.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, 0, exports.world.width);
         this.location.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, 0, exports.world.height);
       } else {
@@ -118,7 +118,7 @@ Walker.prototype.step = function () {
 
     if (this.isRandom) {
       this.target = { // find a random point and steer toward it
-        location: exports.PVector.PVectorAdd(this.location, exports.PVector.create(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
+        location: exports.Vector.VectorAdd(this.location, new exports.Vector(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
       };
     }
 

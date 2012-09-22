@@ -8,7 +8,7 @@ system.start(function() {
   Flora.world.update({
     c: 0,
     showStats: true,
-    gravity: Flora.PVector.create(0, 0),
+    gravity: new Flora.Vector(),
     borderWidth: 0
   });
 
@@ -47,7 +47,7 @@ system.start(function() {
       if (dir) {
         dir.mult(-1);
       } else {
-        dir = Flora.PVector.create(0, 0);
+        dir = new Flora.Vector();
       }
 
       return {
@@ -76,7 +76,7 @@ system.start(function() {
       if (dir) {
         dir.mult(-1);
       } else {
-        dir = Flora.PVector.create(0, 0);
+        dir = new Flora.Vector();
       }
 
       return {
@@ -109,7 +109,7 @@ system.start(function() {
     if (dir) {
       dir.mult(-Flora.Utils.map(lifespan, 8, 12, 10, 20));
     } else {
-      dir = Flora.PVector.create(0, 0);
+      dir = new Flora.Vector();
     }
     var opacity = 1;
     return {
@@ -136,7 +136,7 @@ system.start(function() {
     var fish1 = new Flora.ParticleSystem({
       isStatic: false,
       myIndex: myIndex,
-      location: Flora.PVector.create(Flora.Utils.getRandomNumber(0, Flora.world.width), Flora.Utils.getRandomNumber(0, Flora.world.height)),
+      location: new Flora.Vector(Flora.Utils.getRandomNumber(0, Flora.world.width), Flora.Utils.getRandomNumber(0, Flora.world.height)),
       flocking: true,
       maxSteeringForce: 1,
       separateStrength: 1,

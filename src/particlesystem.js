@@ -76,7 +76,7 @@
       boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')',
       zIndex: exports.Utils.getRandomNumber(1, 100),
       location: this.getLocation(),
-      acceleration: exports.PVector.create(exports.Utils.getRandomNumber(-4, 4), exports.Utils.getRandomNumber(-4, 4))
+      acceleration: new exports.Vector(exports.Utils.getRandomNumber(-4, 4), exports.Utils.getRandomNumber(-4, 4))
     };
   };
 }

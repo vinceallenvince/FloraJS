@@ -18,7 +18,7 @@ function Camera(opt_options) {
 
   var options = opt_options || {};
 
-  this.location = options.location || exports.PVector.create(0, 0);
+  this.location = options.location || new exports.Vector(0, 0);
   this.controlObj = options.controlObj || null;
 }
 

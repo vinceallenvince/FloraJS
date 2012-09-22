@@ -30,8 +30,8 @@ function FloraSystem(el) {
   exports.predators = [];
 
   exports.mouse = {
-    loc: exports.PVector.create(0, 0),
-    locLast: exports.PVector.create(0, 0)
+    loc: new exports.Vector(),
+    locLast: new exports.Vector()
   };
 
   exports.world = new exports.World();

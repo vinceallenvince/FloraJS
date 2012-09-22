@@ -48,8 +48,8 @@ Connector.prototype.step = function() {
 
   var a = this.parentA.location, b = this.parentB.location;
 
-  this.width = Math.floor(exports.PVector.PVectorSub(this.parentA.location, this.parentB.location).mag());
-  this.location = exports.PVector.PVectorAdd(this.parentA.location, this.parentB.location).div(2); // midpoint = (v1 + v2)/2
+  this.width = Math.floor(exports.Vector.VectorSub(this.parentA.location, this.parentB.location).mag());
+  this.location = exports.Vector.VectorAdd(this.parentA.location, this.parentB.location).div(2); // midpoint = (v1 + v2)/2
   this.angle = exports.Utils.radiansToDegrees(Math.atan2(b.y - a.y, b.x - a.x) );
 };
 

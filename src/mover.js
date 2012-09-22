@@ -126,9 +126,9 @@ function Mover(opt_options) {
   this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;
   this.sensors = options.sensors || [];
   this.flowField = options.flowField || null;
-  this.acceleration = options.acceleration || exports.PVector.create(0, 0);
-  this.velocity = options.velocity || exports.PVector.create(0, 0);
-  this.location = options.location || exports.PVector.create(world.width/2, world.height/2);
+  this.acceleration = options.acceleration || new exports.Vector();
+  this.velocity = options.velocity || new exports.Vector();
+  this.location = options.location || new exports.Vector(world.width/2, world.height/2);
   this.controlCamera = !!options.controlCamera;
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
@@ -256,7 +256,7 @@ Mover.prototype.step = function() {
 
         sensor.location.x = this.location.x;
         sensor.location.y = this.location.y;
-        sensor.location.add(exports.PVector.create(x, y)); // position the sensor
+        sensor.location.add(new exports.Vector(x, y)); // position the sensor
 
         if (sensor.activated) {
           this.applyForce(sensor.getActivationForce({
@@ -281,7 +281,7 @@ Mover.prototype.step = function() {
 
     if (this.followMouse) { // follow mouse
       var t = {
-        location: exports.PVector.create(world.mouseX, world.mouseY)
+        location: new exports.Vector(world.mouseX, world.mouseY)
       };
       this.applyForce(this.seek(t));
     }
@@ -300,11 +300,11 @@ Mover.prototype.step = function() {
         loc = this.flowField.field[col][row];
         if (loc) { // !! sometimes loc is not available for edge cases; need to fix
           target = {
-            location: exports.PVector.create(loc.x, loc.y)
+            location: new exports.Vector(loc.x, loc.y)
           };
         } else {
           target = {
-            location: exports.PVector.create(this.location.x, this.location.y)
+            location: new exports.Vector(this.location.x, this.location.y)
           };
         }
         this.applyForce(this.follow(target));
@@ -356,7 +356,7 @@ Mover.prototype.step = function() {
 
           this.location.x = this.parent.location.x;
           this.location.y = this.parent.location.y;
-          this.location.add(exports.PVector.create(x, y)); // position the sensor
+          this.location.add(new exports.Vector(x, y)); // position the sensor
 
         } else {
           this.location = this.parent.location;
@@ -406,7 +406,7 @@ Mover.prototype.seek = function(target, arrive) {
   'use strict';
 
   var world = exports.world,
-    desiredVelocity = exports.PVector.PVectorSub(target.location, this.location),
+    desiredVelocity = exports.Vector.VectorSub(target.location, this.location),
     distanceToTarget = desiredVelocity.mag();
 
   desiredVelocity.normalize();
@@ -418,7 +418,7 @@ Mover.prototype.seek = function(target, arrive) {
     desiredVelocity.mult(this.maxSpeed);
   }
 
-  var steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+  var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
   steer.limit(this.maxSteeringForce);
   return steer;
 };
@@ -437,7 +437,7 @@ Mover.prototype.follow = function(target) {
 
   desiredVelocity.mult(this.maxSpeed);
 
-  var steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+  var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
   steer.limit(this.maxSteeringForce);
   return steer;
 };
@@ -466,7 +466,7 @@ Mover.prototype.separate = function(elements) {
   'use strict';
 
   var i, max, element, diff, d,
-  sum = exports.PVector.create(0, 0),
+  sum = new exports.Vector(),
   count = 0, steer;
 
   for (i = 0, max = elements.length; i < max; i += 1) {
@@ -476,7 +476,7 @@ Mover.prototype.separate = function(elements) {
       d = this.location.distance(element.location);
 
       if ((d > 0) && (d < this.desiredSeparation)) {
-        diff = exports.PVector.PVectorSub(this.location, element.location);
+        diff = exports.Vector.VectorSub(this.location, element.location);
         diff.normalize();
         diff.div(d);
         sum.add(diff);
@@ -488,11 +488,11 @@ Mover.prototype.separate = function(elements) {
     sum.div(count);
     sum.normalize();
     sum.mult(this.maxSpeed);
-    steer = exports.PVector.PVectorSub(sum, this.velocity);
+    steer = exports.Vector.VectorSub(sum, this.velocity);
     steer.limit(this.maxSteeringForce);
     return steer;
   }
-  return exports.PVector.create(0, 0);
+  return new exports.Vector();
 };
 
 /**
@@ -507,7 +507,7 @@ Mover.prototype.align = function(elements) {
   'use strict';
 
   var i, max, element, diff, d,
-    sum = exports.PVector.create(0, 0),
+    sum = new exports.Vector(),
     neighbordist = this.width * 2,
     count = 0, steer;
 
@@ -527,11 +527,11 @@ Mover.prototype.align = function(elements) {
     sum.div(count);
     sum.normalize();
     sum.mult(this.maxSpeed);
-    steer = exports.PVector.PVectorSub(sum, this.velocity);
+    steer = exports.Vector.VectorSub(sum, this.velocity);
     steer.limit(this.maxSteeringForce);
     return steer;
   }
-  return exports.PVector.create(0, 0);
+  return new exports.Vector();
 };
 
 /**
@@ -546,7 +546,7 @@ Mover.prototype.cohesion = function(elements) {
   'use strict';
 
   var i, max, element, diff, d,
-    sum = exports.PVector.create(0, 0),
+    sum = new exports.Vector(),
     neighbordist = 10,
     count = 0, desiredVelocity, steer;
 
@@ -564,14 +564,14 @@ Mover.prototype.cohesion = function(elements) {
 
   if (count > 0) {
     sum.div(count);
-    desiredVelocity = exports.PVector.PVectorSub(sum, this.location);
+    desiredVelocity = exports.Vector.VectorSub(sum, this.location);
     desiredVelocity.normalize();
     desiredVelocity.mult(this.maxSpeed);
-    steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+    steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
     steer.limit(this.maxSteeringForce);
     return steer;
   }
-  return exports.PVector.create(0, 0);
+  return new exports.Vector();
 };
 
 /**
@@ -585,7 +585,7 @@ Mover.prototype.flee = function(target) {
 
   'use strict';
 
-  var desiredVelocity = exports.PVector.PVectorSub(target.location, this.location); // find vector pointing at target
+  var desiredVelocity = exports.Vector.VectorSub(target.location, this.location); // find vector pointing at target
 
   desiredVelocity.normalize(); // reduce to 1
   desiredVelocity.mult(-this.maxSpeed); // multiply by maxSpeed in opposite direction
@@ -623,7 +623,7 @@ Mover.prototype.attract = function(attractor) {
 
   'use strict';
 
-  var force = exports.PVector.PVectorSub(attractor.location, this.location),
+  var force = exports.Vector.VectorSub(attractor.location, this.location),
     distance, strength;
 
   distance = force.mag();
@@ -680,12 +680,12 @@ Mover.prototype.checkWorldEdges = function(world) {
 
   if (this.wrapEdges) {
     if (this.location.x > world.width) {
-      this.location = exports.PVector.create(0, this.location.y);
-      diff = exports.PVector.create(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
+      this.location = new exports.Vector(0, this.location.y);
+      diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
       check = true;
     } else if (this.location.x < 0) {
-      this.location = exports.PVector.create(world.width, this.location.y);
-      diff = exports.PVector.create(x - this.location.x, 0);
+      this.location = new exports.Vector(world.width, this.location.y);
+      diff = new exports.Vector(x - this.location.x, 0);
       check = true;
     }
   } else {
@@ -696,20 +696,20 @@ Mover.prototype.checkWorldEdges = function(world) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
-        desiredVelocity = exports.PVector.create(maxSpeed, this.velocity.y),
-        steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+        desiredVelocity = new exports.Vector(maxSpeed, this.velocity.y),
+        steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
         steer.limit(this.maxSteeringForce);
         this.applyForce(steer);
       }
     }
     if (this.location.x + this.width/2 > world.width) {
-      this.location = exports.PVector.create(world.width - this.width/2, this.location.y);
-      diff = exports.PVector.create(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
+      this.location = new exports.Vector(world.width - this.width/2, this.location.y);
+      diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
       this.velocity.x *= -1 * this.bounciness;
       check = true;
      } else if (this.location.x < this.width/2) {
-      this.location = exports.PVector.create(this.width/2, this.location.y);
-      diff = exports.PVector.create(x - this.location.x, 0);
+      this.location = new exports.Vector(this.width/2, this.location.y);
+      diff = new exports.Vector(x - this.location.x, 0);
       this.velocity.x *= -1 * this.bounciness;
       check = true;
     }
@@ -720,12 +720,12 @@ Mover.prototype.checkWorldEdges = function(world) {
   maxSpeed = null;
   if (this.wrapEdges) {
     if (this.location.y > world.height) {
-      this.location = exports.PVector.create(this.location.x, 0);
-      diff = exports.PVector.create(0, y - this.location.y);
+      this.location = new exports.Vector(this.location.x, 0);
+      diff = new exports.Vector(0, y - this.location.y);
       check = true;
     } else if (this.location.y < 0) {
-      this.location = exports.PVector.create(this.location.x, world.height);
-      diff = exports.PVector.create(0, y - this.location.y);
+      this.location = new exports.Vector(this.location.x, world.height);
+      diff = new exports.Vector(0, y - this.location.y);
       check = true;
     }
   } else {
@@ -736,20 +736,20 @@ Mover.prototype.checkWorldEdges = function(world) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
-        desiredVelocity = exports.PVector.create(this.velocity.x, maxSpeed),
-        steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+        desiredVelocity = new exports.Vector(this.velocity.x, maxSpeed),
+        steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
         steer.limit(this.maxSteeringForce);
         this.applyForce(steer);
       }
     }
     if (this.location.y + this.height/2 > world.height) {
-      this.location = exports.PVector.create(this.location.x, world.height - this.height/2);
-      diff = exports.PVector.create(0, y - this.location.y);
+      this.location = new exports.Vector(this.location.x, world.height - this.height/2);
+      diff = new exports.Vector(0, y - this.location.y);
       this.velocity.y *= -1 * this.bounciness;
       check = true;
       } else if (this.location.y < this.height/2) {
-      this.location = exports.PVector.create(this.location.x, this.height/2);
-      diff = exports.PVector.create(0, y - this.location.y);
+      this.location = new exports.Vector(this.location.x, this.height/2);
+      diff = new exports.Vector(0, y - this.location.y);
       this.velocity.y *= -1 * this.bounciness;
       check = true;
     }
@@ -788,7 +788,7 @@ Mover.prototype.getLocation = function (type) {
   'use strict';
 
   if (!type) {
-    return exports.PVector.create(this.location.x, this.location.y);
+    return new exports.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
     return this.location.x;
   } else if (type === 'y') {
@@ -808,7 +808,7 @@ Mover.prototype.getVelocity = function (type) {
   'use strict';
 
   if (!type) {
-    return exports.PVector.create(this.velocity.x, this.velocity.y);
+    return new exports.Vector(this.velocity.x, this.velocity.y);
   } else if (type === "x") {
     return this.velocity.x;
   } else if (type === "y") {

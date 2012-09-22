@@ -59,14 +59,14 @@ FlowField.prototype.build = function() {
       theta = exports.Utils.map(exports.SimplexNoise.noise(xoff, yoff, 0.1), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
       fieldX = Math.cos(theta);
       fieldY = Math.sin(theta);
-      field = exports.PVector.create(fieldX, fieldY);
+      field = new exports.Vector(fieldX, fieldY);
       vectorList[col][row] = field;
       angle = exports.Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
 
       if (this.createMarkers) {
 
         var ffm = new exports.FlowFieldMarker({ // create the marker
-          location: exports.PVector.create(x, y),
+          location: new exports.Vector(x, y),
           scale: 1,
           opacity: exports.Utils.map(angle, -360, 360, 0.1, 1),
           width: this.resolution,

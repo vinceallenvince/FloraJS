@@ -8,7 +8,7 @@ system.start(function() {
   Flora.world.update({
     c: 0,
     showStats: false,
-    gravity: Flora.PVector.create(0, 0),
+    gravity: new Flora.Vector(),
     borderWidth: 0
   });
 
@@ -32,7 +32,7 @@ system.start(function() {
       return {
         parent: this,
         location: this.getLocation(),
-        acceleration: Flora.PVector.create(x, y),
+        acceleration: new Flora.Vector(x, y),
         color: [200, 200, 200],
         width: 50,
         height: 50,

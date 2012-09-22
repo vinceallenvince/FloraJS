@@ -13,7 +13,7 @@
 </head>
 <body>
   <script type="text/javascript" charset="utf-8">
-  
+
     var system = new exports.FloraSystem();
 
     system.start(function () {
@@ -24,7 +24,7 @@
 
       for (var i = 0; i < 120; i++) {
         new Flora.Mover({
-          location: Flora.PVector.create(Flora.Utils.getRandomNumber(0, Flora.world.width, true), Flora.world.height/4),
+          location: new Flora.Vector(Flora.Utils.getRandomNumber(0, Flora.world.width, true), Flora.world.height/4),
           mass: Flora.Utils.getRandomNumber(10, 50),
           opacity: 1
         });
@@ -35,6 +35,6 @@
         borderRadius: 0
       });
     });
-  </script>  
+  </script>
 </body>
 </html>

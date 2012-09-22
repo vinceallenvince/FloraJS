@@ -54,9 +54,9 @@ function World(opt_options) {
   this.statsInterval = options.statsInterval || 0;
   this.clock = options.clock || 0;
   this.c = options.c || 0.01;
-  this.gravity = options.gravity || exports.PVector.create(0, 1);
-  this.wind =  options.wind || exports.PVector.create(0, 0);
-  this.location = options.location || exports.PVector.create(0, 0);
+  this.gravity = options.gravity || new exports.Vector(0, 1);
+  this.wind =  options.wind || new exports.Vector();
+  this.location = options.location || new exports.Vector();
   this.zSorted = !!options.zSorted;
 
   this.scale = options.scale || 1;
@@ -116,7 +116,7 @@ function World(opt_options) {
   // save the current and last mouse position
   exports.Utils.addEvent(document.body, 'mousemove', function(e) {
     exports.mouse.locLast = exports.mouse.loc.clone();
-    exports.mouse.loc = exports.PVector.create(e.pageX, e.pageY);
+    exports.mouse.loc = new exports.Vector(e.pageX, e.pageY);
   });
 
   // toggle the world playstate
@@ -146,13 +146,13 @@ function World(opt_options) {
             x = r * Math.cos(theta);
             y = r * Math.sin(theta);
 
-            target = exports.PVector.PVectorAdd(exports.PVector.create(x, y), obj.location);
+            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
 
-            desired = exports.PVector.PVectorSub(target, obj.location);
+            desired = exports.Vector.VectorSub(target, obj.location);
             desired.normalize();
             desired.mult(obj.velocity.mag() * 2);
 
-            steer = desired.PVectorSub(desired, obj.velocity);
+            steer = desired.VectorSub(desired, obj.velocity);
 
             elements[i].applyForce(steer);
           }
@@ -168,7 +168,7 @@ function World(opt_options) {
             theta = exports.Utils.degreesToRadians(obj.angle);
             x = r * Math.cos(theta);
             y = r * Math.sin(theta);
-            desired = exports.PVector.create(x, y);
+            desired = new exports.Vector(x, y);
             desired.normalize();
             desired.mult(obj.thrust);
             desired.limit(obj.maxSpeed);
@@ -187,13 +187,13 @@ function World(opt_options) {
             x = r * Math.cos(theta);
             y = r * Math.sin(theta);
 
-            target = exports.PVector.PVectorAdd(exports.PVector.create(x, y), obj.location);
+            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
 
-            desired = exports.PVector.PVectorSub(target, obj.location);
+            desired = exports.Vector.VectorSub(target, obj.location);
             desired.normalize();
             desired.mult(obj.velocity.mag() * 2);
 
-            steer = desired.PVectorSub(desired, obj.velocity);
+            steer = desired.VectorSub(desired, obj.velocity);
 
             elements[i].applyForce(steer);
           }
@@ -333,14 +333,14 @@ World.prototype.devicemotion = function() {
 
   if (window.orientation === 0) {
     if (this.isTopDown) {
-      this.gravity = exports.PVector.create(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
+      this.gravity = new exports.Vector(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
     } else {
-      this.gravity = exports.PVector.create(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
+      this.gravity = new exports.Vector(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
     }
   } else if (window.orientation === -90) {
-    this.gravity = exports.PVector.create(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
+    this.gravity = new exports.Vector(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
   } else {
-    this.gravity = exports.PVector.create(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
+    this.gravity = new exports.Vector(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
   }
 
   /*if (World.showDeviceOrientation) {

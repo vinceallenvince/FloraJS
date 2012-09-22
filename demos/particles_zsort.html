@@ -64,7 +64,7 @@
               boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 12) + 'px rgb(' + plLight.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(401, 500),
               location: this.getLocation().mult(1.15),
-              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+              acceleration: new Flora.Vector(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
             };
           }
         });
@@ -101,7 +101,7 @@
               boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 12) + 'px rgb(' + plOxygen.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(301, 400),
               location: this.getLocation().mult(0.85),
-              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+              acceleration: new Flora.Vector(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
             };
           }
         });
@@ -138,7 +138,7 @@
               boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 12) + 'px rgb(' + plFood.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(101, 200),
               location: this.getLocation().mult(0.95),
-              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+              acceleration: new Flora.Vector(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
             };
           }
         });
@@ -175,7 +175,7 @@
               boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 12) + 'px rgb(' + plCold.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(201, 300),
               location: this.getLocation().mult(1.05),
-              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+              acceleration: new Flora.Vector(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
             };
           }
         });
@@ -212,7 +212,7 @@
               boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(1, 12) + 'px rgb(' + plHeat.getColor().toString() + ')',
               zIndex: Flora.Utils.getRandomNumber(1, 100),
               location: this.getLocation(),
-              acceleration: Flora.PVector.create(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
+              acceleration: new Flora.Vector(Flora.Utils.getRandomNumber(-4, 4), Flora.Utils.getRandomNumber(-4, 4))
             };
           }
         });

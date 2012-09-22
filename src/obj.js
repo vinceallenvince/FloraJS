@@ -86,7 +86,7 @@ Obj.mousemove = function(e) {
     x = e.pageX - worldOffset.left;
     y = e.pageY - worldOffset.top;
 
-    this.item.location = exports.PVector.create(x, y);
+    this.item.location = new exports.Vector(x, y);
 
     //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
       //this.draw();
@@ -131,7 +131,7 @@ Obj.mouseleave = function(e) {
         x = exports.Flora.World.mouseX - worldOffset.left;
         y = exports.Flora.World.mouseY - worldOffset.top;
 
-        item.location = exports.PVector.create(x, y);
+        item.location = new exports.Vector(x, y);
 
         //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
           //me.draw();

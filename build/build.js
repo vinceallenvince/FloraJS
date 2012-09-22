@@ -1,10 +1,11 @@
 /*ignore!
 This is the license.
 */
-/* Build time: September 8, 2012 06:37:17 */
+/* Build time: September 22, 2012 05:11:16 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
+(function(exports) {
 /**
  * RequestAnimationFrame shim layer with setTimeout fallback
  * @param {function} callback The function to call.
@@ -103,8 +104,8 @@ function FloraSystem(el) {
   exports.predators = [];
 
   exports.mouse = {
-    loc: exports.PVector.create(0, 0),
-    locLast: exports.PVector.create(0, 0)
+    loc: new exports.Vector(),
+    locLast: new exports.Vector()
   };
 
   exports.world = new exports.World();
@@ -413,236 +414,241 @@ var Utils = (function () {
 exports.Utils = Utils;
 /*jshint supernew:true */
 /**
-    A module representing a PVector.
-    @module PVector
+    A module representing a Vector.
+    @module Vector
  */
-
 /**
- * @namespace
+ * Creates a new Vector.
+ *
+ * @param {number} [opt_x = 0] The x location.
+ * @param {number} [opt_y = 0] The y location.
  */
-var PVector = (function() {
-
+function Vector(opt_x, opt_y) {
   'use strict';
+  var x = opt_x || 0,
+      y = opt_y || 0;
+  this.x = x;
+  this.y = y;
+}
+/**
+ * Subtract two vectors. Uses clone to avoid affecting the values of the vectors.
+ *
+ * @returns {Object} A vector.
+ */
+Vector.VectorSub = function(v1, v2) {
+  'use strict';
+  return new Vector(v1.x - v2.x, v1.y - v2.y);
+};
+/**
+ * Add two vectors. Uses clone to avoid affecting the values of the vectors.
+ *
+ * @returns {Object} A vector.
+ */
+Vector.VectorAdd = function(v1, v2) {
+  'use strict';
+  return new Vector(v1.x + v2.x, v1.y + v2.y);
+};
+/**
+ * Multiply two vectors. Uses clone to avoid affecting the values of the vectors.
+ *
+ * @returns {Object} A vector.
+ */
+Vector.VectorMult = function(v, n) {
+  'use strict';
+  return new Vector(v.x * n, v.y * n);
+};
+/**
+ * Divide two vectors. Uses clone to avoid affecting the values of the vectors.
+ *
+ * @returns {Object} A vector.
+ */
+Vector.VectorDiv = function(v1, v2) {
+  'use strict';
+  return new Vector(v1.x / v2.x, v1.y / v2.y);
+};
+/**
+ * Get the midpoint between two vectors. Uses clone to avoid affecting the values of the vectors.
+ *
+ * @returns {Object} A vector.
+ */
+Vector.VectorMidPoint = function(v1, v2) {
+  'use strict';
+  return this.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
+};
+/**
+ * Get the angle between two vectors.
+ *
+ * @returns {Object} A vector.
+ */
+Vector.VectorAngleBetween = function(v1, v2) {
+  'use strict';
+  var dot = v1.dot(v2),
+  theta = Math.acos(dot / (v1.mag() * v2.mag()));
+  return theta;
+};
+/**
+* Returns an new vector with all properties and methods of the
+* old vector copied to the new vector's prototype.
+*
+* @returns {Object} A vector.
+*/
+Vector.prototype.clone = function() {
+  'use strict';
+  function F() {}
+  F.prototype = this;
+  return new F;
+};
+/**
+ * Adds a vector to this vector.
+ *
+ * @param {Object} vector The vector to add.
+ * @returns {Object} This vector.
+ */
+Vector.prototype.add = function(vector) {
+  'use strict';
+  this.x += vector.x;
+  this.y += vector.y;
+  return this;
+};
+/**
+ * Subtracts a vector from this vector.
+ *
+ * @param {Object} vector The vector to subtract.
+ * @returns {Object} This vector.
+ */
+Vector.prototype.sub = function(vector) {
+  'use strict';
+  this.x -= vector.x;
+  this.y -= vector.y;
+  return this;
+};
+/**
+ * Multiplies this vector by a passed value.
+ *
+ * @param {number} n Vector will be multiplied by this number.
+ * @returns {Object} This vector.
+ */
+Vector.prototype.mult = function(n) {
+  'use strict';
+  this.x *= n;
+  this.y *= n;
+  return this;
+};
+/**
+ * Divides this vector by a passed value.
+ *
+ * @param {number} n Vector will be divided by this number.
+ * @returns {Object} This vector.
+ */
+Vector.prototype.div = function(n) {
+  'use strict';
+  this.x = this.x / n;
+  this.y = this.y / n;
+  return this;
+};
+/**
+ * Calculates the magnitude of this vector.
+ *
+ * @returns {number} The vector's magnitude.
+ */
+Vector.prototype.mag = function() {
+  'use strict';
+  return Math.sqrt((this.x * this.x) + (this.y * this.y));
+};
+/**
+ * Limits the vector's magnitude.
+ *
+ * @param {number} high The upper bound of the vector's magnitude.
+ */
+Vector.prototype.limit = function(high) {
+  'use strict';
+  if (this.mag() > high) {
+    this.normalize();
+    this.mult(high);
+  }
+};
 
-  /** @scope PVector */
-  return {
-    /**
-     * Subtract two vectors. Uses clone to avoid affecting the values of the vectors.
-     *
-     * @returns {Object} A vector.
-     */
-    PVectorSub: function(v1, v2) {
-      return this.create(v1.x - v2.x, v1.y - v2.y);
-    },
-    /**
-     * Add two vectors. Uses clone to avoid affecting the values of the vectors.
-     *
-     * @returns {Object} A vector.
-     */
-    PVectorAdd: function(v1, v2) {
-      return this.create(v1.x + v2.x, v1.y + v2.y);
-    },
-    /**
-     * Multiply two vectors. Uses clone to avoid affecting the values of the vectors.
-     *
-     * @returns {Object} A vector.
-     */
-    PVectorMult: function(v, n) {
-      return this.create(v.x * n, v.y * n);
-    },
-    /**
-     * Divide two vectors. Uses clone to avoid affecting the values of the vectors.
-     *
-     * @returns {Object} A vector.
-     */
-    PVectorDiv: function(v1, v2) {
-      return this.create(v1.x / v2.x, v1.y / v2.y);
-    },
-    /**
-     * Get the midpoint between two vectors. Uses clone to avoid affecting the values of the vectors.
-     *
-     * @returns {Object} A vector.
-     */
-    PVectorMidPoint: function(v1, v2) {
-      return this.PVectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
-    },
-    /**
-     * Get the angle between two vectors.
-     *
-     * @returns {Object} A vector.
-     */
-    PVectorAngleBetween: function(v1, v2) {
-        var dot = v1.dot(v2),
-        theta = Math.acos(dot / (v1.mag() * v2.mag()));
-        return theta;
-    },
-    /**
-     * Returns an new vector with all properties and methods of the
-     * old vector copied to the new vector's prototype.
-     *
-     * @returns {Object} A vector.
-     */
-    clone: function() {
-      function F() {}
-      F.prototype = this;
-      return new F;
-    },
-    /**
-     * Creates a new vector based on passed x, y locations.
-     * The new vector will have all PVector methods on its prototype.
-     *
-     * @param {number} x The x coordinate of the vector.
-     * @param {number} y The y coordinate of the vector.
-     * @returns {Object} A vector.
-     */
-    create: function(x, y) {
-      var obj;
-      function F() {}
-      F.prototype = this;
-      obj = new F;
-      obj.x = x;
-      obj.y = y;
-      return obj;
-    },
-    /**
-     * Adds a vector to this vector.
-     *
-     * @param {Object} vector The vector to add.
-     * @returns {Object} This vector.
-     */
-    add: function(vector) {
-      this.x += vector.x;
-      this.y += vector.y;
-      return this;
-    },
-    /**
-     * Subtracts a vector from this vector.
-     *
-     * @param {Object} vector The vector to subtract.
-     * @returns {Object} This vector.
-     */
-    sub: function(vector) {
-      this.x -= vector.x;
-      this.y -= vector.y;
-      return this;
-    },
-    /**
-     * Multiplies this vector by a passed value.
-     *
-     * @param {number} n Vector will be multiplied by this number.
-     * @returns {Object} This vector.
-     */
-    mult: function(n) {
-      this.x *= n;
-      this.y *= n;
-      return this;
-    },
-    /**
-     * Divides this vector by a passed value.
-     *
-     * @param {number} n Vector will be divided by this number.
-     * @returns {Object} This vector.
-     */
-    div: function(n) {
-      this.x = this.x / n;
-      this.y = this.y / n;
-      return this;
-    },
-    /**
-     * Calculates the magnitude of this vector.
-     *
-     * @returns {number} The vector's magnitude.
-     */
-    mag: function() {
-      return Math.sqrt((this.x * this.x) + (this.y * this.y));
-    },
-    /**
-     * Limits the vector's magnitude.
-     *
-     * @param {number} high The upper bound of the vector's magnitude.
-     */
-    limit: function(high) {
-      if (this.mag() > high) {
-        this.normalize();
-        this.mult(high);
-      }
-    },
-    limitLow: function(low) {
-      if (this.mag() < low) {
-        this.normalize();
-        this.mult(low);
-      }
-    },
-    /**
-     * Divides a vector by its magnitude to reduce its magnitude to 1.
-     * Typically used to retrieve the direction of the vector for later manipulation.
-     *
-     * @returns {Object} This vector.
-     */
-    normalize: function() {
-      var m = this.mag();
-      if (m !== 0) {
-        return this.div(m);
-      }
-    },
-    /**
-     * Calculates the distance between this vector and a passed vector.
-     *
-     * @param {Object} vector The target vector.
-     * @returns {Object} This vector.
-     */
-    distance: function(vector) {
-      return Math.sqrt(Math.pow(vector.x - this.x, 2) + Math.pow(vector.y - this.y, 2));
-    },
-    /**
-     * Calculates the length of this vector.
-     *
-     * @returns {number} This vector's length.
-     */
-    length: function() {
-      return Math.sqrt(this.x * this.x + this.y * this.y);
-    },
-    /**
-     * Rotates a vector using a passed angle in radians.
-     *
-     * @param {number} radians The angle to rotate in radians.
-     * @returns {Object} This vector.
-     */
-    rotate: function(radians) {
-      var cos = Math.cos(radians),
-        sin = Math.sin(radians),
-        x = this.x,
-        y = this.y;
+Vector.prototype.limitLow = function(low) {
+  'use strict';
+  if (this.mag() < low) {
+    this.normalize();
+    this.mult(low);
+  }
+};
+/**
+ * Divides a vector by its magnitude to reduce its magnitude to 1.
+ * Typically used to retrieve the direction of the vector for later manipulation.
+ *
+ * @returns {Object} This vector.
+ */
+Vector.prototype.normalize = function() {
+  'use strict';
+  var m = this.mag();
+  if (m !== 0) {
+    return this.div(m);
+  }
+};
+/**
+ * Calculates the distance between this vector and a passed vector.
+ *
+ * @param {Object} vector The target vector.
+ * @returns {Object} This vector.
+ */
+Vector.prototype.distance = function(vector) {
+  'use strict';
+  return Math.sqrt(Math.pow(vector.x - this.x, 2) + Math.pow(vector.y - this.y, 2));
+};
+/**
+ * Calculates the length of this vector.
+ *
+ * @returns {number} This vector's length.
+ */
+Vector.prototype.length = function() {
+  'use strict';
+  return Math.sqrt(this.x * this.x + this.y * this.y);
+};
+/**
+ * Rotates a vector using a passed angle in radians.
+ *
+ * @param {number} radians The angle to rotate in radians.
+ * @returns {Object} This vector.
+ */
+Vector.prototype.rotate = function(radians) {
+  'use strict';
+  var cos = Math.cos(radians),
+    sin = Math.sin(radians),
+    x = this.x,
+    y = this.y;
 
-      this.x = x * cos - y * sin;
-      this.y = x * sin + y * cos;
-      return this;
-    },
-    /**
-     * Calulates the midpoint between two vectors.
-     *
-     * @param {Object} v1 The first vector.
-     * @param {Object} v1 The second vector.
-     * @returns {Object} A vector representing the midpoint between the passed vectors.
-     */
-    midpoint: function(v1, v2) {
-      return this.PVectorAdd(v1, v2).div(2);
-    },
-    /**
-     * Calulates the dot product.
-     *
-     * @param {Object} vector The target vector.
-     * @returns {Object} A vector.
-     */
-    dot: function(vector) {
-      if (this.z && vector.z) {
-        return this.x * vector.x + this.y * vector.y + this.z * vector.z;
-      }
-      return this.x * vector.x + this.y * vector.y;
-    }
-  };
-}());
-exports.PVector = PVector;
+  this.x = x * cos - y * sin;
+  this.y = x * sin + y * cos;
+  return this;
+};
+/**
+ * Calulates the midpoint between two vectors.
+ *
+ * @param {Object} v1 The first vector.
+ * @param {Object} v1 The second vector.
+ * @returns {Object} A vector representing the midpoint between the passed vectors.
+ */
+Vector.prototype.midpoint = function(v1, v2) {
+  'use strict';
+  return this.VectorAdd(v1, v2).div(2);
+};
+/**
+ * Calulates the dot product.
+ *
+ * @param {Object} vector The target vector.
+ * @returns {Object} A vector.
+ */
+Vector.prototype.dot = function(vector) {
+  'use strict';
+  if (this.z && vector.z) {
+    return this.x * vector.x + this.y * vector.y + this.z * vector.z;
+  }
+  return this.x * vector.x + this.y * vector.y;
+};
+exports.Vector = Vector;
 var defaultColorList = [
   {
     name: 'heat',
@@ -965,7 +971,7 @@ BorderPalette.prototype.getBorder = function() {
 
 exports.BorderPalette = BorderPalette;
 /*jshint bitwise:false */
-/**
+/** 
     A module representing SimplexNoise.
     @module SimplexNoise
  */
@@ -993,27 +999,27 @@ var SimplexNoise = (function (r) {
     r = Math;
   }
   var i;
-  var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
+  var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]]; 
   var p = [];
   for (i = 0; i < 256; i += 1) {
     p[i] = Math.floor(r.random()*256);
   }
-  // To remove the need for index wrapping, double the permutation table length
-  var perm = [];
+  // To remove the need for index wrapping, double the permutation table length 
+  var perm = []; 
   for(i = 0; i < 512; i += 1) {
     perm[i] = p[i & 255];
-  }
+  } 
 
-  // A lookup table to traverse the simplex around a given point in 4D.
-  // Details can be found where this table is used, in the 4D noise method.
-  var simplex = [
-  [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0],
-  [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0],
-  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
-  [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0],
-  [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0],
-  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
-  [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0],
+  // A lookup table to traverse the simplex around a given point in 4D. 
+  // Details can be found where this table is used, in the 4D noise method. 
+  var simplex = [ 
+  [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0], 
+  [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0], 
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
+  [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0], 
+  [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0], 
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
+  [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0], 
   [2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
 
 /** @scope SimplexNoise */
@@ -1022,150 +1028,150 @@ return {
   p: p,
   perm: perm,
   simplex: simplex,
-  dot: function(g, x, y) {
+  dot: function(g, x, y) { 
     return g[0] * x + g[1] * y;
   },
-  noise: function(xin, yin) {
-    var n0, n1, n2; // Noise contributions from the three corners
-    // Skew the input space to determine which simplex cell we're in
-    var F2 = 0.5*(Math.sqrt(3.0)-1.0);
-    var s = (xin+yin)*F2; // Hairy factor for 2D
-    var i = Math.floor(xin+s);
-    var j = Math.floor(yin+s);
-    var G2 = (3.0-Math.sqrt(3.0))/6.0;
-    var t = (i+j)*G2;
-    var X0 = i-t; // Unskew the cell origin back to (x,y) space
-    var Y0 = j-t;
-    var x0 = xin-X0; // The x,y distances from the cell origin
-    var y0 = yin-Y0;
-    // For the 2D case, the simplex shape is an equilateral triangle.
-    // Determine which simplex we are in.
-    var i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
-    if(x0>y0) {i1=1; j1=0;} // lower triangle, XY order: (0,0)->(1,0)->(1,1)
-    else {i1=0; j1=1;}      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
-    // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
-    // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
-    // c = (3-sqrt(3))/6
-    var x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
-    var y1 = y0 - j1 + G2;
-    var x2 = x0 - 1.0 + 2.0 * G2; // Offsets for last corner in (x,y) unskewed coords
-    var y2 = y0 - 1.0 + 2.0 * G2;
-    // Work out the hashed gradient indices of the three simplex corners
-    var ii = i & 255;
-    var jj = j & 255;
-    var gi0 = this.perm[ii+this.perm[jj]] % 12;
-    var gi1 = this.perm[ii+i1+this.perm[jj+j1]] % 12;
-    var gi2 = this.perm[ii+1+this.perm[jj+1]] % 12;
-    // Calculate the contribution from the three corners
-    var t0 = 0.5 - x0*x0-y0*y0;
+  noise: function(xin, yin) { 
+    var n0, n1, n2; // Noise contributions from the three corners 
+    // Skew the input space to determine which simplex cell we're in 
+    var F2 = 0.5*(Math.sqrt(3.0)-1.0); 
+    var s = (xin+yin)*F2; // Hairy factor for 2D 
+    var i = Math.floor(xin+s); 
+    var j = Math.floor(yin+s); 
+    var G2 = (3.0-Math.sqrt(3.0))/6.0; 
+    var t = (i+j)*G2; 
+    var X0 = i-t; // Unskew the cell origin back to (x,y) space 
+    var Y0 = j-t; 
+    var x0 = xin-X0; // The x,y distances from the cell origin 
+    var y0 = yin-Y0; 
+    // For the 2D case, the simplex shape is an equilateral triangle. 
+    // Determine which simplex we are in. 
+    var i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords 
+    if(x0>y0) {i1=1; j1=0;} // lower triangle, XY order: (0,0)->(1,0)->(1,1) 
+    else {i1=0; j1=1;}      // upper triangle, YX order: (0,0)->(0,1)->(1,1) 
+    // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and 
+    // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where 
+    // c = (3-sqrt(3))/6 
+    var x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords 
+    var y1 = y0 - j1 + G2; 
+    var x2 = x0 - 1.0 + 2.0 * G2; // Offsets for last corner in (x,y) unskewed coords 
+    var y2 = y0 - 1.0 + 2.0 * G2; 
+    // Work out the hashed gradient indices of the three simplex corners 
+    var ii = i & 255; 
+    var jj = j & 255; 
+    var gi0 = this.perm[ii+this.perm[jj]] % 12; 
+    var gi1 = this.perm[ii+i1+this.perm[jj+j1]] % 12; 
+    var gi2 = this.perm[ii+1+this.perm[jj+1]] % 12; 
+    // Calculate the contribution from the three corners 
+    var t0 = 0.5 - x0*x0-y0*y0; 
     if (t0 < 0) {
       n0 = 0.0;
-    } else {
-      t0 *= t0;
-      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient
-    }
-    var t1 = 0.5 - x1*x1-y1*y1;
+    } else { 
+      t0 *= t0; 
+      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient 
+    } 
+    var t1 = 0.5 - x1*x1-y1*y1; 
     if (t1 < 0) {
-      n1 = 0.0;
-    } else {
-      t1 *= t1;
-      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1);
+      n1 = 0.0; 
+    } else { 
+      t1 *= t1; 
+      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1); 
     }
-    var t2 = 0.5 - x2*x2-y2*y2;
+    var t2 = 0.5 - x2*x2-y2*y2; 
     if (t2 < 0) {
-      n2 = 0.0;
-    } else {
-      t2 *= t2;
-      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2);
-    }
-    // Add contributions from each corner to get the final noise value.
-    // The result is scaled to return values in the interval [-1,1].
-    return 70.0 * (n0 + n1 + n2);
+      n2 = 0.0; 
+    } else { 
+      t2 *= t2; 
+      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2); 
+    } 
+    // Add contributions from each corner to get the final noise value. 
+    // The result is scaled to return values in the interval [-1,1]. 
+    return 70.0 * (n0 + n1 + n2); 
   },
-  noise3d: function(xin, yin, zin) {
-    var n0, n1, n2, n3; // Noise contributions from the four corners
-    // Skew the input space to determine which simplex cell we're in
-    var F3 = 1.0/3.0;
-    var s = (xin+yin+zin)*F3; // Very nice and simple skew factor for 3D
-    var i = Math.floor(xin+s);
-    var j = Math.floor(yin+s);
-    var k = Math.floor(zin+s);
-    var G3 = 1.0/6.0; // Very nice and simple unskew factor, too
-    var t = (i+j+k)*G3;
-    var X0 = i-t; // Unskew the cell origin back to (x,y,z) space
-    var Y0 = j-t;
-    var Z0 = k-t;
-    var x0 = xin-X0; // The x,y,z distances from the cell origin
-    var y0 = yin-Y0;
-    var z0 = zin-Z0;
-    // For the 3D case, the simplex shape is a slightly irregular tetrahedron.
-    // Determine which simplex we are in.
-    var i1, j1, k1; // Offsets for second corner of simplex in (i,j,k) coords
-    var i2, j2, k2; // Offsets for third corner of simplex in (i,j,k) coords
-    if(x0>=y0) {
-    if(y0>=z0)
-    { i1=1; j1=0; k1=0; i2=1; j2=1; k2=0; } // X Y Z order
-    else if(x0>=z0) { i1=1; j1=0; k1=0; i2=1; j2=0; k2=1; } // X Z Y order
-    else { i1=0; j1=0; k1=1; i2=1; j2=0; k2=1; } // Z X Y order
-    }
-    else { // x0<y0
-    if(y0<z0) { i1=0; j1=0; k1=1; i2=0; j2=1; k2=1; } // Z Y X order
-    else if(x0<z0) { i1=0; j1=1; k1=0; i2=0; j2=1; k2=1; } // Y Z X order
-    else { i1=0; j1=1; k1=0; i2=1; j2=1; k2=0; } // Y X Z order
-    }
-    // A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z),
-    // a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (x,y,z), and
-    // a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where
+  noise3d: function(xin, yin, zin) { 
+    var n0, n1, n2, n3; // Noise contributions from the four corners 
+    // Skew the input space to determine which simplex cell we're in 
+    var F3 = 1.0/3.0; 
+    var s = (xin+yin+zin)*F3; // Very nice and simple skew factor for 3D 
+    var i = Math.floor(xin+s); 
+    var j = Math.floor(yin+s); 
+    var k = Math.floor(zin+s); 
+    var G3 = 1.0/6.0; // Very nice and simple unskew factor, too 
+    var t = (i+j+k)*G3; 
+    var X0 = i-t; // Unskew the cell origin back to (x,y,z) space 
+    var Y0 = j-t; 
+    var Z0 = k-t; 
+    var x0 = xin-X0; // The x,y,z distances from the cell origin 
+    var y0 = yin-Y0; 
+    var z0 = zin-Z0; 
+    // For the 3D case, the simplex shape is a slightly irregular tetrahedron. 
+    // Determine which simplex we are in. 
+    var i1, j1, k1; // Offsets for second corner of simplex in (i,j,k) coords 
+    var i2, j2, k2; // Offsets for third corner of simplex in (i,j,k) coords 
+    if(x0>=y0) { 
+    if(y0>=z0) 
+    { i1=1; j1=0; k1=0; i2=1; j2=1; k2=0; } // X Y Z order 
+    else if(x0>=z0) { i1=1; j1=0; k1=0; i2=1; j2=0; k2=1; } // X Z Y order 
+    else { i1=0; j1=0; k1=1; i2=1; j2=0; k2=1; } // Z X Y order 
+    } 
+    else { // x0<y0 
+    if(y0<z0) { i1=0; j1=0; k1=1; i2=0; j2=1; k2=1; } // Z Y X order 
+    else if(x0<z0) { i1=0; j1=1; k1=0; i2=0; j2=1; k2=1; } // Y Z X order 
+    else { i1=0; j1=1; k1=0; i2=1; j2=1; k2=0; } // Y X Z order 
+    } 
+    // A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z), 
+    // a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (x,y,z), and 
+    // a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where 
     // c = 1/6.
-    var x1 = x0 - i1 + G3; // Offsets for second corner in (x,y,z) coords
-    var y1 = y0 - j1 + G3;
-    var z1 = z0 - k1 + G3;
-    var x2 = x0 - i2 + 2.0*G3; // Offsets for third corner in (x,y,z) coords
-    var y2 = y0 - j2 + 2.0*G3;
-    var z2 = z0 - k2 + 2.0*G3;
-    var x3 = x0 - 1.0 + 3.0*G3; // Offsets for last corner in (x,y,z) coords
-    var y3 = y0 - 1.0 + 3.0*G3;
-    var z3 = z0 - 1.0 + 3.0*G3;
-    // Work out the hashed gradient indices of the four simplex corners
-    var ii = i & 255;
-    var jj = j & 255;
-    var kk = k & 255;
-    var gi0 = this.perm[ii+this.perm[jj+this.perm[kk]]] % 12;
-    var gi1 = this.perm[ii+i1+this.perm[jj+j1+this.perm[kk+k1]]] % 12;
-    var gi2 = this.perm[ii+i2+this.perm[jj+j2+this.perm[kk+k2]]] % 12;
-    var gi3 = this.perm[ii+1+this.perm[jj+1+this.perm[kk+1]]] % 12;
-    // Calculate the contribution from the four corners
-    var t0 = 0.6 - x0*x0 - y0*y0 - z0*z0;
+    var x1 = x0 - i1 + G3; // Offsets for second corner in (x,y,z) coords 
+    var y1 = y0 - j1 + G3; 
+    var z1 = z0 - k1 + G3; 
+    var x2 = x0 - i2 + 2.0*G3; // Offsets for third corner in (x,y,z) coords 
+    var y2 = y0 - j2 + 2.0*G3; 
+    var z2 = z0 - k2 + 2.0*G3; 
+    var x3 = x0 - 1.0 + 3.0*G3; // Offsets for last corner in (x,y,z) coords 
+    var y3 = y0 - 1.0 + 3.0*G3; 
+    var z3 = z0 - 1.0 + 3.0*G3; 
+    // Work out the hashed gradient indices of the four simplex corners 
+    var ii = i & 255; 
+    var jj = j & 255; 
+    var kk = k & 255; 
+    var gi0 = this.perm[ii+this.perm[jj+this.perm[kk]]] % 12; 
+    var gi1 = this.perm[ii+i1+this.perm[jj+j1+this.perm[kk+k1]]] % 12; 
+    var gi2 = this.perm[ii+i2+this.perm[jj+j2+this.perm[kk+k2]]] % 12; 
+    var gi3 = this.perm[ii+1+this.perm[jj+1+this.perm[kk+1]]] % 12; 
+    // Calculate the contribution from the four corners 
+    var t0 = 0.6 - x0*x0 - y0*y0 - z0*z0; 
     if (t0 < 0) {
-      n0 = 0.0;
-    } else {
-      t0 *= t0;
-      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0, z0);
+      n0 = 0.0; 
+    } else { 
+      t0 *= t0; 
+      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0, z0); 
     }
-    var t1 = 0.6 - x1*x1 - y1*y1 - z1*z1;
+    var t1 = 0.6 - x1*x1 - y1*y1 - z1*z1; 
     if (t1 < 0) {
-      n1 = 0.0;
-    } else {
-      t1 *= t1;
-      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1, z1);
-    }
-    var t2 = 0.6 - x2*x2 - y2*y2 - z2*z2;
+      n1 = 0.0; 
+    } else { 
+      t1 *= t1; 
+      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1, z1); 
+    } 
+    var t2 = 0.6 - x2*x2 - y2*y2 - z2*z2; 
     if(t2 < 0) {
-      n2 = 0.0;
-    } else {
-      t2 *= t2;
-      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2, z2);
-    }
-    var t3 = 0.6 - x3*x3 - y3*y3 - z3*z3;
+      n2 = 0.0; 
+    } else { 
+      t2 *= t2; 
+      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2, z2); 
+    } 
+    var t3 = 0.6 - x3*x3 - y3*y3 - z3*z3; 
     if(t3 <0 ) {
-      n3 = 0.0;
-    } else {
-      t3 *= t3;
-      n3 = t3 * t3 * this.dot(this.grad3[gi3], x3, y3, z3);
-    }
-    // Add contributions from each corner to get the final noise value.
-    // The result is scaled to stay just inside [-1,1]
-    return 32.0*(n0 + n1 + n2 + n3);
+      n3 = 0.0; 
+    } else { 
+      t3 *= t3; 
+      n3 = t3 * t3 * this.dot(this.grad3[gi3], x3, y3, z3); 
+    } 
+    // Add contributions from each corner to get the final noise value. 
+    // The result is scaled to stay just inside [-1,1] 
+    return 32.0*(n0 + n1 + n2 + n3); 
   }
 };
 
@@ -1173,7 +1179,7 @@ return {
 random: function () {
 
   'use strict';
-
+  
   return 0.1;
 }
 }));
@@ -1346,9 +1352,9 @@ function World(opt_options) {
   this.statsInterval = options.statsInterval || 0;
   this.clock = options.clock || 0;
   this.c = options.c || 0.01;
-  this.gravity = options.gravity || exports.PVector.create(0, 1);
-  this.wind =  options.wind || exports.PVector.create(0, 0);
-  this.location = options.location || exports.PVector.create(0, 0);
+  this.gravity = options.gravity || new exports.Vector(0, 1);
+  this.wind =  options.wind || new exports.Vector();
+  this.location = options.location || new exports.Vector();
   this.zSorted = !!options.zSorted;
 
   this.scale = options.scale || 1;
@@ -1408,7 +1414,7 @@ function World(opt_options) {
   // save the current and last mouse position
   exports.Utils.addEvent(document.body, 'mousemove', function(e) {
     exports.mouse.locLast = exports.mouse.loc.clone();
-    exports.mouse.loc = exports.PVector.create(e.pageX, e.pageY);
+    exports.mouse.loc = new exports.Vector(e.pageX, e.pageY);
   });
 
   // toggle the world playstate
@@ -1438,13 +1444,13 @@ function World(opt_options) {
             x = r * Math.cos(theta);
             y = r * Math.sin(theta);
 
-            target = exports.PVector.PVectorAdd(exports.PVector.create(x, y), obj.location);
+            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
 
-            desired = exports.PVector.PVectorSub(target, obj.location);
+            desired = exports.Vector.VectorSub(target, obj.location);
             desired.normalize();
             desired.mult(obj.velocity.mag() * 2);
 
-            steer = desired.PVectorSub(desired, obj.velocity);
+            steer = desired.VectorSub(desired, obj.velocity);
 
             elements[i].applyForce(steer);
           }
@@ -1460,7 +1466,7 @@ function World(opt_options) {
             theta = exports.Utils.degreesToRadians(obj.angle);
             x = r * Math.cos(theta);
             y = r * Math.sin(theta);
-            desired = exports.PVector.create(x, y);
+            desired = new exports.Vector(x, y);
             desired.normalize();
             desired.mult(obj.thrust);
             desired.limit(obj.maxSpeed);
@@ -1479,13 +1485,13 @@ function World(opt_options) {
             x = r * Math.cos(theta);
             y = r * Math.sin(theta);
 
-            target = exports.PVector.PVectorAdd(exports.PVector.create(x, y), obj.location);
+            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
 
-            desired = exports.PVector.PVectorSub(target, obj.location);
+            desired = exports.Vector.VectorSub(target, obj.location);
             desired.normalize();
             desired.mult(obj.velocity.mag() * 2);
 
-            steer = desired.PVectorSub(desired, obj.velocity);
+            steer = desired.VectorSub(desired, obj.velocity);
 
             elements[i].applyForce(steer);
           }
@@ -1625,14 +1631,14 @@ World.prototype.devicemotion = function() {
 
   if (window.orientation === 0) {
     if (this.isTopDown) {
-      this.gravity = exports.PVector.create(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
+      this.gravity = new exports.Vector(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
     } else {
-      this.gravity = exports.PVector.create(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
+      this.gravity = new exports.Vector(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
     }
   } else if (window.orientation === -90) {
-    this.gravity = exports.PVector.create(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
+    this.gravity = new exports.Vector(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
   } else {
-    this.gravity = exports.PVector.create(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
+    this.gravity = new exports.Vector(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
   }
 
   /*if (World.showDeviceOrientation) {
@@ -1761,7 +1767,7 @@ function Camera(opt_options) {
 
   var options = opt_options || {};
 
-  this.location = options.location || exports.PVector.create(0, 0);
+  this.location = options.location || new exports.Vector(0, 0);
   this.controlObj = options.controlObj || null;
 }
 
@@ -1859,7 +1865,7 @@ Obj.mousemove = function(e) {
     x = e.pageX - worldOffset.left;
     y = e.pageY - worldOffset.top;
 
-    this.item.location = exports.PVector.create(x, y);
+    this.item.location = new exports.Vector(x, y);
 
     //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
       //this.draw();
@@ -1904,7 +1910,7 @@ Obj.mouseleave = function(e) {
         x = exports.Flora.World.mouseX - worldOffset.left;
         y = exports.Flora.World.mouseY - worldOffset.top;
 
-        item.location = exports.PVector.create(x, y);
+        item.location = new exports.Vector(x, y);
 
         //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
           //me.draw();
@@ -2074,9 +2080,9 @@ function Mover(opt_options) {
   this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;
   this.sensors = options.sensors || [];
   this.flowField = options.flowField || null;
-  this.acceleration = options.acceleration || exports.PVector.create(0, 0);
-  this.velocity = options.velocity || exports.PVector.create(0, 0);
-  this.location = options.location || exports.PVector.create(world.width/2, world.height/2);
+  this.acceleration = options.acceleration || new exports.Vector();
+  this.velocity = options.velocity || new exports.Vector();
+  this.location = options.location || new exports.Vector(world.width/2, world.height/2);
   this.controlCamera = !!options.controlCamera;
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
@@ -2204,7 +2210,7 @@ Mover.prototype.step = function() {
 
         sensor.location.x = this.location.x;
         sensor.location.y = this.location.y;
-        sensor.location.add(exports.PVector.create(x, y)); // position the sensor
+        sensor.location.add(new exports.Vector(x, y)); // position the sensor
 
         if (sensor.activated) {
           this.applyForce(sensor.getActivationForce({
@@ -2229,7 +2235,7 @@ Mover.prototype.step = function() {
 
     if (this.followMouse) { // follow mouse
       var t = {
-        location: exports.PVector.create(world.mouseX, world.mouseY)
+        location: new exports.Vector(world.mouseX, world.mouseY)
       };
       this.applyForce(this.seek(t));
     }
@@ -2248,11 +2254,11 @@ Mover.prototype.step = function() {
         loc = this.flowField.field[col][row];
         if (loc) { // !! sometimes loc is not available for edge cases; need to fix
           target = {
-            location: exports.PVector.create(loc.x, loc.y)
+            location: new exports.Vector(loc.x, loc.y)
           };
         } else {
           target = {
-            location: exports.PVector.create(this.location.x, this.location.y)
+            location: new exports.Vector(this.location.x, this.location.y)
           };
         }
         this.applyForce(this.follow(target));
@@ -2304,7 +2310,7 @@ Mover.prototype.step = function() {
 
           this.location.x = this.parent.location.x;
           this.location.y = this.parent.location.y;
-          this.location.add(exports.PVector.create(x, y)); // position the sensor
+          this.location.add(new exports.Vector(x, y)); // position the sensor
 
         } else {
           this.location = this.parent.location;
@@ -2354,7 +2360,7 @@ Mover.prototype.seek = function(target, arrive) {
   'use strict';
 
   var world = exports.world,
-    desiredVelocity = exports.PVector.PVectorSub(target.location, this.location),
+    desiredVelocity = exports.Vector.VectorSub(target.location, this.location),
     distanceToTarget = desiredVelocity.mag();
 
   desiredVelocity.normalize();
@@ -2366,7 +2372,7 @@ Mover.prototype.seek = function(target, arrive) {
     desiredVelocity.mult(this.maxSpeed);
   }
 
-  var steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+  var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
   steer.limit(this.maxSteeringForce);
   return steer;
 };
@@ -2385,7 +2391,7 @@ Mover.prototype.follow = function(target) {
 
   desiredVelocity.mult(this.maxSpeed);
 
-  var steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+  var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
   steer.limit(this.maxSteeringForce);
   return steer;
 };
@@ -2414,7 +2420,7 @@ Mover.prototype.separate = function(elements) {
   'use strict';
 
   var i, max, element, diff, d,
-  sum = exports.PVector.create(0, 0),
+  sum = new exports.Vector(),
   count = 0, steer;
 
   for (i = 0, max = elements.length; i < max; i += 1) {
@@ -2424,7 +2430,7 @@ Mover.prototype.separate = function(elements) {
       d = this.location.distance(element.location);
 
       if ((d > 0) && (d < this.desiredSeparation)) {
-        diff = exports.PVector.PVectorSub(this.location, element.location);
+        diff = exports.Vector.VectorSub(this.location, element.location);
         diff.normalize();
         diff.div(d);
         sum.add(diff);
@@ -2436,11 +2442,11 @@ Mover.prototype.separate = function(elements) {
     sum.div(count);
     sum.normalize();
     sum.mult(this.maxSpeed);
-    steer = exports.PVector.PVectorSub(sum, this.velocity);
+    steer = exports.Vector.VectorSub(sum, this.velocity);
     steer.limit(this.maxSteeringForce);
     return steer;
   }
-  return exports.PVector.create(0, 0);
+  return new exports.Vector();
 };
 
 /**
@@ -2455,7 +2461,7 @@ Mover.prototype.align = function(elements) {
   'use strict';
 
   var i, max, element, diff, d,
-    sum = exports.PVector.create(0, 0),
+    sum = new exports.Vector(),
     neighbordist = this.width * 2,
     count = 0, steer;
 
@@ -2475,11 +2481,11 @@ Mover.prototype.align = function(elements) {
     sum.div(count);
     sum.normalize();
     sum.mult(this.maxSpeed);
-    steer = exports.PVector.PVectorSub(sum, this.velocity);
+    steer = exports.Vector.VectorSub(sum, this.velocity);
     steer.limit(this.maxSteeringForce);
     return steer;
   }
-  return exports.PVector.create(0, 0);
+  return new exports.Vector();
 };
 
 /**
@@ -2494,7 +2500,7 @@ Mover.prototype.cohesion = function(elements) {
   'use strict';
 
   var i, max, element, diff, d,
-    sum = exports.PVector.create(0, 0),
+    sum = new exports.Vector(),
     neighbordist = 10,
     count = 0, desiredVelocity, steer;
 
@@ -2512,14 +2518,14 @@ Mover.prototype.cohesion = function(elements) {
 
   if (count > 0) {
     sum.div(count);
-    desiredVelocity = exports.PVector.PVectorSub(sum, this.location);
+    desiredVelocity = exports.Vector.VectorSub(sum, this.location);
     desiredVelocity.normalize();
     desiredVelocity.mult(this.maxSpeed);
-    steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+    steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
     steer.limit(this.maxSteeringForce);
     return steer;
   }
-  return exports.PVector.create(0, 0);
+  return new exports.Vector();
 };
 
 /**
@@ -2533,7 +2539,7 @@ Mover.prototype.flee = function(target) {
 
   'use strict';
 
-  var desiredVelocity = exports.PVector.PVectorSub(target.location, this.location); // find vector pointing at target
+  var desiredVelocity = exports.Vector.VectorSub(target.location, this.location); // find vector pointing at target
 
   desiredVelocity.normalize(); // reduce to 1
   desiredVelocity.mult(-this.maxSpeed); // multiply by maxSpeed in opposite direction
@@ -2571,7 +2577,7 @@ Mover.prototype.attract = function(attractor) {
 
   'use strict';
 
-  var force = exports.PVector.PVectorSub(attractor.location, this.location),
+  var force = exports.Vector.VectorSub(attractor.location, this.location),
     distance, strength;
 
   distance = force.mag();
@@ -2628,12 +2634,12 @@ Mover.prototype.checkWorldEdges = function(world) {
 
   if (this.wrapEdges) {
     if (this.location.x > world.width) {
-      this.location = exports.PVector.create(0, this.location.y);
-      diff = exports.PVector.create(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
+      this.location = new exports.Vector(0, this.location.y);
+      diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
       check = true;
     } else if (this.location.x < 0) {
-      this.location = exports.PVector.create(world.width, this.location.y);
-      diff = exports.PVector.create(x - this.location.x, 0);
+      this.location = new exports.Vector(world.width, this.location.y);
+      diff = new exports.Vector(x - this.location.x, 0);
       check = true;
     }
   } else {
@@ -2644,20 +2650,20 @@ Mover.prototype.checkWorldEdges = function(world) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
-        desiredVelocity = exports.PVector.create(maxSpeed, this.velocity.y),
-        steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+        desiredVelocity = new exports.Vector(maxSpeed, this.velocity.y),
+        steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
         steer.limit(this.maxSteeringForce);
         this.applyForce(steer);
       }
     }
     if (this.location.x + this.width/2 > world.width) {
-      this.location = exports.PVector.create(world.width - this.width/2, this.location.y);
-      diff = exports.PVector.create(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
+      this.location = new exports.Vector(world.width - this.width/2, this.location.y);
+      diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
       this.velocity.x *= -1 * this.bounciness;
       check = true;
      } else if (this.location.x < this.width/2) {
-      this.location = exports.PVector.create(this.width/2, this.location.y);
-      diff = exports.PVector.create(x - this.location.x, 0);
+      this.location = new exports.Vector(this.width/2, this.location.y);
+      diff = new exports.Vector(x - this.location.x, 0);
       this.velocity.x *= -1 * this.bounciness;
       check = true;
     }
@@ -2668,12 +2674,12 @@ Mover.prototype.checkWorldEdges = function(world) {
   maxSpeed = null;
   if (this.wrapEdges) {
     if (this.location.y > world.height) {
-      this.location = exports.PVector.create(this.location.x, 0);
-      diff = exports.PVector.create(0, y - this.location.y);
+      this.location = new exports.Vector(this.location.x, 0);
+      diff = new exports.Vector(0, y - this.location.y);
       check = true;
     } else if (this.location.y < 0) {
-      this.location = exports.PVector.create(this.location.x, world.height);
-      diff = exports.PVector.create(0, y - this.location.y);
+      this.location = new exports.Vector(this.location.x, world.height);
+      diff = new exports.Vector(0, y - this.location.y);
       check = true;
     }
   } else {
@@ -2684,20 +2690,20 @@ Mover.prototype.checkWorldEdges = function(world) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
-        desiredVelocity = exports.PVector.create(this.velocity.x, maxSpeed),
-        steer = exports.PVector.PVectorSub(desiredVelocity, this.velocity);
+        desiredVelocity = new exports.Vector(this.velocity.x, maxSpeed),
+        steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
         steer.limit(this.maxSteeringForce);
         this.applyForce(steer);
       }
     }
     if (this.location.y + this.height/2 > world.height) {
-      this.location = exports.PVector.create(this.location.x, world.height - this.height/2);
-      diff = exports.PVector.create(0, y - this.location.y);
+      this.location = new exports.Vector(this.location.x, world.height - this.height/2);
+      diff = new exports.Vector(0, y - this.location.y);
       this.velocity.y *= -1 * this.bounciness;
       check = true;
       } else if (this.location.y < this.height/2) {
-      this.location = exports.PVector.create(this.location.x, this.height/2);
-      diff = exports.PVector.create(0, y - this.location.y);
+      this.location = new exports.Vector(this.location.x, this.height/2);
+      diff = new exports.Vector(0, y - this.location.y);
       this.velocity.y *= -1 * this.bounciness;
       check = true;
     }
@@ -2736,7 +2742,7 @@ Mover.prototype.getLocation = function (type) {
   'use strict';
 
   if (!type) {
-    return exports.PVector.create(this.location.x, this.location.y);
+    return new exports.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
     return this.location.x;
   } else if (type === 'y') {
@@ -2756,7 +2762,7 @@ Mover.prototype.getVelocity = function (type) {
   'use strict';
 
   if (!type) {
-    return exports.PVector.create(this.velocity.x, this.velocity.y);
+    return new exports.Vector(this.velocity.x, this.velocity.y);
   } else if (type === "x") {
     return this.velocity.x;
   } else if (type === "y") {
@@ -2767,7 +2773,7 @@ Mover.prototype.getVelocity = function (type) {
 exports.Mover = Mover;
 /*global exports */
 /**
-    A module representing Walker.
+    A module representing a Walker.
     @module Walker
  */
 
@@ -2788,7 +2794,7 @@ exports.Mover = Mover;
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.isRandom = false] Set to true for walker to move in a random direction.
- * @param {number} [opt_options.isRandom = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
+ * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
  * @param {boolean} [opt_options.isHarmonic = false] If set to true, walker will move using harmonic motion.
  * @param {Object} [opt_options.isHarmonic = {x: 6, y: 6}] If isHarmonic = true, sets the motion's amplitude.
  * @param {Object} [opt_options.harmonicPeriod = {x: 150, y: 150}] If isHarmonic = true, sets the motion's period.
@@ -2806,7 +2812,7 @@ function Walker(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.isPerlin = options.isPerlin === false ? false : options.isPerline || true;
+  this.isPerlin = options.isPerlin === false ? false : options.isPerlin || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
   this.perlinSpeed = options.perlinSpeed || 0.005;
   this.perlinTime = options.perlinTime || 0;
@@ -2817,8 +2823,8 @@ function Walker(opt_options) {
   this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
   this.isHarmonic = !!options.isHarmonic;
-  this.harmonicAmplitude = options.harmonicAmplitude || exports.PVector.create(4, 0);
-  this.harmonicPeriod = options.harmonicPeriod || exports.PVector.create(300, 1);
+  this.harmonicAmplitude = options.harmonicAmplitude || new exports.Vector(4, 0);
+  this.harmonicPeriod = options.harmonicPeriod || new exports.Vector(300, 1);
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 30;
@@ -2853,8 +2859,8 @@ Walker.prototype.step = function () {
       this.perlinTime += this.perlinSpeed;
 
       if (this.remainsOnScreen) {
-        this.acceleration = exports.PVector.create(0, 0);
-        this.velocity = exports.PVector.create(0, 0);
+        this.acceleration = new exports.Vector();
+        this.velocity = new exports.Vector.create();
         this.location.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, 0, exports.world.width);
         this.location.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, 0, exports.world.height);
       } else {
@@ -2885,7 +2891,7 @@ Walker.prototype.step = function () {
 
     if (this.isRandom) {
       this.target = { // find a random point and steer toward it
-        location: exports.PVector.PVectorAdd(this.location, exports.PVector.create(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
+        location: exports.Vector.VectorAdd(this.location, new exports.Vector(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
       };
     }
 
@@ -2929,6 +2935,128 @@ Walker.prototype.step = function () {
   }
 };
 exports.Walker = Walker;
+/*global exports */
+/**
+    A module representing an Oscillator.
+    @module Oscillator
+ */
+
+/**
+ * Creates a new Oscillator.
+ * Oscillators simulate wave patterns and move according to
+ * amplitude and period properties. As step() is called, the
+ * object's location is determined by the output of the
+ * cosine function and the world's clock.
+ *
+ * @constructor
+ * @extends Mover
+ *
+ * @param {Object} [opt_options] Oscillator options.
+ * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
+ * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
+ *    angle if pointToDirection = true.
+ * @param {Object} [opt_options.amplitude = {x: 4, y: 0}] Sets amplitude, the distance from the object's
+ *    initial location (center of the motion) to either extreme.
+ * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's acceleration. Oscillators have a
+ *    constant acceleration.
+ * @param {number} [opt_options.width = 10] Width
+ * @param {number} [opt_options.height = 10] Height
+ * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
+ * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
+ * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
+ * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
+ * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when isPerlin = true.
+ * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when isPerlin = true.
+ * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
+ * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
+ */
+function Oscillator(opt_options) {
+
+  'use strict';
+
+  var options = opt_options || {};
+
+  exports.Mover.call(this, options);
+
+  this.initialLocation = options.initialLocation ||
+      new exports.Vector(exports.world.width/2, exports.world.height/2);
+  this.lastLocation = new exports.Vector(0, 0);
+  this.amplitude = options.amplitude || new exports.Vector(4, 0);
+  this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
+  this.aVelocity = new exports.Vector(0, 0);
+  this.width = options.width === 0 ? 0 : options.width || 10;
+  this.height = options.height === 0 ? 0 : options.height || 10;
+  this.isStatic = !!options.isStatic;
+
+  this.isPerlin = !!options.isPerlin;
+  this.perlinSpeed = options.perlinSpeed || 0.005;
+  this.perlinTime = options.perlinTime || 0;
+  this.perlinAccelLow = options.perlinAccelLow || -2;
+  this.perlinAccelHigh = options.perlinAccelHigh || 2;
+  this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
+  this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
+}
+exports.Utils.inherit(Oscillator, exports.Mover);
+
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Oscillator.name = 'oscillator';
+
+/**
+ * Called every frame, step() updates the instance's properties.
+ */
+Oscillator.prototype.step = function () {
+
+  'use strict';
+
+  var world = exports.world, velDiff;
+
+  if (this.beforeStep) {
+    this.beforeStep.apply(this);
+  }
+
+  if (!this.isStatic && !this.isPressed) {
+
+    if (this.isPerlin) {
+      this.perlinTime += this.perlinSpeed;
+      this.aVelocity.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.aVelocity.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+    } else {
+      this.aVelocity.add(this.acceleration); // add acceleration
+    }
+
+    this.location.x = this.initialLocation.x + Math.sin(this.aVelocity.x) * this.amplitude.x;
+    this.location.y = this.initialLocation.y + Math.sin(this.aVelocity.y) * this.amplitude.y;
+
+    if (this.pointToDirection) { // object rotates toward direction
+        velDiff = exports.Vector.VectorSub(this.location, this.lastLocation);
+        this.angle = exports.Utils.radiansToDegrees(Math.atan2(velDiff.y, velDiff.x));
+    }
+
+    if (this.controlCamera) {
+      this.checkCameraEdges();
+    }
+
+    if (this.checkEdges || this.wrapEdges) {
+      this.checkWorldEdges(world);
+    }
+
+    if (this.lifespan > 0) {
+      this.lifespan -= 1;
+    }
+
+    if (this.afterStep) {
+      this.afterStep.apply(this);
+    }
+
+    if (this.pointToDirection) {
+      this.lastLocation.x = this.location.x;
+      this.lastLocation.y = this.location.y;
+    }
+  }
+};
+exports.Oscillator = Oscillator;
 /*global exports */
 /**
     A module representing a Particle.
@@ -3104,7 +3232,7 @@ exports.Particle = Particle;
       boxShadow: '0 0 0 ' + exports.Utils.getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')',
       zIndex: exports.Utils.getRandomNumber(1, 100),
       location: this.getLocation(),
-      acceleration: exports.PVector.create(exports.Utils.getRandomNumber(-4, 4), exports.Utils.getRandomNumber(-4, 4))
+      acceleration: new exports.Vector(exports.Utils.getRandomNumber(-4, 4), exports.Utils.getRandomNumber(-4, 4))
     };
   };
 }
@@ -3639,7 +3767,7 @@ Sensor.prototype.getActivationForce = function(params) {
      * Arrives at target and keeps moving
      */
     case "LIKES":
-      var dvLikes = exports.PVector.PVectorSub(this.target.location, this.location); // desiredVelocity
+      var dvLikes = exports.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
       dvLikes.normalize();
       dvLikes.mult(0.5);
       return dvLikes;
@@ -3647,32 +3775,32 @@ Sensor.prototype.getActivationForce = function(params) {
      * Arrives at target and remains
      */
     case "LOVES":
-      var dvLoves = exports.PVector.PVectorSub(this.target.location, this.location); // desiredVelocity
+      var dvLoves = exports.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
       distanceToTarget = dvLoves.mag();
       dvLoves.normalize();
 
       if (distanceToTarget > this.width) {
         m = distanceToTarget/params.mover.maxSpeed;
         dvLoves.mult(m);
-        steer = exports.PVector.PVectorSub(dvLoves, params.mover.velocity);
+        steer = exports.Vector.VectorSub(dvLoves, params.mover.velocity);
         steer.limit(params.mover.maxSteeringForce);
         return steer;
       }
-      params.mover.velocity = exports.PVector.create(0, 0);
-      params.mover.acceleration = exports.PVector.create(0, 0);
+      params.mover.velocity = new exports.Vector();
+      params.mover.acceleration = new exports.Vector();
       params.mover.isStatic = true;
-      return exports.PVector.create(0, 0);
+      return new exports.Vector();
     /**
      * Arrives at target but does not stop
      */
     case "EXPLORER":
-      var dvExplorer = exports.PVector.PVectorSub(this.target.location, this.location);
+      var dvExplorer = exports.Vector.VectorSub(this.target.location, this.location);
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
 
       m = distanceToTarget/params.mover.maxSpeed;
       dvExplorer.mult(-m);
-      steer = exports.PVector.PVectorSub(dvExplorer, params.mover.velocity);
+      steer = exports.Vector.VectorSub(dvExplorer, params.mover.velocity);
       steer.limit(params.mover.maxSteeringForce * 0.1);
       return steer;
     /**
@@ -3692,7 +3820,7 @@ Sensor.prototype.getActivationForce = function(params) {
       return forceDecel.mult(-params.mover.minSpeed);
 
     default:
-      return exports.PVector.create(0, 0);
+      return new exports.Vector();
   }
 };
 
@@ -3848,14 +3976,14 @@ FlowField.prototype.build = function() {
       theta = exports.Utils.map(exports.SimplexNoise.noise(xoff, yoff, 0.1), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
       fieldX = Math.cos(theta);
       fieldY = Math.sin(theta);
-      field = exports.PVector.create(fieldX, fieldY);
+      field = new exports.Vector(fieldX, fieldY);
       vectorList[col][row] = field;
       angle = exports.Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
 
       if (this.createMarkers) {
 
         var ffm = new exports.FlowFieldMarker({ // create the marker
-          location: exports.PVector.create(x, y),
+          location: new exports.Vector(x, y),
           scale: 1,
           opacity: exports.Utils.map(angle, -360, 360, 0.1, 1),
           width: this.resolution,
@@ -3925,8 +4053,8 @@ Connector.prototype.step = function() {
 
   var a = this.parentA.location, b = this.parentB.location;
 
-  this.width = Math.floor(exports.PVector.PVectorSub(this.parentA.location, this.parentB.location).mag());
-  this.location = exports.PVector.PVectorAdd(this.parentA.location, this.parentB.location).div(2); // midpoint = (v1 + v2)/2
+  this.width = Math.floor(exports.Vector.VectorSub(this.parentA.location, this.parentB.location).mag());
+  this.location = exports.Vector.VectorAdd(this.parentA.location, this.parentB.location).div(2); // midpoint = (v1 + v2)/2
   this.angle = exports.Utils.radiansToDegrees(Math.atan2(b.y - a.y, b.x - a.x) );
 };
 
@@ -4141,3 +4269,4 @@ function Stats() {
   };
 }
 exports.Stats = Stats;
+}(exports));

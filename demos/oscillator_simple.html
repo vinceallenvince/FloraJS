@@ -18,42 +18,13 @@
 
       system.start(function () {
 
-        Flora.world.update({
-          showStats: false,
-          style: {
-            background: "#fff"
-          }
+        var osc = new Flora.Oscillator({
+          amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
+          acceleration: new Flora.Vector(0.015, 0.025),
+          pointToDirection: true,
+          width: 50,
+          height: 5
         });
-
-        var pl = new Flora.ColorPalette();
-        pl.addColor({
-          min: 1,
-          max: 3,
-          startColor: [255, 0, 0],
-          endColor: [100, 0, 0]
-        }).addColor({
-          min: 5,
-          max: 10,
-          startColor: [0, 0, 255],
-          endColor: [0, 0, 100]
-        });
-
-        function createMover() {
-
-          var x = Flora.Utils.getRandomNumber(0, Flora.world.width),
-              y = Flora.Utils.getRandomNumber(0, Flora.world.height);
-
-          new Flora.Mover({
-            isStatic: true,
-            location: new Flora.Vector(x, y),
-            color: pl.getColor()
-          });
-        }
-
-        //document.addEventListener('click', createMover, false);
-
-        Flora.Utils.addEvent(document, 'click', createMover);
-
       });
   </script>
 </body>

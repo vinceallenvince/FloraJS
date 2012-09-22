@@ -510,6 +510,40 @@ describe("A new Obj", function() {
   });
 });
 
+describe("A new Oscillator", function() {
+
+  var obj;
+
+  beforeEach(function() {
+    obj = new exports.Oscillator({
+      initialLocation: new exports.Vector()
+    });
+  });
+
+  afterEach(function() {
+    obj = null;
+  });
+
+  it("should have its required properties.", function() {
+    expect(typeof obj.initialLocation).toEqual('object');
+    expect(typeof obj.lastLocation).toEqual('object');
+    expect(typeof obj.amplitude).toEqual('object');
+    expect(typeof obj.acceleration).toEqual('object');
+    expect(typeof obj.aVelocity).toEqual('object');
+    expect(typeof obj.width).toEqual('number');
+    expect(typeof obj.height).toEqual('number');
+    expect(typeof obj.isStatic).toEqual('boolean');
+    expect(typeof obj.isPerlin).toEqual('boolean');
+    expect(typeof obj.perlinSpeed).toEqual('number');
+    expect(typeof obj.perlinTime).toEqual('number');
+    expect(typeof obj.perlinAccelLow).toEqual('number');
+    expect(typeof obj.perlinAccelHigh).toEqual('number');
+    expect(typeof obj.perlinOffsetX).toEqual('number');
+    expect(typeof obj.perlinOffsetY).toEqual('number');
+    expect(typeof obj.constructor.name).toEqual('string');
+  });
+});
+
 describe("A new Oxygen", function() {
 
   var obj;
@@ -623,12 +657,12 @@ describe("A new Predator", function() {
   });
 });
 
-describe("PVector", function() {
+describe("Vector", function() {
 
   var vector;
 
   beforeEach(function() {
-    vector = new exports.PVector.create(10, 20);
+    vector = new exports.Vector(10, 20);
   });
 
   afterEach(function() {
@@ -752,15 +786,12 @@ describe("Utils", function() {
     expect(clonedObj.hello).toEqual('hello');
     expect(clonedObj.sayHi()).toEqual('hi');
   });
-<<<<<<< HEAD
   it("getWindowSize() should return the current window width and height", function() {
     expect(typeof utils.getWindowSize()).toEqual('object');
     expect(typeof utils.getWindowSize().width).toEqual('number');
     expect(typeof utils.getWindowSize().height).toEqual('number');
 
   });
-=======
->>>>>>> a81949104c5ad2d8ade3fd2b1e78aedaae5422c4
   it("getCSSText() should return a text string.", function() {
     var obj = new exports.Obj({
       location: {x: 100, y: 100},

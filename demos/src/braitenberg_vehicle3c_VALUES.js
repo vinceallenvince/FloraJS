@@ -8,7 +8,7 @@ var elements = function() {
   Flora.world.update({
     c: 0.01,
     showStats: false,
-    gravity: Flora.PVector.create(0, 0),
+    gravity: new Flora.Vector(),
     width: 3000,
     height: 1500,
     borderWidth: 1,
@@ -18,7 +18,7 @@ var elements = function() {
 
   function BVehicleVALUES(exports, opt_options) {
 
-    var PVector = exports.PVector,
+    var Vector = exports.Vector,
         getRandomNumber = exports.Utils.getRandomNumber,
         defaultColors = exports.defaultColors,
         options = opt_options || {},
@@ -117,7 +117,7 @@ var elements = function() {
       maxSteeringForce: 1,
       wrapEdges: true,
       sensors: [this.sensorHeat, this.sensorCold, this.sensorOxygen, this.sensorFood],
-      velocity: PVector.create(1, 0),
+      velocity: new Vector(1, 0),
       borderRadius: '100%',
       boxShadow: '0 0 10px 10px rgba(' + color.toString() + ', 0.15)',
       eyeRotation: 0,
@@ -162,7 +162,7 @@ var elements = function() {
         if (getRandomNumber(0, 500) === 1) {
           this.randomRadius = 100;
           this.target = { // find a random point and steer toward it
-            location: PVector.PVectorAdd(this.location, PVector.create(getRandomNumber(-this.randomRadius, this.randomRadius), getRandomNumber(-this.randomRadius, this.randomRadius)))
+            location: Vector.VectorAdd(this.location, new Vector(getRandomNumber(-this.randomRadius, this.randomRadius), getRandomNumber(-this.randomRadius, this.randomRadius)))
           };
           var me = this;
           setTimeout(function () {
@@ -173,8 +173,8 @@ var elements = function() {
         var particle = function () {
           var d = getRandomNumber(1, 5);
           return {
-            location: exports.PVector.create(x, y),
-            acceleration: exports.PVector.create(getRandomNumber(-2, 2), getRandomNumber(-2, 2)),
+            location: new Vector(x, y),
+            acceleration: new Vector(getRandomNumber(-2, 2), getRandomNumber(-2, 2)),
             lifespan: 20,
             checkEdges: false,
             width: d,
@@ -292,7 +292,7 @@ var elements = function() {
         height: d,
         scale: 1,
         isStatic: true,
-        location: exports.PVector.create(w, h),
+        location: new Flora.Vector(w, h),
         borderRadius: '100%',
         borderWidth: getRandomNumber(2, 6),
         borderStyle: borderStr,
@@ -316,7 +316,7 @@ var elements = function() {
         a = Flora.Utils.getRandomNumber(0, 360),
         bv2 = new BVehicleVALUES(Flora, {
           controlCamera: false,
-          location: Flora.PVector.create(x, y),
+          location: new Flora.Vector(x, y),
           angle: a
         });
   }
@@ -353,7 +353,7 @@ var elements = function() {
       height: d,
       scale: 1,
       isStatic: true,
-      location: Flora.PVector.create(w, h),
+      location: new Flora.Vector(w, h),
       borderRadius: '100%',
       borderWidth: Flora.Utils.getRandomNumber(2, 6),
       borderStyle: borderStr,
@@ -384,7 +384,7 @@ var elements = function() {
       height: d,
       scale: 1,
       isStatic: true,
-      location: Flora.PVector.create(w, h),
+      location: new Flora.Vector(w, h),
       borderRadius: '100%',
       borderWidth: Flora.Utils.getRandomNumber(2, 6),
       borderStyle: borderStr,
@@ -415,7 +415,7 @@ var elements = function() {
       height: d,
       scale: 1,
       isStatic: true,
-      location: Flora.PVector.create(w, h),
+      location: new Flora.Vector(w, h),
       borderRadius: '100%',
       borderWidth: Flora.Utils.getRandomNumber(2, 6),
       borderStyle: borderStr,
@@ -446,7 +446,7 @@ var elements = function() {
       height: d,
       scale: 1,
       isStatic: true,
-      location: Flora.PVector.create(w, h),
+      location: new Flora.Vector(w, h),
       borderRadius: '100%',
       borderWidth: Flora.Utils.getRandomNumber(2, 6),
       borderStyle: borderStr,
