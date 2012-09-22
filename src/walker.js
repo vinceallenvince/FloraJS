@@ -1,6 +1,6 @@
 /*global exports */
 /**
-    A module representing Walker.
+    A module representing a Walker.
     @module Walker
  */
 
@@ -21,7 +21,7 @@
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.isRandom = false] Set to true for walker to move in a random direction.
- * @param {number} [opt_options.isRandom = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
+ * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
  * @param {boolean} [opt_options.isHarmonic = false] If set to true, walker will move using harmonic motion.
  * @param {Object} [opt_options.isHarmonic = {x: 6, y: 6}] If isHarmonic = true, sets the motion's amplitude.
  * @param {Object} [opt_options.harmonicPeriod = {x: 150, y: 150}] If isHarmonic = true, sets the motion's period.

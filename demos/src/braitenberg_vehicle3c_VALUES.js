@@ -243,6 +243,65 @@ var elements = function() {
     });
   }
 
+  function createEnvElements(exports, opt_options) {
+
+    var options = opt_options || {},
+        type = options.type || null,
+        getColor = options.getColor || null,
+        getColorMin = options.getColorMin || 0,
+        getColorMax = options.getColorMax || 0,
+        totalElements = options.totalElements || (0.000006 * (exports.world.width * exports.world.height)),
+        getRandomNumber = exports.Utils.getRandomNumber;
+
+    var borderStylesStimulators = [
+      'none',
+      'solid',
+      'dotted',
+      'dashed',
+      'double'
+    ], borderStr;
+
+    var clr = Flora.defaultColors.getColor(getColor);
+    var pl = new Flora.ColorPalette();
+    pl.addColor({
+      min: getColorMin,
+      max: getColorMax,
+      startColor: clr.startColor,
+      endColor: clr.endColor
+    });
+
+    var i, max, w, h, d;
+
+    for (i = 0, max = totalElements; i < max; i += 1) {
+      w = getRandomNumber(0, exports.world.width);
+      h = getRandomNumber(0, exports.world.height);
+      d = getRandomNumber(15, 45);
+
+      borderStr = borderStylesStimulators[getRandomNumber(0, borderStylesStimulators.length - 1)];
+
+      switch (type) {
+        case 'heat':
+          break;
+        case 'cold':
+          break;
+      }
+
+      var heat = new Flora.Heat({
+        color: pl.getColor(),
+        width: d,
+        height: d,
+        scale: 1,
+        isStatic: true,
+        location: exports.PVector.create(w, h),
+        borderRadius: '100%',
+        borderWidth: getRandomNumber(2, 6),
+        borderStyle: borderStr,
+        borderColor: pl.getColor(),
+        boxShadow: '0 0 0 ' + getRandomNumber(2, 6) + 'px rgb(' + pl.getColor().toString() + ')'
+      });
+    }
+  }
+
   var i, max, w, h, d;
 
   var bv1 = new BVehicleVALUES(Flora, {
