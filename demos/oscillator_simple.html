@@ -12,18 +12,64 @@
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
+    <!-- <div class='caption'>click for more oscillators</div> -->
     <script type="text/javascript" charset="utf-8">
 
       var system = new exports.FloraSystem();
 
       system.start(function () {
 
-        var osc = new Flora.Oscillator({
-          amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
-          acceleration: new Flora.Vector(0.015, 0.025),
-          pointToDirection: true,
-          width: 50,
-          height: 5
+        Flora.world.update({
+          color: [255, 255, 255]
+        });
+
+        var pt = new Flora.Point();
+
+        var osc = [],
+            h = exports.defaultColors.getColor('heat'), // gets the heat start and end colors
+            f = exports.defaultColors.getColor('food'), // gets the food start and end colors
+            pl = new Flora.ColorPalette();
+
+        pl.addColor({ // adds a random sampling of colors to palette
+          min: 12,
+          max: 24,
+          startColor: h.startColor,
+          endColor: h.endColor
+        });
+
+        var createOscillator = function() {
+
+          var width = Flora.Utils.getRandomNumber(20, 100);
+
+          osc.push(new Flora.Oscillator({
+            amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
+            acceleration: new Flora.Vector(0.015, 0.025),
+            pointToDirection: true,
+            width: width,
+            height: width - 15,
+            borderColor: pl.getColor(),
+            color: pl.getColor(),
+            boxShadow: '0 0 0 0.5em rgb(' + pl.getColor().toString() + ')'
+          }));
+
+          var connector = new exports.Connector({
+            parentA: pt,
+            parentB: osc[osc.length - 1],
+            color: [0, 0, 0]
+          });
+        };
+        createOscillator();
+
+        var caption = new Flora.Caption({
+          text: 'click to make more oscillators',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+
+        Flora.Utils.addEvent(document, 'mouseup', function() {
+          'use strict';
+          createOscillator();
         });
       });
   </script>

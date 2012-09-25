@@ -74,7 +74,7 @@ function Mover(opt_options) {
       oxygen = exports.oxygen || [],
       food = exports.food || [],
       i, max, evt,
-      constructorName = this.constructor.name || 'anon';
+      constructorName = this.constructor.name || 'anon'; // this a problem when code is minified
 
   for (i in options) {
     if (options.hasOwnProperty(i)) {

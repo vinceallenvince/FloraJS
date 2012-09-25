@@ -18,6 +18,10 @@
 
       system.start(function () {
 
+        Flora.world.update({
+          color: [255, 255, 255]
+        });
+
         var max = 100;
 
         for (var i = 0; i < max; i++) {
@@ -27,8 +31,8 @@
             acceleration: new Flora.Vector(Flora.Utils.map(i, 0, max, 0.025, 0.03),
                 Flora.Utils.map(i, 0, max, 0.035, 0.04)),
             pointToDirection: true,
-            width: Flora.Utils.map(i, 0, max, 1, 30),
-            height: Flora.Utils.map(i, 0, max, 1, 5),
+            width: Flora.Utils.map(i, 0, max, 1, 40),
+            height: Flora.Utils.map(i, 0, max, 1, 25),
             opacity: Flora.Utils.map(i, 0, max, .1, 1)
           });
         }

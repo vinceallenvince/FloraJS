@@ -86,6 +86,27 @@ describe("A new Camera", function() {
   });
 });
 
+describe("A new Caption", function() {
+
+  var obj;
+
+  beforeEach(function() {
+    obj = new exports.Caption();
+  });
+
+  afterEach(function() {
+    obj = null;
+  });
+
+  it("should have its required properties.", function() {
+    expect(typeof obj.position).toEqual('string');
+    expect(typeof obj.text).toEqual('string');
+    expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj.el).toEqual('object');
+    expect(typeof obj.constructor.name).toEqual('string');
+  });
+});
+
 describe("A new Cold", function() {
 
   var obj;

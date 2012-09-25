@@ -171,3 +171,48 @@ body {
 }
 /* STIMULATORS - end */
 
+
+.caption {
+  width: auto;
+  position: fixed;
+  font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+  color: #000;
+  text-align: center;
+  padding: 0.75em;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.caption.top.left {
+	top: 0; left: 0;
+}
+
+.caption.top.center {
+	width: 100%;
+	text-align: center;
+	margin: 0 auto;
+	position: relative;
+	top: 0%;
+}
+
+.caption.top.right {
+	top: 0; right: 0;
+}
+
+.caption.bottom.left {
+	top: 90%; left: 0;
+}
+
+.caption.bottom.center {
+	width: 100%;
+	text-align: center;
+	margin: 0 auto;
+	top: 90%;
+}
+
+.caption.bottom.right {
+	top: 90%; right: 0;
+}

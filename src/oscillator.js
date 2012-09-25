@@ -7,9 +7,9 @@
 /**
  * Creates a new Oscillator.
  * Oscillators simulate wave patterns and move according to
- * amplitude and period properties. As step() is called, the
+ * amplitude and angular velocity. As step() is called, the
  * object's location is determined by the output of the
- * cosine function and the world's clock.
+ * sine function.
  *
  * @constructor
  * @extends Mover
