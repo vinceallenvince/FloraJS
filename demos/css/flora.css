@@ -23,6 +23,10 @@ body {
 	/*border: 1px solid #999;*/
 }
 
+.floraElement {
+	position: absolute; left: 0; top: 0;
+}
+
 .world {
 	background: #000;
 	background-image: -webkit-radial-gradient(circle, #fff, #000);
@@ -39,8 +43,6 @@ body {
 	overflow: hidden;
 }
 .mover {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(197, 177, 115); opacity: 0;
 	z-index: 1;
 }
@@ -52,14 +54,10 @@ body {
 	background: rgb(255, 255, 255);
 }
 .walker {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(255, 150, 50); opacity: 0;
 	border-radius: 100%;
 }
 .oscillator {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(200, 100, 0); opacity: 0;
 	border-bottom-right-radius: 100%;
 	border-top-right-radius: 100%;
@@ -70,21 +68,12 @@ body {
 	/*-webkit-filter: blur(10px);*/
 }
 .particle {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(200, 20, 20); opacity: 0;
 }
 .particle-system {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: transparent; opacity: 0;
 }
-
-
-
 .liquid {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(97, 210, 214);
 	opacity: .5;
 	z-index: 10;
@@ -92,41 +81,32 @@ body {
 	border-radius: 50px;
 }
 .attractor {
-	position: absolute;
 	background: rgb(97, 210, 214);
 	opacity: .5;
 }
 .repeller {
-	position: absolute;
 	background: rgb(97, 210, 214);
 	opacity: .5;
 }
 
 .connector {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: transparent; opacity: .1;
 	border-top: 2px dotted #ff0000;
 }
 .point {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(255, 255, 255); opacity: 0;
 	z-index: 1;
 	border-radius: 100%;
 	border: 3px solid rgba(0, 0, 0, 1);
 }
 .sensor {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	opacity: 0.5;
 	z-index: 1;
 	border-radius: 100%;
 	border: 1px solid rgb(255, 255, 255);
 }
 .flowFieldMarker {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
+
 }
 
 .cyclone {
@@ -138,36 +118,24 @@ body {
 
 /* STIMULATORS - start */
 .cold {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	border-radius: 50px; /* ? */
 	background: rgb(132, 192, 201);
 }
 .food {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(155, 231, 93);
 }
 .heat {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(255, 69, 0);
 }
 .light {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	border-radius: 50px;
 	background: rgb(255, 200, 0);
 }
 .oxygen {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	border-radius: 50px;
 	background: rgb(0, 174, 239);
 }
 .predator {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
 	background: rgb(200, 0, 0);
 }
 /* STIMULATORS - end */

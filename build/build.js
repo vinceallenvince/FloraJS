@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: September 29, 2012 02:44:16 */
+/* Build time: September 29, 2012 02:51:47 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -4048,7 +4048,7 @@ function FlowFieldMarker(options) {
 
     el = document.createElement("div");
     nose = document.createElement("div");
-    el.className = "flowFieldMarker";
+    el.className = "flowFieldMarker floraElement";
     nose.className = "nose";
     el.appendChild(nose);
 

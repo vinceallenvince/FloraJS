@@ -37,7 +37,7 @@ function FlowFieldMarker(options) {
 
     el = document.createElement("div");
     nose = document.createElement("div");
-    el.className = "flowFieldMarker";
+    el.className = "flowFieldMarker floraElement";
     nose.className = "nose";
     el.appendChild(nose);
 
