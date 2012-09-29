@@ -16,6 +16,7 @@ function Vector(opt_x, opt_y) {
   this.x = x;
   this.y = y;
 }
+
 /**
  * Subtract two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -25,6 +26,7 @@ Vector.VectorSub = function(v1, v2) {
   'use strict';
   return new Vector(v1.x - v2.x, v1.y - v2.y);
 };
+
 /**
  * Add two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -34,6 +36,7 @@ Vector.VectorAdd = function(v1, v2) {
   'use strict';
   return new Vector(v1.x + v2.x, v1.y + v2.y);
 };
+
 /**
  * Multiply two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -43,6 +46,7 @@ Vector.VectorMult = function(v, n) {
   'use strict';
   return new Vector(v.x * n, v.y * n);
 };
+
 /**
  * Divide two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -52,6 +56,7 @@ Vector.VectorDiv = function(v1, v2) {
   'use strict';
   return new Vector(v1.x / v2.x, v1.y / v2.y);
 };
+
 /**
  * Get the midpoint between two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -61,6 +66,7 @@ Vector.VectorMidPoint = function(v1, v2) {
   'use strict';
   return this.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
 };
+
 /**
  * Get the angle between two vectors.
  *
@@ -72,6 +78,7 @@ Vector.VectorAngleBetween = function(v1, v2) {
   theta = Math.acos(dot / (v1.mag() * v2.mag()));
   return theta;
 };
+
 /**
 * Returns an new vector with all properties and methods of the
 * old vector copied to the new vector's prototype.
@@ -84,6 +91,7 @@ Vector.prototype.clone = function() {
   F.prototype = this;
   return new F;
 };
+
 /**
  * Adds a vector to this vector.
  *
@@ -96,6 +104,7 @@ Vector.prototype.add = function(vector) {
   this.y += vector.y;
   return this;
 };
+
 /**
  * Subtracts a vector from this vector.
  *
@@ -108,6 +117,7 @@ Vector.prototype.sub = function(vector) {
   this.y -= vector.y;
   return this;
 };
+
 /**
  * Multiplies this vector by a passed value.
  *
@@ -120,6 +130,7 @@ Vector.prototype.mult = function(n) {
   this.y *= n;
   return this;
 };
+
 /**
  * Divides this vector by a passed value.
  *
@@ -132,6 +143,7 @@ Vector.prototype.div = function(n) {
   this.y = this.y / n;
   return this;
 };
+
 /**
  * Calculates the magnitude of this vector.
  *
@@ -141,6 +153,7 @@ Vector.prototype.mag = function() {
   'use strict';
   return Math.sqrt((this.x * this.x) + (this.y * this.y));
 };
+
 /**
  * Limits the vector's magnitude.
  *
@@ -152,6 +165,7 @@ Vector.prototype.limit = function(high) {
     this.normalize();
     this.mult(high);
   }
+  return this;
 };
 
 Vector.prototype.limitLow = function(low) {
@@ -160,7 +174,9 @@ Vector.prototype.limitLow = function(low) {
     this.normalize();
     this.mult(low);
   }
+  return this;
 };
+
 /**
  * Divides a vector by its magnitude to reduce its magnitude to 1.
  * Typically used to retrieve the direction of the vector for later manipulation.
@@ -174,6 +190,7 @@ Vector.prototype.normalize = function() {
     return this.div(m);
   }
 };
+
 /**
  * Calculates the distance between this vector and a passed vector.
  *
@@ -184,15 +201,7 @@ Vector.prototype.distance = function(vector) {
   'use strict';
   return Math.sqrt(Math.pow(vector.x - this.x, 2) + Math.pow(vector.y - this.y, 2));
 };
-/**
- * Calculates the length of this vector.
- *
- * @returns {number} This vector's length.
- */
-Vector.prototype.length = function() {
-  'use strict';
-  return Math.sqrt(this.x * this.x + this.y * this.y);
-};
+
 /**
  * Rotates a vector using a passed angle in radians.
  *
@@ -210,6 +219,7 @@ Vector.prototype.rotate = function(radians) {
   this.y = x * sin + y * cos;
   return this;
 };
+
 /**
  * Calulates the midpoint between two vectors.
  *
@@ -221,6 +231,7 @@ Vector.prototype.midpoint = function(v1, v2) {
   'use strict';
   return this.VectorAdd(v1, v2).div(2);
 };
+
 /**
  * Calulates the dot product.
  *

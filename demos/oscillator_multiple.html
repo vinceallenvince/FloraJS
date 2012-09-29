@@ -22,11 +22,15 @@
           color: [255, 255, 255]
         });
 
-        var max = 100;
+        var osc = [],
+            max = 100,
+            show = 1;
+
+        var pt = new Flora.Point();
 
         for (var i = 0; i < max; i++) {
 
-          var osc = new Flora.Oscillator({
+          osc.push(new Flora.Oscillator({
             amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
             acceleration: new Flora.Vector(Flora.Utils.map(i, 0, max, 0.025, 0.03),
                 Flora.Utils.map(i, 0, max, 0.035, 0.04)),
@@ -34,8 +38,48 @@
             width: Flora.Utils.map(i, 0, max, 1, 40),
             height: Flora.Utils.map(i, 0, max, 1, 25),
             opacity: Flora.Utils.map(i, 0, max, .1, 1)
-          });
+          }));
+
+          if (i % 10  === 0) {
+            var connector = new exports.Connector({
+              parentA: pt,
+              parentB: osc[osc.length - 1],
+              borderColor: [150, 150, 150]
+            });
+          }
         }
+
+
+        var toggleConectors = function() {
+
+          var opacity = 0;
+
+          show *= -1;
+
+          if (show > 0) {
+            opacity = 1;
+          }
+
+          Flora.elementList.updatePropsByClass('Connector', {
+            opacity: opacity
+          });
+        };
+
+        var caption = new Flora.Caption({
+          text: '\'c\' = toggle connectors',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+
+        Flora.Utils.addEvent(document, 'keyup', function(e) {
+          'use strict';
+
+          if (e.keyCode === 67) { // 'c'
+            toggleConectors();
+          }
+        });
+
       });
   </script>
 </body>

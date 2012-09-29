@@ -63,7 +63,7 @@ function Mover(opt_options) {
 
   var options = opt_options || {},
       world = exports.world || document.createElement("div"),
-      elements = exports.elements || [],
+      elements = exports.elementList.records || [],
       liquids = exports.liquids || [],
       repellers = exports.repellers || [],
       attractors = exports.attractors || [],
@@ -94,6 +94,7 @@ function Mover(opt_options) {
 
   // optional
   this.className = options.className || constructorName.toLowerCase(); // constructorName.toLowerCase()
+  this.className += ' floraElement';
   this.mass = options.mass || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
@@ -144,29 +145,29 @@ function Mover(opt_options) {
 
   Mover._idCount += 1; // increment id
 
-  if (this.className === "liquid") {
+  if (this.className.search('liquid') !== -1) {
     liquids.push(this); // push new instance of liquids to liquid list
-  } else if (this.className === "repeller") {
+  } else if (this.className.search('repeller') !== -1) {
     repellers.push(this); // push new instance of repeller to repeller list
-  } else if (this.className === "attractor") {
+  } else if (this.className.search('attractor') !== -1) {
     attractors.push(this); // push new instance of attractor to attractor list
-  } else if (this.className === "heat") {
+  } else if (this.className.search('heat') !== -1) {
     heats.push(this);
-  } else if (this.className === "cold") {
+  } else if (this.className.search('cold') !== -1) {
     colds.push(this);
-  } else if (this.className === "predator") {
+  } else if (this.className.search('predator') !== -1) {
     predators.push(this);
-  } else if (this.className === "light") {
+  } else if (this.className.search('light') !== -1) {
     lights.push(this);
-  } else if (this.className === "oxygen") {
+  } else if (this.className.search('oxygen') !== -1) {
     oxygen.push(this);
-  } else if (this.className === "food") {
+  } else if (this.className.search('food') !== -1) {
     food.push(this);
   }
 
   if (this.controlCamera) { // if this object controls the camera
 
-    exports.Camera.controlObj = this;
+    exports.camera.controlObj = this;
 
     // need to position world so controlObj is centered on screen
     world.location.x = -world.width/2 + $(window).width()/2 + (world.width/2 - this.location.x);
@@ -203,7 +204,7 @@ Mover.prototype.step = function() {
   'use strict';
 
   var i, max, dir, friction, force, nose, r, theta, x, y, sensor,
-    world = exports.world;
+    world = exports.world, elements = exports.elementList.records;
 
   //
 
@@ -313,7 +314,7 @@ Mover.prototype.step = function() {
     }
 
     if (this.flocking) {
-      this.flock(exports.elements);
+      this.flock(elements);
     }
 
     // end -- APPLY FORCES

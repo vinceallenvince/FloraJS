@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: September 23, 2012 06:48:05 */
+/* Build time: September 29, 2012 02:44:16 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -72,6 +72,152 @@ var config = {
   }
 };
 exports.config = config;
+/*global exports */
+/**
+    A module representing an ElementList.
+    @module ElementList
+ */
+
+/**
+ * Creates a new ElementList.
+ *
+ * @constructor
+ * @param {Object} [opt_options] Options.
+ */
+function ElementList(opt_options) {
+
+  'use strict';
+
+  var options = opt_options || {};
+
+  this.records = [];
+}
+
+/**
+ * Define a name property.
+ */
+ElementList.name = 'elementlist';
+
+/**
+ * Returns the entire 'records' array.
+ *
+ * @return {Array.<Object>} arr An array of elements.
+ */
+ElementList.prototype.all = function() {
+  'use strict';
+  return this.records;
+};
+
+/**
+ * Returns an array of elements created from the same constructor.
+ *
+ * @param {string} name The constructor name.
+ * @return {Array.<Object>} arr An array of elements.
+ */
+ElementList.prototype.getAllByClass = function(name) {
+
+  'use strict';
+
+  var i, max, arr = [];
+
+  for (i = 0, max = this.records.length; i < max; i++) {
+    if (this.records[i].constructor.name === name) {
+      arr[arr.length] = this.records[i];
+    }
+  }
+  return arr;
+};
+
+/**
+ * Updates the properties of elements created from the same constructor.
+ *
+ * @param {string} name The constructor name.
+ * @param {Object} props A map of properties to update.
+ * @example
+ * exports.elementList.updatePropsByClass('Point', {
+ *    color: [0, 0, 0],
+ *    scale: 2
+ * }); // all point will turn black and double in size
+ */
+ElementList.prototype.updatePropsByClass = function(name, props) {
+
+  'use strict';
+
+  var i, max, p, arr = this.getAllByClass(name);
+
+  for (i = 0, max = arr.length; i < max; i++) {
+    for (p in props) {
+      if (props.hasOwnProperty(p)) {
+        arr[i][p] = props[p];
+      }
+    }
+  }
+  return arr;
+};
+
+/**
+ * Finds an element by its 'id' and returns it.
+ *
+ * @param {string|number} id The element's id.
+ * @return {Object} The element.
+ */
+ElementList.prototype.getElement = function (id) {
+
+  'use strict';
+
+  var i, max, records = this.records;
+
+  for (i = 0, max = records.length; i < max; i += 1) {
+    if (records[i].id === id) {
+      return records[i];
+    }
+  }
+};
+
+/**
+ * Finds an element by its 'id' and removes it from its
+ * world as well as the records array.
+ *
+ * @param {string|number} id The element's id.
+ */
+ElementList.prototype.destroyElement = function (id) {
+
+  'use strict';
+
+  var i, max, records = this.records;
+
+  for (i = 0, max = records.length; i < max; i += 1) {
+    if (records[i].id === id) {
+      exports.world.el.removeChild(records[i].el);
+      records.splice(i, 1);
+      break;
+    }
+  }
+};
+
+/**
+ * Removes all elements from their world and resets
+ * the 'records' array.
+ *
+ * @param {string|number} id The element's id.
+ */
+ElementList.prototype.destroyAll = function () {
+
+  'use strict';
+
+  var i, max, records = this.records,
+      world = exports.world.el,
+      children = world.children;
+
+  for (i = children.length; i >= 0; i -= 1) {
+    if (records[i] && children[i] && children[i].className.search('floraElement') !== -1) {
+      world.removeChild(records[i].el);
+    }
+  }
+
+  this.records = [];
+};
+exports.ElementList = ElementList;
 /*global exports, window, Modernizr */
 /**
     A module representing a FloraSystem.
@@ -92,7 +238,6 @@ function FloraSystem(el) {
 
   this.el = el || null;
 
-  exports.elements = [];
   exports.liquids = [];
   exports.repellers = [];
   exports.attractors = [];
@@ -108,11 +253,13 @@ function FloraSystem(el) {
     locLast: new exports.Vector()
   };
 
+  exports.elementList = new exports.ElementList();
+
   exports.world = new exports.World();
   exports.world.configure(this.el); // call configure after DOM has loaded
-  exports.elements.push(exports.world);
+  exports.elementList.records.push(exports.world); // use add() method here
 
-  exports.Camera = new exports.Camera();
+  exports.camera = new exports.Camera();
 
   // add default colors
   exports.defaultColors = new exports.ColorTable();
@@ -126,12 +273,12 @@ function FloraSystem(el) {
 
   exports.destroyElement = function (id) {
 
-    var i, max;
+    var i, max, elements = exports.elementList.records;
 
-    for (i = 0, max = this.elements.length; i < max; i += 1) {
-      if (this.elements[i].id === id) {
-        exports.world.el.removeChild(this.elements[i].el);
-        this.elements.splice(i, 1);
+    for (i = 0, max = elements.length; i < max; i += 1) {
+      if (elements[i].id === id) {
+        exports.world.el.removeChild(elements[i].el);
+        elements.splice(i, 1);
         break;
       }
     }
@@ -141,7 +288,7 @@ function FloraSystem(el) {
 
     var i, max,
         world = exports.world,
-        elements = exports.elements;
+        elements = exports.elementList.records;
 
     if (exports.world.isPlaying) {
       window.requestAnimFrame(exports.animLoop);
@@ -178,6 +325,11 @@ FloraSystem.prototype.start = function (func) {
 
   func.call();
   exports.animLoop();
+};
+
+FloraSystem.prototype.destroy = function () {
+  'use strict';
+  exports.elementList.destroyAll();
 };
 
 exports.FloraSystem = FloraSystem;
@@ -430,6 +582,7 @@ function Vector(opt_x, opt_y) {
   this.x = x;
   this.y = y;
 }
+
 /**
  * Subtract two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -439,6 +592,7 @@ Vector.VectorSub = function(v1, v2) {
   'use strict';
   return new Vector(v1.x - v2.x, v1.y - v2.y);
 };
+
 /**
  * Add two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -448,6 +602,7 @@ Vector.VectorAdd = function(v1, v2) {
   'use strict';
   return new Vector(v1.x + v2.x, v1.y + v2.y);
 };
+
 /**
  * Multiply two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -457,6 +612,7 @@ Vector.VectorMult = function(v, n) {
   'use strict';
   return new Vector(v.x * n, v.y * n);
 };
+
 /**
  * Divide two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -466,6 +622,7 @@ Vector.VectorDiv = function(v1, v2) {
   'use strict';
   return new Vector(v1.x / v2.x, v1.y / v2.y);
 };
+
 /**
  * Get the midpoint between two vectors. Uses clone to avoid affecting the values of the vectors.
  *
@@ -475,6 +632,7 @@ Vector.VectorMidPoint = function(v1, v2) {
   'use strict';
   return this.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
 };
+
 /**
  * Get the angle between two vectors.
  *
@@ -486,6 +644,7 @@ Vector.VectorAngleBetween = function(v1, v2) {
   theta = Math.acos(dot / (v1.mag() * v2.mag()));
   return theta;
 };
+
 /**
 * Returns an new vector with all properties and methods of the
 * old vector copied to the new vector's prototype.
@@ -498,6 +657,7 @@ Vector.prototype.clone = function() {
   F.prototype = this;
   return new F;
 };
+
 /**
  * Adds a vector to this vector.
  *
@@ -510,6 +670,7 @@ Vector.prototype.add = function(vector) {
   this.y += vector.y;
   return this;
 };
+
 /**
  * Subtracts a vector from this vector.
  *
@@ -522,6 +683,7 @@ Vector.prototype.sub = function(vector) {
   this.y -= vector.y;
   return this;
 };
+
 /**
  * Multiplies this vector by a passed value.
  *
@@ -534,6 +696,7 @@ Vector.prototype.mult = function(n) {
   this.y *= n;
   return this;
 };
+
 /**
  * Divides this vector by a passed value.
  *
@@ -546,6 +709,7 @@ Vector.prototype.div = function(n) {
   this.y = this.y / n;
   return this;
 };
+
 /**
  * Calculates the magnitude of this vector.
  *
@@ -555,6 +719,7 @@ Vector.prototype.mag = function() {
   'use strict';
   return Math.sqrt((this.x * this.x) + (this.y * this.y));
 };
+
 /**
  * Limits the vector's magnitude.
  *
@@ -566,6 +731,7 @@ Vector.prototype.limit = function(high) {
     this.normalize();
     this.mult(high);
   }
+  return this;
 };
 
 Vector.prototype.limitLow = function(low) {
@@ -574,7 +740,9 @@ Vector.prototype.limitLow = function(low) {
     this.normalize();
     this.mult(low);
   }
+  return this;
 };
+
 /**
  * Divides a vector by its magnitude to reduce its magnitude to 1.
  * Typically used to retrieve the direction of the vector for later manipulation.
@@ -588,6 +756,7 @@ Vector.prototype.normalize = function() {
     return this.div(m);
   }
 };
+
 /**
  * Calculates the distance between this vector and a passed vector.
  *
@@ -598,15 +767,7 @@ Vector.prototype.distance = function(vector) {
   'use strict';
   return Math.sqrt(Math.pow(vector.x - this.x, 2) + Math.pow(vector.y - this.y, 2));
 };
-/**
- * Calculates the length of this vector.
- *
- * @returns {number} This vector's length.
- */
-Vector.prototype.length = function() {
-  'use strict';
-  return Math.sqrt(this.x * this.x + this.y * this.y);
-};
+
 /**
  * Rotates a vector using a passed angle in radians.
  *
@@ -624,6 +785,7 @@ Vector.prototype.rotate = function(radians) {
   this.y = x * sin + y * cos;
   return this;
 };
+
 /**
  * Calulates the midpoint between two vectors.
  *
@@ -635,6 +797,7 @@ Vector.prototype.midpoint = function(v1, v2) {
   'use strict';
   return this.VectorAdd(v1, v2).div(2);
 };
+
 /**
  * Calulates the dot product.
  *
@@ -1428,7 +1591,7 @@ function World(opt_options) {
   });
 
   exports.Utils.addEvent(document.body, 'keydown', function(e) {
-    var i, max, elements = exports.elements,
+    var i, max, elements = exports.elementList.records,
         obj, desired, steer, target,
         r, theta, x, y;
 
@@ -1591,11 +1754,12 @@ World.prototype.resize = function() {
 
   var i, max, elementLoc, controlCamera, winSize = exports.Utils.getWindowSize(),
     windowWidth = winSize.width,
-    windowHeight = winSize.height;
+    windowHeight = winSize.height,
+    elements = exports.elementList.records;
 
   // check of any elements control the camera
-  for (i = 0, max = exports.elements.length; i < max; i += 1) {
-    if (exports.elements[i].controlCamera) {
+  for (i = 0, max = elements.length; i < max; i += 1) {
+    if (elements[i].controlCamera) {
       controlCamera = true;
       break;
     }
@@ -1603,9 +1767,9 @@ World.prototype.resize = function() {
 
   // loop thru elements
   if (!controlCamera) {
-    for (i = 0, max = exports.elements.length; i < max; i += 1) {
+    for (i = 0, max = elements.length; i < max; i += 1) {
 
-      elementLoc = exports.elements[i].location; // recalculate location
+      elementLoc = elements[i].location; // recalculate location
 
       elementLoc.x = windowWidth * (elementLoc.x/this.width);
       elementLoc.y = windowHeight * (elementLoc.y/this.height);
@@ -1724,7 +1888,7 @@ World.prototype.draw = function() {
    * If there's not an object controlling the camera,
    * we want to draw the world once.
    */
-  if (!exports.Camera.controlObj && this.isStatic && exports.world.clock > 0) {
+  if (!exports.camera.controlObj && this.isStatic && exports.world.clock > 0) {
     return;
   }
 
@@ -2017,7 +2181,7 @@ function Mover(opt_options) {
 
   var options = opt_options || {},
       world = exports.world || document.createElement("div"),
-      elements = exports.elements || [],
+      elements = exports.elementList.records || [],
       liquids = exports.liquids || [],
       repellers = exports.repellers || [],
       attractors = exports.attractors || [],
@@ -2048,6 +2212,7 @@ function Mover(opt_options) {
 
   // optional
   this.className = options.className || constructorName.toLowerCase(); // constructorName.toLowerCase()
+  this.className += ' floraElement';
   this.mass = options.mass || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
@@ -2098,29 +2263,29 @@ function Mover(opt_options) {
 
   Mover._idCount += 1; // increment id
 
-  if (this.className === "liquid") {
+  if (this.className.search('liquid') !== -1) {
     liquids.push(this); // push new instance of liquids to liquid list
-  } else if (this.className === "repeller") {
+  } else if (this.className.search('repeller') !== -1) {
     repellers.push(this); // push new instance of repeller to repeller list
-  } else if (this.className === "attractor") {
+  } else if (this.className.search('attractor') !== -1) {
     attractors.push(this); // push new instance of attractor to attractor list
-  } else if (this.className === "heat") {
+  } else if (this.className.search('heat') !== -1) {
     heats.push(this);
-  } else if (this.className === "cold") {
+  } else if (this.className.search('cold') !== -1) {
     colds.push(this);
-  } else if (this.className === "predator") {
+  } else if (this.className.search('predator') !== -1) {
     predators.push(this);
-  } else if (this.className === "light") {
+  } else if (this.className.search('light') !== -1) {
     lights.push(this);
-  } else if (this.className === "oxygen") {
+  } else if (this.className.search('oxygen') !== -1) {
     oxygen.push(this);
-  } else if (this.className === "food") {
+  } else if (this.className.search('food') !== -1) {
     food.push(this);
   }
 
   if (this.controlCamera) { // if this object controls the camera
 
-    exports.Camera.controlObj = this;
+    exports.camera.controlObj = this;
 
     // need to position world so controlObj is centered on screen
     world.location.x = -world.width/2 + $(window).width()/2 + (world.width/2 - this.location.x);
@@ -2157,7 +2322,7 @@ Mover.prototype.step = function() {
   'use strict';
 
   var i, max, dir, friction, force, nose, r, theta, x, y, sensor,
-    world = exports.world;
+    world = exports.world, elements = exports.elementList.records;
 
   //
 
@@ -2267,7 +2432,7 @@ Mover.prototype.step = function() {
     }
 
     if (this.flocking) {
-      this.flock(exports.elements);
+      this.flock(elements);
     }
 
     // end -- APPLY FORCES
@@ -4015,10 +4180,10 @@ exports.FlowField = FlowField;
  * @constructor
  * @extends Mover
  * @param {Object} [opt_options] Options.
- * @param {number} [opt_options.zIndex = 0] zIndex.
- * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {number} [opt_options.width = 10] Width.
  * @param {number} [opt_options.height = 1] Height.
+ * @param {number} [opt_options.opacity = 0.25] Opacity.
+ * @param {number} [opt_options.zIndex = 0] zIndex.
  * @param {Object} [opt_options.parentA = null] The parent A object.
  * @param {Object} [opt_options.parentB = null] The parent B object.
  */
@@ -4032,10 +4197,11 @@ function Connector(opt_options) {
 
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 1;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.25;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.zIndex = options.zIndex || 0;
   this.parentA = options.parentA || null;
   this.parentB = options.parentB || null;
+  this.color = 'transparent';
 }
 exports.Utils.inherit(Connector, exports.Mover);
 

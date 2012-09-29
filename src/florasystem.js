@@ -18,7 +18,6 @@ function FloraSystem(el) {
 
   this.el = el || null;
 
-  exports.elements = [];
   exports.liquids = [];
   exports.repellers = [];
   exports.attractors = [];
@@ -34,11 +33,13 @@ function FloraSystem(el) {
     locLast: new exports.Vector()
   };
 
+  exports.elementList = new exports.ElementList();
+
   exports.world = new exports.World();
   exports.world.configure(this.el); // call configure after DOM has loaded
-  exports.elements.push(exports.world);
+  exports.elementList.records.push(exports.world); // use add() method here
 
-  exports.Camera = new exports.Camera();
+  exports.camera = new exports.Camera();
 
   // add default colors
   exports.defaultColors = new exports.ColorTable();
@@ -52,12 +53,12 @@ function FloraSystem(el) {
 
   exports.destroyElement = function (id) {
 
-    var i, max;
+    var i, max, elements = exports.elementList.records;
 
-    for (i = 0, max = this.elements.length; i < max; i += 1) {
-      if (this.elements[i].id === id) {
-        exports.world.el.removeChild(this.elements[i].el);
-        this.elements.splice(i, 1);
+    for (i = 0, max = elements.length; i < max; i += 1) {
+      if (elements[i].id === id) {
+        exports.world.el.removeChild(elements[i].el);
+        elements.splice(i, 1);
         break;
       }
     }
@@ -67,7 +68,7 @@ function FloraSystem(el) {
 
     var i, max,
         world = exports.world,
-        elements = exports.elements;
+        elements = exports.elementList.records;
 
     if (exports.world.isPlaying) {
       window.requestAnimFrame(exports.animLoop);
@@ -104,6 +105,11 @@ FloraSystem.prototype.start = function (func) {
 
   func.call();
   exports.animLoop();
+};
+
+FloraSystem.prototype.destroy = function () {
+  'use strict';
+  exports.elementList.destroyAll();
 };
 
 exports.FloraSystem = FloraSystem;

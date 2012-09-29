@@ -130,7 +130,7 @@ function World(opt_options) {
   });
 
   exports.Utils.addEvent(document.body, 'keydown', function(e) {
-    var i, max, elements = exports.elements,
+    var i, max, elements = exports.elementList.records,
         obj, desired, steer, target,
         r, theta, x, y;
 
@@ -293,11 +293,12 @@ World.prototype.resize = function() {
 
   var i, max, elementLoc, controlCamera, winSize = exports.Utils.getWindowSize(),
     windowWidth = winSize.width,
-    windowHeight = winSize.height;
+    windowHeight = winSize.height,
+    elements = exports.elementList.records;
 
   // check of any elements control the camera
-  for (i = 0, max = exports.elements.length; i < max; i += 1) {
-    if (exports.elements[i].controlCamera) {
+  for (i = 0, max = elements.length; i < max; i += 1) {
+    if (elements[i].controlCamera) {
       controlCamera = true;
       break;
     }
@@ -305,9 +306,9 @@ World.prototype.resize = function() {
 
   // loop thru elements
   if (!controlCamera) {
-    for (i = 0, max = exports.elements.length; i < max; i += 1) {
+    for (i = 0, max = elements.length; i < max; i += 1) {
 
-      elementLoc = exports.elements[i].location; // recalculate location
+      elementLoc = elements[i].location; // recalculate location
 
       elementLoc.x = windowWidth * (elementLoc.x/this.width);
       elementLoc.y = windowHeight * (elementLoc.y/this.height);
@@ -426,7 +427,7 @@ World.prototype.draw = function() {
    * If there's not an object controlling the camera,
    * we want to draw the world once.
    */
-  if (!exports.Camera.controlObj && this.isStatic && exports.world.clock > 0) {
+  if (!exports.camera.controlObj && this.isStatic && exports.world.clock > 0) {
     return;
   }
 

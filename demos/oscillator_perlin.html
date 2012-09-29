@@ -28,7 +28,6 @@
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-    <div class='caption'>click for more oscillators</div>
     <script type="text/javascript" charset="utf-8">
 
       var system = new exports.FloraSystem();
@@ -41,7 +40,8 @@
 
         var pt = new Flora.Point();
 
-        var i, max,
+        var i, max, show = 1,
+            osc = [],
             h = exports.defaultColors.getColor('heat'),
             c = exports.defaultColors.getColor('cold'),
             f = exports.defaultColors.getColor('food'),
@@ -87,7 +87,7 @@
 
           for (var i = 0; i < max; i++) {
 
-            var osc = new Flora.Oscillator({
+            osc.push(new Flora.Oscillator({
               amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
               pointToDirection: true,
               width: Flora.Utils.map(i, 0, max, 1, width),
@@ -99,7 +99,15 @@
               borderColor: borderColor,
               color: color,
               boxShadow: '0 0 0 0.5em rgb(' + boxShadow.toString() + ')'
-            });
+            }));
+
+            if (osc.length % max === 0) {
+              var connector = new exports.Connector({
+                parentA: pt,
+                parentB: osc[osc.length - 1],
+                borderColor: [150, 150, 150]
+              });
+            }
           }
         };
 
@@ -107,70 +115,40 @@
           setTimeout(createOscillator, i * 500);
         }
 
+        var toggleConectors = function() {
+
+          var opacity = 0;
+
+          show *= -1;
+
+          if (show > 0) {
+            opacity = 1;
+          }
+
+          Flora.elementList.updatePropsByClass('Connector', {
+            opacity: opacity
+          });
+        };
+
+        var caption = new Flora.Caption({
+          text: 'click = oscillators; \'c\' = toggle connectors',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+
         Flora.Utils.addEvent(document, 'mouseup', function() {
           'use strict';
           createOscillator();
         });
 
-        /*max = 6;
-        borderColor = pl.getColor();
-        color = pl.getColor();
+        Flora.Utils.addEvent(document, 'keyup', function(e) {
+          'use strict';
 
-        for (var i = 0; i < max; i++) {
-
-          var osc = new Flora.Oscillator({
-            amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
-            pointToDirection: true,
-            width: Flora.Utils.map(i, 0, max, 1, 20),
-            height: Flora.Utils.map(i, 0, max, 1, 5),
-            opacity: Flora.Utils.map(i, 0, max, .1, 1),
-            isPerlin: true,
-            perlinOffsetX: Flora.Utils.map(i, 0, max, -1.1, -1),
-            perlinOffsetY: Flora.Utils.map(i, 0, max, 1, 1.1),
-            borderColor: borderColor,
-            color: color
-          });
-        }
-
-        max = 6;
-        borderColor = pl.getColor();
-        color = pl.getColor();
-
-        for (var i = 0; i < max; i++) {
-
-          var osc = new Flora.Oscillator({
-            amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
-            pointToDirection: true,
-            width: Flora.Utils.map(i, 0, max, 1, 20),
-            height: Flora.Utils.map(i, 0, max, 1, 5),
-            opacity: Flora.Utils.map(i, 0, max, .1, 1),
-            isPerlin: true,
-            perlinOffsetX: Flora.Utils.map(i, 0, max, -5.1, -5),
-            perlinOffsetY: Flora.Utils.map(i, 0, max, 5, 5.1),
-            borderColor: borderColor,
-            color: color
-          });
-        }
-
-        max = 6;
-        borderColor = pl.getColor();
-        color = pl.getColor();
-
-        for (var i = 0; i < max; i++) {
-
-          var osc = new Flora.Oscillator({
-            amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
-            pointToDirection: true,
-            width: Flora.Utils.map(i, 0, max, 1, 20),
-            height: Flora.Utils.map(i, 0, max, 1, 5),
-            opacity: Flora.Utils.map(i, 0, max, .1, 1),
-            isPerlin: true,
-            perlinOffsetX: Flora.Utils.map(i, 0, max, -10.1, -10),
-            perlinOffsetY: Flora.Utils.map(i, 0, max, 10, 10.1),
-            borderColor: borderColor,
-            color: color
-          });
-        }*/
+          if (e.keyCode === 67) { // 'c'
+            toggleConectors();
+          }
+        });
       });
   </script>
 </body>

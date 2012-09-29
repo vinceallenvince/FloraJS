@@ -1,13 +1,16 @@
+var interfaceCheck = exports.Interface;
+
 describe("A new Attractor", function() {
 
-  var attractor;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Attractor();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -18,25 +21,27 @@ describe("A new Attractor", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Attractor');
   });
 });
 
+
 describe("A new BorderPalette", function() {
 
-  var obj, interfaceCheck = exports.Interface;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.BorderPalette();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
     expect(interfaceCheck.getDataType(obj.borders)).toEqual('array');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('BorderPalette');
   });
 
   it("should have an addBorder() method that pushed border styles (strings) on to a borders property.", function() {
@@ -70,32 +75,34 @@ describe("A new BorderPalette", function() {
 
 describe("A new Camera", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Camera();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
     expect(typeof obj.location).toEqual('object');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Camera');
   });
 });
 
 describe("A new Caption", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Caption();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -103,20 +110,21 @@ describe("A new Caption", function() {
     expect(typeof obj.text).toEqual('string');
     expect(typeof obj.opacity).toEqual('number');
     expect(typeof obj.el).toEqual('object');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Caption');
   });
 });
 
 describe("A new Cold", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Cold();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -125,26 +133,27 @@ describe("A new Cold", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Cold');
   });
 });
 
 describe("A new ColorPalette", function() {
 
-  var obj, interfaceCheck = exports.Interface;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.ColorPalette();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
     expect(interfaceCheck.getDataType(obj.gradients)).toEqual('array');
     expect(interfaceCheck.getDataType(obj.colors)).toEqual('array');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('ColorPalette');
   });
 
   it("should have a createGradient() method that pushes an array of color arrays on to a gradients property.", function() {
@@ -203,18 +212,19 @@ describe("A new ColorPalette", function() {
 
 describe("A new ColorTable", function() {
 
-  var c, obj, interfaceCheck = exports.Interface;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.ColorTable();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('ColorTable');
   });
 
   it("should have a method that adds an object representing a color range to a 'colors' property.", function() {
@@ -264,36 +274,135 @@ describe("A new ColorTable", function() {
 
 describe("A new Connector", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Connector();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
-    expect(typeof obj.color).toEqual('object');
+    expect(typeof obj.color).toEqual('string');
     expect(typeof obj.zIndex).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Connector');
+  });
+});
+
+describe("A new ElementList collection", function() {
+
+  var system;
+
+  beforeEach(function() {
+    system = new exports.FloraSystem();
+  });
+
+  afterEach(function() {
+    system.destroy();
+  });
+
+  it("should have its required properties.", function() {
+    expect(interfaceCheck.getDataType(exports.elementList.records)).toEqual('array');
+  });
+  it("all() should return the 'records' array.", function() {
+    expect(interfaceCheck.getDataType(exports.elementList.all())).toEqual('array');
+  });
+  it("getElement() should receive an id and return the corresponding element.", function() {
+
+      var check = true,
+          point = new exports.Point(),
+          obj = exports.elementList.getElement(point.id);
+
+      expect(typeof obj).toEqual('object');
+  });
+  it("getAllByClass() should return an array of records with the same constructor.", function() {
+
+    var i, max, check = null,
+        point = new exports.Point(),
+        arr;
+
+    arr = exports.elementList.getAllByClass('Point');
+
+    expect(interfaceCheck.getDataType(arr)).toEqual('array');
+
+    for (i = 0, max = arr.length; i < max; i++) {
+      if (arr[i].constructor.name === 'Point') {
+        check = true;
+      } else {
+        check = false;
+      }
+    }
+    expect(check).toEqual(true);
+  });
+  it("destroyElement() should receive an id and remove the corresponding element " +
+      "from elementList.records and the element's world.", function() {
+
+      var check = true,
+          records = exports.elementList.records,
+          point = new exports.Point();
+
+      exports.elementList.destroyElement(point.id);
+
+      for (i = 0, max = records.length; i < max; i += 1) {
+        if (records[i].id === point.id) {
+          check = false;
+        }
+      }
+      expect(check).toEqual(true);
+  });
+  it("destroyAll() should remove all elements from their world and reset " +
+      "the 'records' array.", function() {
+
+      var i, check = true, point;
+
+      for (i = 0; i < 100; i += 1) {
+        point = new exports.Point();
+      }
+
+      exports.elementList.destroyAll();
+      expect(exports.elementList.records.length).toEqual(0);
+  });
+  it("updatePropsByClass() should update the properties of elements created " +
+      "from the same constructor.", function() {
+
+      var i, check = true, point;
+
+      for (i = 0; i < 100; i += 1) {
+        point = new exports.Point();
+      }
+
+      exports.elementList.updatePropsByClass('Point', {
+        color: [0, 0, 0],
+        scale: 2
+      });
+
+      for (i = 0, max = exports.elementList.records.length; i < max; i += 1) {
+        if (exports.elementList.records[i].constructor.name === 'Point' &&
+            (!exports.elementList.records[i].color || exports.elementList.records[i].scale !== 2)) {
+          check = false;
+        }
+      }
+      expect(check).toEqual(true);
   });
 });
 
 describe("A new FlowField", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.FlowField();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -301,25 +410,33 @@ describe("A new FlowField", function() {
     expect(typeof obj.perlinSpeed).toEqual('number');
     expect(typeof obj.perlinTime).toEqual('number');
     expect(typeof obj.createMarkers).toEqual('boolean');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('FlowField');
   });
 });
 
 describe("A new FlowFieldMarker", function() {
 
-  var obj;
+  var system, obj;
+
+  beforeEach(function() {
+    system = new exports.FloraSystem();
+    obj = new exports.FlowFieldMarker({
+      location: {x: 0, y: 0},
+      scale: 1,
+      angle: 90,
+      opacity: 0.75,
+      width: 100,
+      height: 100,
+      colorMode: 'rgb',
+      color: [0, 0, 0]
+    });
+  });
+
+  afterEach(function() {
+    system.destroy();
+  });
 
   it("should return a DOM element.", function() {
-    obj = new exports.FlowFieldMarker({
-        location: {x: 0, y: 0},
-        scale: 1,
-        angle: 90,
-        opacity: 0.75,
-        width: 100,
-        height: 100,
-        colorMode: 'rgb',
-        color: [0, 0, 0]
-      });
     expect(obj.className).toEqual('flowFieldMarker');
     expect(obj.style.width).toEqual('100px');
     expect(obj.style.height).toEqual('100px');
@@ -329,14 +446,15 @@ describe("A new FlowFieldMarker", function() {
 
 describe("A new Food", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Food();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -345,20 +463,21 @@ describe("A new Food", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Food');
   });
 });
 
 describe("A new Heat", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Heat();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -367,7 +486,7 @@ describe("A new Heat", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Heat');
   });
 });
 
@@ -418,14 +537,15 @@ describe("The Interface", function() {
 
 describe("A new Light", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Light();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -440,14 +560,15 @@ describe("A new Light", function() {
 
 describe("A new Liquid", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Liquid();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -458,20 +579,21 @@ describe("A new Liquid", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Liquid');
   });
 });
 
 describe("A new Mover", function() {
 
-  var obj, interfaceCheck = exports.Interface;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Mover();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -507,42 +629,44 @@ describe("A new Mover", function() {
     expect(typeof obj.velocity).toEqual('object');
     expect(typeof obj.location).toEqual('object');
     expect(typeof obj.controlCamera).toEqual('boolean');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Mover');
   });
 });
 
 describe("A new Obj", function() {
 
-  var obj, css;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Obj({
       hello: 'hello'
     });
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should accept all properties passed to the constructor.", function() {
     expect(obj.hello).toEqual('hello');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Obj');
   });
 });
 
 describe("A new Oscillator", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Oscillator({
       initialLocation: new exports.Vector()
     });
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -561,20 +685,21 @@ describe("A new Oscillator", function() {
     expect(typeof obj.perlinAccelHigh).toEqual('number');
     expect(typeof obj.perlinOffsetX).toEqual('number');
     expect(typeof obj.perlinOffsetY).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Oscillator');
   });
 });
 
 describe("A new Oxygen", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Oxygen();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -583,41 +708,42 @@ describe("A new Oxygen", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Oxygen');
   });
 });
 
 describe("A new Particle", function() {
 
-  var obj, system;
+  var system, obj;
 
   beforeEach(function() {
-    system = new Flora.FloraSystem();
+    system = new exports.FloraSystem();
     obj = new exports.Particle();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
     expect(typeof obj.lifespan).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.borderRadius).toEqual('string');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Particle');
   });
 });
 
 describe("A new ParticleSystem", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.ParticleSystem();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -626,22 +752,21 @@ describe("A new ParticleSystem", function() {
     expect(typeof obj.lifespan).toEqual('number');
     expect(typeof obj.burst).toEqual('number');
     expect(typeof obj.particle).toEqual('function');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('ParticleSystem');
   });
 });
 
-
-
 describe("A new Point", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Point();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -652,20 +777,21 @@ describe("A new Point", function() {
     expect(typeof obj.zIndex).toEqual('number');
     expect(typeof obj.offsetAngle).toEqual('number');
     expect(typeof obj.length).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Point');
   });
 });
 
 describe("A new Predator", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Predator();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -674,38 +800,21 @@ describe("A new Predator", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
-  });
-});
-
-describe("Vector", function() {
-
-  var vector;
-
-  beforeEach(function() {
-    vector = new exports.Vector(10, 20);
-  });
-
-  afterEach(function() {
-    vector = null;
-  });
-
-  it("should create vectors.", function() {
-    expect(vector.x).toEqual(10);
-    expect(vector.y).toEqual(20);
+    expect(obj.constructor.name).toEqual('Predator');
   });
 });
 
 describe("A new Repeller", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Repeller();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -716,20 +825,21 @@ describe("A new Repeller", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Repeller');
   });
 });
 
 describe("A new Sensor", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Sensor();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -743,7 +853,7 @@ describe("A new Sensor", function() {
     expect(typeof obj.opacity).toEqual('number');
     expect(typeof obj.target).toEqual('object');
     expect(typeof obj.activated).toEqual('boolean');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Sensor');
   });
 });
 
@@ -853,16 +963,77 @@ describe("Utils", function() {
   });
 });
 
-describe("A new Walker", function() {
+describe("Vector", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
+    obj = new exports.Vector(22, 10);
+  });
+
+  afterEach(function() {
+    system.destroy();
+  });
+
+  it("should create vectors.", function() {
+    expect(obj.x).toEqual(22);
+    expect(obj.y).toEqual(10);
+  });
+  it('add() should add a vector.', function() {
+    obj.add(new exports.Vector(1, 1));
+    expect(obj.x).toEqual(23);
+    expect(obj.y).toEqual(11);
+  });
+  it('sub() should subtract a vector.', function() {
+    obj.sub(new exports.Vector(1, 1));
+    expect(obj.x).toEqual(21);
+    expect(obj.y).toEqual(9);
+  });
+  it('mult() should multiply a vector.', function() {
+    obj.mult(2);
+    expect(obj.x).toEqual(44);
+    expect(obj.y).toEqual(20);
+  });
+  it('div() should divide a vector.', function() {
+    obj.div(2);
+    expect(obj.x).toEqual(11);
+    expect(obj.y).toEqual(5);
+  });
+  it('mag() should calculate the magnitude of a vector.', function() {
+    obj = new exports.Vector(10, 10);
+    expect(obj.mag()).toEqual(14.142135623730951);
+  });
+  it('limit() should limit the magnitude of a vector.', function() {
+    obj = new exports.Vector(10, 10);
+    expect(obj.limit(5).mag()).toEqual(5);
+  });
+  it('normalize() should divide a vector by its magnitude to reduce its magnitude to 1.', function() {
+    obj = new exports.Vector(3, 4);
+    expect(obj.normalize().x).toEqual(0.6);
+    expect(obj.normalize().y).toEqual(0.8);
+  });
+  it('distance() should calculate the distance between this vector and a passed vector.', function() {
+    obj = new exports.Vector(5, 0);
+    expect(obj.distance(new exports.Vector(1, 0))).toEqual(4);
+  });
+  it('rotate() should rotate a vector using a passed angle in radians.', function() {
+    obj = new exports.Vector(10, 0);
+    expect(obj.rotate(Math.PI).x).toEqual(-10);
+  });
+});
+
+describe("A new Walker", function() {
+
+  var system, obj;
+
+  beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.Walker();
   });
 
   afterEach(function() {
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -885,21 +1056,21 @@ describe("A new Walker", function() {
     expect(typeof obj.maxSpeed).toEqual('number');
     expect(typeof obj.wrapEdges).toEqual('boolean');
     expect(typeof obj.isStatic).toEqual('boolean');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('Walker');
   });
 });
 
 describe("A new World", function() {
 
-  var obj;
+  var system, obj;
 
   beforeEach(function() {
+    system = new exports.FloraSystem();
     obj = new exports.World();
   });
 
   afterEach(function() {
-    system = null;
-    obj = null;
+    system.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -915,7 +1086,7 @@ describe("A new World", function() {
     expect(typeof obj.mouseX).toEqual('number');
     expect(typeof obj.mouseY).toEqual('number');
     expect(typeof obj.isPlaying).toEqual('boolean');
-    expect(typeof obj.constructor.name).toEqual('string');
+    expect(obj.constructor.name).toEqual('World');
   });
 
   it("should have a DOM element", function() {

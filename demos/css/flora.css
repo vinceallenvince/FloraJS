@@ -67,6 +67,7 @@ body {
 	border-width: thick;
 	border-color: rgb(255, 150, 50);
 	box-shadow: 0 0 0 .5em rgba(255, 255, 255, 1);
+	/*-webkit-filter: blur(10px);*/
 }
 .particle {
 	position: absolute; left: 0; top: 0;

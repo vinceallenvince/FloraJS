@@ -10,10 +10,10 @@
  * @constructor
  * @extends Mover
  * @param {Object} [opt_options] Options.
- * @param {number} [opt_options.zIndex = 0] zIndex.
- * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {number} [opt_options.width = 10] Width.
  * @param {number} [opt_options.height = 1] Height.
+ * @param {number} [opt_options.opacity = 0.25] Opacity.
+ * @param {number} [opt_options.zIndex = 0] zIndex.
  * @param {Object} [opt_options.parentA = null] The parent A object.
  * @param {Object} [opt_options.parentB = null] The parent B object.
  */
@@ -27,10 +27,11 @@ function Connector(opt_options) {
 
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 1;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.25;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.zIndex = options.zIndex || 0;
   this.parentA = options.parentA || null;
   this.parentB = options.parentB || null;
+  this.color = 'transparent';
 }
 exports.Utils.inherit(Connector, exports.Mover);
 
