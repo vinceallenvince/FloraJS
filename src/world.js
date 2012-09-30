@@ -227,7 +227,7 @@ World.prototype.configure = function(opt_el) { // should be called after doc rea
 
   var el = opt_el || null;
 
-  this.el = el || document.body;
+  this.el = el || document.body; // if no world element is passed, use document.body
   this.el.style.width = this.width + 'px';
   this.el.style.height = this.height + 'px';
 };

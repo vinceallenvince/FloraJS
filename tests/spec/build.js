@@ -437,7 +437,7 @@ describe("A new FlowFieldMarker", function() {
   });
 
   it("should return a DOM element.", function() {
-    expect(obj.className).toEqual('flowFieldMarker');
+    expect(obj.className).toEqual('flowFieldMarker floraElement');
     expect(obj.style.width).toEqual('100px');
     expect(obj.style.height).toEqual('100px');
     expect(typeof obj).toEqual('object');

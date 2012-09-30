@@ -9,14 +9,16 @@
  *
  * @constructor
  */
-function FloraSystem(el) {
+function FloraSystem(opt_el) {
 
   'use strict';
 
   var i, max,
       defaultColorList = exports.config.defaultColorList;
 
-  this.el = el || null;
+  console.log(exports.Interface.getDataType(opt_el));
+
+  this.el = opt_el || null;
 
   exports.liquids = [];
   exports.repellers = [];
