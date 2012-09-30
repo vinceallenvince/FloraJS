@@ -141,6 +141,21 @@ var Utils = (function () {
       this.addEventHandler(target, eventType, handler);
     },
     /**
+     * Logs a message to the browser console.
+     *
+     * @param {string} msg The message to log.
+     */
+    log: function(msg) {
+      if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+        this.log = function(msg) {
+          console.log(msg); // output error to console
+        };
+        this.log.call(this, msg);
+      } else {
+       this.log = function () {}; // noop
+      }
+    },
+    /**
      * @returns {Object} The current window width and height.
      * @example getWindowDim() returns {width: 1024, height: 768}
      */

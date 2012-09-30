@@ -62,7 +62,6 @@ function Mover(opt_options) {
   'use strict';
 
   var options = opt_options || {},
-      world = exports.world || document.createElement("div"),
       elements = exports.elementList.records || [],
       liquids = exports.liquids || [],
       repellers = exports.repellers || [],
@@ -73,7 +72,7 @@ function Mover(opt_options) {
       lights = exports.lights || [],
       oxygen = exports.oxygen || [],
       food = exports.food || [],
-      i, max, evt,
+      i, max, evt, world,
       constructorName = this.constructor.name || 'anon'; // this a problem when code is minified
 
   for (i in options) {
@@ -92,7 +91,10 @@ function Mover(opt_options) {
     this.el = document.createElement("div");
   }
 
-  // optional
+  // if a world is not passed, use the first world in the universe
+  this.world = options.world || exports.universe.first();
+  world = this.world;
+
   this.className = options.className || constructorName.toLowerCase(); // constructorName.toLowerCase()
   this.className += ' floraElement';
   this.mass = options.mass || 10;
@@ -204,7 +206,7 @@ Mover.prototype.step = function() {
   'use strict';
 
   var i, max, dir, friction, force, nose, r, theta, x, y, sensor,
-    world = exports.world, elements = exports.elementList.records;
+    world = this.world, elements = exports.elementList.records;
 
   //
 
@@ -406,7 +408,7 @@ Mover.prototype.seek = function(target, arrive) {
 
   'use strict';
 
-  var world = exports.world,
+  var world = this.world,
     desiredVelocity = exports.Vector.VectorSub(target.location, this.location),
     distanceToTarget = desiredVelocity.mag();
 
@@ -757,7 +759,7 @@ Mover.prototype.checkWorldEdges = function(world) {
   }
 
   if (check && this.controlCamera) {
-    exports.world.location.add(diff); // !! do we need this? // add the distance difference to World.location
+    world.location.add(diff); // !! do we need this? // add the distance difference to World.location
   }
   return check;
 };
@@ -774,7 +776,7 @@ Mover.prototype.checkCameraEdges = function() {
 
   var vel = this.velocity.clone();
 
-  exports.world.location.add(vel.mult(-1));
+  this.world.location.add(vel.mult(-1));
 };
 
 /**

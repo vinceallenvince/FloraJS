@@ -72,7 +72,7 @@ Walker.prototype.step = function () {
 
   'use strict';
 
-  var world = exports.world,
+  var world = this.world,
       friction;
 
   if (this.beforeStep) {

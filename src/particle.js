@@ -38,7 +38,7 @@ Particle.prototype.step = function () {
 
   'use strict';
 
-	var world = exports.world,
+	var world = this.world,
 			friction;
 
 	//
@@ -89,7 +89,7 @@ Particle.prototype.step = function () {
 		if (this.lifespan > 0) {
 			this.lifespan -= 1;
 		} else if (this.lifespan === 0) {
-			exports.destroyElement(this.id);
+			exports.elementList.destroyElement(this.id);
 		}
 		this.acceleration.mult(0); // reset acceleration
 	}

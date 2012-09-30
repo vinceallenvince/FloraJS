@@ -16,8 +16,6 @@ function FloraSystem(opt_el) {
   var i, max,
       defaultColorList = exports.config.defaultColorList;
 
-  console.log(exports.Interface.getDataType(opt_el));
-
   this.el = opt_el || null;
 
   exports.liquids = [];
@@ -37,9 +35,19 @@ function FloraSystem(opt_el) {
 
   exports.elementList = new exports.ElementList();
 
-  exports.world = new exports.World();
-  exports.world.configure(this.el); // call configure after DOM has loaded
-  exports.elementList.records.push(exports.world); // use add() method here
+  exports.universe = new exports.Universe();
+  exports.universe.addWorld({
+    el: this.el
+  });
+
+  //exports.world = new exports.World();
+  //exports.world.configure(this.el); // call configure after DOM has loaded
+
+
+
+  //exports.world = new exports.World();
+  //exports.world.configure(this.el); // call configure after DOM has loaded
+  //exports.elementList.records.push(exports.world); // use add() method here
 
   exports.camera = new exports.Camera();
 
@@ -53,7 +61,7 @@ function FloraSystem(opt_el) {
     });
   }
 
-  exports.destroyElement = function (id) {
+  /*exports.destroyElement = function (id) {
 
     var i, max, elements = exports.elementList.records;
 
@@ -64,20 +72,20 @@ function FloraSystem(opt_el) {
         break;
       }
     }
-  };
+  };*/
 
   exports.animLoop = function () {
 
     var i, max,
-        world = exports.world,
+        world = exports.universe.first(),
         elements = exports.elementList.records;
 
-    if (exports.world.isPlaying) {
+    //if (exports.world.isPlaying) {
       window.requestAnimFrame(exports.animLoop);
 
-      if (world.zSorted) {
-        elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
-      }
+      //if (world.zSorted) {
+        //elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
+      //}
 
       for (i = elements.length - 1; i >= 0; i -= 1) {
         elements[i].step();
@@ -86,7 +94,7 @@ function FloraSystem(opt_el) {
         }
       }
       world.clock += 1;
-    }
+    //}
   };
 }
 

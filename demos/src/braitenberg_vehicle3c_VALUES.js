@@ -5,7 +5,7 @@ var elements = function() {
 
   'use strict';
 
-  Flora.world.update({
+  Flora.universe.update({
     c: 0.01,
     showStats: false,
     gravity: new Flora.Vector(),
@@ -15,6 +15,8 @@ var elements = function() {
     borderStyle: 'solid',
     borderColor: [100, 100, 100]
   });
+
+  var world = Flora.universe.first();
 
   function BVehicleVALUES(exports, opt_options) {
 
@@ -49,7 +51,7 @@ var elements = function() {
           this.opacity = 1;
         } else {
           if (this.connector) {
-            exports.destroyElement(this.connector.id);
+            exports.elementList.destroyElement(this.connector.id);
             this.connector = null;
           }
           this.opacity = 0;
@@ -190,7 +192,7 @@ var elements = function() {
             var x = exports.lights[i].location.x,
             y = exports.lights[i].location.y;
 
-            exports.destroyElement(exports.lights[i].id);
+            exports.elementList.destroyElement(exports.lights[i].id);
             exports.lights.splice(i, 1);
 
             var ps = new exports.ParticleSystem({
@@ -199,8 +201,8 @@ var elements = function() {
               particle: particle
             });
 
-            var w = getRandomNumber(0, exports.world.width);
-            var h = getRandomNumber(0, exports.world.height);
+            var w = getRandomNumber(0, world.width);
+            var h = getRandomNumber(0, world.height);
             var d = getRandomNumber(15, 25);
 
           }
@@ -210,7 +212,7 @@ var elements = function() {
           if (this.isInside(exports.oxygen[i])) {
             exports.oxygen[i].scale -= 0.025;
             if (exports.oxygen[i].scale < 0.25) {
-              exports.destroyElement(exports.oxygen[i].id);
+              exports.elementList.destroyElement(exports.oxygen[i].id);
               exports.oxygen.splice(i, 1);
             }
           }
@@ -220,7 +222,7 @@ var elements = function() {
           if (this.isInside(exports.food[i])) {
             exports.food[i].scale -= 0.025;
             if (exports.food[i].scale < 0.25) {
-              exports.destroyElement(exports.food[i].id);
+              exports.elementList.destroyElement(exports.food[i].id);
               exports.food.splice(i, 1);
             }
           }
@@ -250,7 +252,7 @@ var elements = function() {
         getColor = options.getColor || null,
         getColorMin = options.getColorMin || 0,
         getColorMax = options.getColorMax || 0,
-        totalElements = options.totalElements || (0.000006 * (exports.world.width * exports.world.height)),
+        totalElements = options.totalElements || (0.000006 * (world.width * world.height)),
         getRandomNumber = exports.Utils.getRandomNumber;
 
     var borderStylesStimulators = [
@@ -273,8 +275,8 @@ var elements = function() {
     var i, max, w, h, d;
 
     for (i = 0, max = totalElements; i < max; i += 1) {
-      w = getRandomNumber(0, exports.world.width);
-      h = getRandomNumber(0, exports.world.height);
+      w = getRandomNumber(0, world.width);
+      h = getRandomNumber(0, world.height);
       d = getRandomNumber(15, 45);
 
       borderStr = borderStylesStimulators[getRandomNumber(0, borderStylesStimulators.length - 1)];
@@ -311,8 +313,8 @@ var elements = function() {
   });
 
   for (i = 0; i < 10; i++) {
-    var x = Flora.Utils.getRandomNumber(0, Flora.world.width),
-        y = Flora.Utils.getRandomNumber(0, Flora.world.height),
+    var x = Flora.Utils.getRandomNumber(0, world.width),
+        y = Flora.Utils.getRandomNumber(0, world.height),
         a = Flora.Utils.getRandomNumber(0, 360),
         bv2 = new BVehicleVALUES(Flora, {
           controlCamera: false,
@@ -340,9 +342,9 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.000006 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
-    w = Flora.Utils.getRandomNumber(0, Flora.world.width);
-    h = Flora.Utils.getRandomNumber(0, Flora.world.height);
+  for (i = 0, max = (0.000006 * (world.width * world.height)); i < max; i += 1) {
+    w = Flora.Utils.getRandomNumber(0, world.width);
+    h = Flora.Utils.getRandomNumber(0, world.height);
     d = Flora.Utils.getRandomNumber(15, 45);
 
     borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];
@@ -371,9 +373,9 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.000006 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
-    w = Flora.Utils.getRandomNumber(0, Flora.world.width);
-    h = Flora.Utils.getRandomNumber(0, Flora.world.height);
+  for (i = 0, max = (0.000006 * (world.width * world.height)); i < max; i += 1) {
+    w = Flora.Utils.getRandomNumber(0, world.width);
+    h = Flora.Utils.getRandomNumber(0, world.height);
     d = Flora.Utils.getRandomNumber(15, 45);
 
     borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];
@@ -402,9 +404,9 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.000006 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
-    w = Flora.Utils.getRandomNumber(0, Flora.world.width);
-    h = Flora.Utils.getRandomNumber(0, Flora.world.height);
+  for (i = 0, max = (0.000006 * (world.width * world.height)); i < max; i += 1) {
+    w = Flora.Utils.getRandomNumber(0, world.width);
+    h = Flora.Utils.getRandomNumber(0, world.height);
     d = Flora.Utils.getRandomNumber(20, 80);
 
     borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];
@@ -433,9 +435,9 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.000006 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
-    w = Flora.Utils.getRandomNumber(0, Flora.world.width);
-    h = Flora.Utils.getRandomNumber(0, Flora.world.height);
+  for (i = 0, max = (0.000006 * (world.width * world.height)); i < max; i += 1) {
+    w = Flora.Utils.getRandomNumber(0, world.width);
+    h = Flora.Utils.getRandomNumber(0, world.height);
     d = Flora.Utils.getRandomNumber(20, 80);
 
     borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];

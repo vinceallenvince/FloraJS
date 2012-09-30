@@ -25,6 +25,8 @@ function Caption(opt_options) {
   var options = opt_options || {},
       textNode;
 
+  // if a world is not passed, use the first world in the universe
+  this.world = options.world || exports.universe.first();
   this.position = options.position || 'top left';
   this.text = options.text || '';
   textNode = document.createTextNode(this.text);
@@ -40,7 +42,7 @@ function Caption(opt_options) {
   this.el.style.borderStyle = this.borderStyle;
   this.el.style.borderColor = this.borderColor;
   this.el.appendChild(textNode);
-  exports.world.el.appendChild(this.el);
+  this.world.el.appendChild(this.el);
 }
 
 /**

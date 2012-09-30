@@ -5,7 +5,7 @@ var elements = function() {
 
   'use strict';
 
-  Flora.world.update({
+  Flora.universe.update({
     c: 0.01,
     showStats: false,
     gravity: new Flora.Vector(),
@@ -15,6 +15,8 @@ var elements = function() {
     borderStyle: 'solid',
     borderColor: [100, 100, 100]
   });
+
+  var world = Flora.universe.first();
 
   function BVehicleAGGRESSIVE(exports, opt_options) {
 
@@ -46,7 +48,7 @@ var elements = function() {
           this.opacity = 1;
         } else {
           if (this.connector) {
-            exports.destroyElement(this.connector.id);
+            exports.elementList.destroyElement(this.connector.id);
             this.connector = null;
           }
           this.opacity = 0;
@@ -151,7 +153,7 @@ var elements = function() {
             var x = Flora.lights[i].location.x,
             y = Flora.lights[i].location.y;
 
-            Flora.destroyElement(Flora.lights[i].id);
+            Flora.elementList.destroyElement(Flora.lights[i].id);
             Flora.lights.splice(i, 1);
 
             var ps = new Flora.ParticleSystem({
@@ -160,8 +162,8 @@ var elements = function() {
               particle: particle
             });
 
-            var w = Flora.Utils.getRandomNumber(0, Flora.World.width);
-            var h = Flora.Utils.getRandomNumber(0, Flora.World.height);
+            var w = Flora.Utils.getRandomNumber(0, world.width);
+            var h = Flora.Utils.getRandomNumber(0, world.height);
             var d = Flora.Utils.getRandomNumber(15, 25);
 
           }
@@ -193,8 +195,8 @@ var elements = function() {
   });
 
   for (i = 0; i < 10; i++) {
-    var x = Flora.Utils.getRandomNumber(0, Flora.world.width),
-        y = Flora.Utils.getRandomNumber(0, Flora.world.height),
+    var x = Flora.Utils.getRandomNumber(0, world.width),
+        y = Flora.Utils.getRandomNumber(0, world.height),
         a = Flora.Utils.getRandomNumber(0, 360),
         bv2 = new BVehicleAGGRESSIVE(Flora, {
           controlCamera: false,
@@ -221,9 +223,9 @@ var elements = function() {
     endColor: clr.endColor
   });
 
-  for (i = 0, max = (0.000015 * (Flora.world.width * Flora.world.height)); i < max; i += 1) {
-    w = Flora.Utils.getRandomNumber(0, Flora.world.width);
-    h = Flora.Utils.getRandomNumber(0, Flora.world.height);
+  for (i = 0, max = (0.000015 * (world.width * world.height)); i < max; i += 1) {
+    w = Flora.Utils.getRandomNumber(0, world.width);
+    h = Flora.Utils.getRandomNumber(0, world.height);
     d = Flora.Utils.getRandomNumber(15, 75);
 
     borderStr = borderStylesStimulators[Flora.Utils.getRandomNumber(0, borderStylesStimulators.length - 1)];

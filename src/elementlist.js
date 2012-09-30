@@ -29,6 +29,20 @@ ElementList.name = 'elementlist';
  *
  * @return {Array.<Object>} arr An array of elements.
  */
+ElementList.prototype.add = function(obj) {
+
+  'use strict';
+
+  this.records.push(obj);
+
+  return this.records;
+};
+
+/**
+ * Returns the entire 'records' array.
+ *
+ * @return {Array.<Object>} arr An array of elements.
+ */
 ElementList.prototype.all = function() {
   'use strict';
   return this.records;
@@ -114,7 +128,7 @@ ElementList.prototype.destroyElement = function (id) {
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
-      exports.world.el.removeChild(records[i].el);
+      records[i].world.el.removeChild(records[i].el);
       records.splice(i, 1);
       break;
     }
@@ -131,16 +145,13 @@ ElementList.prototype.destroyAll = function () {
 
   'use strict';
 
-  var i, max, records = this.records,
-      world = exports.world.el,
-      children = world.children;
+  var i, records = this.records;
 
-  for (i = children.length; i >= 0; i -= 1) {
-    if (records[i] && children[i] && children[i].className.search('floraElement') !== -1) {
-      world.removeChild(records[i].el);
+  for (i = records.length - 1; i >= 0; i -= 1) {
+    if (records[i].world) {
+      records[i].world.el.removeChild(records[i].el);
     }
   }
-
   this.records = [];
 };
 exports.ElementList = ElementList;

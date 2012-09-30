@@ -70,8 +70,6 @@ function World(opt_options) {
   this.borderRadius = options.borderRadius || 0;
   this.boxShadow = options.boxShadow || 0;
 
-  this.width = winSize.width;
-  this.height = winSize.height;
   this.zIndex = 0;
   this.mouseX = this.width/2;
   this.mouseY = this.height/2;
@@ -83,6 +81,22 @@ function World(opt_options) {
 
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
+
+  /**
+   * If no DOM element is passed for the world,
+   * use document.body. Because the body initially has
+   * no height, we use the window height.
+   */
+  if (!options.el) {
+    this.width = winSize.width;
+    this.height = winSize.height;
+  } else {
+    this.width = $(this.el).width();
+    this.height = $(this.el).height();
+  }
+  this.el = options.el || document.body; // if no world element is passed, use document.body
+  this.el.style.width = this.width + 'px';
+  this.el.style.height = this.height + 'px';
 
   if (this.showStats) {
     this.createStats();
@@ -427,7 +441,7 @@ World.prototype.draw = function() {
    * If there's not an object controlling the camera,
    * we want to draw the world once.
    */
-  if (!exports.camera.controlObj && this.isStatic && exports.world.clock > 0) {
+  if (!exports.camera.controlObj && this.isStatic && this.clock > 0) {
     return;
   }
 

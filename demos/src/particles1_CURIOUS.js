@@ -5,7 +5,7 @@ system.start(function() {
 
   'use strict';
 
-  Flora.world.update({
+  Flora.universe.update({
     c: 0,
     showStats: true,
     gravity: new Flora.Vector(),
@@ -129,14 +129,14 @@ system.start(function() {
     };
   };
 
-  for (var i = 0; i < (0.004 * Flora.world.width); i += 1) {
+  for (var i = 0; i < (0.004 * Flora.universe.first().width); i += 1) {
 
     var myIndex = i % 2 === 0 ? 0 : 1;
 
     var fish1 = new Flora.ParticleSystem({
       isStatic: false,
       myIndex: myIndex,
-      location: new Flora.Vector(Flora.Utils.getRandomNumber(0, Flora.world.width), Flora.Utils.getRandomNumber(0, Flora.world.height)),
+      location: new Flora.Vector(Flora.Utils.getRandomNumber(0, Flora.universe.first().width), Flora.Utils.getRandomNumber(0, Flora.universe.first().height)),
       flocking: true,
       maxSteeringForce: 1,
       separateStrength: 1,

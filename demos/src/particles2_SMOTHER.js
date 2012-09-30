@@ -5,7 +5,7 @@ system.start(function() {
 
   'use strict';
 
-  Flora.world.update({
+  Flora.universe.update({
     c: 0,
     showStats: false,
     gravity: new Flora.Vector(),

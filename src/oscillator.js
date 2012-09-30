@@ -42,7 +42,7 @@ function Oscillator(opt_options) {
   exports.Mover.call(this, options);
 
   this.initialLocation = options.initialLocation ||
-      new exports.Vector(exports.world.width/2, exports.world.height/2);
+      new exports.Vector(this.world.width/2, this.world.height/2);
   this.lastLocation = new exports.Vector(0, 0);
   this.amplitude = options.amplitude || new exports.Vector(4, 0);
   this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
@@ -73,7 +73,7 @@ Oscillator.prototype.step = function () {
 
   'use strict';
 
-  var world = exports.world, velDiff;
+  var world = this.world, velDiff;
 
   if (this.beforeStep) {
     this.beforeStep.apply(this);

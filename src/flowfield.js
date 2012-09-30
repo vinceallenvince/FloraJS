@@ -26,6 +26,8 @@ function FlowField(opt_options) {
   this.perlinTime = options.perlinTime || 100;
   this.field = options.field || null;
   this.createMarkers = options.createMarkers || false;
+  // if a world is not passed, use the first world in the universe
+  this.world = options.world || exports.universe.first();
 }
 
 /**
@@ -42,7 +44,7 @@ FlowField.prototype.build = function() {
 
   var i, max, col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
       vectorList = {},
-      world = exports.world,
+      world = this.world,
       cols = Math.ceil(world.width/parseFloat(this.resolution)),
       rows = Math.ceil(world.height/parseFloat(this.resolution)),
       xoff = this.perlinTime, // create markers and vectors
@@ -76,7 +78,7 @@ FlowField.prototype.build = function() {
           colorMode: 'rgb',
           color: [200, 100, 50]
         });
-        exports.world.el.appendChild(ffm);
+        world.el.appendChild(ffm);
       }
       yoff += parseFloat(this.perlinSpeed);
     }

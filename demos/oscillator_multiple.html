@@ -18,7 +18,7 @@
 
       system.start(function () {
 
-        Flora.world.update({
+        Flora.universe.update({
           color: [255, 255, 255]
         });
 
@@ -31,7 +31,7 @@
         for (var i = 0; i < max; i++) {
 
           osc.push(new Flora.Oscillator({
-            amplitude: new Flora.Vector(Flora.world.width/2 - 50, Flora.world.height/2 - 50),
+            amplitude: new Flora.Vector(Flora.universe.first().width/2 - 50, Flora.universe.first().height/2 - 50),
             acceleration: new Flora.Vector(Flora.Utils.map(i, 0, max, 0.025, 0.03),
                 Flora.Utils.map(i, 0, max, 0.035, 0.04)),
             pointToDirection: true,

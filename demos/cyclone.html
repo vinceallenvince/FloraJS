@@ -23,7 +23,7 @@
 
       system.start(function () {
 
-         Flora.world.update({
+         Flora.universe.update({
           showStats: true,
           c: 0,
           gravity: new Flora.Vector()
@@ -61,7 +61,7 @@
               maxSpeed: 20,
               lifespan: 190, // determines height
               checkEdges: false,
-              location: new Flora.Vector(this.getLocation().x, Flora.world.height),
+              location: new Flora.Vector(this.getLocation().x, Flora.universe.first().height),
               acceleration: new Flora.Vector(0, -3), // determines denisty
               harmonicAmplitude: new Flora.Vector(2, 0), // determines radius of revolution
               harmonicPeriod: new Flora.Vector(),
@@ -70,7 +70,7 @@
               myLife: 0,
               afterStep: function() {
                 this.harmonicPeriod = new Flora.Vector(this.lifespan, 1); // as particle gets older, period gets smaller
-                this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * (Math.sin(Flora.world.clock * 0.01) + 1000) / this.harmonicPeriod.x);
+                this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * (Math.sin(Flora.universe.first().clock * 0.01) + 1000) / this.harmonicPeriod.x);
                 this.boxShadow = '0 0 ' + ((this.myLife * .4) + 30) + 'px ' + ((this.myLife * .4) + 30) + 'px rgba(' + this.boxShadowColor + ', .5)';
                 this.myLife += 1;
               }
@@ -80,14 +80,14 @@
 
         // cyclone base
         var smoke = new Flora.ParticleSystem({
-          location: new Flora.Vector(Flora.world.width/2, Flora.world.height),
+          location: new Flora.Vector(Flora.universe.first().width/2, Flora.universe.first().height),
           burstRate: 3,
           isStatic: false,
           parent: walker,
           particle: function () {
             return {
               checkEdges: false,
-              location: new Flora.Vector(this.getLocation().x, Flora.world.height + 10),
+              location: new Flora.Vector(this.getLocation().x, Flora.universe.first().height + 10),
               acceleration: new Flora.Vector(Flora.Utils.getRandomNumber(-8, 8), 0),
               width: 0,
               height: 0,
@@ -100,7 +100,7 @@
 
          // cyclone dust
         var dust = new Flora.ParticleSystem({
-          location: new Flora.Vector(Flora.world.width/2, Flora.world.height),
+          location: new Flora.Vector(Flora.universe.first().width/2, Flora.universe.first().height),
           burstRate: 6,
           isStatic: false,
           parent: walker,
@@ -110,7 +110,7 @@
 
             return {
               checkEdges: false,
-              location: new Flora.Vector(this.getLocation().x, Flora.world.height + 10),
+              location: new Flora.Vector(this.getLocation().x, Flora.universe.first().height + 10),
               acceleration: new Flora.Vector(Flora.Utils.getRandomNumber(-8, 8), Flora.Utils.getRandomNumber(-1, -2)),
               maxSpeed: 120,
               width: s,

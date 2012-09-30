@@ -295,7 +295,7 @@ describe("A new Connector", function() {
   });
 });
 
-describe("A new ElementList collection", function() {
+describe("A new ElementList", function() {
 
   var system;
 
@@ -878,6 +878,63 @@ describe("SimplexNoise", function() {
   it("should create different numbers as input parameters change.", function() {
     expect(n1).toNotEqual(n2);
   });
+});
+
+describe("A new Universe", function() {
+
+  var system, obj;
+
+  beforeEach(function() {
+    system = new exports.FloraSystem();
+    obj = new exports.Universe();
+  });
+
+  afterEach(function() {
+    system.destroy();
+  });
+
+  it("should have its required properties.", function() {
+    expect(interfaceCheck.getDataType(exports.elementList.records)).toEqual('array');
+  });
+  it("addWorld() should add a new World to the 'records' array.", function() {
+    obj.addWorld();
+    expect(obj.records.length).toEqual(1);
+    expect(obj.records[obj.records.length - 1].constructor.name).toEqual('World');
+  });
+  it("first() should return the first record in the 'records' array.", function() {
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    expect(obj.records.length).toEqual(3);
+    expect(obj.first()).toEqual(obj.records[0]);
+  });
+  it("last() should return the last record in the 'records' array.", function() {
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    expect(obj.records.length).toEqual(3);
+    expect(obj.last()).toEqual(obj.records[obj.records.length - 1]);
+  });
+  it("all() should return the 'records' array.", function() {
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    expect(obj.all().length).toEqual(3);
+  });
+  it("update() should update the specified world's properties", function() {
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    obj.update({
+      'hello': 'hello'
+    },
+    obj.last());
+    expect(obj.last().hello).toEqual('hello');
+  });
+  // update
+  // getWorldById
+  // destroyWorld
+  // destroyAll
 });
 
 describe("Utils", function() {

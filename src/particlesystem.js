@@ -46,7 +46,7 @@
 
     var i, max, p;
 
-    if (exports.world.clock % this.burstRate === 0) {
+    if (this.world.clock % this.burstRate === 0) {
       for (i = 0; i < this.burst; i += 1) {
         p = new exports.Particle(this.particle());
       }
@@ -54,7 +54,7 @@
     if (this.lifespan > 0) {
       this.lifespan -= 1;
     } else if (this.lifespan === 0) {
-      exports.destroyElement(this.id);
+      exports.elementList.destroyElement(this.id);
     }
   };
   this.lifespan = options.lifespan || -1;

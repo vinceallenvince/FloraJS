@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: September 29, 2012 02:51:47 */
+/* Build time: September 30, 2012 01:10:41 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -103,6 +103,20 @@ ElementList.name = 'elementlist';
  *
  * @return {Array.<Object>} arr An array of elements.
  */
+ElementList.prototype.add = function(obj) {
+
+  'use strict';
+
+  this.records.push(obj);
+
+  return this.records;
+};
+
+/**
+ * Returns the entire 'records' array.
+ *
+ * @return {Array.<Object>} arr An array of elements.
+ */
 ElementList.prototype.all = function() {
   'use strict';
   return this.records;
@@ -188,7 +202,7 @@ ElementList.prototype.destroyElement = function (id) {
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
-      exports.world.el.removeChild(records[i].el);
+      records[i].world.el.removeChild(records[i].el);
       records.splice(i, 1);
       break;
     }
@@ -205,16 +219,13 @@ ElementList.prototype.destroyAll = function () {
 
   'use strict';
 
-  var i, max, records = this.records,
-      world = exports.world.el,
-      children = world.children;
+  var i, records = this.records;
 
-  for (i = children.length; i >= 0; i -= 1) {
-    if (records[i] && children[i] && children[i].className.search('floraElement') !== -1) {
-      world.removeChild(records[i].el);
+  for (i = records.length - 1; i >= 0; i -= 1) {
+    if (records[i].world) {
+      records[i].world.el.removeChild(records[i].el);
     }
   }
-
   this.records = [];
 };
 exports.ElementList = ElementList;
@@ -229,14 +240,14 @@ exports.ElementList = ElementList;
  *
  * @constructor
  */
-function FloraSystem(el) {
+function FloraSystem(opt_el) {
 
   'use strict';
 
   var i, max,
       defaultColorList = exports.config.defaultColorList;
 
-  this.el = el || null;
+  this.el = opt_el || null;
 
   exports.liquids = [];
   exports.repellers = [];
@@ -255,9 +266,19 @@ function FloraSystem(el) {
 
   exports.elementList = new exports.ElementList();
 
-  exports.world = new exports.World();
-  exports.world.configure(this.el); // call configure after DOM has loaded
-  exports.elementList.records.push(exports.world); // use add() method here
+  exports.universe = new exports.Universe();
+  exports.universe.addWorld({
+    el: this.el
+  });
+
+  //exports.world = new exports.World();
+  //exports.world.configure(this.el); // call configure after DOM has loaded
+
+
+
+  //exports.world = new exports.World();
+  //exports.world.configure(this.el); // call configure after DOM has loaded
+  //exports.elementList.records.push(exports.world); // use add() method here
 
   exports.camera = new exports.Camera();
 
@@ -271,7 +292,7 @@ function FloraSystem(el) {
     });
   }
 
-  exports.destroyElement = function (id) {
+  /*exports.destroyElement = function (id) {
 
     var i, max, elements = exports.elementList.records;
 
@@ -282,20 +303,20 @@ function FloraSystem(el) {
         break;
       }
     }
-  };
+  };*/
 
   exports.animLoop = function () {
 
     var i, max,
-        world = exports.world,
+        world = exports.universe.first(),
         elements = exports.elementList.records;
 
-    if (exports.world.isPlaying) {
+    //if (exports.world.isPlaying) {
       window.requestAnimFrame(exports.animLoop);
 
-      if (world.zSorted) {
-        elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
-      }
+      //if (world.zSorted) {
+        //elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
+      //}
 
       for (i = elements.length - 1; i >= 0; i -= 1) {
         elements[i].step();
@@ -304,7 +325,7 @@ function FloraSystem(el) {
         }
       }
       world.clock += 1;
-    }
+    //}
   };
 }
 
@@ -474,6 +495,21 @@ var Utils = (function () {
         };
       }
       this.addEventHandler(target, eventType, handler);
+    },
+    /**
+     * Logs a message to the browser console.
+     *
+     * @param {string} msg The message to log.
+     */
+    log: function(msg) {
+      if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+        this.log = function(msg) {
+          console.log(msg); // output error to console
+        };
+        this.log.call(this, msg);
+      } else {
+       this.log = function () {}; // noop
+      }
     },
     /**
      * @returns {Object} The current window width and height.
@@ -1459,6 +1495,197 @@ var Interface = (function () {
   };
 }());
 exports.Interface = Interface;
+/*global exports */
+/**
+    A module representing a Universe.
+    @module Universe
+ */
+
+/**
+ * Creates a new Universe.
+ *
+ * @constructor
+ * @param {Object} [opt_options] Options.
+ */
+function Universe(opt_options) {
+
+  'use strict';
+
+  var options = opt_options || {};
+
+  this.records = [];
+}
+
+/**
+ * Define a name property.
+ */
+Universe.name = 'universe';
+
+/**
+ * Adds a new World to the 'records' array.
+ *
+ * @return {Array.<Object>} arr An array of elements.
+ */
+Universe.prototype.addWorld = function(opt_options) {
+
+  'use strict';
+
+  var options = opt_options || {};
+
+  this.records.push(new exports.World(options));
+
+  // copy reference to new World in elementList
+  exports.elementList.add(this.records[this.records.length - 1]);
+
+  return this.records;
+};
+
+/**
+ * Returns the first item in 'records' array.
+ *
+ * @return {Object} The first world.
+ */
+Universe.prototype.first = function() {
+
+  'use strict';
+
+  if (this.records[0]) {
+    return this.records[0];
+  } else {
+    return null;
+  }
+};
+
+/**
+ * Returns the last item in 'records' array.
+ *
+ * @return {Object} The last world.
+ */
+Universe.prototype.last = function() {
+
+  'use strict';
+
+  if (this.records[this.records.length - 1]) {
+    return this.records[this.records.length - 1];
+  } else {
+    return null;
+  }
+};
+
+/**
+ * Update the properties of a world.
+ *
+ * @return {Object} The last world.
+ */
+Universe.prototype.update = function(opt_props, opt_world) {
+
+  'use strict';
+
+  var i, props = exports.Interface.getDataType(opt_props) === 'object' ? opt_props : {},
+      world;
+
+  if (!opt_world) {
+    world = this.first();
+  } else {
+    if (exports.Interface.getDataType(opt_world) === 'string') {
+      world = this.getWorldById(opt_world);
+    } else if (exports.Interface.getDataType(opt_world) === 'object') {
+      world = opt_world;
+    } else {
+      exports.Utils.log('Universe: update: world param must be null, a string (an id) or reference to a world.');
+      return;
+    }
+  }
+
+  for (i in props) {
+    if (props.hasOwnProperty(i)) {
+      world[i] = props[i];
+    }
+  }
+
+  if (props.el) { // if updating the element; update the width and height
+    world.width = parseInt(world.el.style.width.replace('px', ''), 10);
+    world.height = parseInt(world.el.style.height.replace('px', ''), 10);
+  }
+
+  if (props.showStats && window.addEventListener) {
+    world.createStats();
+  }
+};
+
+/**
+ * Returns the entire 'records' array.
+ *
+ * @return {Array.<Object>} arr An array of elements.
+ */
+Universe.prototype.all = function() {
+  'use strict';
+  return this.records;
+};
+
+/**
+ * Finds an element by its 'id' and returns it.
+ *
+ * @param {string|number} id The element's id.
+ * @return {Object} The element.
+ */
+Universe.prototype.getWorldById = function (id) {
+
+  'use strict';
+
+  var i, max, records = this.records;
+
+  for (i = 0, max = records.length; i < max; i += 1) {
+    if (records[i].id === id) {
+      return records[i];
+    }
+  }
+};
+
+/**
+ * Finds an element by its 'id' and removes it from its
+ * world as well as the records array.
+ *
+ * @param {string|number} id The element's id.
+ */
+Universe.prototype.destroyWorld = function (id) {
+
+  'use strict';
+
+  var i, max, records = this.records;
+
+  for (i = 0, max = records.length; i < max; i += 1) {
+    if (records[i].id === id) {
+      exports.world.el.removeChild(records[i].el);
+      records.splice(i, 1);
+      break;
+    }
+  }
+};
+
+/**
+ * Removes all elements from their world and resets
+ * the 'records' array.
+ *
+ * @param {string|number} id The element's id.
+ */
+Universe.prototype.destroyAll = function () {
+
+  'use strict';
+
+  var i, max, records = this.records,
+      world = exports.world.el,
+      children = world.children;
+
+  for (i = children.length; i >= 0; i -= 1) {
+    if (records[i] && children[i] && children[i].className.search('floraElement') !== -1) {
+      world.removeChild(records[i].el);
+    }
+  }
+
+  this.records = [];
+};
+exports.Universe = Universe;
 /*global exports, $, Modernizr */
 
 /**
@@ -1531,8 +1758,6 @@ function World(opt_options) {
   this.borderRadius = options.borderRadius || 0;
   this.boxShadow = options.boxShadow || 0;
 
-  this.width = winSize.width;
-  this.height = winSize.height;
   this.zIndex = 0;
   this.mouseX = this.width/2;
   this.mouseY = this.height/2;
@@ -1544,6 +1769,22 @@ function World(opt_options) {
 
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
+
+  /**
+   * If no DOM element is passed for the world,
+   * use document.body. Because the body initially has
+   * no height, we use the window height.
+   */
+  if (!options.el) {
+    this.width = winSize.width;
+    this.height = winSize.height;
+  } else {
+    this.width = $(this.el).width();
+    this.height = $(this.el).height();
+  }
+  this.el = options.el || document.body; // if no world element is passed, use document.body
+  this.el.style.width = this.width + 'px';
+  this.el.style.height = this.height + 'px';
 
   if (this.showStats) {
     this.createStats();
@@ -1688,7 +1929,7 @@ World.prototype.configure = function(opt_el) { // should be called after doc rea
 
   var el = opt_el || null;
 
-  this.el = el || document.body;
+  this.el = el || document.body; // if no world element is passed, use document.body
   this.el.style.width = this.width + 'px';
   this.el.style.height = this.height + 'px';
 };
@@ -1888,7 +2129,7 @@ World.prototype.draw = function() {
    * If there's not an object controlling the camera,
    * we want to draw the world once.
    */
-  if (!exports.camera.controlObj && this.isStatic && exports.world.clock > 0) {
+  if (!exports.camera.controlObj && this.isStatic && this.clock > 0) {
     return;
   }
 
@@ -2180,7 +2421,6 @@ function Mover(opt_options) {
   'use strict';
 
   var options = opt_options || {},
-      world = exports.world || document.createElement("div"),
       elements = exports.elementList.records || [],
       liquids = exports.liquids || [],
       repellers = exports.repellers || [],
@@ -2191,7 +2431,7 @@ function Mover(opt_options) {
       lights = exports.lights || [],
       oxygen = exports.oxygen || [],
       food = exports.food || [],
-      i, max, evt,
+      i, max, evt, world,
       constructorName = this.constructor.name || 'anon'; // this a problem when code is minified
 
   for (i in options) {
@@ -2210,7 +2450,10 @@ function Mover(opt_options) {
     this.el = document.createElement("div");
   }
 
-  // optional
+  // if a world is not passed, use the first world in the universe
+  this.world = options.world || exports.universe.first();
+  world = this.world;
+
   this.className = options.className || constructorName.toLowerCase(); // constructorName.toLowerCase()
   this.className += ' floraElement';
   this.mass = options.mass || 10;
@@ -2322,7 +2565,7 @@ Mover.prototype.step = function() {
   'use strict';
 
   var i, max, dir, friction, force, nose, r, theta, x, y, sensor,
-    world = exports.world, elements = exports.elementList.records;
+    world = this.world, elements = exports.elementList.records;
 
   //
 
@@ -2524,7 +2767,7 @@ Mover.prototype.seek = function(target, arrive) {
 
   'use strict';
 
-  var world = exports.world,
+  var world = this.world,
     desiredVelocity = exports.Vector.VectorSub(target.location, this.location),
     distanceToTarget = desiredVelocity.mag();
 
@@ -2875,7 +3118,7 @@ Mover.prototype.checkWorldEdges = function(world) {
   }
 
   if (check && this.controlCamera) {
-    exports.world.location.add(diff); // !! do we need this? // add the distance difference to World.location
+    world.location.add(diff); // !! do we need this? // add the distance difference to World.location
   }
   return check;
 };
@@ -2892,7 +3135,7 @@ Mover.prototype.checkCameraEdges = function() {
 
   var vel = this.velocity.clone();
 
-  exports.world.location.add(vel.mult(-1));
+  this.world.location.add(vel.mult(-1));
 };
 
 /**
@@ -3010,7 +3253,7 @@ Walker.prototype.step = function () {
 
   'use strict';
 
-  var world = exports.world,
+  var world = this.world,
       friction;
 
   if (this.beforeStep) {
@@ -3144,7 +3387,7 @@ function Oscillator(opt_options) {
   exports.Mover.call(this, options);
 
   this.initialLocation = options.initialLocation ||
-      new exports.Vector(exports.world.width/2, exports.world.height/2);
+      new exports.Vector(this.world.width/2, this.world.height/2);
   this.lastLocation = new exports.Vector(0, 0);
   this.amplitude = options.amplitude || new exports.Vector(4, 0);
   this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
@@ -3175,7 +3418,7 @@ Oscillator.prototype.step = function () {
 
   'use strict';
 
-  var world = exports.world, velDiff;
+  var world = this.world, velDiff;
 
   if (this.beforeStep) {
     this.beforeStep.apply(this);
@@ -3262,7 +3505,7 @@ Particle.prototype.step = function () {
 
   'use strict';
 
-	var world = exports.world,
+	var world = this.world,
 			friction;
 
 	//
@@ -3313,7 +3556,7 @@ Particle.prototype.step = function () {
 		if (this.lifespan > 0) {
 			this.lifespan -= 1;
 		} else if (this.lifespan === 0) {
-			exports.destroyElement(this.id);
+			exports.elementList.destroyElement(this.id);
 		}
 		this.acceleration.mult(0); // reset acceleration
 	}
@@ -3367,7 +3610,7 @@ exports.Particle = Particle;
 
     var i, max, p;
 
-    if (exports.world.clock % this.burstRate === 0) {
+    if (this.world.clock % this.burstRate === 0) {
       for (i = 0; i < this.burst; i += 1) {
         p = new exports.Particle(this.particle());
       }
@@ -3375,7 +3618,7 @@ exports.Particle = Particle;
     if (this.lifespan > 0) {
       this.lifespan -= 1;
     } else if (this.lifespan === 0) {
-      exports.destroyElement(this.id);
+      exports.elementList.destroyElement(this.id);
     }
   };
   this.lifespan = options.lifespan || -1;
@@ -4108,6 +4351,8 @@ function FlowField(opt_options) {
   this.perlinTime = options.perlinTime || 100;
   this.field = options.field || null;
   this.createMarkers = options.createMarkers || false;
+  // if a world is not passed, use the first world in the universe
+  this.world = options.world || exports.universe.first();
 }
 
 /**
@@ -4124,7 +4369,7 @@ FlowField.prototype.build = function() {
 
   var i, max, col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
       vectorList = {},
-      world = exports.world,
+      world = this.world,
       cols = Math.ceil(world.width/parseFloat(this.resolution)),
       rows = Math.ceil(world.height/parseFloat(this.resolution)),
       xoff = this.perlinTime, // create markers and vectors
@@ -4158,7 +4403,7 @@ FlowField.prototype.build = function() {
           colorMode: 'rgb',
           color: [200, 100, 50]
         });
-        exports.world.el.appendChild(ffm);
+        world.el.appendChild(ffm);
       }
       yoff += parseFloat(this.perlinSpeed);
     }
@@ -4294,6 +4539,8 @@ function Caption(opt_options) {
   var options = opt_options || {},
       textNode;
 
+  // if a world is not passed, use the first world in the universe
+  this.world = options.world || exports.universe.first();
   this.position = options.position || 'top left';
   this.text = options.text || '';
   textNode = document.createTextNode(this.text);
@@ -4309,7 +4556,7 @@ function Caption(opt_options) {
   this.el.style.borderStyle = this.borderStyle;
   this.el.style.borderColor = this.borderColor;
   this.el.appendChild(textNode);
-  exports.world.el.appendChild(this.el);
+  this.world.el.appendChild(this.el);
 }
 
 /**
