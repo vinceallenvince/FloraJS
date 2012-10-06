@@ -9,14 +9,16 @@
  *
  * @constructor
  */
-function FloraSystem(opt_el) {
+function FloraSystem(opt_options) {
 
   'use strict';
 
   var i, max,
+      options = opt_options || {},
       defaultColorList = exports.config.defaultColorList;
 
-  this.el = opt_el || null;
+  this.el = options.world || null;
+  this.universeOptions = options.universeOptions || null;
 
   exports.liquids = [];
   exports.repellers = [];
@@ -33,21 +35,21 @@ function FloraSystem(opt_el) {
     locLast: new exports.Vector()
   };
 
+  // create elementList before universe
   exports.elementList = new exports.ElementList();
 
-  exports.universe = new exports.Universe();
-  exports.universe.addWorld({
-    el: this.el
-  });
-
-  //exports.world = new exports.World();
-  //exports.world.configure(this.el); // call configure after DOM has loaded
-
-
-
-  //exports.world = new exports.World();
-  //exports.world.configure(this.el); // call configure after DOM has loaded
-  //exports.elementList.records.push(exports.world); // use add() method here
+  exports.universe = new exports.Universe(this.universeOptions);
+  if (exports.Interface.getDataType(this.el) === 'array') {
+    for (i = 0, max = this.el.length; i < max; i += 1) {
+      exports.universe.addWorld({
+        el: this.el[i]
+      });
+    }
+  } else {
+    exports.universe.addWorld({
+      el: this.el
+    });
+  }
 
   exports.camera = new exports.Camera();
 
@@ -60,32 +62,21 @@ function FloraSystem(opt_el) {
       endColor: defaultColorList[i].endColor
     });
   }
-
-  /*exports.destroyElement = function (id) {
-
-    var i, max, elements = exports.elementList.records;
-
-    for (i = 0, max = elements.length; i < max; i += 1) {
-      if (elements[i].id === id) {
-        exports.world.el.removeChild(elements[i].el);
-        elements.splice(i, 1);
-        break;
-      }
-    }
-  };*/
+  //var stats = new exports.StatsDisplay();
 
   exports.animLoop = function () {
 
     var i, max,
-        world = exports.universe.first(),
+        universe = exports.universe,
+        world = universe.first(),
         elements = exports.elementList.records;
 
-    //if (exports.world.isPlaying) {
+    if (universe.isPlaying) {
       window.requestAnimFrame(exports.animLoop);
 
-      //if (world.zSorted) {
-        //elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
-      //}
+      if (universe.zSorted) {
+        elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
+      }
 
       for (i = elements.length - 1; i >= 0; i -= 1) {
         elements[i].step();
@@ -93,8 +84,12 @@ function FloraSystem(opt_el) {
           elements[i].draw();
         }
       }
-      world.clock += 1;
-    //}
+
+      exports.universe.updateClocks();
+    }
+    /*if (universe.statsDisplay) {
+      universe.statsDisplay.update();
+    }*/
   };
 }
 

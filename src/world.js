@@ -10,15 +10,14 @@
  *
  * @constructor
  *
+ * @param {Object} [opt_options] World options.
+ * @param {string} [opt_options.id = "m-" + World._idCount] An id. If an id is not provided, one is created.
  * @param {boolean} [opt_options.isStatic = true] Set to false if transforming the world every frame.
- * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
- * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
  * @param {number} [opt_options.clock = 0] Increments each frame.
  * @param {number} [opt_options.c = 0.01] Coefficient of friction.
  * @param {Object} [opt_options.gravity = {x: 0, y: 1}] Gravity
  * @param {Object} [opt_options.wind = {x: 0, y: 0}] Wind
  * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location
- * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
  * @param {number} [opt_options.scale = 1] Scale
  * @param {number} [opt_options.angle = 0] Angle
  * @param {number} [opt_options.opacity = 0.85] Opacity
@@ -32,13 +31,10 @@
  * @param {number} [opt_options.width = window.width] The world width.
  * @param {number} [opt_options.height = window.height] The world height.
  * @param {number} [opt_options.zIndex = 0] The world z-index.
- * @param {number} [opt_options.mouseX = window.width/2] The x coordinate of the mouse location.
- * @param {number} [opt_options.mouseY = window.height/2] The y coordinate of the mouse location.
  * @param {boolean} [opt_options.isTopDown = true] Set to true to orient the gravity vector when listening to the devicemotion event.
  * @param {number} [opt_options.compassHeading = 0] The compass heading. Value is set via the deviceorientation event.
  * @param {number} [opt_options.compassAccuracy = 0] The compass accuracy. Value is set via the deviceorientation event.
  * @param {boolean} [opt_options.isDeviceMotion = false] Set to true add the devicemotion event listener. Typically use with accelerometer equipped devices.
- * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
  * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
  * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
  */
@@ -50,14 +46,11 @@ function World(opt_options) {
       winSize = exports.Utils.getWindowSize();
 
   this.isStatic = options.isStatic || true;
-  this.showStats = !!options.showStats;
-  this.statsInterval = options.statsInterval || 0;
   this.clock = options.clock || 0;
   this.c = options.c || 0.01;
   this.gravity = options.gravity || new exports.Vector(0, 1);
   this.wind =  options.wind || new exports.Vector();
   this.location = options.location || new exports.Vector();
-  this.zSorted = !!options.zSorted;
 
   this.scale = options.scale || 1;
   this.angle = options.angle || 0;
@@ -71,13 +64,10 @@ function World(opt_options) {
   this.boxShadow = options.boxShadow || 0;
 
   this.zIndex = 0;
-  this.mouseX = this.width/2;
-  this.mouseY = this.height/2;
   this.isTopDown = true;
   this.compassHeading = 0;
   this.compassAccuracy = 0;
   this.isDeviceMotion = !options.isDeviceMotion;
-  this.isPlaying = true;
 
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
@@ -88,25 +78,24 @@ function World(opt_options) {
    * no height, we use the window height.
    */
   if (!options.el) {
+    this.el = document.body; // if no world element is passed, use document.body
     this.width = winSize.width;
     this.height = winSize.height;
+    this.id = World.name + "-" + World._idCount; // if no id, create one
   } else {
+    this.el = options.el;
+    this.id = this.el.id; // use the element's id as the record id
     this.width = $(this.el).width();
     this.height = $(this.el).height();
   }
-  this.el = options.el || document.body; // if no world element is passed, use document.body
+
+  this.el.className = 'world floraElement';
   this.el.style.width = this.width + 'px';
   this.el.style.height = this.height + 'px';
 
-  if (this.showStats) {
-    this.createStats();
-  }
+  World._idCount += 1; // increment id
 
   // events
-  $(document).mousemove(function(e) {
-    me.mouseX = e.pageX;
-    me.mouseY = e.pageY;
-  });
 
   if (window.addEventListener && this.isDeviceMotion) {
     window.addEventListener("devicemotion", function(e) { // listens for device motion events
@@ -120,107 +109,9 @@ function World(opt_options) {
     }, false);
   }
 
-  /*$(window).bind("resize", function (e) { // listens for window resize
+
+  exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
     me.resize.call(me);
-  });*/
-  exports.Utils.addEvent(window, 'resize', function(e) {
-    me.resize.call(me);
-  });
-
-  // save the current and last mouse position
-  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
-    exports.mouse.locLast = exports.mouse.loc.clone();
-    exports.mouse.loc = new exports.Vector(e.pageX, e.pageY);
-  });
-
-  // toggle the world playstate
-  exports.Utils.addEvent(document, 'keyup', function(e) {
-    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
-      me.isPlaying = !me.isPlaying;
-      if (me.isPlaying) {
-        window.requestAnimFrame(exports.animLoop);
-      }
-    }
-  });
-
-  exports.Utils.addEvent(document.body, 'keydown', function(e) {
-    var i, max, elements = exports.elementList.records,
-        obj, desired, steer, target,
-        r, theta, x, y;
-
-    switch(e.keyCode) {
-      case exports.config.keyMap.thrustLeft:
-        for(i = 0, max = elements.length; i < max; i++) {
-          if (elements[i].keyControl) {
-
-            obj = elements[i];
-
-            r = exports.world.width/2; // use angle to calculate x, y
-            theta = exports.Utils.degreesToRadians(obj.angle - obj.turningRadius);
-            x = r * Math.cos(theta);
-            y = r * Math.sin(theta);
-
-            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
-
-            desired = exports.Vector.VectorSub(target, obj.location);
-            desired.normalize();
-            desired.mult(obj.velocity.mag() * 2);
-
-            steer = desired.VectorSub(desired, obj.velocity);
-
-            elements[i].applyForce(steer);
-          }
-        }
-      break;
-      case exports.config.keyMap.thrustUp:
-        for(i = 0, max = elements.length; i < max; i++) {
-          if (elements[i].keyControl) {
-
-            obj = elements[i];
-
-            r = exports.world.width/2;
-            theta = exports.Utils.degreesToRadians(obj.angle);
-            x = r * Math.cos(theta);
-            y = r * Math.sin(theta);
-            desired = new exports.Vector(x, y);
-            desired.normalize();
-            desired.mult(obj.thrust);
-            desired.limit(obj.maxSpeed);
-            elements[i].applyForce(desired);
-          }
-        }
-      break;
-      case exports.config.keyMap.thrustRight:
-        for(i = 0, max = elements.length; i < max; i++) {
-          if (elements[i].keyControl) {
-
-            obj = elements[i];
-
-            r = exports.world.width/2; // use angle to calculate x, y
-            theta = exports.Utils.degreesToRadians(obj.angle + obj.turningRadius);
-            x = r * Math.cos(theta);
-            y = r * Math.sin(theta);
-
-            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
-
-            desired = exports.Vector.VectorSub(target, obj.location);
-            desired.normalize();
-            desired.mult(obj.velocity.mag() * 2);
-
-            steer = desired.VectorSub(desired, obj.velocity);
-
-            elements[i].applyForce(steer);
-          }
-        }
-      break;
-      case exports.config.keyMap.thrustDown:
-        for(i = 0, max = elements.length; i < max; i++) {
-          if (elements[i].keyControl) {
-            elements[i].velocity.mult(0.5);
-          }
-        }
-      break;
-    }
   });
 
 }
@@ -229,6 +120,13 @@ function World(opt_options) {
  * Define a name property. Used to assign a class name and prefix an id.
  */
 World.name = 'world';
+
+/**
+ * Increments as each World is created.
+ * @type number
+ * @default 0
+ */
+World._idCount = 0;
 
 /**
  * Configures a new World by setting the DOM element and the element's width/height.
@@ -291,9 +189,9 @@ World.prototype.update = function(opt_props) {
     this.el.style.setAttribute('cssText', cssText, 0);
   }*/
 
-  if (props.showStats && window.addEventListener) {
+  /*if (props.showStats && window.addEventListener) {
     this.createStats();
-  }
+  }*/
 };
 
 /**
@@ -383,37 +281,6 @@ World.prototype.deviceorientation = function(e) {
   }
 };
 
-/**
- * Creates a new instance of mr doob's stats monitor.
- */
-World.prototype.createStats = function() {
-
-  'use strict';
-
-  var stats = new exports.Stats();
-
-  stats.getDomElement().style.position = 'absolute'; // Align top-left
-  stats.getDomElement().style.left = '0px';
-  stats.getDomElement().style.top = '0px';
-  stats.getDomElement().id = 'stats';
-
-  document.body.appendChild(stats.getDomElement());
-
-  this.statsInterval = setInterval(function() {
-      stats.update();
-  }, 1000 / 60);
-};
-
-/**
- * Destroys an instance of mr doob's stats monitor.
- */
-World.prototype.destroyStats = function() {
-
-  'use strict';
-
-  clearInterval(this.statsInterval);
-  document.body.removeChild(document.getElementById('stats'));
-};
 
 /**
  * Called every frame, step() updates the world's properties.

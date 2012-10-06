@@ -18,12 +18,12 @@
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
  *    angle if pointToDirection = true.
+ * @param {number} [opt_options.width = 10] Width
+ * @param {number} [opt_options.height = 10] Height
  * @param {Object} [opt_options.amplitude = {x: 4, y: 0}] Sets amplitude, the distance from the object's
  *    initial location (center of the motion) to either extreme.
  * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's acceleration. Oscillators have a
  *    constant acceleration.
- * @param {number} [opt_options.width = 10] Width
- * @param {number} [opt_options.height = 10] Height
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
  * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
  * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
@@ -44,11 +44,11 @@ function Oscillator(opt_options) {
   this.initialLocation = options.initialLocation ||
       new exports.Vector(this.world.width/2, this.world.height/2);
   this.lastLocation = new exports.Vector(0, 0);
-  this.amplitude = options.amplitude || new exports.Vector(4, 0);
-  this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
-  this.aVelocity = new exports.Vector(0, 0);
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 10;
+  this.amplitude = options.amplitude || new exports.Vector(this.world.width/2 - this.width, this.world.height/2 - this.height);
+  this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
+  this.aVelocity = new exports.Vector(0, 0);
   this.isStatic = !!options.isStatic;
 
   this.isPerlin = !!options.isPerlin;

@@ -49,6 +49,16 @@ ElementList.prototype.all = function() {
 };
 
 /**
+ * Returns the total number of elements.
+ *
+ * @return {number} Total number of elements.
+ */
+ElementList.prototype.count = function() {
+  'use strict';
+  return this.records.length;
+};
+
+/**
  * Returns an array of elements created from the same constructor.
  *
  * @param {string} name The constructor name.
@@ -153,5 +163,24 @@ ElementList.prototype.destroyAll = function () {
     }
   }
   this.records = [];
+};
+
+/**
+ * Removes all elements from their world and resets
+ * the 'records' array.
+ *
+ * @param {string|number} id The element's id.
+ */
+ElementList.prototype.destroyByWorld = function (world) {
+
+  'use strict';
+
+  var i, records = this.records;
+
+  for (i = records.length - 1; i >= 0; i -= 1) {
+    if (records[i].world &&  records[i].world === world) {
+      records[i].world.el.removeChild(records[i].el);
+    }
+  }
 };
 exports.ElementList = ElementList;

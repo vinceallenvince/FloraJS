@@ -313,6 +313,9 @@ describe("A new ElementList", function() {
   it("all() should return the 'records' array.", function() {
     expect(interfaceCheck.getDataType(exports.elementList.all())).toEqual('array');
   });
+  it("count() should return the total number of elements.", function() {
+    expect(exports.elementList.count()).toEqual(1);
+  });
   it("getElement() should receive an id and return the corresponding element.", function() {
 
       var check = true,
@@ -390,6 +393,7 @@ describe("A new ElementList", function() {
       }
       expect(check).toEqual(true);
   });
+  // destroyByWorld
 });
 
 describe("A new FlowField", function() {
@@ -880,6 +884,31 @@ describe("SimplexNoise", function() {
   });
 });
 
+describe("A new StatsDisplay", function() {
+
+  var system, obj;
+
+  beforeEach(function() {
+    system = new exports.FloraSystem();
+    obj = new exports.StatsDisplay();
+  });
+
+  afterEach(function() {
+    system.destroy();
+  });
+
+  it("should have its required properties.", function() {
+    expect(obj.constructor.name).toEqual('StatsDisplay');
+  });
+  it("update() should calculate the difference in ms between time now and last call to update().", function() {
+    expect(obj.constructor.name).toEqual('StatsDisplay');
+  });
+  it("getFPS() should return the current FPS.", function() {
+    expect(obj.constructor.name).toEqual('StatsDisplay');
+  });
+});
+
+
 describe("A new Universe", function() {
 
   var system, obj;
@@ -915,6 +944,13 @@ describe("A new Universe", function() {
     expect(obj.records.length).toEqual(3);
     expect(obj.last()).toEqual(obj.records[obj.records.length - 1]);
   });
+  it("count() should return the total number of worlds.", function() {
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    expect(obj.count()).toEqual(4);
+  });
   it("all() should return the 'records' array.", function() {
     obj.addWorld();
     obj.addWorld();
@@ -931,10 +967,35 @@ describe("A new Universe", function() {
     obj.last());
     expect(obj.last().hello).toEqual('hello');
   });
-  // update
-  // getWorldById
-  // destroyWorld
-  // destroyAll
+  it("getWorldById() should return the world with the passed id", function() {
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    var id = obj.last().id;
+    expect(obj.getWorldById(id).id).toEqual(id);
+  });
+  it("destroyWorld() should remove the world with the passed id from 'records' and remove the associated DOM element from the DOM.", function() {
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    var id = obj.last().id;
+    obj.destroyWorld(id);
+    expect(obj.getWorldById(id)).toEqual(null);
+  });
+  it("destroyAll() should remove all worlds from the DOM and reset the records array.", function() {
+    obj.addWorld();
+    obj.addWorld();
+    obj.addWorld();
+    obj.destroyAll();
+    expect(obj.count()).toEqual(0);
+    expect(obj.records.length).toEqual(0);
+  });
+  it("createStats() should create a StatsDisplay instance.", function() {
+
+  });
+  it("destroyStats() should destroy the StatsDisplay instance and remove any associated DOM elements.", function() {
+
+  });
 });
 
 describe("Utils", function() {
@@ -1131,8 +1192,6 @@ describe("A new World", function() {
   });
 
   it("should have its required properties.", function() {
-    expect(typeof obj.showStats).toEqual('boolean');
-    expect(typeof obj.statsInterval).toEqual('number');
     expect(typeof obj.clock).toEqual('number');
     expect(typeof obj.c).toEqual('number');
     expect(typeof obj.gravity).toEqual('object');
@@ -1140,9 +1199,6 @@ describe("A new World", function() {
     expect(typeof obj.location).toEqual('object');
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
-    expect(typeof obj.mouseX).toEqual('number');
-    expect(typeof obj.mouseY).toEqual('number');
-    expect(typeof obj.isPlaying).toEqual('boolean');
     expect(obj.constructor.name).toEqual('World');
   });
 

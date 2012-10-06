@@ -1,7 +1,7 @@
 /*ignore!
 This is the license.
 */
-/* Build time: September 30, 2012 01:10:41 */
+/* Build time: October 6, 2012 09:34:49 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -65,6 +65,7 @@ var config = {
   ],
   keyMap: {
     toggleWorldPlaystate: 80,
+    toggleStatsDisplay: 83,
     thrustLeft: 37,
     thrustUp: 38,
     thrustRight: 39,
@@ -120,6 +121,16 @@ ElementList.prototype.add = function(obj) {
 ElementList.prototype.all = function() {
   'use strict';
   return this.records;
+};
+
+/**
+ * Returns the total number of elements.
+ *
+ * @return {number} Total number of elements.
+ */
+ElementList.prototype.count = function() {
+  'use strict';
+  return this.records.length;
 };
 
 /**
@@ -228,6 +239,25 @@ ElementList.prototype.destroyAll = function () {
   }
   this.records = [];
 };
+
+/**
+ * Removes all elements from their world and resets
+ * the 'records' array.
+ *
+ * @param {string|number} id The element's id.
+ */
+ElementList.prototype.destroyByWorld = function (world) {
+
+  'use strict';
+
+  var i, records = this.records;
+
+  for (i = records.length - 1; i >= 0; i -= 1) {
+    if (records[i].world &&  records[i].world === world) {
+      records[i].world.el.removeChild(records[i].el);
+    }
+  }
+};
 exports.ElementList = ElementList;
 /*global exports, window, Modernizr */
 /**
@@ -240,14 +270,16 @@ exports.ElementList = ElementList;
  *
  * @constructor
  */
-function FloraSystem(opt_el) {
+function FloraSystem(opt_options) {
 
   'use strict';
 
   var i, max,
+      options = opt_options || {},
       defaultColorList = exports.config.defaultColorList;
 
-  this.el = opt_el || null;
+  this.el = options.world || null;
+  this.universeOptions = options.universeOptions || null;
 
   exports.liquids = [];
   exports.repellers = [];
@@ -264,21 +296,21 @@ function FloraSystem(opt_el) {
     locLast: new exports.Vector()
   };
 
+  // create elementList before universe
   exports.elementList = new exports.ElementList();
 
-  exports.universe = new exports.Universe();
-  exports.universe.addWorld({
-    el: this.el
-  });
-
-  //exports.world = new exports.World();
-  //exports.world.configure(this.el); // call configure after DOM has loaded
-
-
-
-  //exports.world = new exports.World();
-  //exports.world.configure(this.el); // call configure after DOM has loaded
-  //exports.elementList.records.push(exports.world); // use add() method here
+  exports.universe = new exports.Universe(this.universeOptions);
+  if (exports.Interface.getDataType(this.el) === 'array') {
+    for (i = 0, max = this.el.length; i < max; i += 1) {
+      exports.universe.addWorld({
+        el: this.el[i]
+      });
+    }
+  } else {
+    exports.universe.addWorld({
+      el: this.el
+    });
+  }
 
   exports.camera = new exports.Camera();
 
@@ -291,32 +323,21 @@ function FloraSystem(opt_el) {
       endColor: defaultColorList[i].endColor
     });
   }
-
-  /*exports.destroyElement = function (id) {
-
-    var i, max, elements = exports.elementList.records;
-
-    for (i = 0, max = elements.length; i < max; i += 1) {
-      if (elements[i].id === id) {
-        exports.world.el.removeChild(elements[i].el);
-        elements.splice(i, 1);
-        break;
-      }
-    }
-  };*/
+  //var stats = new exports.StatsDisplay();
 
   exports.animLoop = function () {
 
     var i, max,
-        world = exports.universe.first(),
+        universe = exports.universe,
+        world = universe.first(),
         elements = exports.elementList.records;
 
-    //if (exports.world.isPlaying) {
+    if (universe.isPlaying) {
       window.requestAnimFrame(exports.animLoop);
 
-      //if (world.zSorted) {
-        //elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
-      //}
+      if (universe.zSorted) {
+        elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
+      }
 
       for (i = elements.length - 1; i >= 0; i -= 1) {
         elements[i].step();
@@ -324,8 +345,12 @@ function FloraSystem(opt_el) {
           elements[i].draw();
         }
       }
-      world.clock += 1;
-    //}
+
+      exports.universe.updateClocks();
+    }
+    /*if (universe.statsDisplay) {
+      universe.statsDisplay.update();
+    }*/
   };
 }
 
@@ -1506,14 +1531,132 @@ exports.Interface = Interface;
  *
  * @constructor
  * @param {Object} [opt_options] Options.
+ * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
+ * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
+ * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
+ * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
  */
 function Universe(opt_options) {
 
   'use strict';
 
-  var options = opt_options || {};
+  var me = this,
+      options = opt_options || {};
 
-  this.records = [];
+  this.isPlaying = options.isPlaying === false ? false : true;
+  this.zSorted = !!options.zSorted;
+  this.showStats = !!options.showStats;
+  this.statsInterval = options.statsInterval || 0;
+
+  this.records = []; // !! private
+  this.statsDisplay = null;
+
+  // save the current and last mouse position
+  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
+    exports.mouse.locLast = exports.mouse.loc.clone();
+    exports.mouse.loc = new exports.Vector(e.pageX, e.pageY);
+  });
+
+  // toggle the world playstate
+  exports.Utils.addEvent(document, 'keyup', function(e) {
+    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
+      me.isPlaying = !me.isPlaying;
+      if (me.isPlaying) {
+        window.requestAnimFrame(exports.animLoop);
+      }
+    } else if (e.keyCode === exports.config.keyMap.toggleStatsDisplay) {
+      if (!me.statsDisplay) {
+        me.createStats();
+      } else {
+        me.destroyStats();
+      }
+    }
+  });
+
+  // key control
+  exports.Utils.addEvent(document.body, 'keydown', function(e) {
+    var i, max, elements = exports.elementList.records,
+        obj, desired, steer, target,
+        r, theta, x, y;
+
+    switch(e.keyCode) {
+      case exports.config.keyMap.thrustLeft:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = obj.world.width/2; // use angle to calculate x, y
+            theta = exports.Utils.degreesToRadians(obj.angle - obj.turningRadius);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+
+            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
+
+            desired = exports.Vector.VectorSub(target, obj.location);
+            desired.normalize();
+            desired.mult(obj.velocity.mag() * 2);
+
+            steer = exports.Vector.VectorSub(desired, obj.velocity);
+
+            obj.applyForce(steer);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustUp:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = obj.world.width/2;
+            theta = exports.Utils.degreesToRadians(obj.angle);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+            desired = new exports.Vector(x, y);
+            desired.normalize();
+            desired.mult(obj.thrust);
+            desired.limit(obj.maxSpeed);
+            elements[i].applyForce(desired);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustRight:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = obj.world.width/2; // use angle to calculate x, y
+            theta = exports.Utils.degreesToRadians(obj.angle + obj.turningRadius);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+
+            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
+
+            desired = exports.Vector.VectorSub(target, obj.location);
+            desired.normalize();
+            desired.mult(obj.velocity.mag() * 2);
+
+            steer = exports.Vector.VectorSub(desired, obj.velocity);
+
+            elements[i].applyForce(steer);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustDown:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+            elements[i].velocity.mult(0.5);
+          }
+        }
+      break;
+    }
+  });
+
+  if (this.showStats) {
+    this.createStats();
+  }
 }
 
 /**
@@ -1608,9 +1751,9 @@ Universe.prototype.update = function(opt_props, opt_world) {
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
 
-  if (props.showStats && window.addEventListener) {
-    world.createStats();
-  }
+  /*if (props.showStats && window.addEventListener) {
+    this.createStats();
+  }*/
 };
 
 /**
@@ -1621,6 +1764,16 @@ Universe.prototype.update = function(opt_props, opt_world) {
 Universe.prototype.all = function() {
   'use strict';
   return this.records;
+};
+
+/**
+ * Returns the total number of worlds.
+ *
+ * @return {number} Total number of worlds.
+ */
+Universe.prototype.count = function() {
+  'use strict';
+  return this.records.length;
 };
 
 /**
@@ -1640,13 +1793,13 @@ Universe.prototype.getWorldById = function (id) {
       return records[i];
     }
   }
+  return null;
 };
 
 /**
- * Finds an element by its 'id' and removes it from its
- * world as well as the records array.
+ * Removes a world and its elements.
  *
- * @param {string|number} id The element's id.
+ * @param {string} id The element's id.
  */
 Universe.prototype.destroyWorld = function (id) {
 
@@ -1656,7 +1809,18 @@ Universe.prototype.destroyWorld = function (id) {
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
-      exports.world.el.removeChild(records[i].el);
+
+      var parent = records[i].el.parentNode;
+
+      // is this world the body element?
+      if (records[i].el === document.body) {
+        // remove all elements but not the <body>
+        exports.elementList.destroyAll();
+      } else {
+        // remove ell elements and world
+        exports.elementList.destroyByWorld(records[i]);
+        parent.removeChild(records[i].el);
+      }
       records.splice(i, 1);
       break;
     }
@@ -1664,26 +1828,71 @@ Universe.prototype.destroyWorld = function (id) {
 };
 
 /**
- * Removes all elements from their world and resets
- * the 'records' array.
- *
- * @param {string|number} id The element's id.
+ * Removes all worlds and resets the 'records' array.
  */
 Universe.prototype.destroyAll = function () {
 
   'use strict';
 
-  var i, max, records = this.records,
-      world = exports.world.el,
-      children = world.children;
+  exports.elementList.destroyAll();
 
-  for (i = children.length; i >= 0; i -= 1) {
-    if (records[i] && children[i] && children[i].className.search('floraElement') !== -1) {
-      world.removeChild(records[i].el);
-    }
+  for (var i = this.records.length - 1; i >= 0; i -= 1) {
+    this.destroyWorld(this.records[i].id);
+  }
+};
+
+/**
+ * Increments each world's clock.
+ */
+Universe.prototype.updateClocks = function () {
+
+  'use strict';
+
+  for (var i = 0, max = this.records.length; i < max; i += 1) {
+    this.records[i].clock += 1;
+  }
+};
+
+/**
+ * Creates a new instance of mr doob's stats monitor.
+ */
+Universe.prototype.createStats = function() {
+
+  'use strict';
+
+  this.statsDisplay = new exports.StatsDisplay();
+
+  /*var stats = new exports.Stats();
+
+  stats.getDomElement().style.position = 'absolute'; // Align top-left
+  stats.getDomElement().style.left = '0px';
+  stats.getDomElement().style.top = '0px';
+  stats.getDomElement().id = 'stats';
+
+  document.body.appendChild(stats.getDomElement());
+
+  this.statsInterval = setInterval(function() {
+      stats.update();
+  }, 1000 / 60);*/
+};
+
+/**
+ * Destroys an instance of mr doob's stats monitor.
+ */
+Universe.prototype.destroyStats = function() {
+
+  'use strict';
+
+  var el = document.getElementById('statsDisplay');
+
+  this.statsDisplay = null;
+
+  if (el) {
+    el.parentNode.removeChild(el);
   }
 
-  this.records = [];
+  /*clearInterval(this.statsInterval);
+  document.body.removeChild(document.getElementById('stats'));*/
 };
 exports.Universe = Universe;
 /*global exports, $, Modernizr */
@@ -1698,15 +1907,14 @@ exports.Universe = Universe;
  *
  * @constructor
  *
+ * @param {Object} [opt_options] World options.
+ * @param {string} [opt_options.id = "m-" + World._idCount] An id. If an id is not provided, one is created.
  * @param {boolean} [opt_options.isStatic = true] Set to false if transforming the world every frame.
- * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
- * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
  * @param {number} [opt_options.clock = 0] Increments each frame.
  * @param {number} [opt_options.c = 0.01] Coefficient of friction.
  * @param {Object} [opt_options.gravity = {x: 0, y: 1}] Gravity
  * @param {Object} [opt_options.wind = {x: 0, y: 0}] Wind
  * @param {Object} [opt_options.location = {x: 0, y: 0}] Initial location
- * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
  * @param {number} [opt_options.scale = 1] Scale
  * @param {number} [opt_options.angle = 0] Angle
  * @param {number} [opt_options.opacity = 0.85] Opacity
@@ -1720,13 +1928,10 @@ exports.Universe = Universe;
  * @param {number} [opt_options.width = window.width] The world width.
  * @param {number} [opt_options.height = window.height] The world height.
  * @param {number} [opt_options.zIndex = 0] The world z-index.
- * @param {number} [opt_options.mouseX = window.width/2] The x coordinate of the mouse location.
- * @param {number} [opt_options.mouseY = window.height/2] The y coordinate of the mouse location.
  * @param {boolean} [opt_options.isTopDown = true] Set to true to orient the gravity vector when listening to the devicemotion event.
  * @param {number} [opt_options.compassHeading = 0] The compass heading. Value is set via the deviceorientation event.
  * @param {number} [opt_options.compassAccuracy = 0] The compass accuracy. Value is set via the deviceorientation event.
  * @param {boolean} [opt_options.isDeviceMotion = false] Set to true add the devicemotion event listener. Typically use with accelerometer equipped devices.
- * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
  * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
  * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
  */
@@ -1738,14 +1943,11 @@ function World(opt_options) {
       winSize = exports.Utils.getWindowSize();
 
   this.isStatic = options.isStatic || true;
-  this.showStats = !!options.showStats;
-  this.statsInterval = options.statsInterval || 0;
   this.clock = options.clock || 0;
   this.c = options.c || 0.01;
   this.gravity = options.gravity || new exports.Vector(0, 1);
   this.wind =  options.wind || new exports.Vector();
   this.location = options.location || new exports.Vector();
-  this.zSorted = !!options.zSorted;
 
   this.scale = options.scale || 1;
   this.angle = options.angle || 0;
@@ -1759,13 +1961,10 @@ function World(opt_options) {
   this.boxShadow = options.boxShadow || 0;
 
   this.zIndex = 0;
-  this.mouseX = this.width/2;
-  this.mouseY = this.height/2;
   this.isTopDown = true;
   this.compassHeading = 0;
   this.compassAccuracy = 0;
   this.isDeviceMotion = !options.isDeviceMotion;
-  this.isPlaying = true;
 
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
@@ -1776,25 +1975,24 @@ function World(opt_options) {
    * no height, we use the window height.
    */
   if (!options.el) {
+    this.el = document.body; // if no world element is passed, use document.body
     this.width = winSize.width;
     this.height = winSize.height;
+    this.id = World.name + "-" + World._idCount; // if no id, create one
   } else {
+    this.el = options.el;
+    this.id = this.el.id; // use the element's id as the record id
     this.width = $(this.el).width();
     this.height = $(this.el).height();
   }
-  this.el = options.el || document.body; // if no world element is passed, use document.body
+
+  this.el.className = 'world floraElement';
   this.el.style.width = this.width + 'px';
   this.el.style.height = this.height + 'px';
 
-  if (this.showStats) {
-    this.createStats();
-  }
+  World._idCount += 1; // increment id
 
   // events
-  $(document).mousemove(function(e) {
-    me.mouseX = e.pageX;
-    me.mouseY = e.pageY;
-  });
 
   if (window.addEventListener && this.isDeviceMotion) {
     window.addEventListener("devicemotion", function(e) { // listens for device motion events
@@ -1808,107 +2006,9 @@ function World(opt_options) {
     }, false);
   }
 
-  /*$(window).bind("resize", function (e) { // listens for window resize
+
+  exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
     me.resize.call(me);
-  });*/
-  exports.Utils.addEvent(window, 'resize', function(e) {
-    me.resize.call(me);
-  });
-
-  // save the current and last mouse position
-  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
-    exports.mouse.locLast = exports.mouse.loc.clone();
-    exports.mouse.loc = new exports.Vector(e.pageX, e.pageY);
-  });
-
-  // toggle the world playstate
-  exports.Utils.addEvent(document, 'keyup', function(e) {
-    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
-      me.isPlaying = !me.isPlaying;
-      if (me.isPlaying) {
-        window.requestAnimFrame(exports.animLoop);
-      }
-    }
-  });
-
-  exports.Utils.addEvent(document.body, 'keydown', function(e) {
-    var i, max, elements = exports.elementList.records,
-        obj, desired, steer, target,
-        r, theta, x, y;
-
-    switch(e.keyCode) {
-      case exports.config.keyMap.thrustLeft:
-        for(i = 0, max = elements.length; i < max; i++) {
-          if (elements[i].keyControl) {
-
-            obj = elements[i];
-
-            r = exports.world.width/2; // use angle to calculate x, y
-            theta = exports.Utils.degreesToRadians(obj.angle - obj.turningRadius);
-            x = r * Math.cos(theta);
-            y = r * Math.sin(theta);
-
-            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
-
-            desired = exports.Vector.VectorSub(target, obj.location);
-            desired.normalize();
-            desired.mult(obj.velocity.mag() * 2);
-
-            steer = desired.VectorSub(desired, obj.velocity);
-
-            elements[i].applyForce(steer);
-          }
-        }
-      break;
-      case exports.config.keyMap.thrustUp:
-        for(i = 0, max = elements.length; i < max; i++) {
-          if (elements[i].keyControl) {
-
-            obj = elements[i];
-
-            r = exports.world.width/2;
-            theta = exports.Utils.degreesToRadians(obj.angle);
-            x = r * Math.cos(theta);
-            y = r * Math.sin(theta);
-            desired = new exports.Vector(x, y);
-            desired.normalize();
-            desired.mult(obj.thrust);
-            desired.limit(obj.maxSpeed);
-            elements[i].applyForce(desired);
-          }
-        }
-      break;
-      case exports.config.keyMap.thrustRight:
-        for(i = 0, max = elements.length; i < max; i++) {
-          if (elements[i].keyControl) {
-
-            obj = elements[i];
-
-            r = exports.world.width/2; // use angle to calculate x, y
-            theta = exports.Utils.degreesToRadians(obj.angle + obj.turningRadius);
-            x = r * Math.cos(theta);
-            y = r * Math.sin(theta);
-
-            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
-
-            desired = exports.Vector.VectorSub(target, obj.location);
-            desired.normalize();
-            desired.mult(obj.velocity.mag() * 2);
-
-            steer = desired.VectorSub(desired, obj.velocity);
-
-            elements[i].applyForce(steer);
-          }
-        }
-      break;
-      case exports.config.keyMap.thrustDown:
-        for(i = 0, max = elements.length; i < max; i++) {
-          if (elements[i].keyControl) {
-            elements[i].velocity.mult(0.5);
-          }
-        }
-      break;
-    }
   });
 
 }
@@ -1917,6 +2017,13 @@ function World(opt_options) {
  * Define a name property. Used to assign a class name and prefix an id.
  */
 World.name = 'world';
+
+/**
+ * Increments as each World is created.
+ * @type number
+ * @default 0
+ */
+World._idCount = 0;
 
 /**
  * Configures a new World by setting the DOM element and the element's width/height.
@@ -1979,9 +2086,9 @@ World.prototype.update = function(opt_props) {
     this.el.style.setAttribute('cssText', cssText, 0);
   }*/
 
-  if (props.showStats && window.addEventListener) {
+  /*if (props.showStats && window.addEventListener) {
     this.createStats();
-  }
+  }*/
 };
 
 /**
@@ -2071,37 +2178,6 @@ World.prototype.deviceorientation = function(e) {
   }
 };
 
-/**
- * Creates a new instance of mr doob's stats monitor.
- */
-World.prototype.createStats = function() {
-
-  'use strict';
-
-  var stats = new exports.Stats();
-
-  stats.getDomElement().style.position = 'absolute'; // Align top-left
-  stats.getDomElement().style.left = '0px';
-  stats.getDomElement().style.top = '0px';
-  stats.getDomElement().id = 'stats';
-
-  document.body.appendChild(stats.getDomElement());
-
-  this.statsInterval = setInterval(function() {
-      stats.update();
-  }, 1000 / 60);
-};
-
-/**
- * Destroys an instance of mr doob's stats monitor.
- */
-World.prototype.destroyStats = function() {
-
-  'use strict';
-
-  clearInterval(this.statsInterval);
-  document.body.removeChild(document.getElementById('stats'));
-};
 
 /**
  * Called every frame, step() updates the world's properties.
@@ -3363,12 +3439,12 @@ exports.Walker = Walker;
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
  *    angle if pointToDirection = true.
+ * @param {number} [opt_options.width = 10] Width
+ * @param {number} [opt_options.height = 10] Height
  * @param {Object} [opt_options.amplitude = {x: 4, y: 0}] Sets amplitude, the distance from the object's
  *    initial location (center of the motion) to either extreme.
  * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's acceleration. Oscillators have a
  *    constant acceleration.
- * @param {number} [opt_options.width = 10] Width
- * @param {number} [opt_options.height = 10] Height
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
  * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
  * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
@@ -3389,11 +3465,11 @@ function Oscillator(opt_options) {
   this.initialLocation = options.initialLocation ||
       new exports.Vector(this.world.width/2, this.world.height/2);
   this.lastLocation = new exports.Vector(0, 0);
-  this.amplitude = options.amplitude || new exports.Vector(4, 0);
-  this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
-  this.aVelocity = new exports.Vector(0, 0);
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 10;
+  this.amplitude = options.amplitude || new exports.Vector(this.world.width/2 - this.width, this.world.height/2 - this.height);
+  this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
+  this.aVelocity = new exports.Vector(0, 0);
   this.isStatic = !!options.isStatic;
 
   this.isPerlin = !!options.isPerlin;
@@ -4733,4 +4809,99 @@ function Stats() {
   };
 }
 exports.Stats = Stats;
+/*global exports */
+/**
+    A module representing a StatsDisplay object.
+    @module StatsDisplay
+ */
+
+/**
+ * Creates a new StatsDisplay object.
+ *
+ * @constructor
+ *
+ * @param {Object} [opt_options] Options.
+ */
+function StatsDisplay(opt_options) {
+
+  'use strict';
+
+  var options = opt_options || {},
+      labelContainer,
+      label;
+
+  if (!Date.now) {
+    return;
+  }
+
+  this._time = Date.now();
+  this._timeLastFrame = this._time;
+  this._timeLastSecond = this._time;
+  this._frameCount = 0;
+
+  this._el = document.createElement('div');
+  this._el.id = 'statsDisplay';
+  this._el.className = 'statsDisplay';
+  this._el.style.color = 'white';
+
+  // create totol elements label
+  labelContainer = document.createElement('span');
+  labelContainer.className = 'statsDisplayLabel';
+  label = document.createTextNode('total elements: ');
+  labelContainer.appendChild(label);
+  this._el.appendChild(labelContainer);
+
+  // create textNode for totalElements
+  this._totalElementsValue = document.createTextNode('0');
+  this._el.appendChild(this._totalElementsValue);
+
+  // create fps label
+  labelContainer = document.createElement('span');
+  labelContainer.className = 'statsDisplayLabel';
+  label = document.createTextNode('fps: ');
+  labelContainer.appendChild(label);
+  this._el.appendChild(labelContainer);
+
+  // create textNode for fps
+  this._fpsValue = document.createTextNode('0');
+  this._el.appendChild(this._fpsValue);
+
+  document.body.appendChild(this._el);
+
+  this.update();
+}
+
+StatsDisplay.prototype.update = function() {
+
+  'use strict';
+
+  this._time = Date.now();
+  this._frameCount++;
+
+  // at least a second has passed
+  if (this._time > this._timeLastSecond + 1000) {
+
+    this._fps = this._frameCount;
+    this._fpsValue.nodeValue = this._fps;
+    this._totalElementsValue.nodeValue = exports.elementList.count();
+
+    this._timeLastSecond = this._time;
+    this._frameCount = 0;
+  }
+  window.requestAnimFrame(this.update.bind(this));
+};
+
+StatsDisplay.prototype.getFPS = function() {
+
+  'use strict';
+
+  return this._fps;
+};
+
+/**
+ * Define a name property.
+ */
+StatsDisplay.name = 'statsDisplay';
+
+exports.StatsDisplay = StatsDisplay;
 }(exports));

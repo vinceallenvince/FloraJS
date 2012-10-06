@@ -18,7 +18,7 @@
 
       system.start(function () {
 
-        Flora.world.update({
+        Flora.universe.update({
           showStats: false,
           style: {
             background: "#fff"
@@ -40,8 +40,8 @@
 
         function createMover() {
 
-          var x = Flora.Utils.getRandomNumber(0, Flora.world.width),
-              y = Flora.Utils.getRandomNumber(0, Flora.world.height);
+          var x = Flora.Utils.getRandomNumber(0, Flora.universe.first().width),
+              y = Flora.Utils.getRandomNumber(0, Flora.universe.first().height);
 
           new Flora.Mover({
             isStatic: true,

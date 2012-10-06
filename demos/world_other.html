@@ -12,26 +12,83 @@
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-  <div id='otherWorld'></div>
+  <div id='worldA'></div>
+  <div id='worldB'></div>
+  <div id='worldC'></div>
+  <div id='worldD'></div>
   <script type="text/javascript" charset="utf-8">
 
-    var system = new exports.FloraSystem(document.getElementById('otherWorld'));
+    var worlds = [
+          document.getElementById('worldA'),
+          document.getElementById('worldB'),
+          document.getElementById('worldC'),
+          document.getElementById('worldD')
+        ],
+        system = new exports.FloraSystem({
+          world: worlds,
+          universeOptions: {
+            isPlaying: true,
+            zSorted: false,
+            showStats: true
+          }
+        });
 
     system.start(function () {
-       Flora.universe.update({
+
+      Flora.universe.update({
         isStatic: false,
-        showStats: true,
         width: 300,
         height: 300,
-        angle: 0,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: [100, 100, 100],
-        beforeStep: function() {
-          ///this.angle += 1;
-        }
+        location: new exports.Vector(0, 0)
+      }, exports.universe.first());
+
+      Flora.universe.update({
+        isStatic: false,
+        width: 300,
+        height: 300,
+        location: new exports.Vector(301, 0)
+      }, exports.universe.getWorldById('worldB'));
+
+      Flora.universe.update({
+        isStatic: false,
+        width: 300,
+        height: 300,
+        location: new exports.Vector(602, 0)
+      }, exports.universe.getWorldById('worldC'));
+
+     Flora.universe.update({
+        isStatic: false,
+        width: 300,
+        height: 300,
+        location: new exports.Vector(903, 0)
+      }, exports.universe.last());
+
+      new Flora.ParticleSystem({
+        world: exports.universe.first()
       });
-      new Flora.Mover();
+
+      new Flora.Mover({
+        world: exports.universe.getWorldById('worldB')
+      });
+
+      new Flora.Oscillator({
+        world: exports.universe.getWorldById('worldC'),
+        acceleration: new exports.Vector(0.01, 0.05)
+      });
+
+      new Flora.Oscillator({
+        world: exports.universe.getWorldById('worldC'),
+        acceleration: new exports.Vector(0.05, 0.025)
+      });
+
+      new Flora.Walker({
+        world: exports.universe.last()
+      });
+
+      document.addEventListener('mouseup', function() {
+        var id = Flora.universe.last().id;
+        Flora.universe.destroyAll();
+      }, false);
     });
   </script>
 </body>

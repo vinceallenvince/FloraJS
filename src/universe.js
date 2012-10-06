@@ -9,14 +9,132 @@
  *
  * @constructor
  * @param {Object} [opt_options] Options.
+ * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
+ * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
+ * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
+ * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
  */
 function Universe(opt_options) {
 
   'use strict';
 
-  var options = opt_options || {};
+  var me = this,
+      options = opt_options || {};
 
-  this.records = [];
+  this.isPlaying = options.isPlaying === false ? false : true;
+  this.zSorted = !!options.zSorted;
+  this.showStats = !!options.showStats;
+  this.statsInterval = options.statsInterval || 0;
+
+  this.records = []; // !! private
+  this.statsDisplay = null;
+
+  // save the current and last mouse position
+  exports.Utils.addEvent(document.body, 'mousemove', function(e) {
+    exports.mouse.locLast = exports.mouse.loc.clone();
+    exports.mouse.loc = new exports.Vector(e.pageX, e.pageY);
+  });
+
+  // toggle the world playstate
+  exports.Utils.addEvent(document, 'keyup', function(e) {
+    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
+      me.isPlaying = !me.isPlaying;
+      if (me.isPlaying) {
+        window.requestAnimFrame(exports.animLoop);
+      }
+    } else if (e.keyCode === exports.config.keyMap.toggleStatsDisplay) {
+      if (!me.statsDisplay) {
+        me.createStats();
+      } else {
+        me.destroyStats();
+      }
+    }
+  });
+
+  // key control
+  exports.Utils.addEvent(document.body, 'keydown', function(e) {
+    var i, max, elements = exports.elementList.records,
+        obj, desired, steer, target,
+        r, theta, x, y;
+
+    switch(e.keyCode) {
+      case exports.config.keyMap.thrustLeft:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = obj.world.width/2; // use angle to calculate x, y
+            theta = exports.Utils.degreesToRadians(obj.angle - obj.turningRadius);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+
+            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
+
+            desired = exports.Vector.VectorSub(target, obj.location);
+            desired.normalize();
+            desired.mult(obj.velocity.mag() * 2);
+
+            steer = exports.Vector.VectorSub(desired, obj.velocity);
+
+            obj.applyForce(steer);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustUp:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = obj.world.width/2;
+            theta = exports.Utils.degreesToRadians(obj.angle);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+            desired = new exports.Vector(x, y);
+            desired.normalize();
+            desired.mult(obj.thrust);
+            desired.limit(obj.maxSpeed);
+            elements[i].applyForce(desired);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustRight:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+
+            obj = elements[i];
+
+            r = obj.world.width/2; // use angle to calculate x, y
+            theta = exports.Utils.degreesToRadians(obj.angle + obj.turningRadius);
+            x = r * Math.cos(theta);
+            y = r * Math.sin(theta);
+
+            target = exports.Vector.VectorAdd(new exports.Vector(x, y), obj.location);
+
+            desired = exports.Vector.VectorSub(target, obj.location);
+            desired.normalize();
+            desired.mult(obj.velocity.mag() * 2);
+
+            steer = exports.Vector.VectorSub(desired, obj.velocity);
+
+            elements[i].applyForce(steer);
+          }
+        }
+      break;
+      case exports.config.keyMap.thrustDown:
+        for(i = 0, max = elements.length; i < max; i++) {
+          if (elements[i].keyControl) {
+            elements[i].velocity.mult(0.5);
+          }
+        }
+      break;
+    }
+  });
+
+  if (this.showStats) {
+    this.createStats();
+  }
 }
 
 /**
@@ -111,9 +229,9 @@ Universe.prototype.update = function(opt_props, opt_world) {
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
 
-  if (props.showStats && window.addEventListener) {
-    world.createStats();
-  }
+  /*if (props.showStats && window.addEventListener) {
+    this.createStats();
+  }*/
 };
 
 /**
@@ -124,6 +242,16 @@ Universe.prototype.update = function(opt_props, opt_world) {
 Universe.prototype.all = function() {
   'use strict';
   return this.records;
+};
+
+/**
+ * Returns the total number of worlds.
+ *
+ * @return {number} Total number of worlds.
+ */
+Universe.prototype.count = function() {
+  'use strict';
+  return this.records.length;
 };
 
 /**
@@ -143,13 +271,13 @@ Universe.prototype.getWorldById = function (id) {
       return records[i];
     }
   }
+  return null;
 };
 
 /**
- * Finds an element by its 'id' and removes it from its
- * world as well as the records array.
+ * Removes a world and its elements.
  *
- * @param {string|number} id The element's id.
+ * @param {string} id The element's id.
  */
 Universe.prototype.destroyWorld = function (id) {
 
@@ -159,7 +287,18 @@ Universe.prototype.destroyWorld = function (id) {
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
-      exports.world.el.removeChild(records[i].el);
+
+      var parent = records[i].el.parentNode;
+
+      // is this world the body element?
+      if (records[i].el === document.body) {
+        // remove all elements but not the <body>
+        exports.elementList.destroyAll();
+      } else {
+        // remove ell elements and world
+        exports.elementList.destroyByWorld(records[i]);
+        parent.removeChild(records[i].el);
+      }
       records.splice(i, 1);
       break;
     }
@@ -167,25 +306,70 @@ Universe.prototype.destroyWorld = function (id) {
 };
 
 /**
- * Removes all elements from their world and resets
- * the 'records' array.
- *
- * @param {string|number} id The element's id.
+ * Removes all worlds and resets the 'records' array.
  */
 Universe.prototype.destroyAll = function () {
 
   'use strict';
 
-  var i, max, records = this.records,
-      world = exports.world.el,
-      children = world.children;
+  exports.elementList.destroyAll();
 
-  for (i = children.length; i >= 0; i -= 1) {
-    if (records[i] && children[i] && children[i].className.search('floraElement') !== -1) {
-      world.removeChild(records[i].el);
-    }
+  for (var i = this.records.length - 1; i >= 0; i -= 1) {
+    this.destroyWorld(this.records[i].id);
+  }
+};
+
+/**
+ * Increments each world's clock.
+ */
+Universe.prototype.updateClocks = function () {
+
+  'use strict';
+
+  for (var i = 0, max = this.records.length; i < max; i += 1) {
+    this.records[i].clock += 1;
+  }
+};
+
+/**
+ * Creates a new instance of mr doob's stats monitor.
+ */
+Universe.prototype.createStats = function() {
+
+  'use strict';
+
+  this.statsDisplay = new exports.StatsDisplay();
+
+  /*var stats = new exports.Stats();
+
+  stats.getDomElement().style.position = 'absolute'; // Align top-left
+  stats.getDomElement().style.left = '0px';
+  stats.getDomElement().style.top = '0px';
+  stats.getDomElement().id = 'stats';
+
+  document.body.appendChild(stats.getDomElement());
+
+  this.statsInterval = setInterval(function() {
+      stats.update();
+  }, 1000 / 60);*/
+};
+
+/**
+ * Destroys an instance of mr doob's stats monitor.
+ */
+Universe.prototype.destroyStats = function() {
+
+  'use strict';
+
+  var el = document.getElementById('statsDisplay');
+
+  this.statsDisplay = null;
+
+  if (el) {
+    el.parentNode.removeChild(el);
   }
 
-  this.records = [];
+  /*clearInterval(this.statsInterval);
+  document.body.removeChild(document.getElementById('stats'));*/
 };
 exports.Universe = Universe;
