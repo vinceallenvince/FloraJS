@@ -15,19 +15,17 @@
   <target name="init">
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${jsdoc.output}"/>
-    <mkdir dir="${DemoBuild.dir}"/>
   </target>
 
   <target name="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${jsdoc.output}"/>
-    <delete dir="${DemoBuild.dir}"/>
   </target>
 
   <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos">
   </target>
 
-  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake">
+  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,copy">
   </target>
 
   <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask"
@@ -39,7 +37,7 @@
   </target>
 
   <target name="validateDemos">
-    <jshint dir="${DemoSrc.dir}" includes="**/*.js"
+    <jshint dir="${demos.dir}/src" includes="**/*.js"
       optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true, console: true" />
   </target>
 
@@ -127,6 +125,16 @@
     <replaceregexp match="%VERSION%" replace="${version}" flags="g" byline="true">
       <fileset dir="${build.dir}" includes="**/*"/>
     </replaceregexp>
+  </target>
+
+  <!-- copy build and css files to examples/demos -->
+  <target name="copy">
+    <copy file="${build.dir}/flora.min.js" todir="${examples.dir}/js" overwrite="true"/>
+    <copy file="${lib.dir}/modernizr.js" todir="${examples.dir}/js" overwrite="true"/>
+    <copy file="${css.dir}/flora.css" todir="${examples.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/flora.js" todir="${demos.dir}/js" overwrite="true"/>
+    <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
+    <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
   </target>
 
 </project>
