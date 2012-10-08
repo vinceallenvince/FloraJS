@@ -38,8 +38,8 @@ body {
 	position: absolute;
 	margin: 0 auto;
 	z-index: 0;
-	height:600px;
-	width: 900px;
+	height: 100%;
+	width: 100%;
 	overflow: hidden;
 }
 

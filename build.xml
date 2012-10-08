@@ -22,7 +22,7 @@
     <delete dir="${jsdoc.output}"/>
   </target>
 
-  <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos">
+  <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos,copy">
   </target>
 
   <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,copy,document">

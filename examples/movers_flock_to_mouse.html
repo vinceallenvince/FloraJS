@@ -12,11 +12,14 @@
 
     // start the system; pass initial instuctions
     Flora.System.start(function() {
-      Flora.universe.update({
-        gravity: new Flora.Vector(0, -1),
-        c: 0.75
-      });
-      new Flora.Mover();
+      for (i = 0; i < 20; i += 1) {
+        new Flora.Mover({
+          followMouse: true,
+          flocking: true,
+          width: 20,
+          height: 5
+        });
+      }
     });
   </script>
 </body>

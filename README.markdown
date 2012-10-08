@@ -25,11 +25,8 @@ The following is taken from examples/simple.html.
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      // create a new system
-      var system = new exports.System();
-
       // start the system; pass initial instuctions
-      system.start(function () {
+      Flora.System.start(function() {
         new Flora.Mover();
       });
     </script>
@@ -52,7 +49,7 @@ Worlds carry two properties that directly affect their elements.
 
 We can change these defaults after the system starts via the Universe's update() method.
 
-        system.start(function () {
+        Flora.System.start(function() {
           Flora.universe.update({
             gravity: new Flora.Vector(0, -1),
             c: 0.75
@@ -72,7 +69,7 @@ Movers are highly configurable. For a complete list of options see the docs at h
 
 For an example of the Mover's seek behavior, set 'followMouse' to 'true' when creating the Mover.
 
-        system.start(function () {
+        Flora.System.start(function() {
           new Flora.Mover({
             followMouse: true
           });
@@ -80,22 +77,64 @@ For an example of the Mover's seek behavior, set 'followMouse' to 'true' when cr
 
 #### Walkers
 
-Walkers are a step down on the evolutionary chain from Movers. They have no seeking, steering or directional behavior and are meant to randomly explore their World. Use Walkers to create wandering objects or targets for Movers to seek.
+Walkers are a step down on the evolutionary chain from Movers. They have no seeking, steering or directional behavior and just randomly explore their World. Use Walkers to create wandering objects or targets for Movers to seek.
 
 Walkers carry two properties that directly affect how they 'walk'.
 
 * isPerlin {boolean} default: true
 * isRandom {boolean} default: false
 
-By default, Walkers use an algorithm called Perlin Noise (http://en.wikipedia.org/wiki/Perlin_noise) to navigate their World Below is an example.
+By default, Walkers use an algorithm called Perlin Noise (http://en.wikipedia.org/wiki/Perlin_noise) to navigate their World. Below is an example.
 
-        system.start(function () {
+        Flora.System.start(function() {
           new Flora.Walker();
         });
 
+#### Targets
 
-- Mover follows Walker
-- Movers flock toward Walker
-- Movers flock around mouse
+In the Mover example above, the Mover targeted the mouse. By saving a reference to a new Walker and passing at as a 'target' for a new Mover, we can make the Mover seek the Walker.
+
+        Flora.System.start(function() {
+          var walker = new Flora.Walker();
+          new Flora.Mover({
+            target: walker
+          });
+        });
+
+#### Flocking
+
+Movers can also organize in flocks. The following properties affect flocking behavior.
+
+* flocking {boolean} default: false
+* desiredSeparation {number} default: width * 2
+* separateStrength {number} default: 0.3
+* alignStrength {number} default: 0.2
+* cohesionStrength {number} default: 0.1
+
+In the example below, we create 20 Movers and set their target to the Walker. We also set 'flocking' to true to enable the flocking behavior.
+
+        Flora.System.start(function() {
+          var i, walker = new Flora.Walker();
+          for (i = 0; i < 20; i += 1) {
+            new Flora.Mover({
+              target: walker,
+              flocking: true
+            });
+          }
+        });
+
+In the example below, Movers flock to the mouse. We've also adjusted the 'width' and 'height' properties.
+
+        Flora.System.start(function() {
+          for (i = 0; i < 20; i += 1) {
+            new Flora.Mover({
+              followMouse: true,
+              flocking: true,
+              width: 20,
+              height: 5
+            });
+          }
+        });
+
 
 

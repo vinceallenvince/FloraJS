@@ -10,11 +10,8 @@
 <body>
   <script type="text/javascript" charset="utf-8">
 
-    // create a new system
-    var system = new Flora.System();
-
     // start the system; pass initial instuctions
-    system.start(function () {
+    Flora.System.start(function() {
       new Flora.Mover();
     });
   </script>

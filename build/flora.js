@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: October 8, 2012 05:11:18 */
+/* Build time: October 8, 2012 06:53:47 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -287,16 +287,36 @@ exports.ElementList = ElementList;
  *
  * @constructor
  */
-function System(opt_options) {
+function System() {
+
+  'use strict';
+}
+
+/**
+ * Define a name property.
+ */
+System.name = 'system';
+
+/**
+ * A list of instructions to execute before the system starts.
+ */
+System.setup = null;
+
+/**
+ * Starts the System.
+ * @param {function} func A list of instructions to execute before the system starts.
+ * @param {Object} opt_universe A map of options for the System's universe.
+ * @param {Array} opt_worlds An array of DOM elements to use as Worlds.
+ */
+System.start = function (func, opt_universe, opt_worlds) {
 
   'use strict';
 
   var i, max,
-      options = opt_options || {},
       defaultColorList = exports.config.defaultColorList;
 
-  this.el = options.world || null;
-  this.universeOptions = options.universeOptions || null;
+  this.universeOptions = opt_universe || null;
+  this.worlds = opt_worlds || null;
 
   exports.liquids = [];
   exports.repellers = [];
@@ -317,16 +337,14 @@ function System(opt_options) {
   exports.elementList = new exports.ElementList();
 
   exports.universe = new exports.Universe(this.universeOptions);
-  if (exports.Interface.getDataType(this.el) === 'array') {
-    for (i = 0, max = this.el.length; i < max; i += 1) {
+  if (exports.Interface.getDataType(this.worlds) === 'array') {
+    for (i = 0, max = this.worlds.length; i < max; i += 1) {
       exports.universe.addWorld({
-        el: this.el[i]
+        el: this.worlds[i]
       });
     }
   } else {
-    exports.universe.addWorld({
-      el: this.el
-    });
+    exports.universe.addWorld();
   }
 
   exports.camera = new exports.Camera();
@@ -365,25 +383,7 @@ function System(opt_options) {
       exports.universe.updateClocks();
     }
   };
-}
 
-/**
- * Define a name property.
- */
-System.prototype.name = 'system';
-
-/**
- * A list of instructions to execute before the system starts.
- */
-System.setup = null;
-
-/**
- * Starts a System.
- * @param {function} func A list of instructions to execute before the system starts.
- */
-System.prototype.start = function (func) {
-
-  'use strict';
 
   func = exports.Interface.getDataType(func) === "function" ? func : function () {};
   System.setup = func;
@@ -392,7 +392,10 @@ System.prototype.start = function (func) {
   exports.animLoop();
 };
 
-System.prototype.destroy = function () {
+/**
+ * Destroys a System.
+ */
+System.destroy = function () {
   'use strict';
   exports.elementList.destroyAll();
 };
