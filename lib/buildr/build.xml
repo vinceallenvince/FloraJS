@@ -1,6 +1,0 @@
-<project name="buildrx">
-
-    <!-- import all properties -->
-    <import file="buildr.xml"/>
-
-</project>
