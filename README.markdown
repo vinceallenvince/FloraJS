@@ -45,7 +45,7 @@ Every Flora system starts with one universe and one world. While a universe may 
 
 In the example above, immediately after the system starts, a Mover is created and appended to the world (or &lt;body&gt;).
 
-Worlds are highly configurable and carry two properties that directly affect their elements.
+Worlds carry two properties that directly affect their elements.
 
 * gravity {Vector} default: new Vector(0, 1)
 * c (coefficient of friction) {number} 0.01
@@ -62,9 +62,23 @@ We can change these defaults after the system starts via the universe's update()
 
 We've reversed the world's gravity and increased its friction. Now the block slowly drifts upwards.
 
-- World
-- Mover
-- Follow mouse
+#### Movers
+
+Movers are basic Flora elements that respond to forces like gravity, attraction, repulsion, etc. They can also chase after other Movers, organize with other Movers in a flocking behavior, and steer away from obstacles.
+
+All other Flora elements like Walkers and Oscillators inherit properties from Movers.
+
+Movers are highly configurable. For a complete list of options see the docs at http://www.florajs.com/docs
+
+For an example of the Mover's seek behavior, set 'followMouse' to 'true' when creating the Mover.
+
+        system.start(function () {
+          new Flora.Mover({
+            followMouse: true
+          });
+        });
+
+
 - Walker
 - Mover follows Walker
 - Movers flock toward Walker
