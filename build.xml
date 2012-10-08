@@ -50,7 +50,7 @@
   </target>
 
   <target name="concatenate">
-    <concat destfile="${build.dir}/build.js" fixlastline="yes" eol="lf">
+    <concat destfile="${build.dir}/flora.js" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         ${license}
         */
@@ -112,14 +112,14 @@
   <!-- Bake: the final step -->
   <target name="bake">
     <!-- Adds the license to the raw minified file. -->
-    <concat destfile="${build.dir}/build.min.js" fixlastline="yes" eol="lf">
+    <concat destfile="${build.dir}/flora.min.js" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         ${license}
         */
         /* Version: %VERSION% */
         /* Build time: ${build.time} */
       </header>
-      <filelist dir="${build.dir}" files="build.raw.min.js"/>
+      <filelist dir="${build.dir}" files="flora.raw.min.js"/>
       <footer trimleading="yes"></footer>
     </concat>
     <!-- Searches for %VERSION% in the build directory and replaces with -->
