@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: October 8, 2012 03:42:42 */
+/* Build time: October 8, 2012 05:11:18 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -370,7 +370,7 @@ function System(opt_options) {
 /**
  * Define a name property.
  */
-System.prototype.name = 'florasystem';
+System.prototype.name = 'system';
 
 /**
  * A list of instructions to execute before the system starts.
@@ -1652,7 +1652,7 @@ function Universe(opt_options) {
           exports.elementList.destroyByWorld(records[i].id);
         }
         // call initial setup
-        exports.FloraSystem.setup();
+        exports.System.setup();
         // if system is pause, restart
         if (!me.isPlaying) {
           me.isPlaying = true;
@@ -4637,7 +4637,7 @@ exports.Caption = Caption;
  * Use this class to create a field in the
  * top-left corner that displays the current
  * frames per second and total number of
- * processed in the FloraSystem.animLoop.
+ * processed in the System.animLoop.
  *
  * @constructor
  */

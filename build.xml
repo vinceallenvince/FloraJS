@@ -135,6 +135,7 @@
     <copy file="${build.dir}/flora.js" todir="${demos.dir}/js" overwrite="true"/>
     <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
     <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
+    <!-- should copy docs to FloraJS.com/docs/ folder -->
   </target>
 
 </project>

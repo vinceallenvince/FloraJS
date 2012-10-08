@@ -87,7 +87,7 @@ function System(opt_options) {
 /**
  * Define a name property.
  */
-System.prototype.name = 'florasystem';
+System.prototype.name = 'system';
 
 /**
  * A list of instructions to execute before the system starts.

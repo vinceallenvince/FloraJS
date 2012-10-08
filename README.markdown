@@ -2,7 +2,7 @@
 
 FloraJS is a JavaScript framework for exploring natural systems simulation. In Flora, the "world" is your web browser. DOM elements inhabit the world and behave according to rules meant to simulate a natural environment.
 
-The formulas driving a large part of Flora are taken from Daniel Shiffman's 'The Nature of Code' at https://github.com/shiffman/The-Nature-of-Code. Inspiration also came from the writings of Valentino Braitenberg and Gary Flake.
+The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'The Nature of Code' at https://github.com/shiffman/The-Nature-of-Code. Inspiration also came from the writings of Valentino Braitenberg and Gary Flake.
 
 ## Simple System
 
@@ -38,6 +38,29 @@ The following is taken from examples/simple.html.
 ```
 
 You should see a block fall and bounce off the bottom of your browser window.
+
+#### The Universe and its Worlds
+
+Every Flora system starts with one universe and one world. While a universe may have many worlds, by default, Flora's system uses the &lt;body&gt; as the only world.
+
+In the example above, immediately after the system starts, a Mover is created and appended to the world (or &lt;body&gt;).
+
+Worlds are highly configurable and carry two properties that directly affect their elements.
+
+* gravity {Vector} default: new Vector(0, 1)
+* c (coefficient of friction) {number} 0.01
+
+We can change these defaults after the system starts via the universe's update() method.
+
+        system.start(function () {
+          Flora.universe.update({
+            gravity: new Flora.Vector(0, -1),
+            c: 0.75
+          });
+          new Flora.Mover();
+        });
+
+We've reversed the world's gravity and increased its friction. Now the block slowly drifts upwards.
 
 - World
 - Mover

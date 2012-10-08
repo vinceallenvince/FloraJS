@@ -5,7 +5,7 @@
  * Use this class to create a field in the
  * top-left corner that displays the current
  * frames per second and total number of
- * processed in the FloraSystem.animLoop.
+ * processed in the System.animLoop.
  *
  * @constructor
  */

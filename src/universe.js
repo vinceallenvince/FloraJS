@@ -54,7 +54,7 @@ function Universe(opt_options) {
           exports.elementList.destroyByWorld(records[i].id);
         }
         // call initial setup
-        exports.FloraSystem.setup();
+        exports.System.setup();
         // if system is pause, restart
         if (!me.isPlaying) {
           me.isPlaying = true;
