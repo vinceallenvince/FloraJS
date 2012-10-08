@@ -41,16 +41,16 @@ You should see a block fall and bounce off the bottom of your browser window.
 
 #### The Universe and its Worlds
 
-Every Flora system starts with one universe and one world. While a universe may have many worlds, by default, Flora's system uses the &lt;body&gt; as the only world.
+Every Flora system starts with one Universe and one World. While a universe may have many Worlds, by default, Flora's system uses the &lt;body&gt; as the only World.
 
-In the example above, immediately after the system starts, a Mover is created and appended to the world (or &lt;body&gt;).
+In the example above, immediately after the system starts, a Mover is created and appended to the World (or &lt;body&gt;).
 
 Worlds carry two properties that directly affect their elements.
 
 * gravity {Vector} default: new Vector(0, 1)
 * c (coefficient of friction) {number} 0.01
 
-We can change these defaults after the system starts via the universe's update() method.
+We can change these defaults after the system starts via the Universe's update() method.
 
         system.start(function () {
           Flora.universe.update({
@@ -60,7 +60,7 @@ We can change these defaults after the system starts via the universe's update()
           new Flora.Mover();
         });
 
-We've reversed the world's gravity and increased its friction. Now the block slowly drifts upwards.
+We've reversed the World's gravity and increased its friction. Now the block slowly drifts upwards.
 
 #### Movers
 
@@ -78,8 +78,22 @@ For an example of the Mover's seek behavior, set 'followMouse' to 'true' when cr
           });
         });
 
+#### Walkers
 
-- Walker
+Walkers are a step down on the evolutionary chain from Movers. They have no seeking, steering or directional behavior and are meant to randomly explore their World. Use Walkers to create wandering objects or targets for Movers to seek.
+
+Walkers carry two properties that directly affect how they 'walk'.
+
+* isPerlin {boolean} default: true
+* isRandom {boolean} default: false
+
+By default, Walkers use an algorithm called Perlin Noise (http://en.wikipedia.org/wiki/Perlin_noise) to navigate their World Below is an example.
+
+        system.start(function () {
+          new Flora.Walker();
+        });
+
+
 - Mover follows Walker
 - Movers flock toward Walker
 - Movers flock around mouse
