@@ -25,7 +25,7 @@
   <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos">
   </target>
 
-  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,copy">
+  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,copy,document">
   </target>
 
   <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask"
@@ -127,7 +127,7 @@
     </replaceregexp>
   </target>
 
-  <!-- copy build and css files to examples/demos -->
+  <!-- Copy: copy build and css files to examples/demos -->
   <target name="copy">
     <copy file="${build.dir}/flora.min.js" todir="${examples.dir}/js" overwrite="true"/>
     <copy file="${lib.dir}/modernizr.js" todir="${examples.dir}/js" overwrite="true"/>
