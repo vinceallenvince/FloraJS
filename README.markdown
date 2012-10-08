@@ -6,6 +6,7 @@ To setup a simple Flora system, reference the Flora .js file and the latest vers
 
 The following is taken from examples/simple.html.
 
+```html
 <!DOCTYPE html>
   <html>
   <head>
@@ -28,3 +29,4 @@ The following is taken from examples/simple.html.
     </script>
   </body>
 </html>
+```
