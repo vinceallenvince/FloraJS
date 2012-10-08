@@ -1,6 +1,6 @@
 # FloraJS: a JavaScript framework for rendering natural systems in a web browser.
 
-FloraJS is a JavaScript framework for exploring natural systems simulation. In Flora, the "world" is your web browser. DOM elements inhabit the world and behave according to rules meant to simulate a natural environment.
+FloraJS is a JavaScript framework for exploring natural systems simulation. In Flora, the "world" is your web browser. DOM elements inhabit the world and behave according to rules meant to simulate a natural environment. You can find demos at http://www.florajs.com.
 
 The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'The Nature of Code' at https://github.com/shiffman/The-Nature-of-Code. Inspiration also came from the writings of Valentino Braitenberg and Gary Flake.
 
@@ -136,5 +136,7 @@ In the example below, Movers flock to the mouse. We've also adjusted the 'width'
           }
         });
 
+#### More to come
 
+I'll post more examples soon. You can see the examples above in action at http://www.florajs.com/examples. You can also find full documentation at http://www.florajs.com/docs.
 
