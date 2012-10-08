@@ -938,7 +938,6 @@ describe("A new Universe", function() {
     expect(interfaceCheck.getDataType(obj.isPlaying)).toEqual('boolean');
     expect(interfaceCheck.getDataType(obj.zSorted)).toEqual('boolean');
     expect(interfaceCheck.getDataType(obj.showStats)).toEqual('boolean');
-    expect(interfaceCheck.getDataType(obj.statsInterval)).toEqual('number');
     expect(interfaceCheck.getDataType(obj._records)).toEqual('array');
   });
   it("addWorld() should add a new World to the 'records' array.", function() {
