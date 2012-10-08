@@ -1,3 +1,8 @@
 # FOLDERS #
 ###########
 bak/
+
+# FILES #
+#########
+build/build.raw.min.js
+build/build.raw.js
