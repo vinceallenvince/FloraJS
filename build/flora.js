@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: October 8, 2012 03:19:28 */
+/* Build time: October 8, 2012 03:29:10 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -283,11 +283,11 @@ ElementList.prototype.destroyByWorld = function (world) {
 exports.ElementList = ElementList;
 /*global exports, window */
 /**
- * Creates a new FloraSystem.
+ * Creates a new System.
  *
  * @constructor
  */
-function FloraSystem(opt_options) {
+function System(opt_options) {
 
   'use strict';
 
@@ -370,34 +370,34 @@ function FloraSystem(opt_options) {
 /**
  * Define a name property.
  */
-FloraSystem.prototype.name = 'florasystem';
+System.prototype.name = 'florasystem';
 
 /**
  * A list of instructions to execute before the system starts.
  */
-FloraSystem.setup = null;
+System.setup = null;
 
 /**
- * Starts a FloraSystem.
+ * Starts a System.
  * @param {function} func A list of instructions to execute before the system starts.
  */
-FloraSystem.prototype.start = function (func) {
+System.prototype.start = function (func) {
 
   'use strict';
 
   func = exports.Interface.getDataType(func) === "function" ? func : function () {};
-  FloraSystem.setup = func;
+  System.setup = func;
 
   func();
   exports.animLoop();
 };
 
-FloraSystem.prototype.destroy = function () {
+System.prototype.destroy = function () {
   'use strict';
   exports.elementList.destroyAll();
 };
 
-exports.FloraSystem = FloraSystem;
+exports.System = System;
 /*global console, Modernizr */
 /*jshint supernew:true */
 

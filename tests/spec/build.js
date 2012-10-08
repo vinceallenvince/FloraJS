@@ -5,7 +5,7 @@ describe("A new Attractor", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Attractor();
   });
 
@@ -31,7 +31,7 @@ describe("A new BorderPalette", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.BorderPalette();
   });
 
@@ -78,7 +78,7 @@ describe("A new Camera", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Camera();
   });
 
@@ -97,7 +97,7 @@ describe("A new Caption", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Caption();
   });
 
@@ -119,7 +119,7 @@ describe("A new Cold", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Cold();
   });
 
@@ -142,7 +142,7 @@ describe("A new ColorPalette", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.ColorPalette();
   });
 
@@ -215,7 +215,7 @@ describe("A new ColorTable", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.ColorTable();
   });
 
@@ -277,7 +277,7 @@ describe("A new Connector", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Connector();
   });
 
@@ -300,7 +300,7 @@ describe("A new ElementList", function() {
   var system;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
   });
 
   afterEach(function() {
@@ -401,7 +401,7 @@ describe("A new FlowField", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.FlowField();
   });
 
@@ -423,7 +423,7 @@ describe("A new FlowFieldMarker", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.FlowFieldMarker({
       location: {x: 0, y: 0},
       scale: 1,
@@ -453,7 +453,7 @@ describe("A new Food", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Food();
   });
 
@@ -476,7 +476,7 @@ describe("A new Heat", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Heat();
   });
 
@@ -544,7 +544,7 @@ describe("A new Light", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Light();
   });
 
@@ -567,7 +567,7 @@ describe("A new Liquid", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Liquid();
   });
 
@@ -592,7 +592,7 @@ describe("A new Mover", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Mover();
   });
 
@@ -642,7 +642,7 @@ describe("A new Obj", function() {
   var system, obj, mover;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Obj({
       hello: 'hello'
     });
@@ -669,7 +669,7 @@ describe("A new Oscillator", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Oscillator({
       initialLocation: new exports.Vector()
     });
@@ -704,7 +704,7 @@ describe("A new Oxygen", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Oxygen();
   });
 
@@ -727,7 +727,7 @@ describe("A new Particle", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Particle();
   });
 
@@ -748,7 +748,7 @@ describe("A new ParticleSystem", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.ParticleSystem();
   });
 
@@ -771,7 +771,7 @@ describe("A new Point", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Point();
   });
 
@@ -796,7 +796,7 @@ describe("A new Predator", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Predator();
   });
 
@@ -819,7 +819,7 @@ describe("A new Repeller", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Repeller();
   });
 
@@ -844,7 +844,7 @@ describe("A new Sensor", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Sensor();
   });
 
@@ -895,7 +895,7 @@ describe("A new StatsDisplay", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.StatsDisplay();
   });
 
@@ -926,7 +926,7 @@ describe("A new Universe", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Universe();
   });
 
@@ -1101,7 +1101,7 @@ describe("Vector", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Vector(22, 10);
   });
 
@@ -1161,7 +1161,7 @@ describe("A new Walker", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.Walker();
   });
 
@@ -1198,7 +1198,7 @@ describe("A new World", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.FloraSystem();
+    system = new exports.System();
     obj = new exports.World();
   });
 
