@@ -1,10 +1,4 @@
-/*global exports, $, Modernizr */
-
-/**
-    A module representing World.
-    @module World
- */
-
+/*global exports */
 /**
  * Creates a new World.
  *
@@ -85,8 +79,8 @@ function World(opt_options) {
   } else {
     this.el = options.el;
     this.id = this.el.id; // use the element's id as the record id
-    this.width = $(this.el).width();
-    this.height = $(this.el).height();
+    this.width = this.el.offsetWidth;
+    this.height = this.el.offsetHeight;
   }
 
   this.el.className = 'world floraElement';
@@ -97,7 +91,11 @@ function World(opt_options) {
 
   // events
 
-  if (window.addEventListener && this.isDeviceMotion) {
+  exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
+    me.resize.call(me);
+  });
+
+  /*if (window.addEventListener && this.isDeviceMotion) {
     window.addEventListener("devicemotion", function(e) { // listens for device motion events
       me.devicemotion.call(me, e);
     }, false);
@@ -107,19 +105,13 @@ function World(opt_options) {
     window.addEventListener("deviceorientation", function(e) { // listens for device orientation events
       me.deviceorientation.call(me, e);
     }, false);
-  }
-
-
-  exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
-    me.resize.call(me);
-  });
-
+  }*/
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-World.name = 'world';
+World.prototype.name = 'world';
 
 /**
  * Increments as each World is created.
@@ -150,6 +142,8 @@ World.prototype.configure = function(opt_el) { // should be called after doc rea
  * change the world's style.
  *
  * @param {Object} props A hash of properties to update.
+ *    Optional properties:
+ *    opt_props.style A map of css styles to apply.
  */
 World.prototype.update = function(opt_props) {
 
@@ -164,12 +158,12 @@ World.prototype.update = function(opt_props) {
     }
   }
 
-  if (props.el) { // if updating the element; update the width and height
+  if (props.el) { // if updating the world's DOM element; update the width and height
     this.width = parseInt(this.el.style.width.replace('px', ''), 10);
     this.height = parseInt(this.el.style.height.replace('px', ''), 10);
   }
 
-  /*if (!this.el.style.setAttribute) { // WC3
+  if (!this.el.style.setAttribute) { // WC3
     if (props.style) {
       for (i in props.style) {
         if (props.style.hasOwnProperty(i)) {
@@ -187,11 +181,7 @@ World.prototype.update = function(opt_props) {
       }
     }
     this.el.style.setAttribute('cssText', cssText, 0);
-  }*/
-
-  /*if (props.showStats && window.addEventListener) {
-    this.createStats();
-  }*/
+  }
 };
 
 /**
@@ -206,7 +196,7 @@ World.prototype.resize = function() {
   var i, max, elementLoc, controlCamera, winSize = exports.Utils.getWindowSize(),
     windowWidth = winSize.width,
     windowHeight = winSize.height,
-    elements = exports.elementList.records;
+    elements = exports.elementList.all();
 
   // check of any elements control the camera
   for (i = 0, max = elements.length; i < max; i += 1) {
@@ -238,11 +228,9 @@ World.prototype.resize = function() {
  * Called from a window devicemotion event, updates the world's gravity
  * relative to the accelerometer's values.
  */
-World.prototype.devicemotion = function() {
+World.prototype.devicemotion = function(e) {
 
   'use strict';
-
-  var e = arguments[0];
 
   if (window.orientation === 0) {
     if (this.isTopDown) {
@@ -256,9 +244,11 @@ World.prototype.devicemotion = function() {
     this.gravity = new exports.Vector(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
   }
 
-  /*if (World.showDeviceOrientation) {
-    $(".console").val("orientation: " + window.orientation + " x: " + e.accelerationIncludingGravity.x.toFixed(2) + " y: " + e.accelerationIncludingGravity.y.toFixed(2) + " z: " + e.accelerationIncludingGravity.z.toFixed(2));
-  }*/
+  if (this.showDeviceOrientation) {
+    document.getElementById('compassDisplay').val("orientation: " + window.orientation + " x: " +
+        e.accelerationIncludingGravity.x.toFixed(2) + " y: " + e.accelerationIncludingGravity.y.toFixed(2) + " z: " +
+        e.accelerationIncludingGravity.z.toFixed(2));
+  }
 };
 
 /**
@@ -277,7 +267,8 @@ World.prototype.deviceorientation = function(e) {
   this.compassHeading = compassHeading;
 
   if (this.showCompassHeading) {
-    $(".console").val("heading: " + compassHeading.toFixed(2) + " accuracy: +/- " + compassAccuracy);
+    document.getElementById('compassDisplay').val("heading: " + compassHeading.toFixed(2) +
+        " accuracy: +/- " +compassAccuracy);
   }
 };
 

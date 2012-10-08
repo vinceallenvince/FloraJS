@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Connector.
-    @module Connector
- */
-
-/**
  * Creates a new Connector.
  *
  * @constructor
@@ -33,12 +28,12 @@ function Connector(opt_options) {
   this.parentB = options.parentB || null;
   this.color = 'transparent';
 }
-exports.Utils.inherit(Connector, exports.Mover);
+exports.Utils.extend(Connector, exports.Mover);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
  */
-Connector.name = 'connector';
+Connector.prototype.name = 'connector';
 
 /**
  * Called every frame, step() updates the instance's properties.

@@ -1,9 +1,4 @@
-/*global exports, window, Modernizr */
-/**
-    A module representing a FloraSystem.
-    @module florasystem
- */
-
+/*global exports, window */
 /**
  * Creates a new FloraSystem.
  *
@@ -62,14 +57,13 @@ function FloraSystem(opt_options) {
       endColor: defaultColorList[i].endColor
     });
   }
-  //var stats = new exports.StatsDisplay();
 
   exports.animLoop = function () {
 
     var i, max,
         universe = exports.universe,
         world = universe.first(),
-        elements = exports.elementList.records;
+        elements = exports.elementList.all();
 
     if (universe.isPlaying) {
       window.requestAnimFrame(exports.animLoop);
@@ -87,28 +81,31 @@ function FloraSystem(opt_options) {
 
       exports.universe.updateClocks();
     }
-    /*if (universe.statsDisplay) {
-      universe.statsDisplay.update();
-    }*/
   };
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-FloraSystem.name = 'florasystem';
+FloraSystem.prototype.name = 'florasystem';
+
+/**
+ * A list of instructions to execute before the system starts.
+ */
+FloraSystem.setup = null;
 
 /**
  * Starts a FloraSystem.
- * @param {function} func A list of instructions to execute when the system starts.
+ * @param {function} func A list of instructions to execute before the system starts.
  */
 FloraSystem.prototype.start = function (func) {
 
   'use strict';
 
   func = exports.Interface.getDataType(func) === "function" ? func : function () {};
+  FloraSystem.setup = func;
 
-  func.call();
+  func();
   exports.animLoop();
 };
 

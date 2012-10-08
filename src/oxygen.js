@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing an Oxygen object.
-    @module Oxygen
- */
-
-/**
  * Creates a new Oxygen object.
  *
  * @constructor
@@ -31,11 +26,11 @@ function Oxygen(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Oxygen, exports.Mover);
+exports.Utils.extend(Oxygen, exports.Mover);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
  */
-Oxygen.name = 'oxygen';
+Oxygen.prototype.name = 'oxygen';
 
 exports.Oxygen = Oxygen;

@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Food object.
-    @module Food
- */
-
-/**
  * Creates a new Food object.
  *
  * @constructor
@@ -31,11 +26,11 @@ function Food(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Food, exports.Mover);
+exports.Utils.extend(Food, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Food.name = 'food';
+Food.prototype.name = 'food';
 
 exports.Food = Food;

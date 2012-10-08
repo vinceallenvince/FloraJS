@@ -39,6 +39,7 @@ var config = {
   ],
   keyMap: {
     toggleWorldPlaystate: 80,
+    resetSystem: 82,
     toggleStatsDisplay: 83,
     thrustLeft: 37,
     thrustUp: 38,

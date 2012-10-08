@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing an ElementList.
-    @module ElementList
- */
-
-/**
  * Creates a new ElementList.
  *
  * @constructor
@@ -16,53 +11,57 @@ function ElementList(opt_options) {
 
   var options = opt_options || {};
 
-  this.records = [];
+  /**
+   * Holds a list of elements.
+   * @private
+   */
+  this._records = [];
 }
 
 /**
  * Define a name property.
  */
-ElementList.name = 'elementlist';
+ElementList.prototype.name = 'elementlist';
 
 /**
  * Returns the entire 'records' array.
  *
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} An array of elements.
  */
 ElementList.prototype.add = function(obj) {
 
   'use strict';
 
-  this.records.push(obj);
+  this._records.push(obj);
 
-  return this.records;
+  return this._records;
 };
 
 /**
  * Returns the entire 'records' array.
  *
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} An array of elements.
  */
 ElementList.prototype.all = function() {
   'use strict';
-  return this.records;
+  return this._records;
 };
 
 /**
  * Returns the total number of elements.
  *
- * @return {number} Total number of elements.
+ * @returns {number} Total number of elements.
  */
 ElementList.prototype.count = function() {
   'use strict';
-  return this.records.length;
+  return this._records.length;
 };
 
 /**
  * Returns an array of elements created from the same constructor.
  *
  * @param {string} name The constructor name.
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} An array of elements.
  */
 ElementList.prototype.getAllByClass = function(name) {
 
@@ -70,9 +69,9 @@ ElementList.prototype.getAllByClass = function(name) {
 
   var i, max, arr = [];
 
-  for (i = 0, max = this.records.length; i < max; i++) {
-    if (this.records[i].constructor.name === name) {
-      arr[arr.length] = this.records[i];
+  for (i = 0, max = this._records.length; i < max; i++) {
+    if (this._records[i].constructor.name === name) {
+      arr[arr.length] = this._records[i];
     }
   }
   return arr;
@@ -83,6 +82,7 @@ ElementList.prototype.getAllByClass = function(name) {
  *
  * @param {string} name The constructor name.
  * @param {Object} props A map of properties to update.
+ * @returns {Array} An array of elements.
  * @example
  * exports.elementList.updatePropsByClass('Point', {
  *    color: [0, 0, 0],
@@ -109,13 +109,13 @@ ElementList.prototype.updatePropsByClass = function(name, props) {
  * Finds an element by its 'id' and returns it.
  *
  * @param {string|number} id The element's id.
- * @return {Object} The element.
+ * @returns {Object} The element.
  */
 ElementList.prototype.getElement = function (id) {
 
   'use strict';
 
-  var i, max, records = this.records;
+  var i, max, records = this._records;
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
@@ -134,7 +134,7 @@ ElementList.prototype.destroyElement = function (id) {
 
   'use strict';
 
-  var i, max, records = this.records;
+  var i, max, records = this._records;
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
@@ -155,14 +155,14 @@ ElementList.prototype.destroyAll = function () {
 
   'use strict';
 
-  var i, records = this.records;
+  var i, records = this._records;
 
   for (i = records.length - 1; i >= 0; i -= 1) {
     if (records[i].world) {
       records[i].world.el.removeChild(records[i].el);
     }
   }
-  this.records = [];
+  this._records = [];
 };
 
 /**
@@ -175,11 +175,12 @@ ElementList.prototype.destroyByWorld = function (world) {
 
   'use strict';
 
-  var i, records = this.records;
+  var i, records = this._records;
 
   for (i = records.length - 1; i >= 0; i -= 1) {
-    if (records[i].world &&  records[i].world === world) {
+    if (records[i].world && records[i].world.id === world) {
       records[i].world.el.removeChild(records[i].el);
+      records.splice(i, 1);
     }
   }
 };

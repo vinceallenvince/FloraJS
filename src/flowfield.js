@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a FlowField.
-    @module FlowField
- */
-
-/**
  * Creates a new FlowField.
  *
  * @constructor
@@ -31,9 +26,9 @@ function FlowField(opt_options) {
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-FlowField.name = 'flowfield';
+FlowField.prototype.name = 'flowfield';
 
 /**
  * Builds a FlowField.

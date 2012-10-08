@@ -7,7 +7,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Flora</title>
   <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
-  <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
@@ -26,31 +25,33 @@
         var pt = new Flora.Point();
 
         var osc = [], show = 1,
-            h = exports.defaultColors.getColor('heat'), // gets the heat start and end colors
-            f = exports.defaultColors.getColor('food'), // gets the food start and end colors
             pl = new Flora.ColorPalette();
 
         pl.addColor({ // adds a random sampling of colors to palette
-          min: 12,
-          max: 24,
-          startColor: h.startColor,
-          endColor: h.endColor
-        });
-
-        //
-
-        pl = new Flora.ColorPalette();
-
-        pl.addColor({ // adds a random sampling of colors to palette
-          min: 1,
-          max: 4,
-          startColor: [0, 0, 0],
-          endColor: [255, 0, 0]
-        }).addColor({ // adds a random sampling of colors to palette
-          min: 12,
-          max: 24,
-          startColor: [0, 0, 255],
-          endColor: [0, 0, 0]
+          min: 2,
+          max: 8,
+          startColor: [112, 176, 175],
+          endColor: [89, 158, 157]
+        }).addColor({
+          min: 2,
+          max: 8,
+          startColor: [192, 59, 48],
+          endColor: [174, 41, 30]
+        }).addColor({
+          min: 2,
+          max: 8,
+          startColor: [250, 79, 61],
+          endColor: [238, 56, 36]
+        }).addColor({
+          min: 2,
+          max: 8,
+          startColor: [230, 180, 134],
+          endColor: [212, 158, 107]
+        }).addColor({
+          min: 2,
+          max: 8,
+          startColor: [95, 58, 37],
+          endColor: [76, 43, 24]
         });
 
         var createOscillator = function() {

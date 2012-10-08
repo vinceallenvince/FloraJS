@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Sensor object.
-    @module Sensor
- */
-
-/**
  * Creates a new Sensor object.
  *
  * @constructor
@@ -41,12 +36,12 @@ function Sensor(opt_options) {
   this.target = options.target || null;
   this.activated = !!options.activated;
 }
-exports.Utils.inherit(Sensor, exports.Mover);
+exports.Utils.extend(Sensor, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Sensor.name = 'sensor';
+Sensor.prototype.name = 'sensor';
 
 /**
  * Called every frame, step() updates the instance's properties.

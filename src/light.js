@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Light object.
-    @module Light
- */
-
-/**
  * Creates a new Light object.
  *
  * @constructor
@@ -31,11 +26,11 @@ function Light(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Light, exports.Mover);
+exports.Utils.extend(Light, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Light.name = 'light';
+Light.prototype.name = 'light';
 
 exports.Light = Light;

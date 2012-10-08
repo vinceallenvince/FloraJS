@@ -11,29 +11,17 @@
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
-  <script type="text/javascript" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
 
-    var system = new exports.FloraSystem();
-
-    system.start(function () {
-
-      Flora.universe.update({
-        showStats: true
-      });
-
-      for (var i = 0; i < 120; i++) {
+      var system = new exports.FloraSystem();
+      system.start(function () {
         new Flora.Mover({
-          location: new Flora.Vector(Flora.Utils.getRandomNumber(0, Flora.universe.first().width, true), Flora.universe.first().height/4),
-          mass: Flora.Utils.getRandomNumber(10, 50),
-          opacity: 1
+          isStatic: true,
+          isDraggable: true,
+          width: 100,
+          height: 100
         });
-      }
-
-      var liquid = new Flora.Liquid({
-        width: Flora.universe.first().width,
-        borderRadius: 0
       });
-    });
   </script>
 </body>
 </html>

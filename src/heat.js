@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Heat object.
-    @module Heat
- */
-
-/**
  * Creates a new Heat object.
  *
  * @constructor
@@ -31,11 +26,11 @@ function Heat(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Heat, exports.Mover);
+exports.Utils.extend(Heat, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Heat.name = 'heat';
+Heat.prototype.name = 'heat';
 
 exports.Heat = Heat;

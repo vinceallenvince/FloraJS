@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Predator object.
-    @module Predator
- */
-
-/**
  * Creates a new Predator object.
  *
  * @constructor
@@ -31,11 +26,11 @@ function Predator(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 75;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Predator, exports.Mover);
+exports.Utils.extend(Predator, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Predator.name = 'predator';
+Predator.prototype.name = 'predator';
 
 exports.Predator = Predator;

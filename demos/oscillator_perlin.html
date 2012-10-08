@@ -23,7 +23,6 @@
       user-select: none;
     }
   </style>
-  <script src="lib/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="lib/modernizr.js" type="text/javascript" charset="utf-8"></script>
   <script src="../build/build.js" type="text/javascript" charset="utf-8"></script>
 </head>
@@ -51,30 +50,30 @@
             borderColor, color;
 
         pl.addColor({ // adds a random sampling of colors to palette
-          min: 12,
-          max: 24,
-          startColor: h.startColor,
-          endColor: h.endColor
-        }).addColor({ // adds a random sampling of colors to palette
-          min: 12,
-          max: 24,
-          startColor: c.startColor,
-          endColor: c.endColor
-        }).addColor({ // adds a random sampling of colors to palette
-          min: 12,
-          max: 24,
-          startColor: f.startColor,
-          endColor: f.endColor
-        }).addColor({ // adds a random sampling of colors to palette
-          min: 12,
-          max: 24,
-          startColor: o.startColor,
-          endColor: o.endColor
-        }).addColor({ // adds a random sampling of colors to palette
-          min: 12,
-          max: 24,
-          startColor: l.startColor,
-          endColor: l.endColor
+          min: 2,
+          max: 8,
+          startColor: [119, 221, 241],
+          endColor: [91, 200, 222]
+        }).addColor({
+          min: 2,
+          max: 8,
+          startColor: [183, 228, 225],
+          endColor: [152, 209, 206]
+        }).addColor({
+          min: 2,
+          max: 8,
+          startColor: [235, 237, 222],
+          endColor: [213, 218, 186]
+        }).addColor({
+          min: 2,
+          max: 8,
+          startColor: [251, 145, 61],
+          endColor: [234, 124, 38]
+        }).addColor({
+          min: 2,
+          max: 8,
+          startColor: [255, 116, 16],
+          endColor: [235, 99, 0]
         });
 
         var createOscillator = function() {

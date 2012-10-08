@@ -40,7 +40,7 @@ describe("A new BorderPalette", function() {
   });
 
   it("should have its required properties.", function() {
-    expect(interfaceCheck.getDataType(obj.borders)).toEqual('array');
+    expect(interfaceCheck.getDataType(obj._borders)).toEqual('array');
     expect(obj.constructor.name).toEqual('BorderPalette');
   });
 
@@ -53,9 +53,9 @@ describe("A new BorderPalette", function() {
       style: 'dotted'
     });
 
-    expect(obj.borders.length).toBeGreaterThan(1);
-    expect(obj.borders.length).toBeLessThan(9);
-    expect(interfaceCheck.getDataType(obj.borders[0])).toEqual('string');
+    expect(obj._borders.length).toBeGreaterThan(1);
+    expect(obj._borders.length).toBeLessThan(9);
+    expect(interfaceCheck.getDataType(obj._borders[0])).toEqual('string');
   });
 
   it("should have have a method that returns a string representing a border from the borders property", function() {
@@ -109,7 +109,7 @@ describe("A new Caption", function() {
     expect(typeof obj.position).toEqual('string');
     expect(typeof obj.text).toEqual('string');
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.el).toEqual('object');
+    expect(typeof obj._el).toEqual('object');
     expect(obj.constructor.name).toEqual('Caption');
   });
 });
@@ -151,8 +151,8 @@ describe("A new ColorPalette", function() {
   });
 
   it("should have its required properties.", function() {
-    expect(interfaceCheck.getDataType(obj.gradients)).toEqual('array');
-    expect(interfaceCheck.getDataType(obj.colors)).toEqual('array');
+    expect(interfaceCheck.getDataType(obj._gradients)).toEqual('array');
+    expect(interfaceCheck.getDataType(obj._colors)).toEqual('array');
     expect(obj.constructor.name).toEqual('ColorPalette');
   });
 
@@ -166,11 +166,11 @@ describe("A new ColorPalette", function() {
       totalColors: 255
     });
 
-    expect(obj.gradients.length).toEqual(1);
-    expect(interfaceCheck.getDataType(obj.gradients[0])).toEqual('array');
-    expect(interfaceCheck.getDataType(obj.gradients[0][0][0])).toEqual('number');
-    expect(interfaceCheck.getDataType(obj.gradients[0][0][1])).toEqual('number');
-    expect(interfaceCheck.getDataType(obj.gradients[0][0][2])).toEqual('number');
+    expect(obj._gradients.length).toEqual(1);
+    expect(interfaceCheck.getDataType(obj._gradients[0])).toEqual('array');
+    expect(interfaceCheck.getDataType(obj._gradients[0][0][0])).toEqual('number');
+    expect(interfaceCheck.getDataType(obj._gradients[0][0][1])).toEqual('number');
+    expect(interfaceCheck.getDataType(obj._gradients[0][0][2])).toEqual('number');
   });
 
   it("should have an addColor() method that pushes color arrays on to a colors property.", function() {
@@ -183,12 +183,12 @@ describe("A new ColorPalette", function() {
       endColor: [0, 0, 0]
     });
 
-    expect(obj.colors.length).toBeGreaterThan(2);
-    expect(obj.colors.length).toBeLessThan(9);
-    expect(interfaceCheck.getDataType(obj.colors[0])).toEqual('array');
-    expect(interfaceCheck.getDataType(obj.colors[0][0])).toEqual('number');
-    expect(interfaceCheck.getDataType(obj.colors[0][1])).toEqual('number');
-    expect(interfaceCheck.getDataType(obj.colors[0][2])).toEqual('number');
+    expect(obj._colors.length).toBeGreaterThan(2);
+    expect(obj._colors.length).toBeLessThan(9);
+    expect(interfaceCheck.getDataType(obj._colors[0])).toEqual('array');
+    expect(interfaceCheck.getDataType(obj._colors[0][0])).toEqual('number');
+    expect(interfaceCheck.getDataType(obj._colors[0][1])).toEqual('number');
+    expect(interfaceCheck.getDataType(obj._colors[0][2])).toEqual('number');
   });
 
   it("should have have a method that returns an array of 3 numeric values representing a color value", function() {
@@ -308,7 +308,7 @@ describe("A new ElementList", function() {
   });
 
   it("should have its required properties.", function() {
-    expect(interfaceCheck.getDataType(exports.elementList.records)).toEqual('array');
+    expect(interfaceCheck.getDataType(exports.elementList._records)).toEqual('array');
   });
   it("all() should return the 'records' array.", function() {
     expect(interfaceCheck.getDataType(exports.elementList.all())).toEqual('array');
@@ -347,7 +347,7 @@ describe("A new ElementList", function() {
       "from elementList.records and the element's world.", function() {
 
       var check = true,
-          records = exports.elementList.records,
+          records = exports.elementList.all(),
           point = new exports.Point();
 
       exports.elementList.destroyElement(point.id);
@@ -369,7 +369,7 @@ describe("A new ElementList", function() {
       }
 
       exports.elementList.destroyAll();
-      expect(exports.elementList.records.length).toEqual(0);
+      expect(exports.elementList.all().length).toEqual(0);
   });
   it("updatePropsByClass() should update the properties of elements created " +
       "from the same constructor.", function() {
@@ -385,9 +385,9 @@ describe("A new ElementList", function() {
         scale: 2
       });
 
-      for (i = 0, max = exports.elementList.records.length; i < max; i += 1) {
-        if (exports.elementList.records[i].constructor.name === 'Point' &&
-            (!exports.elementList.records[i].color || exports.elementList.records[i].scale !== 2)) {
+      for (i = 0, max = exports.elementList.all().length; i < max; i += 1) {
+        if (exports.elementList.all()[i].constructor.name === 'Point' &&
+            (!exports.elementList.all()[i].color || exports.elementList.all()[i].scale !== 2)) {
           check = false;
         }
       }
@@ -639,13 +639,14 @@ describe("A new Mover", function() {
 
 describe("A new Obj", function() {
 
-  var system, obj;
+  var system, obj, mover;
 
   beforeEach(function() {
     system = new exports.FloraSystem();
     obj = new exports.Obj({
       hello: 'hello'
     });
+    mover = new exports.Mover();
   });
 
   afterEach(function() {
@@ -655,6 +656,11 @@ describe("A new Obj", function() {
   it("should accept all properties passed to the constructor.", function() {
     expect(obj.hello).toEqual('hello');
     expect(obj.constructor.name).toEqual('Obj');
+  });
+  it("Obj should should have a static method to check if mouse is inside World.", function() {
+    exports.mouse.loc.x = 1;
+    exports.mouse.loc.y = 1;
+    expect(exports.Obj.mouseIsInsideWorld(mover.world)).toEqual(true);
   });
 });
 
@@ -899,12 +905,18 @@ describe("A new StatsDisplay", function() {
 
   it("should have its required properties.", function() {
     expect(obj.constructor.name).toEqual('StatsDisplay');
+    expect(obj._fps).toEqual(0);
+    expect(typeof obj._time).toEqual('number');
+    expect(typeof obj._timeLastFrame).toEqual('number');
+    expect(typeof obj._timeLastSecond).toEqual('number');
+    expect(typeof obj._frameCount).toEqual('number');
+    expect(typeof obj._el).toEqual('object');
   });
   it("update() should calculate the difference in ms between time now and last call to update().", function() {
-    expect(obj.constructor.name).toEqual('StatsDisplay');
+
   });
   it("getFPS() should return the current FPS.", function() {
-    expect(obj.constructor.name).toEqual('StatsDisplay');
+    expect(typeof obj.getFPS()).toEqual('number');
   });
 });
 
@@ -923,26 +935,30 @@ describe("A new Universe", function() {
   });
 
   it("should have its required properties.", function() {
-    expect(interfaceCheck.getDataType(exports.elementList.records)).toEqual('array');
+    expect(interfaceCheck.getDataType(obj.isPlaying)).toEqual('boolean');
+    expect(interfaceCheck.getDataType(obj.zSorted)).toEqual('boolean');
+    expect(interfaceCheck.getDataType(obj.showStats)).toEqual('boolean');
+    expect(interfaceCheck.getDataType(obj.statsInterval)).toEqual('number');
+    expect(interfaceCheck.getDataType(obj._records)).toEqual('array');
   });
   it("addWorld() should add a new World to the 'records' array.", function() {
     obj.addWorld();
-    expect(obj.records.length).toEqual(1);
-    expect(obj.records[obj.records.length - 1].constructor.name).toEqual('World');
+    expect(obj.all().length).toEqual(1);
+    expect(obj.all()[obj.all().length - 1].constructor.name).toEqual('World');
   });
   it("first() should return the first record in the 'records' array.", function() {
     obj.addWorld();
     obj.addWorld();
     obj.addWorld();
-    expect(obj.records.length).toEqual(3);
-    expect(obj.first()).toEqual(obj.records[0]);
+    expect(obj.all().length).toEqual(3);
+    expect(obj.first()).toEqual(obj.all()[0]);
   });
   it("last() should return the last record in the 'records' array.", function() {
     obj.addWorld();
     obj.addWorld();
     obj.addWorld();
-    expect(obj.records.length).toEqual(3);
-    expect(obj.last()).toEqual(obj.records[obj.records.length - 1]);
+    expect(obj.all().length).toEqual(3);
+    expect(obj.last()).toEqual(obj.all()[obj.all().length - 1]);
   });
   it("count() should return the total number of worlds.", function() {
     obj.addWorld();
@@ -988,7 +1004,7 @@ describe("A new Universe", function() {
     obj.addWorld();
     obj.destroyAll();
     expect(obj.count()).toEqual(0);
-    expect(obj.records.length).toEqual(0);
+    expect(obj.all().length).toEqual(0);
   });
   it("createStats() should create a StatsDisplay instance.", function() {
 

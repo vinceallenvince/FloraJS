@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Repeller object.
-    @module Repeller
- */
-
-/**
  * Creates a new Repeller object.
  *
  * @constructor
@@ -33,11 +28,11 @@ function Repeller(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.inherit(Repeller, exports.Mover);
+exports.Utils.extend(Repeller, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Repeller.name = 'repeller';
+Repeller.prototype.name = 'repeller';
 
 exports.Repeller = Repeller;

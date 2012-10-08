@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a ParticleSystem.
-    @module ParticleSystem
- */
-
-/**
  * Creates a new ParticleSystem.
  *
  * @constructor
@@ -80,11 +75,11 @@
     };
   };
 }
-exports.Utils.inherit(ParticleSystem, exports.Mover);
+exports.Utils.extend(ParticleSystem, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-ParticleSystem.name = 'particlesystem';
+ParticleSystem.prototype.name = 'particlesystem';
 
 exports.ParticleSystem = ParticleSystem;

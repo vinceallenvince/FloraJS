@@ -1,7 +1,27 @@
-/*ignore!
-This is the license.
+/*
+Copyright (C) 2012 Vince Allen
+Brooklyn, NY 11215, USA
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 */
-/* Build time: October 6, 2012 09:34:49 */
+/* Version: 1.0.0 */
+/* Build time: October 8, 2012 01:15:40 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -65,6 +85,7 @@ var config = {
   ],
   keyMap: {
     toggleWorldPlaystate: 80,
+    resetSystem: 82,
     toggleStatsDisplay: 83,
     thrustLeft: 37,
     thrustUp: 38,
@@ -74,11 +95,6 @@ var config = {
 };
 exports.config = config;
 /*global exports */
-/**
-    A module representing an ElementList.
-    @module ElementList
- */
-
 /**
  * Creates a new ElementList.
  *
@@ -91,53 +107,57 @@ function ElementList(opt_options) {
 
   var options = opt_options || {};
 
-  this.records = [];
+  /**
+   * Holds a list of elements.
+   * @private
+   */
+  this._records = [];
 }
 
 /**
  * Define a name property.
  */
-ElementList.name = 'elementlist';
+ElementList.prototype.name = 'elementlist';
 
 /**
  * Returns the entire 'records' array.
  *
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} An array of elements.
  */
 ElementList.prototype.add = function(obj) {
 
   'use strict';
 
-  this.records.push(obj);
+  this._records.push(obj);
 
-  return this.records;
+  return this._records;
 };
 
 /**
  * Returns the entire 'records' array.
  *
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} An array of elements.
  */
 ElementList.prototype.all = function() {
   'use strict';
-  return this.records;
+  return this._records;
 };
 
 /**
  * Returns the total number of elements.
  *
- * @return {number} Total number of elements.
+ * @returns {number} Total number of elements.
  */
 ElementList.prototype.count = function() {
   'use strict';
-  return this.records.length;
+  return this._records.length;
 };
 
 /**
  * Returns an array of elements created from the same constructor.
  *
  * @param {string} name The constructor name.
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} An array of elements.
  */
 ElementList.prototype.getAllByClass = function(name) {
 
@@ -145,9 +165,9 @@ ElementList.prototype.getAllByClass = function(name) {
 
   var i, max, arr = [];
 
-  for (i = 0, max = this.records.length; i < max; i++) {
-    if (this.records[i].constructor.name === name) {
-      arr[arr.length] = this.records[i];
+  for (i = 0, max = this._records.length; i < max; i++) {
+    if (this._records[i].constructor.name === name) {
+      arr[arr.length] = this._records[i];
     }
   }
   return arr;
@@ -158,6 +178,7 @@ ElementList.prototype.getAllByClass = function(name) {
  *
  * @param {string} name The constructor name.
  * @param {Object} props A map of properties to update.
+ * @returns {Array} An array of elements.
  * @example
  * exports.elementList.updatePropsByClass('Point', {
  *    color: [0, 0, 0],
@@ -184,13 +205,13 @@ ElementList.prototype.updatePropsByClass = function(name, props) {
  * Finds an element by its 'id' and returns it.
  *
  * @param {string|number} id The element's id.
- * @return {Object} The element.
+ * @returns {Object} The element.
  */
 ElementList.prototype.getElement = function (id) {
 
   'use strict';
 
-  var i, max, records = this.records;
+  var i, max, records = this._records;
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
@@ -209,7 +230,7 @@ ElementList.prototype.destroyElement = function (id) {
 
   'use strict';
 
-  var i, max, records = this.records;
+  var i, max, records = this._records;
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
@@ -230,14 +251,14 @@ ElementList.prototype.destroyAll = function () {
 
   'use strict';
 
-  var i, records = this.records;
+  var i, records = this._records;
 
   for (i = records.length - 1; i >= 0; i -= 1) {
     if (records[i].world) {
       records[i].world.el.removeChild(records[i].el);
     }
   }
-  this.records = [];
+  this._records = [];
 };
 
 /**
@@ -250,21 +271,17 @@ ElementList.prototype.destroyByWorld = function (world) {
 
   'use strict';
 
-  var i, records = this.records;
+  var i, records = this._records;
 
   for (i = records.length - 1; i >= 0; i -= 1) {
-    if (records[i].world &&  records[i].world === world) {
+    if (records[i].world && records[i].world.id === world) {
       records[i].world.el.removeChild(records[i].el);
+      records.splice(i, 1);
     }
   }
 };
 exports.ElementList = ElementList;
-/*global exports, window, Modernizr */
-/**
-    A module representing a FloraSystem.
-    @module florasystem
- */
-
+/*global exports, window */
 /**
  * Creates a new FloraSystem.
  *
@@ -323,14 +340,13 @@ function FloraSystem(opt_options) {
       endColor: defaultColorList[i].endColor
     });
   }
-  //var stats = new exports.StatsDisplay();
 
   exports.animLoop = function () {
 
     var i, max,
         universe = exports.universe,
         world = universe.first(),
-        elements = exports.elementList.records;
+        elements = exports.elementList.all();
 
     if (universe.isPlaying) {
       window.requestAnimFrame(exports.animLoop);
@@ -348,28 +364,31 @@ function FloraSystem(opt_options) {
 
       exports.universe.updateClocks();
     }
-    /*if (universe.statsDisplay) {
-      universe.statsDisplay.update();
-    }*/
   };
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-FloraSystem.name = 'florasystem';
+FloraSystem.prototype.name = 'florasystem';
+
+/**
+ * A list of instructions to execute before the system starts.
+ */
+FloraSystem.setup = null;
 
 /**
  * Starts a FloraSystem.
- * @param {function} func A list of instructions to execute when the system starts.
+ * @param {function} func A list of instructions to execute before the system starts.
  */
 FloraSystem.prototype.start = function (func) {
 
   'use strict';
 
   func = exports.Interface.getDataType(func) === "function" ? func : function () {};
+  FloraSystem.setup = func;
 
-  func.call();
+  func();
   exports.animLoop();
 };
 
@@ -381,260 +400,281 @@ FloraSystem.prototype.destroy = function () {
 exports.FloraSystem = FloraSystem;
 /*global console, Modernizr */
 /*jshint supernew:true */
-/**
-    A module representing Utils.
-    @module Utils
- */
 
 /**
  * @namespace
- * @alias module:Utils
  */
-var Utils = (function () {
+var Utils = {};
+
+/**
+ * Use to extend the properties and methods of a superClass
+ * onto a subClass.
+ */
+Utils.extend = function(subClass, superClass) {
 
   'use strict';
 
-  /** @private */
-  var PI = Math.PI;
+  function F() {}
+  F.prototype = superClass.prototype;
+  subClass.prototype = new F;
+  subClass.prototype.constructor = subClass;
+};
 
-  /** @scope Utils */
-  return {
-    inherit: function(cls, superclass) {
-      function F() {}
-      F.prototype = superclass.prototype;
-      cls.prototype = new F;
-      cls.prototype.constructor = cls;
-    },
-    /**
-     * Re-maps a number from one range to another.
-     *
-     * @param {number} value The value to be converted.
-     * @param {number} min1 Lower bound of the value's current range.
-     * @param {number} max1 Upper bound of the value's current range.
-     * @param {number} min2 Lower bound of the value's target range.
-     * @param {number} max2 Upper bound of the value's target range.
-     * @returns {number} A number.
-     */
-    map: function(value, min1, max1, min2, max2) { // returns a new value relative to a new rangee
-      var unitratio = (value - min1) / (max1 - min1);
-      return (unitratio * (max2 - min2)) + min2;
-    },
-    /**
-     * Generates a psuedo-random number within a range.
-     *
-     * @param {number} low The low end of the range.
-     * @param {number} high The high end of the range.
-     * @param {boolean} [flt] Set to true to return a float.
-     * @returns {number} A number.
-     */
-    getRandomNumber: function(low, high, flt) {
-      if (flt) {
-        return Math.random()*(high-(low-1)) + low;
-      }
-      return Math.floor(Math.random()*(high-(low-1))) + low;
-    },
-    /**
-     * Converts degrees to radians.
-     *
-     * @param {number} degrees The degrees value to be converted.
-     * @returns {number} A number in radians.
-     */
-    degreesToRadians: function(degrees) {
-      if (typeof degrees !== 'undefined') {
-        return 2 * PI * (degrees/360);
-      } else {
-        if (typeof console !== 'undefined') {
-          console.log('Error: Utils.degreesToRadians is missing degrees param.');
-        }
-        return false;
-      }
-    },
-    /**
-     * Converts radians to degrees.
-     *
-     * @param {number} radians The radians value to be converted.
-     * @returns {number} A number in degrees.
-     */
-    radiansToDegrees: function(radians) {
-      if (typeof radians !== 'undefined') {
-        return radians * (180/PI);
-      } else {
-        if (typeof console !== 'undefined') {
-          console.log('Error: Utils.radiansToDegrees is missing radians param.');
-        }
-        return false;
-      }
-    },
-    /**
-     * Constrain a value within a range.
-     *
-     * @param {number} val The value to constrain.
-     * @param {number} low The lower bound of the range.
-     * @param {number} high The upper bound of the range.
-     * @returns {number} A number.
-     */
-    constrain: function(val, low, high) {
-      if (val > high) {
-        return high;
-      } else if (val < low) {
-        return low;
-      }
-      return val;
-    },
-    /**
-     * Returns a new object with all properties and methods of the
-     * old object copied to the new object's prototype.
-     *
-     * @param {Object} object The object to clone.
-     * @returns {Object} An object.
-     */
-    clone: function(object) {
-        function F() {}
-        F.prototype = object;
-        return new F;
-    },
-    /**
-     * Generate a unique id based on the current time in milliseconds + a random number.
-     *
-     * @returns {number} A number.
-     */
-    getUniqueId: function() {
-         var dateObj = new Date();
-         return dateObj.getTime() + this.getRandomNumber(0,1000000000);
-    },
-    /**
-     * Add an event listener to a DOM element.
-     *
-     * @param {Object} target The element to receive the event listener.
-     * @param {string} eventType The event type.
-     * @param {function} The function to run when the event is triggered.
-     */
-    addEvent: function(target, eventType, handler) {
-      if (target.addEventListener) { // W3C
-        this.addEventHandler = function(target, eventType, handler) {
-          target.addEventListener(eventType, handler, false);
-        };
-      } else if (target.attachEvent) { // IE
-        this.addEventHandler = function(target, eventType, handler) {
-          target.attachEvent("on" + eventType, handler);
-        };
-      }
-      this.addEventHandler(target, eventType, handler);
-    },
-    /**
-     * Logs a message to the browser console.
-     *
-     * @param {string} msg The message to log.
-     */
-    log: function(msg) {
-      if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
-        this.log = function(msg) {
-          console.log(msg); // output error to console
-        };
-        this.log.call(this, msg);
-      } else {
-       this.log = function () {}; // noop
-      }
-    },
-    /**
-     * @returns {Object} The current window width and height.
-     * @example getWindowDim() returns {width: 1024, height: 768}
-     */
-    getWindowSize: function() {
-      var d = {
-        'width' : false,
-        'height' : false
-      };
-      if (typeof(window.innerWidth) !== "undefined") {
-        d.width = window.innerWidth;
-      } else if (typeof(document.documentElement) !== "undefined" &&
-          typeof(document.documentElement.clientWidth) !== "undefined") {
-        d.width = document.documentElement.clientWidth;
-      } else if (typeof(document.body) !== "undefined") {
-        d.width = document.body.clientWidth;
-      }
-      if (typeof(window.innerHeight) !== "undefined") {
-        d.height = window.innerHeight;
-      } else if (typeof(document.documentElement) !== "undefined" &&
-          typeof(document.documentElement.clientHeight) !== "undefined") {
-        d.height = document.documentElement.clientHeight;
-      } else if (typeof(document.body) !== "undefined") {
-        d.height = document.body.clientHeight;
-      }
-      return d;
-    },
-    /**
-     * Concatenates several properties into a single list
-     * representing the style properties of an object.
-     *
-     * @param [Object] props A map of properties.
-     * @returns {string} A list of style properties.
-     */
-    getCSSText: function(props) {
+/**
+ * Re-maps a number from one range to another.
+ *
+ * @param {number} value The value to be converted.
+ * @param {number} min1 Lower bound of the value's current range.
+ * @param {number} max1 Upper bound of the value's current range.
+ * @param {number} min2 Lower bound of the value's target range.
+ * @param {number} max2 Upper bound of the value's target range.
+ * @returns {number} A number.
+ */
+Utils.map = function(value, min1, max1, min2, max2) { // returns a new value relative to a new range
 
-      var positionStr = '';
+  'use strict';
 
-      if (!props.color) {
-        props.color = [];
-        props.background = null;
-      } else {
-        props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
-      }
+  var unitratio = (value - min1) / (max1 - min1);
+  return (unitratio * (max2 - min2)) + min2;
+};
 
-      if (!props.borderColor) {
-        props.borderColor = [];
-        props.borderColorStr = '';
-      } else {
-        props.borderColorStr = props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')';
-      }
+/**
+ * Generates a psuedo-random number within a range.
+ *
+ * @param {number} low The low end of the range.
+ * @param {number} high The high end of the range.
+ * @param {boolean} [flt] Set to true to return a float.
+ * @returns {number} A number.
+ */
+Utils.getRandomNumber = function(low, high, flt) {
 
-      if (Modernizr.csstransforms3d) {
-        positionStr = [
-          '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-          '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-          '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
-        ].join(';');
-      } else if (Modernizr.csstransforms) {
-        positionStr = [
-          '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-          '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-          '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
-        ].join(';');
-      } else {
-        positionStr = [
-          'position: absolute',
-          'left: ' + props.x + 'px',
-          'top: ' + props.y + 'px'
-        ].join(';');
-      }
+  'use strict';
 
-      return [
-        positionStr,
-        'opacity: ' + props.o,
-        'width: ' + props.w + 'px',
-        'height: ' + props.h + 'px',
-        'background: ' + props.background,
-        'z-index: ' + props.z,
-        'border-width: ' + props.borderWidth + 'px',
-        'border-style: ' + props.borderStyle,
-        'border-color: ' + props.borderColorStr,
-        'border-radius: ' + props.borderRadius,
-        'box-shadow: ' + props.boxShadow
-      ].join(';');
+  if (flt) {
+    return Math.random()*(high-(low-1)) + low;
+  }
+  return Math.floor(Math.random()*(high-(low-1))) + low;
+};
+
+/**
+ * Converts degrees to radians.
+ *
+ * @param {number} degrees The degrees value to be converted.
+ * @returns {number} A number in radians.
+ */
+Utils.degreesToRadians = function(degrees) {
+
+  'use strict';
+
+  if (typeof degrees !== 'undefined') {
+    return 2 * Math.PI * (degrees/360);
+  } else {
+    if (typeof console !== 'undefined') {
+      console.log('Error: Utils.degreesToRadians is missing degrees param.');
     }
+    return false;
+  }
+};
+
+/**
+ * Converts radians to degrees.
+ *
+ * @param {number} radians The radians value to be converted.
+ * @returns {number} A number in degrees.
+ */
+Utils.radiansToDegrees = function(radians) {
+
+  'use strict';
+
+  if (typeof radians !== 'undefined') {
+    return radians * (180/Math.PI);
+  } else {
+    if (typeof console !== 'undefined') {
+      console.log('Error: Utils.radiansToDegrees is missing radians param.');
+    }
+    return false;
+  }
+};
+
+/**
+ * Constrain a value within a range.
+ *
+ * @param {number} val The value to constrain.
+ * @param {number} low The lower bound of the range.
+ * @param {number} high The upper bound of the range.
+ * @returns {number} A number.
+ */
+Utils.constrain = function(val, low, high) {
+
+  'use strict';
+
+  if (val > high) {
+    return high;
+  } else if (val < low) {
+    return low;
+  }
+  return val;
+};
+
+ /**
+ * Returns a new object with all properties and methods of the
+ * old object copied to the new object's prototype.
+ *
+ * @param {Object} object The object to clone.
+ * @returns {Object} An object.
+ */
+Utils.clone = function(object) {
+
+   'use strict';
+
+    function F() {}
+    F.prototype = object;
+    return new F;
+};
+
+/**
+ * Add an event listener to a DOM element.
+ *
+ * @param {Object} target The element to receive the event listener.
+ * @param {string} eventType The event type.
+ * @param {function} The function to run when the event is triggered.
+ */
+Utils.addEvent = function(target, eventType, handler) {
+
+  'use strict';
+
+  if (target.addEventListener) { // W3C
+    this.addEventHandler = function(target, eventType, handler) {
+      target.addEventListener(eventType, handler, false);
+    };
+  } else if (target.attachEvent) { // IE
+    this.addEventHandler = function(target, eventType, handler) {
+      target.attachEvent("on" + eventType, handler);
+    };
+  }
+  this.addEventHandler(target, eventType, handler);
+};
+
+/**
+ * Logs a message to the browser console.
+ *
+ * @param {string} msg The message to log.
+ */
+Utils.log = function(msg) {
+
+  'use strict';
+
+  if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+    this.log = function(msg) {
+      console.log(msg); // output error to console
+    };
+    this.log.call(this, msg);
+  } else {
+   this.log = function () {}; // noop
+  }
+};
+
+/**
+ * @returns {Object} The current window width and height.
+ * @example getWindowDim() returns {width: 1024, height: 768}
+ */
+Utils.getWindowSize = function() {
+
+  'use strict';
+
+  var d = {
+    'width' : false,
+    'height' : false
   };
-}());
+  if (typeof(window.innerWidth) !== "undefined") {
+    d.width = window.innerWidth;
+  } else if (typeof(document.documentElement) !== "undefined" &&
+      typeof(document.documentElement.clientWidth) !== "undefined") {
+    d.width = document.documentElement.clientWidth;
+  } else if (typeof(document.body) !== "undefined") {
+    d.width = document.body.clientWidth;
+  }
+  if (typeof(window.innerHeight) !== "undefined") {
+    d.height = window.innerHeight;
+  } else if (typeof(document.documentElement) !== "undefined" &&
+      typeof(document.documentElement.clientHeight) !== "undefined") {
+    d.height = document.documentElement.clientHeight;
+  } else if (typeof(document.body) !== "undefined") {
+    d.height = document.body.clientHeight;
+  }
+  return d;
+};
+
+/**
+ * Concatenates several properties into a single list
+ * representing the style properties of an object.
+ *
+ * @param [Object] props A map of properties.
+ * @returns {string} A list of style properties.
+ */
+Utils.getCSSText = function(props) {
+
+  'use strict';
+
+  var positionStr = '';
+
+  if (!props.color) {
+    props.color = [];
+    props.background = null;
+  } else {
+    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
+  }
+
+  if (!props.borderColor) {
+    props.borderColor = [];
+    props.borderColorStr = '';
+  } else {
+    props.borderColorStr = props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')';
+  }
+
+  if (Modernizr.csstransforms3d) {
+    positionStr = [
+      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
+    ].join(';');
+  } else if (Modernizr.csstransforms) {
+    positionStr = [
+      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
+      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
+    ].join(';');
+  } else {
+    positionStr = [
+      'position: absolute',
+      'left: ' + props.x + 'px',
+      'top: ' + props.y + 'px'
+    ].join(';');
+  }
+
+  return [
+    positionStr,
+    'opacity: ' + props.o,
+    'width: ' + props.w + 'px',
+    'height: ' + props.h + 'px',
+    'background: ' + props.background,
+    'z-index: ' + props.z,
+    'border-width: ' + props.borderWidth + 'px',
+    'border-style: ' + props.borderStyle,
+    'border-color: ' + props.borderColorStr,
+    'border-radius: ' + props.borderRadius,
+    'box-shadow: ' + props.boxShadow
+  ].join(';');
+};
+
 exports.Utils = Utils;
 /*jshint supernew:true */
-/**
-    A module representing a Vector.
-    @module Vector
- */
 /**
  * Creates a new Vector.
  *
  * @param {number} [opt_x = 0] The x location.
  * @param {number} [opt_y = 0] The y location.
+ * @constructor
  */
 function Vector(opt_x, opt_y) {
   'use strict';
@@ -873,46 +913,14 @@ Vector.prototype.dot = function(vector) {
   return this.x * vector.x + this.y * vector.y;
 };
 exports.Vector = Vector;
-var defaultColorList = [
-  {
-    name: 'heat',
-    startColor: [255, 132, 86],
-    endColor: [175, 47, 0]
-  },
-  {
-    name: 'cold',
-    startColor: [88, 129, 135],
-    endColor: [171, 244, 255]
-  },
-  {
-    name: 'food',
-    startColor: [186, 255, 130],
-    endColor: [84, 187, 0]
-  },
-  {
-    name: 'oxygen',
-    startColor: [109, 215, 255],
-    endColor: [0, 140, 192]
-  },
-  {
-    name: 'light',
-    startColor: [255, 227, 127],
-    endColor: [189, 148, 0]
-  }
-];
-
-exports.defaultColorList = defaultColorList;
 /*global exports */
-/**
-    A module representing a ColorPalette.
-    @module ColorPalette
- */
-
 /**
  * Creates a new ColorPalette object.
  *
- * ColorPalette instances have a 'colors' array that stores
- * arrays of color RGB values.
+ * Use this class to create a palette of colors randomly selected
+ * from a range created with initial start and end colors. You
+ * can also generate gradients that smoothly interpolate from
+ * start and end colors.
  *
  * @constructor
  */
@@ -920,80 +928,25 @@ function ColorPalette(opt_options) {
 
   'use strict';
 
-  this.gradients = [];
-  this.colors = [];
+  /**
+   * Holds a list of arrays representing 3-digit color values
+   * smoothly interpolated between start and end colors.
+   * @private
+   */
+  this._gradients = [];
+
+  /**
+   * Holds a list of arrays representing 3-digit color values
+   * randomly selected from start and end colors.
+   * @private
+   */
+  this._colors = [];
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-ColorPalette.name = 'colorpalette';
-
-/**
- * Creates an array of RGB color values interpolated between
- * a passed startColor and endColor.
- *
- * @param {Array} startColor The beginning of the color array.
- * @param {Array} startColor The end of the color array.
- * @param {number} totalColors The total numnber of colors to create.
- * @returns {Array} An array of color values.
- */
-ColorPalette.createColorRange = function(startColor, endColor, totalColors) {
-
-  'use strict';
-
-  var i, colors = [],
-      startRed = startColor[0],
-      startGreen = startColor[1],
-      startBlue = startColor[2],
-      endRed = endColor[0],
-      endGreen = endColor[1],
-      endBlue = endColor[2],
-      diffRed, diffGreen, diffBlue,
-      newRed, newGreen, newBlue;
-
-  diffRed = endRed - startRed;
-  diffGreen = endGreen - startGreen;
-  diffBlue = endBlue - startBlue;
-
-  for (i = 0; i < totalColors; i++) {
-    newRed = parseInt(diffRed * i/totalColors, 10) + startRed;
-    newGreen = parseInt(diffGreen * i/totalColors, 10) + startGreen;
-    newBlue = parseInt(diffBlue * i/totalColors, 10) + startBlue;
-    colors.push([newRed, newGreen, newBlue]);
-  }
-  return colors;
-};
-
-/**
- * Adds color arrays representing a color range to the gradients property.
- *
- * @param {Object} options A set of required options
- *    that includes:
- *    options.startColor {Array} The beginning color of the color range.
- *    options.endColor {Array} The end color of the color range.
- */
-ColorPalette.prototype.createGradient = function(options) {
-
-  'use strict';
-
-  var requiredOptions = {
-    startColor: 'array',
-    endColor: 'array'
-  };
-
-  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
-
-    this.startColor = options.startColor;
-    this.endColor = options.endColor;
-    this.totalColors = options.totalColors || 255;
-    if (this.totalColors > 0) {
-      this.gradients.push(ColorPalette.createColorRange(this.startColor, this.endColor, this.totalColors));
-    } else {
-      throw new Error('ColorPalette: total colors must be greater than zero.');
-    }
-  }
-};
+ColorPalette.prototype.name = 'colorpalette';
 
 /**
  * Creates a color range of 255 colors from the passed start and end colors.
@@ -1021,13 +974,45 @@ ColorPalette.prototype.addColor = function(options) {
   if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
 
     ln = exports.Utils.getRandomNumber(options.min, options.max);
-    colors = ColorPalette.createColorRange(options.startColor, options.endColor, 255);
+    colors = ColorPalette._createColorRange(options.startColor, options.endColor, 255);
 
     for (i = 0; i < ln; i++) {
-      this.colors.push(colors[exports.Utils.getRandomNumber(0, colors.length - 1)]);
+      this._colors.push(colors[exports.Utils.getRandomNumber(0, colors.length - 1)]);
     }
   }
   return this;
+};
+
+/**
+ * Adds color arrays representing a color range to the gradients property.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.startColor {Array} The beginning color of the color range.
+ *    options.endColor {Array} The end color of the color range.
+ *    options.totalColors {number} The total number of colors in the gradient.
+ * @private
+ */
+ColorPalette.prototype.createGradient = function(options) {
+
+  'use strict';
+
+  var requiredOptions = {
+    startColor: 'array',
+    endColor: 'array'
+  };
+
+  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+
+    this.startColor = options.startColor;
+    this.endColor = options.endColor;
+    this.totalColors = options.totalColors || 255;
+    if (this.totalColors > 0) {
+      this._gradients.push(ColorPalette._createColorRange(this.startColor, this.endColor, this.totalColors));
+    } else {
+      throw new Error('ColorPalette: total colors must be greater than zero.');
+    }
+  }
 };
 
 /**
@@ -1038,8 +1023,9 @@ ColorPalette.prototype.addColor = function(options) {
 ColorPalette.prototype.getColor = function() {
 
   'use strict';
-  if (this.colors.length > 0) {
-    return this.colors[exports.Utils.getRandomNumber(0, this.colors.length - 1)];
+
+  if (this._colors.length > 0) {
+    return this._colors[exports.Utils.getRandomNumber(0, this._colors.length - 1)];
   } else {
     throw new Error('ColorPalette.getColor: You must add colors via addColor() before using getColor().');
   }
@@ -1057,25 +1043,82 @@ ColorPalette.prototype.createSampleStrip = function(parent) {
 
   var i, max, div;
 
-  for (i = 0, max = this.colors.length; i < max; i++) {
+  for (i = 0, max = this._colors.length; i < max; i++) {
     div = document.createElement('div');
     div.className = 'color-sample-strip';
-    div.style.background = 'rgb(' + this.colors[i].toString() + ')';
+    div.style.background = 'rgb(' + this._colors[i].toString() + ')';
     parent.appendChild(div);
   }
+};
+
+/**
+ * Creates an array of RGB color values interpolated between
+ * a passed startColor and endColor.
+ *
+ * @param {Array} startColor The beginning of the color array.
+ * @param {Array} startColor The end of the color array.
+ * @param {number} totalColors The total numnber of colors to create.
+ * @returns {Array} An array of color values.
+ */
+ColorPalette._createColorRange = function(startColor, endColor, totalColors) {
+
+  'use strict';
+
+  var i, colors = [],
+      startRed = startColor[0],
+      startGreen = startColor[1],
+      startBlue = startColor[2],
+      endRed = endColor[0],
+      endGreen = endColor[1],
+      endBlue = endColor[2],
+      diffRed, diffGreen, diffBlue,
+      newRed, newGreen, newBlue;
+
+  diffRed = endRed - startRed;
+  diffGreen = endGreen - startGreen;
+  diffBlue = endBlue - startBlue;
+
+  for (i = 0; i < totalColors; i++) {
+    newRed = parseInt(diffRed * i/totalColors, 10) + startRed;
+    newGreen = parseInt(diffGreen * i/totalColors, 10) + startGreen;
+    newBlue = parseInt(diffBlue * i/totalColors, 10) + startBlue;
+    colors.push([newRed, newGreen, newBlue]);
+  }
+  return colors;
 };
 
 exports.ColorPalette = ColorPalette;
 /*global exports */
 /**
-    A module representing a ColorTable.
-    @module ColorTable
+ * Creates a new ColorTable.
+ *
+ * Use a color table to create a map of keywords to color ranges.
+ * Instead of manually passing start and end colors when creating
+ * color palettes, you can use getColor() and pass a keyword to
+ * receive the start and end colors.
+ *
+ * @example
+ * var heat = defaultColors.getColor('heat');
+ * console.log(heat.startColor); // -> [255, 132, 86]
+ * console.log(heat.endColor); // -> [175, 47, 0]
+ *
+ * @constructor
  */
-
 function ColorTable() {
   'use strict';
 }
 
+/**
+ * Adds a key to the color table with start and end color values.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.name {number} The name of the entry in the color table.
+ *    options.startColor {Array} The beginning color of the color range.
+ *    options.endColor {Array} The end color of the color range.
+ *
+ * @returns {Object} The color table.
+ */
 ColorTable.prototype.addColor = function(options) {
 
   'use strict';
@@ -1096,10 +1139,35 @@ ColorTable.prototype.addColor = function(options) {
 };
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-ColorTable.name = 'colortable';
+ColorTable.prototype.name = 'colortable';
 
+/**
+ * Returns start and end colors from a key in the color table.
+ *
+ * @param {Object} options A set of options.
+ *    Required:
+ *    options.name {number} The name of the entry in the color table.
+ *    Optional:
+ *    options.startColor {boolean} Pass true to only return the start color.
+ *    options.endColor {boolean} Pass true to only return the end color.
+ * @param {Array} startColor An array representing the start color. ex: [255, 100, 50].
+ * @param {Array} endColor An array representing the end color. ex: [155, 50, 10].
+ * @returns {Object|Array} Either an object with startColor and endColor
+ *    properties or an array representing a start or end color.
+ *
+ * @example
+ * var heat = myColorTable.getColor('heat');
+ * console.log(heat.startColor); // -> [255, 132, 86]
+ * console.log(heat.endColor); // -> [175, 47, 0]
+ *
+ * var heat = myColorTable.getColor('heat', true);
+ * console.log(heat); // -> [255, 132, 86]
+ *
+ * var heat = myColorTable.getColor('heat', false, true);
+ * console.log(heat); // -> [175, 47, 0]
+ */
 ColorTable.prototype.getColor = function(name, startColor, endColor) {
 
   'use strict';
@@ -1139,12 +1207,9 @@ ColorTable.prototype.getColor = function(name, startColor, endColor) {
 exports.ColorTable = ColorTable;
 /*global exports */
 /**
-    A module representing a BorderPalette.
-    @module BorderPalette
- */
-
-/**
  * Creates a new BorderPalette object.
+ *
+ * Use this class to create a palette of border styles.
  *
  * @constructor
  */
@@ -1152,14 +1217,27 @@ function BorderPalette() {
 
   'use strict';
 
-  this.borders = [];
+  /**
+   * Holds a list of border styles.
+   * @private
+   */
+  this._borders = [];
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-BorderPalette.name = 'borderpalette';
+BorderPalette.prototype.name = 'borderpalette';
 
+/**
+ * Adds a random number of the passed border style to the 'borders' array.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.min {number} The minimum number of styles to add.
+ *    options.max {number} The maximum number of styles to add.
+ *    options.style {string} The border style.
+ */
 BorderPalette.prototype.addBorder = function(options) {
 
   'use strict';
@@ -1168,38 +1246,35 @@ BorderPalette.prototype.addBorder = function(options) {
     min: 'number',
     max: 'number',
     style: 'string'
-  }, i, ln, colors;
+  }, i, ln;
 
   if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
 
     ln = exports.Utils.getRandomNumber(options.min, options.max);
 
     for (i = 0; i < ln; i++) {
-      this.borders.push(options.style);
+      this._borders.push(options.style);
     }
   }
   return this;
 };
 
+/**
+ * @returns A style randomly selected from the 'borders' property.
+ * @throws {Error} If the 'borders' property is empty.
+ */
 BorderPalette.prototype.getBorder = function() {
 
   'use strict';
 
-  if (this.borders.length > 0) {
-    return this.borders[exports.Utils.getRandomNumber(0, this.borders.length - 1)];
+  if (this._borders.length > 0) {
+    return this._borders[exports.Utils.getRandomNumber(0, this._borders.length - 1)];
   } else {
     throw new Error('BorderPalette.getBorder: You must add borders via addBorder() before using getBorder().');
   }
 };
-
-
 exports.BorderPalette = BorderPalette;
 /*jshint bitwise:false */
-/** 
-    A module representing SimplexNoise.
-    @module SimplexNoise
- */
-
 /**
 * https://gist.github.com/304522
 * Ported from Stefan Gustavson's java implementation
@@ -1223,179 +1298,178 @@ var SimplexNoise = (function (r) {
     r = Math;
   }
   var i;
-  var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]]; 
+  var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
   var p = [];
   for (i = 0; i < 256; i += 1) {
     p[i] = Math.floor(r.random()*256);
   }
-  // To remove the need for index wrapping, double the permutation table length 
-  var perm = []; 
+  // To remove the need for index wrapping, double the permutation table length
+  var perm = [];
   for(i = 0; i < 512; i += 1) {
     perm[i] = p[i & 255];
-  } 
+  }
 
-  // A lookup table to traverse the simplex around a given point in 4D. 
-  // Details can be found where this table is used, in the 4D noise method. 
-  var simplex = [ 
-  [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0], 
-  [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0], 
-  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
-  [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0], 
-  [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0], 
-  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0], 
-  [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0], 
+  // A lookup table to traverse the simplex around a given point in 4D.
+  // Details can be found where this table is used, in the 4D noise method.
+  var simplex = [
+  [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0],
+  [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0],
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
+  [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0],
+  [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0],
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
+  [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0],
   [2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
 
-/** @scope SimplexNoise */
 return {
   grad3: grad3,
   p: p,
   perm: perm,
   simplex: simplex,
-  dot: function(g, x, y) { 
+  dot: function(g, x, y) {
     return g[0] * x + g[1] * y;
   },
-  noise: function(xin, yin) { 
-    var n0, n1, n2; // Noise contributions from the three corners 
-    // Skew the input space to determine which simplex cell we're in 
-    var F2 = 0.5*(Math.sqrt(3.0)-1.0); 
-    var s = (xin+yin)*F2; // Hairy factor for 2D 
-    var i = Math.floor(xin+s); 
-    var j = Math.floor(yin+s); 
-    var G2 = (3.0-Math.sqrt(3.0))/6.0; 
-    var t = (i+j)*G2; 
-    var X0 = i-t; // Unskew the cell origin back to (x,y) space 
-    var Y0 = j-t; 
-    var x0 = xin-X0; // The x,y distances from the cell origin 
-    var y0 = yin-Y0; 
-    // For the 2D case, the simplex shape is an equilateral triangle. 
-    // Determine which simplex we are in. 
-    var i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords 
-    if(x0>y0) {i1=1; j1=0;} // lower triangle, XY order: (0,0)->(1,0)->(1,1) 
-    else {i1=0; j1=1;}      // upper triangle, YX order: (0,0)->(0,1)->(1,1) 
-    // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and 
-    // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where 
-    // c = (3-sqrt(3))/6 
-    var x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords 
-    var y1 = y0 - j1 + G2; 
-    var x2 = x0 - 1.0 + 2.0 * G2; // Offsets for last corner in (x,y) unskewed coords 
-    var y2 = y0 - 1.0 + 2.0 * G2; 
-    // Work out the hashed gradient indices of the three simplex corners 
-    var ii = i & 255; 
-    var jj = j & 255; 
-    var gi0 = this.perm[ii+this.perm[jj]] % 12; 
-    var gi1 = this.perm[ii+i1+this.perm[jj+j1]] % 12; 
-    var gi2 = this.perm[ii+1+this.perm[jj+1]] % 12; 
-    // Calculate the contribution from the three corners 
-    var t0 = 0.5 - x0*x0-y0*y0; 
+  noise: function(xin, yin) {
+    var n0, n1, n2; // Noise contributions from the three corners
+    // Skew the input space to determine which simplex cell we're in
+    var F2 = 0.5*(Math.sqrt(3.0)-1.0);
+    var s = (xin+yin)*F2; // Hairy factor for 2D
+    var i = Math.floor(xin+s);
+    var j = Math.floor(yin+s);
+    var G2 = (3.0-Math.sqrt(3.0))/6.0;
+    var t = (i+j)*G2;
+    var X0 = i-t; // Unskew the cell origin back to (x,y) space
+    var Y0 = j-t;
+    var x0 = xin-X0; // The x,y distances from the cell origin
+    var y0 = yin-Y0;
+    // For the 2D case, the simplex shape is an equilateral triangle.
+    // Determine which simplex we are in.
+    var i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
+    if(x0>y0) {i1=1; j1=0;} // lower triangle, XY order: (0,0)->(1,0)->(1,1)
+    else {i1=0; j1=1;}      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
+    // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
+    // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
+    // c = (3-sqrt(3))/6
+    var x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
+    var y1 = y0 - j1 + G2;
+    var x2 = x0 - 1.0 + 2.0 * G2; // Offsets for last corner in (x,y) unskewed coords
+    var y2 = y0 - 1.0 + 2.0 * G2;
+    // Work out the hashed gradient indices of the three simplex corners
+    var ii = i & 255;
+    var jj = j & 255;
+    var gi0 = this.perm[ii+this.perm[jj]] % 12;
+    var gi1 = this.perm[ii+i1+this.perm[jj+j1]] % 12;
+    var gi2 = this.perm[ii+1+this.perm[jj+1]] % 12;
+    // Calculate the contribution from the three corners
+    var t0 = 0.5 - x0*x0-y0*y0;
     if (t0 < 0) {
       n0 = 0.0;
-    } else { 
-      t0 *= t0; 
-      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient 
-    } 
-    var t1 = 0.5 - x1*x1-y1*y1; 
-    if (t1 < 0) {
-      n1 = 0.0; 
-    } else { 
-      t1 *= t1; 
-      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1); 
+    } else {
+      t0 *= t0;
+      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient
     }
-    var t2 = 0.5 - x2*x2-y2*y2; 
+    var t1 = 0.5 - x1*x1-y1*y1;
+    if (t1 < 0) {
+      n1 = 0.0;
+    } else {
+      t1 *= t1;
+      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1);
+    }
+    var t2 = 0.5 - x2*x2-y2*y2;
     if (t2 < 0) {
-      n2 = 0.0; 
-    } else { 
-      t2 *= t2; 
-      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2); 
-    } 
-    // Add contributions from each corner to get the final noise value. 
-    // The result is scaled to return values in the interval [-1,1]. 
-    return 70.0 * (n0 + n1 + n2); 
-  },
-  noise3d: function(xin, yin, zin) { 
-    var n0, n1, n2, n3; // Noise contributions from the four corners 
-    // Skew the input space to determine which simplex cell we're in 
-    var F3 = 1.0/3.0; 
-    var s = (xin+yin+zin)*F3; // Very nice and simple skew factor for 3D 
-    var i = Math.floor(xin+s); 
-    var j = Math.floor(yin+s); 
-    var k = Math.floor(zin+s); 
-    var G3 = 1.0/6.0; // Very nice and simple unskew factor, too 
-    var t = (i+j+k)*G3; 
-    var X0 = i-t; // Unskew the cell origin back to (x,y,z) space 
-    var Y0 = j-t; 
-    var Z0 = k-t; 
-    var x0 = xin-X0; // The x,y,z distances from the cell origin 
-    var y0 = yin-Y0; 
-    var z0 = zin-Z0; 
-    // For the 3D case, the simplex shape is a slightly irregular tetrahedron. 
-    // Determine which simplex we are in. 
-    var i1, j1, k1; // Offsets for second corner of simplex in (i,j,k) coords 
-    var i2, j2, k2; // Offsets for third corner of simplex in (i,j,k) coords 
-    if(x0>=y0) { 
-    if(y0>=z0) 
-    { i1=1; j1=0; k1=0; i2=1; j2=1; k2=0; } // X Y Z order 
-    else if(x0>=z0) { i1=1; j1=0; k1=0; i2=1; j2=0; k2=1; } // X Z Y order 
-    else { i1=0; j1=0; k1=1; i2=1; j2=0; k2=1; } // Z X Y order 
-    } 
-    else { // x0<y0 
-    if(y0<z0) { i1=0; j1=0; k1=1; i2=0; j2=1; k2=1; } // Z Y X order 
-    else if(x0<z0) { i1=0; j1=1; k1=0; i2=0; j2=1; k2=1; } // Y Z X order 
-    else { i1=0; j1=1; k1=0; i2=1; j2=1; k2=0; } // Y X Z order 
-    } 
-    // A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z), 
-    // a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (x,y,z), and 
-    // a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where 
-    // c = 1/6.
-    var x1 = x0 - i1 + G3; // Offsets for second corner in (x,y,z) coords 
-    var y1 = y0 - j1 + G3; 
-    var z1 = z0 - k1 + G3; 
-    var x2 = x0 - i2 + 2.0*G3; // Offsets for third corner in (x,y,z) coords 
-    var y2 = y0 - j2 + 2.0*G3; 
-    var z2 = z0 - k2 + 2.0*G3; 
-    var x3 = x0 - 1.0 + 3.0*G3; // Offsets for last corner in (x,y,z) coords 
-    var y3 = y0 - 1.0 + 3.0*G3; 
-    var z3 = z0 - 1.0 + 3.0*G3; 
-    // Work out the hashed gradient indices of the four simplex corners 
-    var ii = i & 255; 
-    var jj = j & 255; 
-    var kk = k & 255; 
-    var gi0 = this.perm[ii+this.perm[jj+this.perm[kk]]] % 12; 
-    var gi1 = this.perm[ii+i1+this.perm[jj+j1+this.perm[kk+k1]]] % 12; 
-    var gi2 = this.perm[ii+i2+this.perm[jj+j2+this.perm[kk+k2]]] % 12; 
-    var gi3 = this.perm[ii+1+this.perm[jj+1+this.perm[kk+1]]] % 12; 
-    // Calculate the contribution from the four corners 
-    var t0 = 0.6 - x0*x0 - y0*y0 - z0*z0; 
-    if (t0 < 0) {
-      n0 = 0.0; 
-    } else { 
-      t0 *= t0; 
-      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0, z0); 
+      n2 = 0.0;
+    } else {
+      t2 *= t2;
+      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2);
     }
-    var t1 = 0.6 - x1*x1 - y1*y1 - z1*z1; 
+    // Add contributions from each corner to get the final noise value.
+    // The result is scaled to return values in the interval [-1,1].
+    return 70.0 * (n0 + n1 + n2);
+  },
+  noise3d: function(xin, yin, zin) {
+    var n0, n1, n2, n3; // Noise contributions from the four corners
+    // Skew the input space to determine which simplex cell we're in
+    var F3 = 1.0/3.0;
+    var s = (xin+yin+zin)*F3; // Very nice and simple skew factor for 3D
+    var i = Math.floor(xin+s);
+    var j = Math.floor(yin+s);
+    var k = Math.floor(zin+s);
+    var G3 = 1.0/6.0; // Very nice and simple unskew factor, too
+    var t = (i+j+k)*G3;
+    var X0 = i-t; // Unskew the cell origin back to (x,y,z) space
+    var Y0 = j-t;
+    var Z0 = k-t;
+    var x0 = xin-X0; // The x,y,z distances from the cell origin
+    var y0 = yin-Y0;
+    var z0 = zin-Z0;
+    // For the 3D case, the simplex shape is a slightly irregular tetrahedron.
+    // Determine which simplex we are in.
+    var i1, j1, k1; // Offsets for second corner of simplex in (i,j,k) coords
+    var i2, j2, k2; // Offsets for third corner of simplex in (i,j,k) coords
+    if(x0>=y0) {
+    if(y0>=z0)
+    { i1=1; j1=0; k1=0; i2=1; j2=1; k2=0; } // X Y Z order
+    else if(x0>=z0) { i1=1; j1=0; k1=0; i2=1; j2=0; k2=1; } // X Z Y order
+    else { i1=0; j1=0; k1=1; i2=1; j2=0; k2=1; } // Z X Y order
+    }
+    else { // x0<y0
+    if(y0<z0) { i1=0; j1=0; k1=1; i2=0; j2=1; k2=1; } // Z Y X order
+    else if(x0<z0) { i1=0; j1=1; k1=0; i2=0; j2=1; k2=1; } // Y Z X order
+    else { i1=0; j1=1; k1=0; i2=1; j2=1; k2=0; } // Y X Z order
+    }
+    // A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z),
+    // a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (x,y,z), and
+    // a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where
+    // c = 1/6.
+    var x1 = x0 - i1 + G3; // Offsets for second corner in (x,y,z) coords
+    var y1 = y0 - j1 + G3;
+    var z1 = z0 - k1 + G3;
+    var x2 = x0 - i2 + 2.0*G3; // Offsets for third corner in (x,y,z) coords
+    var y2 = y0 - j2 + 2.0*G3;
+    var z2 = z0 - k2 + 2.0*G3;
+    var x3 = x0 - 1.0 + 3.0*G3; // Offsets for last corner in (x,y,z) coords
+    var y3 = y0 - 1.0 + 3.0*G3;
+    var z3 = z0 - 1.0 + 3.0*G3;
+    // Work out the hashed gradient indices of the four simplex corners
+    var ii = i & 255;
+    var jj = j & 255;
+    var kk = k & 255;
+    var gi0 = this.perm[ii+this.perm[jj+this.perm[kk]]] % 12;
+    var gi1 = this.perm[ii+i1+this.perm[jj+j1+this.perm[kk+k1]]] % 12;
+    var gi2 = this.perm[ii+i2+this.perm[jj+j2+this.perm[kk+k2]]] % 12;
+    var gi3 = this.perm[ii+1+this.perm[jj+1+this.perm[kk+1]]] % 12;
+    // Calculate the contribution from the four corners
+    var t0 = 0.6 - x0*x0 - y0*y0 - z0*z0;
+    if (t0 < 0) {
+      n0 = 0.0;
+    } else {
+      t0 *= t0;
+      n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0, z0);
+    }
+    var t1 = 0.6 - x1*x1 - y1*y1 - z1*z1;
     if (t1 < 0) {
-      n1 = 0.0; 
-    } else { 
-      t1 *= t1; 
-      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1, z1); 
-    } 
-    var t2 = 0.6 - x2*x2 - y2*y2 - z2*z2; 
+      n1 = 0.0;
+    } else {
+      t1 *= t1;
+      n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1, z1);
+    }
+    var t2 = 0.6 - x2*x2 - y2*y2 - z2*z2;
     if(t2 < 0) {
-      n2 = 0.0; 
-    } else { 
-      t2 *= t2; 
-      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2, z2); 
-    } 
-    var t3 = 0.6 - x3*x3 - y3*y3 - z3*z3; 
+      n2 = 0.0;
+    } else {
+      t2 *= t2;
+      n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2, z2);
+    }
+    var t3 = 0.6 - x3*x3 - y3*y3 - z3*z3;
     if(t3 <0 ) {
-      n3 = 0.0; 
-    } else { 
-      t3 *= t3; 
-      n3 = t3 * t3 * this.dot(this.grad3[gi3], x3, y3, z3); 
-    } 
-    // Add contributions from each corner to get the final noise value. 
-    // The result is scaled to stay just inside [-1,1] 
-    return 32.0*(n0 + n1 + n2 + n3); 
+      n3 = 0.0;
+    } else {
+      t3 *= t3;
+      n3 = t3 * t3 * this.dot(this.grad3[gi3], x3, y3, z3);
+    }
+    // Add contributions from each corner to get the final noise value.
+    // The result is scaled to stay just inside [-1,1]
+    return 32.0*(n0 + n1 + n2 + n3);
   }
 };
 
@@ -1403,129 +1477,126 @@ return {
 random: function () {
 
   'use strict';
-  
+
   return 0.1;
 }
 }));
 exports.SimplexNoise = SimplexNoise;
 /*global console */
 /** @namespace */
-var Interface = (function () {
+var Interface = {};
+
+/**
+ * @description Compares passed options to a set of required options.
+ * @param {Object} optionsPassed An object containing options passed to a function.
+ * @param {Object} optionsRequired An object containing a function's required options.
+ * @param {string=} opt_from A message or identifier from the calling function.
+ * @returns {boolean} Returns true if all required options are present and of the right data type.
+ *     Returns false if any required options are missing or are the wrong data type. Also returns false
+ *     if any of the passed options are empty.
+ * @example
+ * optionsPassed = {
+ *  form: document.getElementById("form"),
+ *    color: "blue",
+ *  total: "a whole bunch",
+ *   names: ["jimmy", "joey"]
+ * }
+ * optionsRequired = {
+ *   form: "object",
+ *   color: "string",
+ *   total: "number|string",
+ *   names: "array"
+ * }
+ * checkRequiredOptions(optionsPassed, optionsRequired) returns true in this case.
+ *
+ * Notice you can separate required options data types with a pipe character to allow multiple data types.
+ */
+Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_from) {
 
   'use strict';
 
-  /** @scope Interface */
-  return {
+  var i, msg, check = true;
 
-    /**
-     * @description Compares passed options to a set of required options.
-     * @param {Object} optionsPassed An object containing options passed to a function.
-     * @param {Object} optionsRequired An object containing a function's required options.
-     * @param {string=} opt_from A message or identifier from the calling function.
-     * @returns {boolean} Returns true if all required options are present and of the right data type.
-     *     Returns false if any required options are missing or are the wrong data type. Also returns false
-     *     if any of the passed options are empty.
-     * @example
-     * optionsPassed = {
-     *  form: document.getElementById("form"),
-     *    color: "blue",
-     *  total: "a whole bunch",
-     *   names: ["jimmy", "joey"]
-     * }
-     * optionsRequired = {
-     *   form: "object",
-     *   color: "string",
-     *   total: "number|string",
-     *   names: "array"
-     * }
-     * checkRequiredOptions(optionsPassed, optionsRequired) returns true in this case.
-     *
-     * Notice you can separate required options data types with a pipe character to allow multiple data types.
-     */
-    checkRequiredParams: function (optionsPassed, optionsRequired, opt_from) {
+  for (i in optionsRequired) { // loop thru required options
 
-      var i, msg, check = true;
+    if (optionsRequired.hasOwnProperty(i)) {
 
-      for (i in optionsRequired) { // loop thru required options
+      try {
 
-        if (optionsRequired.hasOwnProperty(i)) {
+        // if no options were passed
+        if (typeof optionsPassed === "undefined") {
+          throw new Error('checkRequiredOptions: No options were passed.');
+        }
 
-          try {
+        // if there is not a corresponding key in the passed options; or options passed value is blank
+        if (!this.checkDataType(this.getDataType(optionsPassed[i]), optionsRequired[i].split('|')) || optionsPassed[i] === "") {
 
-            // if no options were passed
-            if (typeof optionsPassed === "undefined") {
-              throw new Error('checkRequiredOptions: No options were passed.');
-            }
+          check = false;
 
-            // if there is not a corresponding key in the passed options; or options passed value is blank
-            if (!this.checkDataType(this.getDataType(optionsPassed[i]), optionsRequired[i].split('|')) || optionsPassed[i] === "") {
-
-              check = false;
-
-              if (optionsPassed[i] === '') {
-                msg = 'checkRequiredOptions: required option "' + i + '" is empty.';
-              } else if (typeof optionsPassed[i] === 'undefined') {
-                msg = 'checkRequiredOptions: required option "' + i + '" is missing from passed options.';
-              } else {
-                msg = 'checkRequiredOptions: passed option "' + i + '" must be type ' + optionsRequired[i] +
-                '. Passed as ' + this.getDataType(optionsPassed[i]) + '.';
-              }
-
-              throw new Error(msg);
-            }
-          } catch (err) {
-            console.log('ERROR: ' + err.message + (opt_from ? ' from: ' + opt_from : ''));
+          if (optionsPassed[i] === '') {
+            msg = 'checkRequiredOptions: required option "' + i + '" is empty.';
+          } else if (typeof optionsPassed[i] === 'undefined') {
+            msg = 'checkRequiredOptions: required option "' + i + '" is missing from passed options.';
+          } else {
+            msg = 'checkRequiredOptions: passed option "' + i + '" must be type ' + optionsRequired[i] +
+            '. Passed as ' + this.getDataType(optionsPassed[i]) + '.';
           }
+
+          throw new Error(msg);
         }
+      } catch (err) {
+        console.log('ERROR: ' + err.message + (opt_from ? ' from: ' + opt_from : ''));
       }
-      return check;
-    },
-    /**
-     * Loops through an array of data types and checks if the
-     * passed option matches any entry.
-     *
-     * @param {string} option The data type to check.
-     * @param {array} typesToMatch An array of data types to check option against.
-     * @returns {boolean} If option matches any entry in typesToMatch,
-     * return true. Else, returns false.
-     */
-    checkDataType: function(option, typesToMatch) {
-
-      var i, max;
-
-      for (i = 0, max = typesToMatch.length; i < max; i++) {
-        if (option === typesToMatch[i]) {
-          return true;
-        }
-      }
-      return false;
-    },
-    /**
-     * Checks for data type.
-     *
-     * @returns {string} The data type of the passed variable.
-     */
-    getDataType: function (element) {
-
-      if (Object.prototype.toString.call(element) === '[object Array]') {
-        return 'array';
-      }
-
-      if (Object.prototype.toString.call(element) === '[object NodeList]') {
-        return 'nodeList';
-      }
-
-      return typeof element;
     }
-  };
-}());
+  }
+  return check;
+};
+
+/**
+ * Loops through an array of data types and checks if the
+ * passed option matches any entry.
+ *
+ * @param {string} option The data type to check.
+ * @param {array} typesToMatch An array of data types to check option against.
+ * @returns {boolean} If option matches any entry in typesToMatch,
+ * return true. Else, returns false.
+ */
+Interface.checkDataType = function(option, typesToMatch) {
+
+  'use strict';
+
+  var i, max;
+
+  for (i = 0, max = typesToMatch.length; i < max; i++) {
+    if (option === typesToMatch[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * Checks for data type.
+ *
+ * @returns {string} The data type of the passed variable.
+ */
+Interface.getDataType = function(element) {
+
+  'use strict';
+
+  if (Object.prototype.toString.call(element) === '[object Array]') {
+    return 'array';
+  }
+
+  if (Object.prototype.toString.call(element) === '[object NodeList]') {
+    return 'nodeList';
+  }
+
+  return typeof element;
+};
+
 exports.Interface = Interface;
 /*global exports */
-/**
-    A module representing a Universe.
-    @module Universe
- */
-
 /**
  * Creates a new Universe.
  *
@@ -1534,22 +1605,32 @@ exports.Interface = Interface;
  * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
  * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
  * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
- * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
  */
 function Universe(opt_options) {
 
   'use strict';
 
-  var me = this,
+  var i, max, records, me = this,
       options = opt_options || {};
 
   this.isPlaying = options.isPlaying === false ? false : true;
   this.zSorted = !!options.zSorted;
   this.showStats = !!options.showStats;
-  this.statsInterval = options.statsInterval || 0;
 
-  this.records = []; // !! private
-  this.statsDisplay = null;
+  /**
+   * Holds a list of references to worlds
+   * in the universe.
+   * @private
+   */
+  this._records = [];
+
+  /**
+   * Holds a reference to the stats display.
+   * @private
+   */
+  this._statsDisplay = null;
+
+  // Events
 
   // save the current and last mouse position
   exports.Utils.addEvent(document.body, 'mousemove', function(e) {
@@ -1559,13 +1640,26 @@ function Universe(opt_options) {
 
   // toggle the world playstate
   exports.Utils.addEvent(document, 'keyup', function(e) {
-    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
+    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) { // pause
       me.isPlaying = !me.isPlaying;
       if (me.isPlaying) {
         window.requestAnimFrame(exports.animLoop);
       }
-    } else if (e.keyCode === exports.config.keyMap.toggleStatsDisplay) {
-      if (!me.statsDisplay) {
+    } else if (e.keyCode === exports.config.keyMap.resetSystem) { // reset system
+        // loop thru each world and destroy all elements
+        records = me.all();
+        for (i = 0, max = records.length; i < max; i += 1) {
+          exports.elementList.destroyByWorld(records[i].id);
+        }
+        // call initial setup
+        exports.FloraSystem.setup();
+        // if system is pause, restart
+        if (!me.isPlaying) {
+          me.isPlaying = true;
+          window.requestAnimFrame(exports.animLoop);
+        }
+    } else if (e.keyCode === exports.config.keyMap.toggleStatsDisplay) { // stats
+      if (!me._statsDisplay) {
         me.createStats();
       } else {
         me.destroyStats();
@@ -1575,7 +1669,7 @@ function Universe(opt_options) {
 
   // key control
   exports.Utils.addEvent(document.body, 'keydown', function(e) {
-    var i, max, elements = exports.elementList.records,
+    var i, max, elements = exports.elementList.all(),
         obj, desired, steer, target,
         r, theta, x, y;
 
@@ -1662,12 +1756,12 @@ function Universe(opt_options) {
 /**
  * Define a name property.
  */
-Universe.name = 'universe';
+Universe.prototype.name = 'universe';
 
 /**
  * Adds a new World to the 'records' array.
  *
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} An array of elements.
  */
 Universe.prototype.addWorld = function(opt_options) {
 
@@ -1675,25 +1769,25 @@ Universe.prototype.addWorld = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.records.push(new exports.World(options));
+  this._records.push(new exports.World(options));
 
   // copy reference to new World in elementList
-  exports.elementList.add(this.records[this.records.length - 1]);
+  exports.elementList.add(this._records[this._records.length - 1]);
 
-  return this.records;
+  return this._records;
 };
 
 /**
  * Returns the first item in 'records' array.
  *
- * @return {Object} The first world.
+ * @returns {Object} The first world.
  */
 Universe.prototype.first = function() {
 
   'use strict';
 
-  if (this.records[0]) {
-    return this.records[0];
+  if (this._records[0]) {
+    return this._records[0];
   } else {
     return null;
   }
@@ -1702,14 +1796,14 @@ Universe.prototype.first = function() {
 /**
  * Returns the last item in 'records' array.
  *
- * @return {Object} The last world.
+ * @returns {Object} The last world.
  */
 Universe.prototype.last = function() {
 
   'use strict';
 
-  if (this.records[this.records.length - 1]) {
-    return this.records[this.records.length - 1];
+  if (this._records[this._records.length - 1]) {
+    return this._records[this._records.length - 1];
   } else {
     return null;
   }
@@ -1718,7 +1812,7 @@ Universe.prototype.last = function() {
 /**
  * Update the properties of a world.
  *
- * @return {Object} The last world.
+ * @returns {Object} The last world.
  */
 Universe.prototype.update = function(opt_props, opt_world) {
 
@@ -1750,43 +1844,39 @@ Universe.prototype.update = function(opt_props, opt_world) {
     world.width = parseInt(world.el.style.width.replace('px', ''), 10);
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
-
-  /*if (props.showStats && window.addEventListener) {
-    this.createStats();
-  }*/
 };
 
 /**
  * Returns the entire 'records' array.
  *
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} arr An array of elements.
  */
 Universe.prototype.all = function() {
   'use strict';
-  return this.records;
+  return this._records;
 };
 
 /**
  * Returns the total number of worlds.
  *
- * @return {number} Total number of worlds.
+ * @returns {number} Total number of worlds.
  */
 Universe.prototype.count = function() {
   'use strict';
-  return this.records.length;
+  return this._records.length;
 };
 
 /**
  * Finds an element by its 'id' and returns it.
  *
  * @param {string|number} id The element's id.
- * @return {Object} The element.
+ * @returns {Object} The element.
  */
 Universe.prototype.getWorldById = function (id) {
 
   'use strict';
 
-  var i, max, records = this.records;
+  var i, max, records = this._records;
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
@@ -1805,7 +1895,7 @@ Universe.prototype.destroyWorld = function (id) {
 
   'use strict';
 
-  var i, max, records = this.records;
+  var i, max, records = this._records;
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
@@ -1836,8 +1926,8 @@ Universe.prototype.destroyAll = function () {
 
   exports.elementList.destroyAll();
 
-  for (var i = this.records.length - 1; i >= 0; i -= 1) {
-    this.destroyWorld(this.records[i].id);
+  for (var i = this._records.length - 1; i >= 0; i -= 1) {
+    this.destroyWorld(this._records[i].id);
   }
 };
 
@@ -1848,36 +1938,23 @@ Universe.prototype.updateClocks = function () {
 
   'use strict';
 
-  for (var i = 0, max = this.records.length; i < max; i += 1) {
-    this.records[i].clock += 1;
+  for (var i = 0, max = this._records.length; i < max; i += 1) {
+    this._records[i].clock += 1;
   }
 };
 
 /**
- * Creates a new instance of mr doob's stats monitor.
+ * Creates a new instance of the StatsDisplay.
  */
 Universe.prototype.createStats = function() {
 
   'use strict';
 
-  this.statsDisplay = new exports.StatsDisplay();
-
-  /*var stats = new exports.Stats();
-
-  stats.getDomElement().style.position = 'absolute'; // Align top-left
-  stats.getDomElement().style.left = '0px';
-  stats.getDomElement().style.top = '0px';
-  stats.getDomElement().id = 'stats';
-
-  document.body.appendChild(stats.getDomElement());
-
-  this.statsInterval = setInterval(function() {
-      stats.update();
-  }, 1000 / 60);*/
+  this._statsDisplay = new exports.StatsDisplay();
 };
 
 /**
- * Destroys an instance of mr doob's stats monitor.
+ * Destroys an instance of the StatsDisplay
  */
 Universe.prototype.destroyStats = function() {
 
@@ -1885,23 +1962,14 @@ Universe.prototype.destroyStats = function() {
 
   var el = document.getElementById('statsDisplay');
 
-  this.statsDisplay = null;
+  this._statsDisplay = null;
 
   if (el) {
     el.parentNode.removeChild(el);
   }
-
-  /*clearInterval(this.statsInterval);
-  document.body.removeChild(document.getElementById('stats'));*/
 };
 exports.Universe = Universe;
-/*global exports, $, Modernizr */
-
-/**
-    A module representing World.
-    @module World
- */
-
+/*global exports */
 /**
  * Creates a new World.
  *
@@ -1982,8 +2050,8 @@ function World(opt_options) {
   } else {
     this.el = options.el;
     this.id = this.el.id; // use the element's id as the record id
-    this.width = $(this.el).width();
-    this.height = $(this.el).height();
+    this.width = this.el.offsetWidth;
+    this.height = this.el.offsetHeight;
   }
 
   this.el.className = 'world floraElement';
@@ -1994,7 +2062,11 @@ function World(opt_options) {
 
   // events
 
-  if (window.addEventListener && this.isDeviceMotion) {
+  exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
+    me.resize.call(me);
+  });
+
+  /*if (window.addEventListener && this.isDeviceMotion) {
     window.addEventListener("devicemotion", function(e) { // listens for device motion events
       me.devicemotion.call(me, e);
     }, false);
@@ -2004,19 +2076,13 @@ function World(opt_options) {
     window.addEventListener("deviceorientation", function(e) { // listens for device orientation events
       me.deviceorientation.call(me, e);
     }, false);
-  }
-
-
-  exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
-    me.resize.call(me);
-  });
-
+  }*/
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-World.name = 'world';
+World.prototype.name = 'world';
 
 /**
  * Increments as each World is created.
@@ -2047,6 +2113,8 @@ World.prototype.configure = function(opt_el) { // should be called after doc rea
  * change the world's style.
  *
  * @param {Object} props A hash of properties to update.
+ *    Optional properties:
+ *    opt_props.style A map of css styles to apply.
  */
 World.prototype.update = function(opt_props) {
 
@@ -2061,12 +2129,12 @@ World.prototype.update = function(opt_props) {
     }
   }
 
-  if (props.el) { // if updating the element; update the width and height
+  if (props.el) { // if updating the world's DOM element; update the width and height
     this.width = parseInt(this.el.style.width.replace('px', ''), 10);
     this.height = parseInt(this.el.style.height.replace('px', ''), 10);
   }
 
-  /*if (!this.el.style.setAttribute) { // WC3
+  if (!this.el.style.setAttribute) { // WC3
     if (props.style) {
       for (i in props.style) {
         if (props.style.hasOwnProperty(i)) {
@@ -2084,11 +2152,7 @@ World.prototype.update = function(opt_props) {
       }
     }
     this.el.style.setAttribute('cssText', cssText, 0);
-  }*/
-
-  /*if (props.showStats && window.addEventListener) {
-    this.createStats();
-  }*/
+  }
 };
 
 /**
@@ -2103,7 +2167,7 @@ World.prototype.resize = function() {
   var i, max, elementLoc, controlCamera, winSize = exports.Utils.getWindowSize(),
     windowWidth = winSize.width,
     windowHeight = winSize.height,
-    elements = exports.elementList.records;
+    elements = exports.elementList.all();
 
   // check of any elements control the camera
   for (i = 0, max = elements.length; i < max; i += 1) {
@@ -2135,11 +2199,9 @@ World.prototype.resize = function() {
  * Called from a window devicemotion event, updates the world's gravity
  * relative to the accelerometer's values.
  */
-World.prototype.devicemotion = function() {
+World.prototype.devicemotion = function(e) {
 
   'use strict';
-
-  var e = arguments[0];
 
   if (window.orientation === 0) {
     if (this.isTopDown) {
@@ -2153,9 +2215,11 @@ World.prototype.devicemotion = function() {
     this.gravity = new exports.Vector(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
   }
 
-  /*if (World.showDeviceOrientation) {
-    $(".console").val("orientation: " + window.orientation + " x: " + e.accelerationIncludingGravity.x.toFixed(2) + " y: " + e.accelerationIncludingGravity.y.toFixed(2) + " z: " + e.accelerationIncludingGravity.z.toFixed(2));
-  }*/
+  if (this.showDeviceOrientation) {
+    document.getElementById('compassDisplay').val("orientation: " + window.orientation + " x: " +
+        e.accelerationIncludingGravity.x.toFixed(2) + " y: " + e.accelerationIncludingGravity.y.toFixed(2) + " z: " +
+        e.accelerationIncludingGravity.z.toFixed(2));
+  }
 };
 
 /**
@@ -2174,7 +2238,8 @@ World.prototype.deviceorientation = function(e) {
   this.compassHeading = compassHeading;
 
   if (this.showCompassHeading) {
-    $(".console").val("heading: " + compassHeading.toFixed(2) + " accuracy: +/- " + compassAccuracy);
+    document.getElementById('compassDisplay').val("heading: " + compassHeading.toFixed(2) +
+        " accuracy: +/- " +compassAccuracy);
   }
 };
 
@@ -2230,11 +2295,6 @@ World.prototype.draw = function() {
 exports.World = World;
 /*global exports */
 /**
-    A module representing a Camera.
-    @module camera
- */
-
-/**
  * Creates a new Camera.
  *
  * @constructor
@@ -2253,17 +2313,12 @@ function Camera(opt_options) {
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Camera.name = 'camera';
+Camera.prototype.name = 'camera';
 
 exports.Camera = Camera;
-/*global exports, $, console */
-/**
-    A module representing an Obj.
-    @module Obj
- */
-
+/*global exports, console */
 /**
  * Creates a new Obj. All Flora elements extend Obj.
  * @constructor
@@ -2295,19 +2350,19 @@ Obj.events =[
 /**
  * Define a name property.
  */
-Obj.name = 'obj';
+Obj.prototype.name = 'obj';
 
 /**
- * Called by a mouseenter event listener.
+ * Called by a mouseover event listener.
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseenter = function(e) {
+Obj.mouseover = function(e) {
 
   'use strict';
 
   this.isMouseOut = false;
-  //clearInterval(this.myInterval);
+  clearInterval(this.mouseOutInterval);
 };
 
 /**
@@ -2319,12 +2374,12 @@ Obj.mousedown = function(e) {
 
   'use strict';
 
-  var target = $(e.target);
+  var target = e.target;
 
   this.isPressed = true;
   this.isMouseOut = false;
-  this.offsetX = e.pageX - target.position().left;
-  this.offsetY = e.pageY - target.position().top;
+  this.offsetX = e.pageX - target.offsetLeft;
+  this.offsetY = e.pageY - target.offsetTop;
 };
 
 /**
@@ -2336,21 +2391,20 @@ Obj.mousemove = function(e) {
 
   'use strict';
 
-  var x, y,
-    worldOffset = $(".world").offset();
+  var x, y;
 
   if (this.isPressed) {
 
     this.isMouseOut = false;
 
-    x = e.pageX - worldOffset.left;
-    y = e.pageY - worldOffset.top;
+    x = e.pageX - this.world.el.offsetLeft;
+    y = e.pageY - this.world.el.offsetTop;
 
-    this.item.location = new exports.Vector(x, y);
-
-    //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
-      //this.draw();
-    //}
+    if (Obj.mouseIsInsideWorld(this.world)) {
+      this.location = new exports.Vector(x, y);
+    } else {
+      this.isPressed = false;
+    }
   }
 };
 
@@ -2364,46 +2418,60 @@ Obj.mouseup = function(e) {
   'use strict';
 
   this.isPressed = false;
-  //this.item.trigger("saveCurrentPosition");
 };
 
 /**
- * Called by a mouseleave event listener.
+ * Called by a mouseout event listener.
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseleave = function(e) {
+Obj.mouseout = function(e) {
 
   'use strict';
 
   var me = this,
-    item = this.item,
-    x, y,
-    worldOffset = $(".world").offset();
+    x, y;
 
   if (this.isPressed) {
-    this.isMouseOut = true;
-    this.mouseOutInterval = setInterval(function () { // if mouse is too fast for block update, update via an interval until it catches up
 
+    this.isMouseOut = true;
+
+    this.mouseOutInterval = setInterval(function () { // if mouse is too fast for block update, update via an interval until it catches up
 
       if (me.isPressed && me.isMouseOut) {
 
-        x = exports.Flora.World.mouseX - worldOffset.left;
-        y = exports.Flora.World.mouseY - worldOffset.top;
+        x = exports.mouse.loc.x - me.world.el.offsetLeft;
+        y = exports.mouse.loc.y - me.world.el.offsetTop;
 
-        item.location = new exports.Vector(x, y);
-
-        //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
-          //me.draw();
-        //}
+        me.location = new exports.Vector(x, y);
       }
     }, 16);
-
-    $(document).bind("mouseup", function () {
-      me.isPressed = false;
-    });
-
   }
+};
+
+/**
+ * Checks if mouse location is inside the world.
+ *
+ * @param {Object} world A Flora world.
+ * @returns {boolean} True if mouse is inside world; False if
+ *    mouse is outside world.
+ */
+Obj.mouseIsInsideWorld = function(world) {
+
+  'use strict';
+
+  var x = exports.mouse.loc.x,
+      y = exports.mouse.loc.y;
+
+  if (world) {
+    if (x > world.location.x &&
+      x < world.location.x + world.width &&
+      y > world.location.y &&
+      y < world.location.y + world.height) {
+      return true;
+    }
+  }
+  return false;
 };
 
 /**
@@ -2433,12 +2501,7 @@ Obj.prototype.draw = function() {
 };
 
 exports.Obj = Obj;
-/*global exports, $ */
-/**
-    A module representing a Mover.
-    @module Mover
- */
-
+/*global exports */
 /**
  * Creates a new Mover and appends it to Flora.elements.
  *
@@ -2497,7 +2560,7 @@ function Mover(opt_options) {
   'use strict';
 
   var options = opt_options || {},
-      elements = exports.elementList.records || [],
+      elements = exports.elementList.all() || [],
       liquids = exports.liquids || [],
       repellers = exports.repellers || [],
       attractors = exports.attractors || [],
@@ -2508,13 +2571,9 @@ function Mover(opt_options) {
       oxygen = exports.oxygen || [],
       food = exports.food || [],
       i, max, evt, world,
-      constructorName = this.constructor.name || 'anon'; // this a problem when code is minified
+      constructorName = this.name || 'anon'; // this a problem when code is minified
 
-  for (i in options) {
-    if (options.hasOwnProperty(i)) {
-      this[i] = options[i];
-    }
-  }
+  exports.Obj.call(this, options);
 
   this.id = options.id || constructorName.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
@@ -2549,6 +2608,7 @@ function Mover(opt_options) {
   this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
   this.followMouse = !!options.followMouse;
   this.isStatic = !!options.isStatic;
+  this.isDraggable = !!options.isDraggable;
   this.checkEdges = options.checkEdges === false ? false : options.checkEdges || true;
   this.wrapEdges = !!options.wrapEdges;
   this.avoidEdges = !!options.avoidEdges;
@@ -2607,23 +2667,24 @@ function Mover(opt_options) {
     exports.camera.controlObj = this;
 
     // need to position world so controlObj is centered on screen
-    world.location.x = -world.width/2 + $(window).width()/2 + (world.width/2 - this.location.x);
-    world.location.y = -world.height/2 + $(window).height()/2 + (world.height/2 - this.location.y);
+    world.location.x = -world.width/2 + (exports.Utils.getWindowSize().width)/2 + (world.width/2 - this.location.x);
+    world.location.y = -world.height/2 + (exports.Utils.getWindowSize().height)/2 + (world.height/2 - this.location.y);
   }
 
-  /*inst.el.addEventListener("mouseenter", function (e) { Obj.mouseenter.call(inst, e); }, false);
-  inst.el.addEventListener("mousedown", function (e) { Obj.mousedown.call(inst, e); }, false);
-  inst.el.addEventListener("mousemove", function (e) { Obj.mousemove.call(inst, e); }, false);
-  inst.el.addEventListener("mouseup", function (e) { Obj.mouseup.call(inst, e); }, false);
-  inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/
-
+  if (this.isDraggable) {
+    exports.Utils.addEvent(this.el, 'mouseover', exports.Obj.mouseover.bind(this));
+    exports.Utils.addEvent(this.el, 'mousedown', exports.Obj.mousedown.bind(this));
+    exports.Utils.addEvent(this.el, 'mousemove', exports.Obj.mousemove.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseup', exports.Obj.mouseup.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseout', exports.Obj.mouseout.bind(this));
+  }
 }
-exports.Utils.inherit(Mover, exports.Obj);
+exports.Utils.extend(Mover, exports.Obj);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Mover.name = 'mover';
+Mover.prototype.name = 'mover';
 
 /**
  * Increments as each Mover is created.
@@ -2641,7 +2702,7 @@ Mover.prototype.step = function() {
   'use strict';
 
   var i, max, dir, friction, force, nose, r, theta, x, y, sensor,
-    world = this.world, elements = exports.elementList.records;
+    world = this.world, elements = exports.elementList.all();
 
   //
 
@@ -2719,7 +2780,7 @@ Mover.prototype.step = function() {
 
     if (this.followMouse) { // follow mouse
       var t = {
-        location: new exports.Vector(world.mouseX, world.mouseY)
+        location: new exports.Vector(exports.mouse.loc.x, exports.mouse.loc.y)
       };
       this.applyForce(this.seek(t));
     }
@@ -3257,11 +3318,6 @@ Mover.prototype.getVelocity = function (type) {
 exports.Mover = Mover;
 /*global exports */
 /**
-    A module representing a Walker.
-    @module Walker
- */
-
-/**
  * Creates a new Walker.
  *
  * @constructor
@@ -3315,12 +3371,12 @@ function Walker(opt_options) {
   this.wrapEdges = !!options.wrapEdges;
   this.isStatic = !!options.isStatic;
 }
-exports.Utils.inherit(Walker, exports.Mover);
+exports.Utils.extend(Walker, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Walker.name = 'walker';
+Walker.prototype.name = 'walker';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -3421,16 +3477,9 @@ Walker.prototype.step = function () {
 exports.Walker = Walker;
 /*global exports */
 /**
-    A module representing an Oscillator.
-    @module Oscillator
- */
-
-/**
  * Creates a new Oscillator.
  * Oscillators simulate wave patterns and move according to
- * amplitude and angular velocity. As step() is called, the
- * object's location is determined by the output of the
- * sine function.
+ * amplitude and angular velocity.
  *
  * @constructor
  * @extends Mover
@@ -3480,12 +3529,12 @@ function Oscillator(opt_options) {
   this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
   this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
 }
-exports.Utils.inherit(Oscillator, exports.Mover);
+exports.Utils.extend(Oscillator, exports.Mover);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
  */
-Oscillator.name = 'oscillator';
+Oscillator.prototype.name = 'oscillator';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -3543,11 +3592,6 @@ Oscillator.prototype.step = function () {
 exports.Oscillator = Oscillator;
 /*global exports */
 /**
-    A module representing a Particle.
-    @module Particle
- */
-
-/**
  * Creates a new Particle.
  *
  * @constructor
@@ -3570,12 +3614,12 @@ exports.Mover.call(this, options);
 this.lifespan = options.lifespan || 40;
 this.borderRadius = options.borderRadius || '100%';
 }
-exports.Utils.inherit(Particle, exports.Mover);
+exports.Utils.extend(Particle, exports.Mover);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
  */
-Particle.name = 'particle';
+Particle.prototype.name = 'particle';
 
 Particle.prototype.step = function () {
 
@@ -3639,11 +3683,6 @@ Particle.prototype.step = function () {
 };
 exports.Particle = Particle;
 /*global exports */
-/**
-    A module representing a ParticleSystem.
-    @module ParticleSystem
- */
-
 /**
  * Creates a new ParticleSystem.
  *
@@ -3720,20 +3759,15 @@ exports.Particle = Particle;
     };
   };
 }
-exports.Utils.inherit(ParticleSystem, exports.Mover);
+exports.Utils.extend(ParticleSystem, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-ParticleSystem.name = 'particlesystem';
+ParticleSystem.prototype.name = 'particlesystem';
 
 exports.ParticleSystem = ParticleSystem;
 /*global exports */
-/**
-    A module representing a Liquid object.
-    @module Liquid
- */
-
 /**
  * Creates a new Liquid.
  *
@@ -3763,20 +3797,15 @@ function Liquid(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.inherit(Liquid, exports.Mover);
+exports.Utils.extend(Liquid, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Liquid.name = 'liquid';
+Liquid.prototype.name = 'liquid';
 
 exports.Liquid = Liquid;
 /*global exports */
-/**
-    A module representing a Attractor object.
-    @module Attractor
- */
-
 /**
  * Creates a new Attractor object.
  *
@@ -3806,20 +3835,15 @@ function Attractor(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.inherit(Attractor, exports.Mover);
+exports.Utils.extend(Attractor, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Attractor.name = 'attractor';
+Attractor.prototype.name = 'attractor';
 
 exports.Attractor = Attractor;
 /*global exports */
-/**
-    A module representing a Repeller object.
-    @module Repeller
- */
-
 /**
  * Creates a new Repeller object.
  *
@@ -3849,20 +3873,15 @@ function Repeller(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.inherit(Repeller, exports.Mover);
+exports.Utils.extend(Repeller, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Repeller.name = 'repeller';
+Repeller.prototype.name = 'repeller';
 
 exports.Repeller = Repeller;
 /*global exports */
-/**
-    A module representing a Heat object.
-    @module Heat
- */
-
 /**
  * Creates a new Heat object.
  *
@@ -3890,20 +3909,15 @@ function Heat(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Heat, exports.Mover);
+exports.Utils.extend(Heat, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Heat.name = 'heat';
+Heat.prototype.name = 'heat';
 
 exports.Heat = Heat;
 /*global exports */
-/**
-    A module representing a Cold object.
-    @module Cold
- */
-
 /**
  * Creates a new Cold object.
  *
@@ -3931,20 +3945,15 @@ function Cold(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Cold, exports.Mover);
+exports.Utils.extend(Cold, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Cold.name = 'cold';
+Cold.prototype.name = 'cold';
 
 exports.Cold = Cold;
 /*global exports */
-/**
-    A module representing a Light object.
-    @module Light
- */
-
 /**
  * Creates a new Light object.
  *
@@ -3972,20 +3981,15 @@ function Light(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Light, exports.Mover);
+exports.Utils.extend(Light, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Light.name = 'light';
+Light.prototype.name = 'light';
 
 exports.Light = Light;
 /*global exports */
-/**
-    A module representing an Oxygen object.
-    @module Oxygen
- */
-
 /**
  * Creates a new Oxygen object.
  *
@@ -4013,20 +4017,15 @@ function Oxygen(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Oxygen, exports.Mover);
+exports.Utils.extend(Oxygen, exports.Mover);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
  */
-Oxygen.name = 'oxygen';
+Oxygen.prototype.name = 'oxygen';
 
 exports.Oxygen = Oxygen;
 /*global exports */
-/**
-    A module representing a Food object.
-    @module Food
- */
-
 /**
  * Creates a new Food object.
  *
@@ -4054,20 +4053,15 @@ function Food(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Food, exports.Mover);
+exports.Utils.extend(Food, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Food.name = 'food';
+Food.prototype.name = 'food';
 
 exports.Food = Food;
 /*global exports */
-/**
-    A module representing a Predator object.
-    @module Predator
- */
-
 /**
  * Creates a new Predator object.
  *
@@ -4095,20 +4089,15 @@ function Predator(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 75;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Predator, exports.Mover);
+exports.Utils.extend(Predator, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Predator.name = 'predator';
+Predator.prototype.name = 'predator';
 
 exports.Predator = Predator;
 /*global exports */
-/**
-    A module representing a Sensor object.
-    @module Sensor
- */
-
 /**
  * Creates a new Sensor object.
  *
@@ -4146,12 +4135,12 @@ function Sensor(opt_options) {
   this.target = options.target || null;
   this.activated = !!options.activated;
 }
-exports.Utils.inherit(Sensor, exports.Mover);
+exports.Utils.extend(Sensor, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Sensor.name = 'sensor';
+Sensor.prototype.name = 'sensor';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -4328,12 +4317,7 @@ Sensor.prototype.isInside = function(item, container, sensitivity) {
   return false;
 };
 exports.Sensor = Sensor;
-/*global console, exports, Modernizr */
-/**
-    A module representing a FlowFieldMarker.
-    @module FlowFieldMarker
- */
-
+/*global console, exports */
 /**
  * Creates a new FlowFieldMarker.
  *
@@ -4394,17 +4378,12 @@ function FlowFieldMarker(options) {
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-FlowFieldMarker.name = 'flowfieldmarker';
+FlowFieldMarker.prototype.name = 'flowfieldmarker';
 
 exports.FlowFieldMarker = FlowFieldMarker;
 /*global exports */
-/**
-    A module representing a FlowField.
-    @module FlowField
- */
-
 /**
  * Creates a new FlowField.
  *
@@ -4432,9 +4411,9 @@ function FlowField(opt_options) {
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-FlowField.name = 'flowfield';
+FlowField.prototype.name = 'flowfield';
 
 /**
  * Builds a FlowField.
@@ -4491,11 +4470,6 @@ FlowField.prototype.build = function() {
 exports.FlowField = FlowField;
 /*global exports */
 /**
-    A module representing a Connector.
-    @module Connector
- */
-
-/**
  * Creates a new Connector.
  *
  * @constructor
@@ -4524,12 +4498,12 @@ function Connector(opt_options) {
   this.parentB = options.parentB || null;
   this.color = 'transparent';
 }
-exports.Utils.inherit(Connector, exports.Mover);
+exports.Utils.extend(Connector, exports.Mover);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
  */
-Connector.name = 'connector';
+Connector.prototype.name = 'connector';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -4547,11 +4521,6 @@ Connector.prototype.step = function() {
 
 exports.Connector = Connector;
 /*global exports */
-/**
-    A module representing a Point.
-    @module Point
- */
-
 /**
  * Creates a new Point.
  *
@@ -4580,20 +4549,15 @@ function Point(opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.length = options.length === 0 ? 0 : options.length|| 30;
 }
-exports.Utils.inherit(Point, exports.Mover);
+exports.Utils.extend(Point, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Point.name = 'point';
+Point.prototype.name = 'point';
 
 exports.Point = Point;
 /*global exports */
-/**
-    A module representing a Caption object.
-    @module Attractor
- */
-
 /**
  * Creates a new Caption object.
  * Use captions to communicate short messages to users like a title
@@ -4603,246 +4567,141 @@ exports.Point = Point;
  *
  * @param {Object} [opt_options] Options.
  * @param {string} [opt_options.position = 'top left'] A text representation
- *    of the object's location. Possible values are 'top left', 'top center', 'top right',
+ *    of the caption's location. Possible values are 'top left', 'top center', 'top right',
  *    'bottom left', 'bottom center', 'bottom right', 'center'.
  * @param {string} [opt_options.text = ''] The caption's text.
  * @param {number} [opt_options.opacity = 0.75] The caption's opacity.
+ * @param {string} [opt_options.borderWidth = '1px'] The caption's border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] The caption's border style.
+ * @param {Array|string} [opt_options.borderColor = 0.75] The caption's border color.
  */
 function Caption(opt_options) {
 
   'use strict';
 
-  var options = opt_options || {},
-      textNode;
+  var options = opt_options || {};
 
   // if a world is not passed, use the first world in the universe
   this.world = options.world || exports.universe.first();
   this.position = options.position || 'top left';
   this.text = options.text || '';
-  textNode = document.createTextNode(this.text);
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.borderWidth = options.borderWidth || '1px';
   this.borderStyle = options.borderStyle || 'solid';
-  this.borderColor = options.borderColor || '#ccc';
-  this.el = document.createElement('div');
-  this.el.id = 'caption';
-  this.el.className = 'caption ' + this.position;
-  this.el.style.opacity = this.opacity;
-  this.el.style.borderWidth = this.borderWidth;
-  this.el.style.borderStyle = this.borderStyle;
-  this.el.style.borderColor = this.borderColor;
-  this.el.appendChild(textNode);
-  this.world.el.appendChild(this.el);
+  this.borderColor = options.borderColor || [204, 204, 204];
+  this.colorMode = options.colorMode || 'rgb';
+
+  /**
+   * Holds a reference to the caption's DOM elements.
+   * @private
+   */
+  this._el = document.createElement('div');
+  this._el.id = 'caption';
+  this._el.className = 'caption ' + this.position;
+  this._el.style.opacity = this.opacity;
+  this._el.style.borderWidth = this.borderWidth;
+  this._el.style.borderStyle = this.borderStyle;
+  if (typeof this.borderColor === 'string') {
+    this._el.style.borderColor = this.borderColor;
+  } else {
+    this._el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
+        ', ' + this.borderColor[2] + ')';
+  }
+  this._el.appendChild(document.createTextNode(this.text));
+  if (document.getElementById('caption')) {
+    document.getElementById('caption').parentNode.removeChild(document.getElementById('caption'));
+  }
+  this.world.el.appendChild(this._el);
 }
 
 /**
  * Define a name property.
  */
-Caption.name = 'caption';
+Caption.prototype.name = 'caption';
 
-exports.Caption = Caption;
 /**
- * Creates a new Stats object.
- *
- * @author mr.doob / http://mrdoob.com/
- * @constructor
+ * Removes the caption's DOM element.
  */
-function Stats() {
+Caption.prototype.destroy = function() {
 
   'use strict';
 
-  var _container, _bar, _mode = 0, _modes = 2,
-  _frames = 0, _time = 0, _timeLastFrame = _time, _timeLastSecond = _time,
-  _fps = 0, _fpsMin = 1000, _fpsMax = 0, _fpsDiv, _fpsText, _fpsGraph,
-  _fpsColors = [ [ 16, 16, 48 ], [ 0, 255, 255 ] ],
-  _ms = 0, _msMin = 1000, _msMax = 0, _msDiv, _msText, _msGraph,
-  _msColors = [ [ 16, 48, 16 ], [ 0, 255, 0 ] ];
+  this._el.parentNode.removeChild(this._el);
+};
 
-  if (Date.now) {
-    _time = Date.now();
-  }
-  _timeLastFrame = _time;
-  _timeLastSecond = _time;
-
-  _container = document.createElement( 'div' );
-  _container.style.cursor = 'pointer';
-  _container.style.width = '80px';
-  _container.style.opacity = '0.9';
-  _container.style.zIndex = '10001';
-  _container.addEventListener( 'mousedown', function ( event ) {
-
-    event.preventDefault();
-
-    _mode = ( _mode + 1 ) % _modes;
-
-    if (_mode === 0) {
-      _fpsDiv.style.display = 'block';
-      _msDiv.style.display = 'none';
-    } else {
-      _fpsDiv.style.display = 'none';
-      _msDiv.style.display = 'block';
-    }
-  }, false );
-
-  // fps
-
-  _fpsDiv = document.createElement( 'div' );
-  _fpsDiv.style.textAlign = 'left';
-  _fpsDiv.style.lineHeight = '1.2em';
-  _fpsDiv.style.backgroundColor = 'rgb(' + Math.floor( _fpsColors[ 0 ][ 0 ] / 2 ) + ',' + Math.floor( _fpsColors[ 0 ][ 1 ] / 2 ) + ',' + Math.floor( _fpsColors[ 0 ][ 2 ] / 2 ) + ')';
-  _fpsDiv.style.padding = '0 0 3px 3px';
-  _container.appendChild( _fpsDiv );
-
-  _fpsText = document.createElement( 'div' );
-  _fpsText.style.fontFamily = 'Helvetica, Arial, sans-serif';
-  _fpsText.style.fontSize = '9px';
-  _fpsText.style.color = 'rgb(' + _fpsColors[ 1 ][ 0 ] + ',' + _fpsColors[ 1 ][ 1 ] + ',' + _fpsColors[ 1 ][ 2 ] + ')';
-  _fpsText.style.fontWeight = 'bold';
-  _fpsText.innerHTML = 'FPS';
-  _fpsDiv.appendChild( _fpsText );
-
-  _fpsGraph = document.createElement( 'div' );
-  _fpsGraph.style.position = 'relative';
-  _fpsGraph.style.width = '74px';
-  _fpsGraph.style.height = '30px';
-  _fpsGraph.style.backgroundColor = 'rgb(' + _fpsColors[ 1 ][ 0 ] + ',' + _fpsColors[ 1 ][ 1 ] + ',' + _fpsColors[ 1 ][ 2 ] + ')';
-  _fpsDiv.appendChild( _fpsGraph );
-
-  while ( _fpsGraph.children.length < 74 ) {
-    _bar = document.createElement( 'span' );
-    _bar.style.width = '1px';
-    _bar.style.height = '30px';
-    _bar.style.cssFloat = 'left';
-    _bar.style.backgroundColor = 'rgb(' + _fpsColors[ 0 ][ 0 ] + ',' + _fpsColors[ 0 ][ 1 ] + ',' + _fpsColors[ 0 ][ 2 ] + ')';
-    _fpsGraph.appendChild( _bar );
-  }
-
-  // ms
-
-  _msDiv = document.createElement( 'div' );
-  _msDiv.style.textAlign = 'left';
-  _msDiv.style.lineHeight = '1.2em';
-  _msDiv.style.backgroundColor = 'rgb(' + Math.floor( _msColors[ 0 ][ 0 ] / 2 ) + ',' + Math.floor( _msColors[ 0 ][ 1 ] / 2 ) + ',' + Math.floor( _msColors[ 0 ][ 2 ] / 2 ) + ')';
-  _msDiv.style.padding = '0 0 3px 3px';
-  _msDiv.style.display = 'none';
-  _container.appendChild( _msDiv );
-
-  _msText = document.createElement( 'div' );
-  _msText.style.fontFamily = 'Helvetica, Arial, sans-serif';
-  _msText.style.fontSize = '9px';
-  _msText.style.color = 'rgb(' + _msColors[ 1 ][ 0 ] + ',' + _msColors[ 1 ][ 1 ] + ',' + _msColors[ 1 ][ 2 ] + ')';
-  _msText.style.fontWeight = 'bold';
-  _msText.innerHTML = 'MS';
-  _msDiv.appendChild( _msText );
-
-  _msGraph = document.createElement( 'div' );
-  _msGraph.style.position = 'relative';
-  _msGraph.style.width = '74px';
-  _msGraph.style.height = '30px';
-  _msGraph.style.backgroundColor = 'rgb(' + _msColors[ 1 ][ 0 ] + ',' + _msColors[ 1 ][ 1 ] + ',' + _msColors[ 1 ][ 2 ] + ')';
-  _msDiv.appendChild( _msGraph );
-
-  while ( _msGraph.children.length < 74 ) {
-    _bar = document.createElement( 'span' );
-    _bar.style.width = '1px';
-    _bar.style.height = Math.random() * 30 + 'px';
-    _bar.style.cssFloat = 'left';
-    _bar.style.backgroundColor = 'rgb(' + _msColors[ 0 ][ 0 ] + ',' + _msColors[ 0 ][ 1 ] + ',' + _msColors[ 0 ][ 2 ] + ')';
-    _msGraph.appendChild( _bar );
-  }
-
-  var _updateGraph = function (dom, value) {
-    var child = dom.appendChild( dom.firstChild );
-    child.style.height = value + 'px';
-  };
-
-  return {
-    getDomElement: function() {
-      return _container;
-    },
-    getFps: function() {
-      return _fps;
-    },
-    getFpsMin: function() {
-      return _fpsMin;
-    },
-    getFpsMax: function() {
-      return _fpsMax;
-    },
-    getMs: function() {
-      return _ms;
-    },
-    getMsMin: function() {
-      return _msMin;
-    },
-    getMsMax: function() {
-      return _msMax;
-    },
-    update: function() {
-
-      _time = Date.now();
-
-      _ms = _time - _timeLastFrame;
-      _msMin = Math.min( _msMin, _ms );
-      _msMax = Math.max( _msMax, _ms );
-
-      _msText.textContent = _ms + ' MS (' + _msMin + '-' + _msMax + ')';
-      _updateGraph( _msGraph, Math.min( 30, 30 - ( _ms / 200 ) * 30 ) );
-
-      _timeLastFrame = _time;
-
-      _frames ++;
-
-      if (_time > _timeLastSecond + 1000) {
-
-        _fps = Math.round((_frames * 1000) / (_time - _timeLastSecond));
-        _fpsMin = Math.min( _fpsMin, _fps );
-        _fpsMax = Math.max( _fpsMax, _fps );
-
-        _fpsText.textContent = _fps + ' FPS (' + _fpsMin + '-' + _fpsMax + ')';
-        _updateGraph( _fpsGraph, Math.min( 30, 30 - ( _fps / 100 ) * 30 ) );
-
-        _timeLastSecond = _time;
-        _frames = 0;
-      }
-    }
-  };
-}
-exports.Stats = Stats;
+exports.Caption = Caption;
 /*global exports */
-/**
-    A module representing a StatsDisplay object.
-    @module StatsDisplay
- */
-
 /**
  * Creates a new StatsDisplay object.
  *
- * @constructor
+ * Use this class to create a field in the
+ * top-left corner that displays the current
+ * frames per second and total number of
+ * processed in the FloraSystem.animLoop.
  *
- * @param {Object} [opt_options] Options.
+ * @constructor
  */
-function StatsDisplay(opt_options) {
+function StatsDisplay() {
 
   'use strict';
 
-  var options = opt_options || {},
-      labelContainer,
-      label;
+  var labelContainer, label;
 
   if (!Date.now) {
     return;
   }
 
+  /**
+   * Frames per second.
+   * @private
+   */
+  this._fps = 0;
+
+  /**
+   * The current time.
+   * @private
+   */
   this._time = Date.now();
+
+  /**
+   * The time at the last frame.
+   * @private
+   */
   this._timeLastFrame = this._time;
+
+  /**
+   * The time the last second was sampled.
+   * @private
+   */
   this._timeLastSecond = this._time;
+
+  /**
+   * Holds the total number of frames
+   * between seconds.
+   * @private
+   */
   this._frameCount = 0;
 
+  /**
+   * A reference to the DOM element containing the display.
+   * @private
+   */
   this._el = document.createElement('div');
   this._el.id = 'statsDisplay';
   this._el.className = 'statsDisplay';
   this._el.style.color = 'white';
+
+  /**
+   * A reference to the textNode displaying the total number of elements.
+   * @private
+   */
+  this._totalElementsValue = null;
+
+  /**
+   * A reference to the textNode displaying the frame per second.
+   * @private
+   */
+  this._fpsValue = null;
 
   // create totol elements label
   labelContainer = document.createElement('span');
@@ -4868,29 +4727,16 @@ function StatsDisplay(opt_options) {
 
   document.body.appendChild(this._el);
 
-  this.update();
+  /**
+   * Initiates the requestAnimFrame() loop.
+   */
+  this._update();
 }
 
-StatsDisplay.prototype.update = function() {
-
-  'use strict';
-
-  this._time = Date.now();
-  this._frameCount++;
-
-  // at least a second has passed
-  if (this._time > this._timeLastSecond + 1000) {
-
-    this._fps = this._frameCount;
-    this._fpsValue.nodeValue = this._fps;
-    this._totalElementsValue.nodeValue = exports.elementList.count();
-
-    this._timeLastSecond = this._time;
-    this._frameCount = 0;
-  }
-  window.requestAnimFrame(this.update.bind(this));
-};
-
+/**
+ * Returns the current frames per second value.
+ * @returns {number} Frame per second.
+ */
 StatsDisplay.prototype.getFPS = function() {
 
   'use strict';
@@ -4899,9 +4745,41 @@ StatsDisplay.prototype.getFPS = function() {
 };
 
 /**
+ * If 1000ms have elapsed since the last evaluated second,
+ * _fps is assigned the total number of frames rendered and
+ * its corresponding textNode is updated. The total number of
+ * elements is also updated.
+ *
+ * This function is called again via requestAnimFrame().
+ *
+ * @private
+ */
+StatsDisplay.prototype._update = function() {
+
+  'use strict';
+
+  var elementCount = exports.elementList.count();
+
+  this._time = Date.now();
+  this._frameCount++;
+
+  // at least a second has passed
+  if (this._time > this._timeLastSecond + 1000) {
+
+    this._fps = this._frameCount;
+    this._timeLastSecond = this._time;
+    this._frameCount = 0;
+
+    this._fpsValue.nodeValue = this._fps;
+    this._totalElementsValue.nodeValue = elementCount;
+  }
+  window.requestAnimFrame(this._update.bind(this));
+};
+
+/**
  * Define a name property.
  */
-StatsDisplay.name = 'statsDisplay';
+StatsDisplay.prototype.name = 'statsDisplay';
 
 exports.StatsDisplay = StatsDisplay;
 }(exports));

@@ -1,9 +1,4 @@
-/*global exports, $ */
-/**
-    A module representing a Mover.
-    @module Mover
- */
-
+/*global exports */
 /**
  * Creates a new Mover and appends it to Flora.elements.
  *
@@ -62,7 +57,7 @@ function Mover(opt_options) {
   'use strict';
 
   var options = opt_options || {},
-      elements = exports.elementList.records || [],
+      elements = exports.elementList.all() || [],
       liquids = exports.liquids || [],
       repellers = exports.repellers || [],
       attractors = exports.attractors || [],
@@ -73,13 +68,9 @@ function Mover(opt_options) {
       oxygen = exports.oxygen || [],
       food = exports.food || [],
       i, max, evt, world,
-      constructorName = this.constructor.name || 'anon'; // this a problem when code is minified
+      constructorName = this.name || 'anon'; // this a problem when code is minified
 
-  for (i in options) {
-    if (options.hasOwnProperty(i)) {
-      this[i] = options[i];
-    }
-  }
+  exports.Obj.call(this, options);
 
   this.id = options.id || constructorName.toLowerCase() + "-" + Mover._idCount; // if no id, create one
 
@@ -114,6 +105,7 @@ function Mover(opt_options) {
   this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
   this.followMouse = !!options.followMouse;
   this.isStatic = !!options.isStatic;
+  this.isDraggable = !!options.isDraggable;
   this.checkEdges = options.checkEdges === false ? false : options.checkEdges || true;
   this.wrapEdges = !!options.wrapEdges;
   this.avoidEdges = !!options.avoidEdges;
@@ -172,23 +164,24 @@ function Mover(opt_options) {
     exports.camera.controlObj = this;
 
     // need to position world so controlObj is centered on screen
-    world.location.x = -world.width/2 + $(window).width()/2 + (world.width/2 - this.location.x);
-    world.location.y = -world.height/2 + $(window).height()/2 + (world.height/2 - this.location.y);
+    world.location.x = -world.width/2 + (exports.Utils.getWindowSize().width)/2 + (world.width/2 - this.location.x);
+    world.location.y = -world.height/2 + (exports.Utils.getWindowSize().height)/2 + (world.height/2 - this.location.y);
   }
 
-  /*inst.el.addEventListener("mouseenter", function (e) { Obj.mouseenter.call(inst, e); }, false);
-  inst.el.addEventListener("mousedown", function (e) { Obj.mousedown.call(inst, e); }, false);
-  inst.el.addEventListener("mousemove", function (e) { Obj.mousemove.call(inst, e); }, false);
-  inst.el.addEventListener("mouseup", function (e) { Obj.mouseup.call(inst, e); }, false);
-  inst.el.addEventListener("mouseleave", function (e) { Obj.mouseleave.call(inst, e); }, false);*/
-
+  if (this.isDraggable) {
+    exports.Utils.addEvent(this.el, 'mouseover', exports.Obj.mouseover.bind(this));
+    exports.Utils.addEvent(this.el, 'mousedown', exports.Obj.mousedown.bind(this));
+    exports.Utils.addEvent(this.el, 'mousemove', exports.Obj.mousemove.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseup', exports.Obj.mouseup.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseout', exports.Obj.mouseout.bind(this));
+  }
 }
-exports.Utils.inherit(Mover, exports.Obj);
+exports.Utils.extend(Mover, exports.Obj);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Mover.name = 'mover';
+Mover.prototype.name = 'mover';
 
 /**
  * Increments as each Mover is created.
@@ -206,7 +199,7 @@ Mover.prototype.step = function() {
   'use strict';
 
   var i, max, dir, friction, force, nose, r, theta, x, y, sensor,
-    world = this.world, elements = exports.elementList.records;
+    world = this.world, elements = exports.elementList.all();
 
   //
 
@@ -284,7 +277,7 @@ Mover.prototype.step = function() {
 
     if (this.followMouse) { // follow mouse
       var t = {
-        location: new exports.Vector(world.mouseX, world.mouseY)
+        location: new exports.Vector(exports.mouse.loc.x, exports.mouse.loc.y)
       };
       this.applyForce(this.seek(t));
     }

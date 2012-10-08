@@ -1,9 +1,4 @@
-/*global console, exports, Modernizr */
-/**
-    A module representing a FlowFieldMarker.
-    @module FlowFieldMarker
- */
-
+/*global console, exports */
 /**
  * Creates a new FlowFieldMarker.
  *
@@ -64,8 +59,8 @@ function FlowFieldMarker(options) {
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-FlowFieldMarker.name = 'flowfieldmarker';
+FlowFieldMarker.prototype.name = 'flowfieldmarker';
 
 exports.FlowFieldMarker = FlowFieldMarker;

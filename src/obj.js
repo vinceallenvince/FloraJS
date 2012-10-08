@@ -1,9 +1,4 @@
-/*global exports, $, console */
-/**
-    A module representing an Obj.
-    @module Obj
- */
-
+/*global exports, console */
 /**
  * Creates a new Obj. All Flora elements extend Obj.
  * @constructor
@@ -35,19 +30,19 @@ Obj.events =[
 /**
  * Define a name property.
  */
-Obj.name = 'obj';
+Obj.prototype.name = 'obj';
 
 /**
- * Called by a mouseenter event listener.
+ * Called by a mouseover event listener.
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseenter = function(e) {
+Obj.mouseover = function(e) {
 
   'use strict';
 
   this.isMouseOut = false;
-  //clearInterval(this.myInterval);
+  clearInterval(this.mouseOutInterval);
 };
 
 /**
@@ -59,12 +54,12 @@ Obj.mousedown = function(e) {
 
   'use strict';
 
-  var target = $(e.target);
+  var target = e.target;
 
   this.isPressed = true;
   this.isMouseOut = false;
-  this.offsetX = e.pageX - target.position().left;
-  this.offsetY = e.pageY - target.position().top;
+  this.offsetX = e.pageX - target.offsetLeft;
+  this.offsetY = e.pageY - target.offsetTop;
 };
 
 /**
@@ -76,21 +71,20 @@ Obj.mousemove = function(e) {
 
   'use strict';
 
-  var x, y,
-    worldOffset = $(".world").offset();
+  var x, y;
 
   if (this.isPressed) {
 
     this.isMouseOut = false;
 
-    x = e.pageX - worldOffset.left;
-    y = e.pageY - worldOffset.top;
+    x = e.pageX - this.world.el.offsetLeft;
+    y = e.pageY - this.world.el.offsetTop;
 
-    this.item.location = new exports.Vector(x, y);
-
-    //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
-      //this.draw();
-    //}
+    if (Obj.mouseIsInsideWorld(this.world)) {
+      this.location = new exports.Vector(x, y);
+    } else {
+      this.isPressed = false;
+    }
   }
 };
 
@@ -104,46 +98,60 @@ Obj.mouseup = function(e) {
   'use strict';
 
   this.isPressed = false;
-  //this.item.trigger("saveCurrentPosition");
 };
 
 /**
- * Called by a mouseleave event listener.
+ * Called by a mouseout event listener.
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseleave = function(e) {
+Obj.mouseout = function(e) {
 
   'use strict';
 
   var me = this,
-    item = this.item,
-    x, y,
-    worldOffset = $(".world").offset();
+    x, y;
 
   if (this.isPressed) {
-    this.isMouseOut = true;
-    this.mouseOutInterval = setInterval(function () { // if mouse is too fast for block update, update via an interval until it catches up
 
+    this.isMouseOut = true;
+
+    this.mouseOutInterval = setInterval(function () { // if mouse is too fast for block update, update via an interval until it catches up
 
       if (me.isPressed && me.isMouseOut) {
 
-        x = exports.Flora.World.mouseX - worldOffset.left;
-        y = exports.Flora.World.mouseY - worldOffset.top;
+        x = exports.mouse.loc.x - me.world.el.offsetLeft;
+        y = exports.mouse.loc.y - me.world.el.offsetTop;
 
-        item.location = new exports.Vector(x, y);
-
-        //if (World.first().isPaused) { // if World is paused, need to call draw() to render change in location
-          //me.draw();
-        //}
+        me.location = new exports.Vector(x, y);
       }
     }, 16);
-
-    $(document).bind("mouseup", function () {
-      me.isPressed = false;
-    });
-
   }
+};
+
+/**
+ * Checks if mouse location is inside the world.
+ *
+ * @param {Object} world A Flora world.
+ * @returns {boolean} True if mouse is inside world; False if
+ *    mouse is outside world.
+ */
+Obj.mouseIsInsideWorld = function(world) {
+
+  'use strict';
+
+  var x = exports.mouse.loc.x,
+      y = exports.mouse.loc.y;
+
+  if (world) {
+    if (x > world.location.x &&
+      x < world.location.x + world.width &&
+      y > world.location.y &&
+      y < world.location.y + world.height) {
+      return true;
+    }
+  }
+  return false;
 };
 
 /**

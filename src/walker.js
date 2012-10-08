@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Walker.
-    @module Walker
- */
-
-/**
  * Creates a new Walker.
  *
  * @constructor
@@ -58,12 +53,12 @@ function Walker(opt_options) {
   this.wrapEdges = !!options.wrapEdges;
   this.isStatic = !!options.isStatic;
 }
-exports.Utils.inherit(Walker, exports.Mover);
+exports.Utils.extend(Walker, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Walker.name = 'walker';
+Walker.prototype.name = 'walker';
 
 /**
  * Called every frame, step() updates the instance's properties.

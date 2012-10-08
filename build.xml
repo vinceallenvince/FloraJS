@@ -27,7 +27,7 @@
   <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos">
   </target>
 
-  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,document,minify,bake">
+  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake">
   </target>
 
   <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask"
@@ -51,16 +51,17 @@
 
   <target name="concatenate">
     <concat destfile="${build.dir}/build.js" fixlastline="yes" eol="lf">
-      <header trimleading="yes">/*ignore!
+      <header trimleading="yes">/*
         ${license}
         */
+        /* Version: %VERSION% */
         /* Build time: ${build.time} */
         /** @namespace */
         var Flora = {}, exports = Flora;
 
         (function(exports) {
       </header>
-      <filelist dir="${src.dir}" files="requestanimframe.js,config.js,elementlist.js,florasystem.js,utils.js,vector.js,defaultcolorlist.js,colorpalette.js,colortable.js,borderpalette.js,simplexnoise.js,interface.js,universe.js,world.js,camera.js,obj.js,mover.js,walker.js,oscillator.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,caption.js,stats.js,statsdisplay.js"/>
+      <filelist dir="${src.dir}" files="requestanimframe.js,config.js,elementlist.js,florasystem.js,utils.js,vector.js,colorpalette.js,colortable.js,borderpalette.js,simplexnoise.js,interface.js,universe.js,world.js,camera.js,obj.js,mover.js,walker.js,oscillator.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,caption.js,statsdisplay.js"/>
       <footer trimleading="yes">}(exports));</footer>
     </concat>
   </target>
@@ -83,29 +84,8 @@
 
     <apply executable="java" failonerror="true">
 
-      <fileset dir="${build.dir}" includes="*.js" excludes="*-min.js"/>
-      <mapper type="glob" from="*.js" to="${build.dir}/*-min.js"/>
-
-      <arg line="-jar"/>
-      <arg path="${closure}"/>
-      <arg line="${closure.options}"/>
-
-      <arg line="--js"/>
-      <srcfile/>
-
-      <arg line="--js_output_file"/>
-      <targetfile/>
-
-    </apply>
-
-  </target>
-
-  <target name="minifyDemos">
-
-    <apply executable="java" failonerror="true">
-
-      <fileset dir="${DemoSrc.dir}" includes="*.js" excludes="*-min.js"/>
-      <mapper type="glob" from="*.js" to="${DemoBuild.dir}/*-min.js"/>
+      <fileset dir="${build.dir}" includes="*.js" excludes="*.raw.min.js"/>
+      <mapper type="glob" from="*.js" to="${build.dir}/*.raw.min.js"/>
 
       <arg line="-jar"/>
       <arg path="${closure}"/>
@@ -129,8 +109,22 @@
 
   </target>
 
+  <!-- Bake: the final step -->
   <target name="bake">
-    <replaceregexp match="@VERSION@" replace="${version}" flags="g" byline="true">
+    <!-- Adds the license to the raw minified file. -->
+    <concat destfile="${build.dir}/build.min.js" fixlastline="yes" eol="lf">
+      <header trimleading="yes">/*
+        ${license}
+        */
+        /* Version: %VERSION% */
+        /* Build time: ${build.time} */
+      </header>
+      <filelist dir="${build.dir}" files="build.raw.min.js"/>
+      <footer trimleading="yes"></footer>
+    </concat>
+    <!-- Searches for %VERSION% in the build directory and replaces with -->
+    <!-- the version number found in build.properties. -->
+    <replaceregexp match="%VERSION%" replace="${version}" flags="g" byline="true">
       <fileset dir="${build.dir}" includes="**/*"/>
     </replaceregexp>
   </target>

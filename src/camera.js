@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Camera.
-    @module camera
- */
-
-/**
  * Creates a new Camera.
  *
  * @constructor
@@ -23,8 +18,8 @@ function Camera(opt_options) {
 }
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Camera.name = 'camera';
+Camera.prototype.name = 'camera';
 
 exports.Camera = Camera;

@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Universe.
-    @module Universe
- */
-
-/**
  * Creates a new Universe.
  *
  * @constructor
@@ -12,22 +7,32 @@
  * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
  * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
  * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
- * @param {number} [opt_options.statsInterval = 0] Holds a reference to the interval used by mr doob's stats monitor.
  */
 function Universe(opt_options) {
 
   'use strict';
 
-  var me = this,
+  var i, max, records, me = this,
       options = opt_options || {};
 
   this.isPlaying = options.isPlaying === false ? false : true;
   this.zSorted = !!options.zSorted;
   this.showStats = !!options.showStats;
-  this.statsInterval = options.statsInterval || 0;
 
-  this.records = []; // !! private
-  this.statsDisplay = null;
+  /**
+   * Holds a list of references to worlds
+   * in the universe.
+   * @private
+   */
+  this._records = [];
+
+  /**
+   * Holds a reference to the stats display.
+   * @private
+   */
+  this._statsDisplay = null;
+
+  // Events
 
   // save the current and last mouse position
   exports.Utils.addEvent(document.body, 'mousemove', function(e) {
@@ -37,13 +42,26 @@ function Universe(opt_options) {
 
   // toggle the world playstate
   exports.Utils.addEvent(document, 'keyup', function(e) {
-    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) {
+    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) { // pause
       me.isPlaying = !me.isPlaying;
       if (me.isPlaying) {
         window.requestAnimFrame(exports.animLoop);
       }
-    } else if (e.keyCode === exports.config.keyMap.toggleStatsDisplay) {
-      if (!me.statsDisplay) {
+    } else if (e.keyCode === exports.config.keyMap.resetSystem) { // reset system
+        // loop thru each world and destroy all elements
+        records = me.all();
+        for (i = 0, max = records.length; i < max; i += 1) {
+          exports.elementList.destroyByWorld(records[i].id);
+        }
+        // call initial setup
+        exports.FloraSystem.setup();
+        // if system is pause, restart
+        if (!me.isPlaying) {
+          me.isPlaying = true;
+          window.requestAnimFrame(exports.animLoop);
+        }
+    } else if (e.keyCode === exports.config.keyMap.toggleStatsDisplay) { // stats
+      if (!me._statsDisplay) {
         me.createStats();
       } else {
         me.destroyStats();
@@ -53,7 +71,7 @@ function Universe(opt_options) {
 
   // key control
   exports.Utils.addEvent(document.body, 'keydown', function(e) {
-    var i, max, elements = exports.elementList.records,
+    var i, max, elements = exports.elementList.all(),
         obj, desired, steer, target,
         r, theta, x, y;
 
@@ -140,12 +158,12 @@ function Universe(opt_options) {
 /**
  * Define a name property.
  */
-Universe.name = 'universe';
+Universe.prototype.name = 'universe';
 
 /**
  * Adds a new World to the 'records' array.
  *
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} An array of elements.
  */
 Universe.prototype.addWorld = function(opt_options) {
 
@@ -153,25 +171,25 @@ Universe.prototype.addWorld = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.records.push(new exports.World(options));
+  this._records.push(new exports.World(options));
 
   // copy reference to new World in elementList
-  exports.elementList.add(this.records[this.records.length - 1]);
+  exports.elementList.add(this._records[this._records.length - 1]);
 
-  return this.records;
+  return this._records;
 };
 
 /**
  * Returns the first item in 'records' array.
  *
- * @return {Object} The first world.
+ * @returns {Object} The first world.
  */
 Universe.prototype.first = function() {
 
   'use strict';
 
-  if (this.records[0]) {
-    return this.records[0];
+  if (this._records[0]) {
+    return this._records[0];
   } else {
     return null;
   }
@@ -180,14 +198,14 @@ Universe.prototype.first = function() {
 /**
  * Returns the last item in 'records' array.
  *
- * @return {Object} The last world.
+ * @returns {Object} The last world.
  */
 Universe.prototype.last = function() {
 
   'use strict';
 
-  if (this.records[this.records.length - 1]) {
-    return this.records[this.records.length - 1];
+  if (this._records[this._records.length - 1]) {
+    return this._records[this._records.length - 1];
   } else {
     return null;
   }
@@ -196,7 +214,7 @@ Universe.prototype.last = function() {
 /**
  * Update the properties of a world.
  *
- * @return {Object} The last world.
+ * @returns {Object} The last world.
  */
 Universe.prototype.update = function(opt_props, opt_world) {
 
@@ -228,43 +246,39 @@ Universe.prototype.update = function(opt_props, opt_world) {
     world.width = parseInt(world.el.style.width.replace('px', ''), 10);
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
-
-  /*if (props.showStats && window.addEventListener) {
-    this.createStats();
-  }*/
 };
 
 /**
  * Returns the entire 'records' array.
  *
- * @return {Array.<Object>} arr An array of elements.
+ * @returns {Array} arr An array of elements.
  */
 Universe.prototype.all = function() {
   'use strict';
-  return this.records;
+  return this._records;
 };
 
 /**
  * Returns the total number of worlds.
  *
- * @return {number} Total number of worlds.
+ * @returns {number} Total number of worlds.
  */
 Universe.prototype.count = function() {
   'use strict';
-  return this.records.length;
+  return this._records.length;
 };
 
 /**
  * Finds an element by its 'id' and returns it.
  *
  * @param {string|number} id The element's id.
- * @return {Object} The element.
+ * @returns {Object} The element.
  */
 Universe.prototype.getWorldById = function (id) {
 
   'use strict';
 
-  var i, max, records = this.records;
+  var i, max, records = this._records;
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
@@ -283,7 +297,7 @@ Universe.prototype.destroyWorld = function (id) {
 
   'use strict';
 
-  var i, max, records = this.records;
+  var i, max, records = this._records;
 
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === id) {
@@ -314,8 +328,8 @@ Universe.prototype.destroyAll = function () {
 
   exports.elementList.destroyAll();
 
-  for (var i = this.records.length - 1; i >= 0; i -= 1) {
-    this.destroyWorld(this.records[i].id);
+  for (var i = this._records.length - 1; i >= 0; i -= 1) {
+    this.destroyWorld(this._records[i].id);
   }
 };
 
@@ -326,36 +340,23 @@ Universe.prototype.updateClocks = function () {
 
   'use strict';
 
-  for (var i = 0, max = this.records.length; i < max; i += 1) {
-    this.records[i].clock += 1;
+  for (var i = 0, max = this._records.length; i < max; i += 1) {
+    this._records[i].clock += 1;
   }
 };
 
 /**
- * Creates a new instance of mr doob's stats monitor.
+ * Creates a new instance of the StatsDisplay.
  */
 Universe.prototype.createStats = function() {
 
   'use strict';
 
-  this.statsDisplay = new exports.StatsDisplay();
-
-  /*var stats = new exports.Stats();
-
-  stats.getDomElement().style.position = 'absolute'; // Align top-left
-  stats.getDomElement().style.left = '0px';
-  stats.getDomElement().style.top = '0px';
-  stats.getDomElement().id = 'stats';
-
-  document.body.appendChild(stats.getDomElement());
-
-  this.statsInterval = setInterval(function() {
-      stats.update();
-  }, 1000 / 60);*/
+  this._statsDisplay = new exports.StatsDisplay();
 };
 
 /**
- * Destroys an instance of mr doob's stats monitor.
+ * Destroys an instance of the StatsDisplay
  */
 Universe.prototype.destroyStats = function() {
 
@@ -363,13 +364,10 @@ Universe.prototype.destroyStats = function() {
 
   var el = document.getElementById('statsDisplay');
 
-  this.statsDisplay = null;
+  this._statsDisplay = null;
 
   if (el) {
     el.parentNode.removeChild(el);
   }
-
-  /*clearInterval(this.statsInterval);
-  document.body.removeChild(document.getElementById('stats'));*/
 };
 exports.Universe = Universe;

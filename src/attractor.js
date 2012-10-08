@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Attractor object.
-    @module Attractor
- */
-
-/**
  * Creates a new Attractor object.
  *
  * @constructor
@@ -33,11 +28,11 @@ function Attractor(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.inherit(Attractor, exports.Mover);
+exports.Utils.extend(Attractor, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Attractor.name = 'attractor';
+Attractor.prototype.name = 'attractor';
 
 exports.Attractor = Attractor;

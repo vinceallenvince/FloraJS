@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Point.
-    @module Point
- */
-
-/**
  * Creates a new Point.
  *
  * @constructor
@@ -32,11 +27,11 @@ function Point(opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.length = options.length === 0 ? 0 : options.length|| 30;
 }
-exports.Utils.inherit(Point, exports.Mover);
+exports.Utils.extend(Point, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Point.name = 'point';
+Point.prototype.name = 'point';
 
 exports.Point = Point;

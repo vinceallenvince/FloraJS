@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Particle.
-    @module Particle
- */
-
-/**
  * Creates a new Particle.
  *
  * @constructor
@@ -27,12 +22,12 @@ exports.Mover.call(this, options);
 this.lifespan = options.lifespan || 40;
 this.borderRadius = options.borderRadius || '100%';
 }
-exports.Utils.inherit(Particle, exports.Mover);
+exports.Utils.extend(Particle, exports.Mover);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
  */
-Particle.name = 'particle';
+Particle.prototype.name = 'particle';
 
 Particle.prototype.step = function () {
 

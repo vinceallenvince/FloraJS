@@ -1,15 +1,8 @@
 /*global exports */
 /**
-    A module representing an Oscillator.
-    @module Oscillator
- */
-
-/**
  * Creates a new Oscillator.
  * Oscillators simulate wave patterns and move according to
- * amplitude and angular velocity. As step() is called, the
- * object's location is determined by the output of the
- * sine function.
+ * amplitude and angular velocity.
  *
  * @constructor
  * @extends Mover
@@ -59,12 +52,12 @@ function Oscillator(opt_options) {
   this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
   this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
 }
-exports.Utils.inherit(Oscillator, exports.Mover);
+exports.Utils.extend(Oscillator, exports.Mover);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
  */
-Oscillator.name = 'oscillator';
+Oscillator.prototype.name = 'oscillator';
 
 /**
  * Called every frame, step() updates the instance's properties.

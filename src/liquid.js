@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Liquid object.
-    @module Liquid
- */
-
-/**
  * Creates a new Liquid.
  *
  * @constructor
@@ -33,11 +28,11 @@ function Liquid(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.inherit(Liquid, exports.Mover);
+exports.Utils.extend(Liquid, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Liquid.name = 'liquid';
+Liquid.prototype.name = 'liquid';
 
 exports.Liquid = Liquid;

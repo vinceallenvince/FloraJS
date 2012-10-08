@@ -1,10 +1,5 @@
 /*global exports */
 /**
-    A module representing a Cold object.
-    @module Cold
- */
-
-/**
  * Creates a new Cold object.
  *
  * @constructor
@@ -31,11 +26,11 @@ function Cold(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.inherit(Cold, exports.Mover);
+exports.Utils.extend(Cold, exports.Mover);
 
 /**
- * Define a name property. Used to assign a class name and prefix an id.
+ * Define a name property.
  */
-Cold.name = 'cold';
+Cold.prototype.name = 'cold';
 
 exports.Cold = Cold;

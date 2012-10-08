@@ -1,13 +1,10 @@
 /*jshint supernew:true */
 /**
-    A module representing a Vector.
-    @module Vector
- */
-/**
  * Creates a new Vector.
  *
  * @param {number} [opt_x = 0] The x location.
  * @param {number} [opt_y = 0] The y location.
+ * @constructor
  */
 function Vector(opt_x, opt_y) {
   'use strict';
