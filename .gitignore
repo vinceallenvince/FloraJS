@@ -6,5 +6,4 @@ lib/
 
 # FILES #
 #########
-build/build.raw.min.js
-build/build.raw.js
+build/flora.raw.min.js
