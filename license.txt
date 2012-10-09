@@ -1,3 +1,4 @@
+FloraJS
 Copyright (C) 2012 Vince Allen
 Brooklyn, NY 11215, USA
 

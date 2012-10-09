@@ -1,4 +1,5 @@
 /*
+FloraJS
 Copyright (C) 2012 Vince Allen
 Brooklyn, NY 11215, USA
 
@@ -21,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: October 8, 2012 06:53:47 */
+/* Build time: October 8, 2012 08:20:38 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -305,7 +306,7 @@ System.setup = null;
 /**
  * Starts the System.
  * @param {function} func A list of instructions to execute before the system starts.
- * @param {Object} opt_universe A map of options for the System's universe.
+ * @param {Object} opt_universe A map of options for the System's Universe.
  * @param {Array} opt_worlds An array of DOM elements to use as Worlds.
  */
 System.start = function (func, opt_universe, opt_worlds) {

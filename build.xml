@@ -25,7 +25,7 @@
   <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos,copy">
   </target>
 
-  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,copy,document">
+  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,document,copy">
   </target>
 
   <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask"
@@ -135,7 +135,15 @@
     <copy file="${build.dir}/flora.js" todir="${demos.dir}/js" overwrite="true"/>
     <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
     <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
-    <!-- should copy docs to FloraJS.com/docs/ folder -->
+    <copy todir="../FloraJS.com/examples" overwrite="true">
+      <fileset dir="${examples.dir}"/>
+    </copy>
+    <copy todir="../FloraJS.com/docs" overwrite="true">
+      <fileset dir="${jsdoc.output}"/>
+    </copy>
+    <copy todir="../FloraJS.com/demos" overwrite="true">
+      <fileset dir="${demos.dir}"/>
+    </copy>
   </target>
 
 </project>
