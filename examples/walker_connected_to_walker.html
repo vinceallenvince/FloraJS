@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Flora</title>
+  <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
+  <script src="js/modernizr.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/flora.min.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+  <script type="text/javascript" charset="utf-8">
+
+    // start the system; pass initial instuctions
+    Flora.System.start(function() {
+      var point = new Flora.Point(),
+          walkerA = new Flora.Walker(),
+          walkerB = new Flora.Walker(),
+          mover = new Flora.Mover({followMouse: true}),
+          connector1 = new Flora.Connector(point, walkerA),
+          connector2 = new Flora.Connector(walkerA, walkerB),
+          connector3 = new Flora.Connector(walkerB, mover),
+          connector4 = new Flora.Connector(mover, point);
+
+      Flora.universe.update({
+        gravity: new Flora.Vector(0, 0)
+      });
+    });
+  </script>
+</body>
+</html>

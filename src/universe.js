@@ -37,7 +37,11 @@ function Universe(opt_options) {
   // save the current and last mouse position
   exports.Utils.addEvent(document.body, 'mousemove', function(e) {
     exports.mouse.locLast = exports.mouse.loc.clone();
-    exports.mouse.loc = new exports.Vector(e.pageX, e.pageY);
+    if (e.pageX && e.pageY) {
+      exports.mouse.loc = new exports.Vector(e.pageX, e.pageY);
+    } else if (e.clientX && e.clientY) {
+      exports.mouse.loc = new exports.Vector(e.clientX, e.clientY);
+    }
   });
 
   // toggle the world playstate

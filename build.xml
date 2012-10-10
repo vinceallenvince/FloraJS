@@ -129,11 +129,21 @@
 
   <!-- Copy: copy build and css files to examples/demos -->
   <target name="copy">
+    <!-- copy fat file in same folder with version number -->
+    <copy file="${build.dir}/flora.js" tofile="${build.dir}/flora.${version}.js" overwrite="true"/>
+    <!-- copy minified file in same folder with version number -->
+    <copy file="${build.dir}/flora.min.js" tofile="${build.dir}/flora.${version}.min.js" overwrite="true"/>
+    <!-- copy minified file to examples/js -->
     <copy file="${build.dir}/flora.min.js" todir="${examples.dir}/js" overwrite="true"/>
+    <!-- copy modernizr to examples/js -->
     <copy file="${lib.dir}/modernizr.js" todir="${examples.dir}/js" overwrite="true"/>
+    <!-- copy css file to examples/css -->
     <copy file="${css.dir}/flora.css" todir="${examples.dir}/css" overwrite="true"/>
+    <!-- copy fat build file to demos/js -->
     <copy file="${build.dir}/flora.js" todir="${demos.dir}/js" overwrite="true"/>
+    <!-- copy modernizr to demos/js -->
     <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
+    <!-- copy css file to demos/css -->
     <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
     <copy todir="../FloraJS.com/examples" overwrite="true">
       <fileset dir="${examples.dir}"/>

@@ -5,12 +5,13 @@ describe("A new Attractor", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Attractor();
+    Flora.System.start(function() {
+      obj = new exports.Attractor();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -31,12 +32,13 @@ describe("A new BorderPalette", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.BorderPalette();
+    Flora.System.start(function() {
+      obj = new exports.BorderPalette();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -78,12 +80,13 @@ describe("A new Camera", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Camera();
+    Flora.System.start(function() {
+      obj = new exports.Camera();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -97,12 +100,13 @@ describe("A new Caption", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Caption();
+    Flora.System.start(function() {
+      obj = new exports.Caption();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -119,12 +123,13 @@ describe("A new Cold", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Cold();
+    Flora.System.start(function() {
+      obj = new exports.Cold();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -142,12 +147,13 @@ describe("A new ColorPalette", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.ColorPalette();
+    Flora.System.start(function() {
+      obj = new exports.ColorPalette();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -215,12 +221,13 @@ describe("A new ColorTable", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.ColorTable();
+    Flora.System.start(function() {
+      obj = new exports.ColorTable();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -274,24 +281,29 @@ describe("A new ColorTable", function() {
 
 describe("A new Connector", function() {
 
-  var system, obj;
+  var system, obj, walkerA, walkerB;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Connector();
+    Flora.System.start(function() {
+      walkerA = new Flora.Walker();
+      walkerB = new Flora.Walker();
+      obj = new exports.Connector(walkerA, walkerB, {opacity: 0.9, zIndex: 10});
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
     expect(typeof obj.color).toEqual('string');
     expect(typeof obj.zIndex).toEqual('number');
+    expect(obj.zIndex).toEqual(10);
     expect(typeof obj.opacity).toEqual('number');
-    expect(typeof obj.width).toEqual('number');
-    expect(typeof obj.height).toEqual('number');
-    expect(obj.constructor.name).toEqual('Connector');
+    expect(obj.opacity).toEqual(0.9);
+    expect(typeof obj.parentA).toEqual('object');
+    expect(typeof obj.parentB).toEqual('object');
+    expect(obj.name).toEqual('connector');
   });
 });
 
@@ -300,11 +312,11 @@ describe("A new ElementList", function() {
   var system;
 
   beforeEach(function() {
-    system = new exports.System();
+    Flora.System.start(function() {});
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -401,12 +413,13 @@ describe("A new FlowField", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.FlowField();
+    Flora.System.start(function() {
+      obj = new exports.FlowField();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -423,21 +436,22 @@ describe("A new FlowFieldMarker", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.FlowFieldMarker({
-      location: {x: 0, y: 0},
-      scale: 1,
-      angle: 90,
-      opacity: 0.75,
-      width: 100,
-      height: 100,
-      colorMode: 'rgb',
-      color: [0, 0, 0]
+    Flora.System.start(function() {
+      obj = new exports.FlowFieldMarker({
+        location: {x: 0, y: 0},
+        scale: 1,
+        angle: 90,
+        opacity: 0.75,
+        width: 100,
+        height: 100,
+        colorMode: 'rgb',
+        color: [0, 0, 0]
+      });
     });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should return a DOM element.", function() {
@@ -453,12 +467,13 @@ describe("A new Food", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Food();
+    Flora.System.start(function() {
+      obj = new exports.Food();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -476,12 +491,13 @@ describe("A new Heat", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Heat();
+    Flora.System.start(function() {
+      obj = new exports.Heat();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -544,12 +560,13 @@ describe("A new Light", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Light();
+    Flora.System.start(function() {
+      obj = new exports.Light();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -567,12 +584,13 @@ describe("A new Liquid", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Liquid();
+    Flora.System.start(function() {
+      obj = new exports.Liquid();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -592,12 +610,13 @@ describe("A new Mover", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Mover();
+    Flora.System.start(function() {
+      obj = new exports.Mover();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -642,15 +661,16 @@ describe("A new Obj", function() {
   var system, obj, mover;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Obj({
-      hello: 'hello'
+    Flora.System.start(function() {
+      obj = new exports.Obj({
+        hello: 'hello'
+      });
+      mover = new exports.Mover();
     });
-    mover = new exports.Mover();
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should accept all properties passed to the constructor.", function() {
@@ -669,14 +689,15 @@ describe("A new Oscillator", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Oscillator({
-      initialLocation: new exports.Vector()
+    Flora.System.start(function() {
+      obj = new exports.Oscillator({
+        initialLocation: new exports.Vector()
+      });
     });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -704,12 +725,13 @@ describe("A new Oxygen", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Oxygen();
+    Flora.System.start(function() {
+      obj = new exports.Oxygen();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -727,12 +749,13 @@ describe("A new Particle", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Particle();
+    Flora.System.start(function() {
+      obj = new exports.Particle();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -748,12 +771,13 @@ describe("A new ParticleSystem", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.ParticleSystem();
+    Flora.System.start(function() {
+      obj = new exports.ParticleSystem();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -771,12 +795,13 @@ describe("A new Point", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Point();
+    Flora.System.start(function() {
+      obj = new exports.Point();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -796,12 +821,13 @@ describe("A new Predator", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Predator();
+    Flora.System.start(function() {
+      obj = new exports.Predator();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -819,12 +845,13 @@ describe("A new Repeller", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Repeller();
+    Flora.System.start(function() {
+      obj = new exports.Repeller();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -844,12 +871,13 @@ describe("A new Sensor", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Sensor();
+    Flora.System.start(function() {
+      obj = new exports.Sensor();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -895,12 +923,13 @@ describe("A new StatsDisplay", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.StatsDisplay();
+    Flora.System.start(function() {
+      obj = new exports.StatsDisplay();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -926,12 +955,13 @@ describe("A new Universe", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Universe();
+    Flora.System.start(function() {
+      obj = new exports.Universe();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -1101,12 +1131,13 @@ describe("Vector", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Vector(22, 10);
+    Flora.System.start(function() {
+      obj = new exports.Vector(22, 10);
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should create vectors.", function() {
@@ -1161,12 +1192,13 @@ describe("A new Walker", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.Walker();
+    Flora.System.start(function() {
+      obj = new exports.Walker();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {
@@ -1198,12 +1230,13 @@ describe("A new World", function() {
   var system, obj;
 
   beforeEach(function() {
-    system = new exports.System();
-    obj = new exports.World();
+    Flora.System.start(function() {
+      obj = new exports.World();
+    });
   });
 
   afterEach(function() {
-    system.destroy();
+    Flora.System.destroy();
   });
 
   it("should have its required properties.", function() {

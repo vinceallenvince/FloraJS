@@ -1,12 +1,12 @@
 # FloraJS: a JavaScript framework for rendering natural systems in a web browser.
 
-FloraJS is a JavaScript framework for exploring natural systems simulation. In Flora, the "world" is your web browser. DOM elements inhabit the world and behave according to rules meant to simulate a natural environment. You can find demos at http://www.florajs.com.
+FloraJS is a JavaScript framework for simulating natural systems in a web browser. In Flora, the "world" is your web browser. DOM elements inhabit the world and behave according to rules meant to simulate a natural environment. You can find demos at http://www.florajs.com.
 
 The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'The Nature of Code' at https://github.com/shiffman/The-Nature-of-Code. Inspiration also came from the writings of Valentino Braitenberg and Gary Flake.
 
 ## Simple System
 
-To setup a simple Flora system, reference the Flora .js file and the latest version of Modernizr from two script tags in the &lt;head&gt; of your document. Also, reference in the flora.css file.
+To setup a simple Flora system, reference the Flora .js file and the latest version of Modernizr from two script tags in the &lt;head&gt; of your document. Also, reference the flora.css file.
 
 In the body, add a &lt;script&gt; tag and create a new Flora system. Pass the system a function that describes the elements in your world.
 
@@ -65,7 +65,7 @@ Movers are basic Flora elements that respond to forces like gravity, attraction,
 
 All other Flora elements like Walkers and Oscillators inherit properties from Movers.
 
-Movers are highly configurable. For a complete list of options see the docs at http://www.florajs.com/docs
+Movers are highly configurable. For a complete list of options see the docs at http://www.florajs.com/docs.
 
 For an example of the Mover's seek behavior, set 'followMouse' to 'true' when creating the Mover.
 

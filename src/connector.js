@@ -4,15 +4,13 @@
  *
  * @constructor
  * @extends Mover
+ * @param {Object} parentA The object that starts the connection.
+ * @param {Object} parentB The object that ends the connection.
  * @param {Object} [opt_options] Options.
- * @param {number} [opt_options.width = 10] Width.
- * @param {number} [opt_options.height = 1] Height.
  * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {number} [opt_options.zIndex = 0] zIndex.
- * @param {Object} [opt_options.parentA = null] The parent A object.
- * @param {Object} [opt_options.parentB = null] The parent B object.
  */
-function Connector(opt_options) {
+function Connector(parentA, parentB, opt_options) {
 
   'use strict';
 
@@ -20,13 +18,18 @@ function Connector(opt_options) {
 
   exports.Mover.call(this, options);
 
-  this.width = options.width === 0 ? 0 : options.width || 10;
-  this.height = options.height === 0 ? 0 : options.height || 1;
+  if (!parentA || !parentB) {
+    throw new Error('Connector: both parentA and parentB are required.');
+  }
+  this.parentA = parentA;
+  this.parentB = parentB;
+  this.width = 0;
+  this.height = 0;
+  this.color = 'transparent';
+
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.zIndex = options.zIndex || 0;
-  this.parentA = options.parentA || null;
-  this.parentB = options.parentB || null;
-  this.color = 'transparent';
+
 }
 exports.Utils.extend(Connector, exports.Mover);
 
@@ -42,7 +45,8 @@ Connector.prototype.step = function() {
 
   'use strict';
 
-  var a = this.parentA.location, b = this.parentB.location;
+  var a = this.parentA.location,
+      b = this.parentB.location;
 
   this.width = Math.floor(exports.Vector.VectorSub(this.parentA.location, this.parentB.location).mag());
   this.location = exports.Vector.VectorAdd(this.parentA.location, this.parentB.location).div(2); // midpoint = (v1 + v2)/2
