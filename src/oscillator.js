@@ -5,7 +5,7 @@
  * amplitude and angular velocity.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Oscillator options.
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
@@ -32,7 +32,7 @@ function Oscillator(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.initialLocation = options.initialLocation ||
       new exports.Vector(this.world.width/2, this.world.height/2);
@@ -52,7 +52,7 @@ function Oscillator(opt_options) {
   this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
   this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
 }
-exports.Utils.extend(Oscillator, exports.Mover);
+exports.Utils.extend(Oscillator, exports.Agent);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.

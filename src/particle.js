@@ -3,7 +3,7 @@
  * Creates a new Particle.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Particle options.
  * @param {number} [opt_options.lifespan = 40] The number of frames before particle dies. Set to -1 for infinite life.
@@ -17,12 +17,12 @@ function Particle(opt_options) {
 
 var options = opt_options || {};
 
-exports.Mover.call(this, options);
+exports.Agent.call(this, options);
 
 this.lifespan = options.lifespan || 40;
 this.borderRadius = options.borderRadius || '100%';
 }
-exports.Utils.extend(Particle, exports.Mover);
+exports.Utils.extend(Particle, exports.Agent);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.

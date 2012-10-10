@@ -3,7 +3,7 @@
  * Creates a new Liquid.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.c = 1] Drag coefficient.
@@ -19,7 +19,7 @@ function Liquid(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.c = options.c === 0 ? 0 : options.c || 1;
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
@@ -28,7 +28,7 @@ function Liquid(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.extend(Liquid, exports.Mover);
+exports.Utils.extend(Liquid, exports.Agent);
 
 /**
  * Define a name property.

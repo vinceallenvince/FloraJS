@@ -3,7 +3,7 @@
  * Creates a new ParticleSystem.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Particle options.
  * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move.
@@ -23,7 +23,7 @@
       f = exports.defaultColors.getColor('food'), // gets the food start and end colors
       pl = new exports.ColorPalette();
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   pl.addColor({ // adds a random sampling of colors to palette
     min: 12,
@@ -75,7 +75,7 @@
     };
   };
 }
-exports.Utils.extend(ParticleSystem, exports.Mover);
+exports.Utils.extend(ParticleSystem, exports.Agent);
 
 /**
  * Define a name property.

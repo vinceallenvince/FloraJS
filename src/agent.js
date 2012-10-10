@@ -1,14 +1,14 @@
 /*global exports */
 /**
- * Creates a new Mover and appends it to Flora.elements.
+ * Creates a new Agent and appends it to Flora.elements.
  *
  * @constructor
  * @extends Obj
  *
- * @param {Object} [opt_options] Mover options.
- * @param {string} [opt_options.id = "m-" + Mover._idCount] An id. If an id is not provided, one is created.
- * @param {Object|function} [opt_options.view] HTML representing the Mover instance.
- * @param {string} [opt_options.className = 'mover'] The corresponding DOM element's class name.
+ * @param {Object} [opt_options] Agent options.
+ * @param {string} [opt_options.id = "m-" + Agent._idCount] An id. If an id is not provided, one is created.
+ * @param {Object|function} [opt_options.view] HTML representing the Agent instance.
+ * @param {string} [opt_options.className = 'agent'] The corresponding DOM element's class name.
  * @param {number} [opt_options.mass = 10] Mass
  * @param {number} [opt_options.maxSpeed = 10] Maximum speed
  * @param {number} [opt_options.minSpeed = 0] Minimum speed
@@ -18,8 +18,8 @@
  * @param {number} [opt_options.lifespan = -1] Life span. Set to -1 to live forever.
  * @param {number} [opt_options.width = 20] Width
  * @param {number} [opt_options.height = 20] Height
- * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the mover's parent.
- * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the mover.
+ * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the agent's parent.
+ * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the agent.
  * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
  * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
  * @param {number} [opt_options.zIndex = 10] z-index
@@ -52,7 +52,7 @@
  */
 
 
-function Mover(opt_options) {
+function Agent(opt_options) {
 
   'use strict';
 
@@ -72,7 +72,7 @@ function Mover(opt_options) {
 
   exports.Obj.call(this, options);
 
-  this.id = options.id || constructorName.toLowerCase() + "-" + Mover._idCount; // if no id, create one
+  this.id = options.id || constructorName.toLowerCase() + "-" + Agent._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
     this.el = options.view.call(this);
@@ -128,7 +128,7 @@ function Mover(opt_options) {
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
 
-  elements.push(this); // push new instance of Mover
+  elements.push(this); // push new instance of Agent
 
   this.el.id = this.id;
   this.el.className = this.className;
@@ -137,7 +137,7 @@ function Mover(opt_options) {
     world.el.appendChild(this.el); // append the view to the World
   }
 
-  Mover._idCount += 1; // increment id
+  Agent._idCount += 1; // increment id
 
   if (this.className.search('liquid') !== -1) {
     liquids.push(this); // push new instance of liquids to liquid list
@@ -176,25 +176,25 @@ function Mover(opt_options) {
     exports.Utils.addEvent(this.el, 'mouseout', exports.Obj.mouseout.bind(this));
   }
 }
-exports.Utils.extend(Mover, exports.Obj);
+exports.Utils.extend(Agent, exports.Obj);
 
 /**
  * Define a name property.
  */
-Mover.prototype.name = 'mover';
+Agent.prototype.name = 'agent';
 
 /**
- * Increments as each Mover is created.
+ * Increments as each Agent is created.
  * @type number
  * @default 0
  */
-Mover._idCount = 0;
+Agent._idCount = 0;
 
 
 /**
  * Called every frame, step() updates the instance's properties.
  */
-Mover.prototype.step = function() {
+Agent.prototype.step = function() {
 
   'use strict';
 
@@ -256,7 +256,7 @@ Mover.prototype.step = function() {
 
         if (sensor.activated) {
           this.applyForce(sensor.getActivationForce({
-            mover: this
+            agent: this
           }));
         }
 
@@ -379,7 +379,7 @@ Mover.prototype.step = function() {
  *
  * @param {Object} force The force to be applied (expressed as a vector).
  */
-Mover.prototype.applyForce = function(force) {
+Agent.prototype.applyForce = function(force) {
 
   'use strict';
 
@@ -397,7 +397,7 @@ Mover.prototype.applyForce = function(force) {
  * @param {boolean} arrive Set to true to for this object to arrive and stop at the target.
  * @returns {Object} The force to apply.
  */
-Mover.prototype.seek = function(target, arrive) {
+Agent.prototype.seek = function(target, arrive) {
 
   'use strict';
 
@@ -425,7 +425,7 @@ Mover.prototype.seek = function(target, arrive) {
  * @param {Object} target The object to seek.
  * @returns {Object} The force to apply.
  */
-Mover.prototype.follow = function(target) {
+Agent.prototype.follow = function(target) {
 
   'use strict';
 
@@ -441,7 +441,7 @@ Mover.prototype.follow = function(target) {
 /**
  * Bundles flocking behaviors (separate, align, cohesion) into one call.
  */
-Mover.prototype.flock = function(elements) {
+Agent.prototype.flock = function(elements) {
 
   'use strict';
 
@@ -457,7 +457,7 @@ Mover.prototype.flock = function(elements) {
  * @param {array} elements An array of Flora elements.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.separate = function(elements) {
+Agent.prototype.separate = function(elements) {
 
   'use strict';
 
@@ -498,7 +498,7 @@ Mover.prototype.separate = function(elements) {
  * @param {array} elements An array of Flora elements.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.align = function(elements) {
+Agent.prototype.align = function(elements) {
 
   'use strict';
 
@@ -537,7 +537,7 @@ Mover.prototype.align = function(elements) {
  * @param {array} elements An array of Flora elements.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.cohesion = function(elements) {
+Agent.prototype.cohesion = function(elements) {
 
   'use strict';
 
@@ -577,7 +577,7 @@ Mover.prototype.cohesion = function(elements) {
  * @param {Object} target The object to flee from.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.flee = function(target) {
+Agent.prototype.flee = function(target) {
 
   'use strict';
 
@@ -595,7 +595,7 @@ Mover.prototype.flee = function(target) {
  * @param {Object} target The object that is applying the drag force.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.drag = function(target) {
+Agent.prototype.drag = function(target) {
 
   'use strict';
 
@@ -615,7 +615,7 @@ Mover.prototype.drag = function(target) {
  * @param {Object} attractor The attracting object.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.attract = function(attractor) {
+Agent.prototype.attract = function(attractor) {
 
   'use strict';
 
@@ -637,7 +637,7 @@ Mover.prototype.attract = function(attractor) {
  * @param {Object} container The containing object.
  * @returns {boolean} Returns true if the object is inside the container.
  */
-Mover.prototype.isInside = function(container) {
+Agent.prototype.isInside = function(container) {
 
   'use strict';
 
@@ -658,7 +658,7 @@ Mover.prototype.isInside = function(container) {
  * @param {Object} world The world object.
  * @returns {boolean} Returns true if the object is outside the world.
  */
-Mover.prototype.checkWorldEdges = function(world) {
+Agent.prototype.checkWorldEdges = function(world) {
 
   'use strict';
 
@@ -763,7 +763,7 @@ Mover.prototype.checkWorldEdges = function(world) {
  * @param {Object} world The world object.
  * @returns {boolean} Returns true if the object is outside the world.
  */
-Mover.prototype.checkCameraEdges = function() {
+Agent.prototype.checkCameraEdges = function() {
 
   'use strict';
 
@@ -779,7 +779,7 @@ Mover.prototype.checkCameraEdges = function() {
                           Accepts 'x', 'y' to return their respective values.
  * @returns {boolean} Returns true if the object is outside the world.
  */
-Mover.prototype.getLocation = function (type) {
+Agent.prototype.getLocation = function (type) {
 
   'use strict';
 
@@ -799,7 +799,7 @@ Mover.prototype.getLocation = function (type) {
                           Accepts 'x', 'y' to return their respective values.
  * @returns {boolean} Returns true if the object is outside the world.
  */
-Mover.prototype.getVelocity = function (type) {
+Agent.prototype.getVelocity = function (type) {
 
   'use strict';
 
@@ -812,4 +812,4 @@ Mover.prototype.getVelocity = function (type) {
   }
 };
 
-exports.Mover = Mover;
+exports.Agent = Agent;

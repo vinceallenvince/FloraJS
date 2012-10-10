@@ -59,7 +59,7 @@
 
         (function(exports) {
       </header>
-      <filelist dir="${src.dir}" files="requestanimframe.js,config.js,elementlist.js,system.js,utils.js,vector.js,colorpalette.js,colortable.js,borderpalette.js,simplexnoise.js,interface.js,universe.js,world.js,camera.js,obj.js,mover.js,walker.js,oscillator.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,caption.js,statsdisplay.js"/>
+      <filelist dir="${src.dir}" files="requestanimframe.js,config.js,elementlist.js,system.js,utils.js,vector.js,colorpalette.js,colortable.js,borderpalette.js,simplexnoise.js,interface.js,universe.js,world.js,camera.js,obj.js,agent.js,walker.js,oscillator.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,caption.js,statsdisplay.js"/>
       <footer trimleading="yes">}(exports));</footer>
     </concat>
   </target>

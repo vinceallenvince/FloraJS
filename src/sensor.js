@@ -3,7 +3,7 @@
  * Creates a new Sensor object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
@@ -23,7 +23,7 @@ function Sensor(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
@@ -36,7 +36,7 @@ function Sensor(opt_options) {
   this.target = options.target || null;
   this.activated = !!options.activated;
 }
-exports.Utils.extend(Sensor, exports.Mover);
+exports.Utils.extend(Sensor, exports.Agent);
 
 /**
  * Define a name property.
@@ -116,7 +116,7 @@ Sensor.prototype.step = function() {
  * Returns the force to apply the vehicle when its sensor is activated.
  *
  * @param {Object} params A list of properties.
- * @param {Object} params.mover The vehicle carrying the sensor.
+ * @param {Object} params.agent The vehicle carrying the sensor.
  */
 Sensor.prototype.getActivationForce = function(params) {
 
@@ -154,15 +154,15 @@ Sensor.prototype.getActivationForce = function(params) {
       dvLoves.normalize();
 
       if (distanceToTarget > this.width) {
-        m = distanceToTarget/params.mover.maxSpeed;
+        m = distanceToTarget/params.agent.maxSpeed;
         dvLoves.mult(m);
-        steer = exports.Vector.VectorSub(dvLoves, params.mover.velocity);
-        steer.limit(params.mover.maxSteeringForce);
+        steer = exports.Vector.VectorSub(dvLoves, params.agent.velocity);
+        steer.limit(params.agent.maxSteeringForce);
         return steer;
       }
-      params.mover.velocity = new exports.Vector();
-      params.mover.acceleration = new exports.Vector();
-      params.mover.isStatic = true;
+      params.agent.velocity = new exports.Vector();
+      params.agent.acceleration = new exports.Vector();
+      params.agent.isStatic = true;
       return new exports.Vector();
     /**
      * Arrives at target but does not stop
@@ -172,10 +172,10 @@ Sensor.prototype.getActivationForce = function(params) {
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
 
-      m = distanceToTarget/params.mover.maxSpeed;
+      m = distanceToTarget/params.agent.maxSpeed;
       dvExplorer.mult(-m);
-      steer = exports.Vector.VectorSub(dvExplorer, params.mover.velocity);
-      steer.limit(params.mover.maxSteeringForce * 0.1);
+      steer = exports.Vector.VectorSub(dvExplorer, params.agent.velocity);
+      steer.limit(params.agent.maxSteeringForce * 0.1);
       return steer;
     /**
      * Moves in the opposite direction as fast as possible
@@ -184,14 +184,14 @@ Sensor.prototype.getActivationForce = function(params) {
       return this.flee(this.target);
 
     case "ACCELERATE":
-      var forceAccel = params.mover.velocity.clone();
+      var forceAccel = params.agent.velocity.clone();
       forceAccel.normalize(); // get direction
-      return forceAccel.mult(params.mover.minSpeed);
+      return forceAccel.mult(params.agent.minSpeed);
 
     case "DECELERATE":
-      var forceDecel = params.mover.velocity.clone();
+      var forceDecel = params.agent.velocity.clone();
       forceDecel.normalize(); // get direction
-      return forceDecel.mult(-params.mover.minSpeed);
+      return forceDecel.mult(-params.agent.minSpeed);
 
     default:
       return new exports.Vector();

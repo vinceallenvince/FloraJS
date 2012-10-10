@@ -3,7 +3,7 @@
  * Creates a new Attractor object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.G = -1] Universal Gravitational Constant.
@@ -19,7 +19,7 @@ function Attractor(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.G = options.G === 0 ? 0 : options.G || 1;
   this.mass = options.mass === 0 ? 0 : options.mass || 100;
@@ -28,7 +28,7 @@ function Attractor(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.extend(Attractor, exports.Mover);
+exports.Utils.extend(Attractor, exports.Agent);
 
 /**
  * Define a name property.

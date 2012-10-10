@@ -10,7 +10,7 @@
 <span class='line'>  3</span>  * Creates a new Point.
 <span class='line'>  4</span>  *
 <span class='line'>  5</span>  * @constructor
-<span class='line'>  6</span>  * @extends Mover
+<span class='line'>  6</span>  * @extends Agent
 <span class='line'>  7</span>  * @param {Object} [opt_options] Options.
 <span class='line'>  8</span>  * @param {number} [opt_options.zIndex = 0] zIndex.
 <span class='line'>  9</span>  * @param {number} [opt_options.width = 5] Width.
@@ -24,7 +24,7 @@
 <span class='line'> 17</span> 
 <span class='line'> 18</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">options</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">opt_options</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 19</span> 
-<span class='line'> 20</span> </span><span class="WHIT">  </span><span class="NAME">exports.Mover.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">  </span><span class="NAME">exports.Agent.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 21</span> 
 <span class='line'> 22</span> </span><span class="WHIT">  </span><span class="NAME">this.width</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options.width</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">options.width</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 23</span> </span><span class="WHIT">  </span><span class="NAME">this.height</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options.height</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">options.height</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="PUNC">;</span><span class="WHIT">
@@ -34,7 +34,7 @@
 <span class='line'> 27</span> </span><span class="WHIT">  </span><span class="NAME">this.offsetAngle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options.offsetAngle</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 28</span> </span><span class="WHIT">  </span><span class="NAME">this.length</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options.length</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">options.length</span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">30</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 29</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 30</span> </span><span class="NAME">exports.Utils.extend</span><span class="PUNC">(</span><span class="NAME">Point</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">exports.Mover</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="NAME">exports.Utils.extend</span><span class="PUNC">(</span><span class="NAME">Point</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">exports.Agent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 31</span> 
 <span class='line'> 32</span> </span><span class="COMM">/**
 <span class='line'> 33</span>  * Define a name property.

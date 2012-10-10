@@ -3,7 +3,7 @@
  * Creates a new Point.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.zIndex = 0] zIndex.
  * @param {number} [opt_options.width = 5] Width.
@@ -17,7 +17,7 @@ function Point(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 10;
@@ -27,7 +27,7 @@ function Point(opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.length = options.length === 0 ? 0 : options.length|| 30;
 }
-exports.Utils.extend(Point, exports.Mover);
+exports.Utils.extend(Point, exports.Agent);
 
 /**
  * Define a name property.

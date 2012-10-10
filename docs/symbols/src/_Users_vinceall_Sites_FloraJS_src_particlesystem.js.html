@@ -10,7 +10,7 @@
 <span class='line'>  3</span>  * Creates a new ParticleSystem.
 <span class='line'>  4</span>  *
 <span class='line'>  5</span>  * @constructor
-<span class='line'>  6</span>  * @extends Mover
+<span class='line'>  6</span>  * @extends Agent
 <span class='line'>  7</span>  *
 <span class='line'>  8</span>  * @param {Object} [opt_options] Particle options.
 <span class='line'>  9</span>  * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move.
@@ -30,7 +30,7 @@
 <span class='line'> 23</span> </span><span class="WHIT">      </span><span class="NAME">f</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">exports.defaultColors.getColor</span><span class="PUNC">(</span><span class="STRN">'food'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="COMM">// gets the food start and end colors</span><span class="WHIT">
 <span class='line'> 24</span> </span><span class="WHIT">      </span><span class="NAME">pl</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">exports.ColorPalette</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 25</span> 
-<span class='line'> 26</span> </span><span class="WHIT">  </span><span class="NAME">exports.Mover.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="WHIT">  </span><span class="NAME">exports.Agent.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 27</span> 
 <span class='line'> 28</span> </span><span class="WHIT">  </span><span class="NAME">pl.addColor</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// adds a random sampling of colors to palette</span><span class="WHIT">
 <span class='line'> 29</span> </span><span class="WHIT">    </span><span class="NAME">min</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">12</span><span class="PUNC">,</span><span class="WHIT">
@@ -82,7 +82,7 @@
 <span class='line'> 75</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 76</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 77</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 78</span> </span><span class="NAME">exports.Utils.extend</span><span class="PUNC">(</span><span class="NAME">ParticleSystem</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">exports.Mover</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="NAME">exports.Utils.extend</span><span class="PUNC">(</span><span class="NAME">ParticleSystem</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">exports.Agent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 79</span> 
 <span class='line'> 80</span> </span><span class="COMM">/**
 <span class='line'> 81</span>  * Define a name property.

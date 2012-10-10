@@ -3,7 +3,7 @@
  * Creates a new Oxygen object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
@@ -18,7 +18,7 @@ function Oxygen(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
@@ -26,7 +26,7 @@ function Oxygen(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.extend(Oxygen, exports.Mover);
+exports.Utils.extend(Oxygen, exports.Agent);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.

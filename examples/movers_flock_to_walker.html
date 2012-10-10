@@ -14,7 +14,7 @@
     Flora.System.start(function() {
       var i, walker = new Flora.Walker();
       for (i = 0; i < 20; i += 1) {
-        new Flora.Mover({
+        new Flora.Agent({
           target: walker,
           flocking: true
         });

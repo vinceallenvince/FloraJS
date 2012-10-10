@@ -3,7 +3,7 @@
  * Creates a new Connector.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
  * @param {Object} [opt_options] Options.
@@ -16,7 +16,7 @@ function Connector(parentA, parentB, opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   if (!parentA || !parentB) {
     throw new Error('Connector: both parentA and parentB are required.');
@@ -31,7 +31,7 @@ function Connector(parentA, parentB, opt_options) {
   this.zIndex = options.zIndex || 0;
 
 }
-exports.Utils.extend(Connector, exports.Mover);
+exports.Utils.extend(Connector, exports.Agent);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.

@@ -3,7 +3,7 @@
  * Creates a new Walker.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Walker options.
  * @param {string} [opt_options.className = 'walker'] The corresponding DOM element's class name.
@@ -32,7 +32,7 @@ function Walker(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.isPerlin = options.isPerlin === false ? false : options.isPerlin || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
@@ -53,7 +53,7 @@ function Walker(opt_options) {
   this.wrapEdges = !!options.wrapEdges;
   this.isStatic = !!options.isStatic;
 }
-exports.Utils.extend(Walker, exports.Mover);
+exports.Utils.extend(Walker, exports.Agent);
 
 /**
  * Define a name property.

@@ -10,7 +10,7 @@
 <span class='line'>  3</span>  * Creates a new Particle.
 <span class='line'>  4</span>  *
 <span class='line'>  5</span>  * @constructor
-<span class='line'>  6</span>  * @extends Mover
+<span class='line'>  6</span>  * @extends Agent
 <span class='line'>  7</span>  *
 <span class='line'>  8</span>  * @param {Object} [opt_options] Particle options.
 <span class='line'>  9</span>  * @param {number} [opt_options.lifespan = 40] The number of frames before particle dies. Set to -1 for infinite life.
@@ -24,12 +24,12 @@
 <span class='line'> 17</span> 
 <span class='line'> 18</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">options</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">opt_options</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 19</span> 
-<span class='line'> 20</span> </span><span class="NAME">exports.Mover.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="NAME">exports.Agent.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 21</span> 
 <span class='line'> 22</span> </span><span class="NAME">this.lifespan</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options.lifespan</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">40</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 23</span> </span><span class="NAME">this.borderRadius</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options.borderRadius</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">'100%'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 24</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 25</span> </span><span class="NAME">exports.Utils.extend</span><span class="PUNC">(</span><span class="NAME">Particle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">exports.Mover</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="NAME">exports.Utils.extend</span><span class="PUNC">(</span><span class="NAME">Particle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">exports.Agent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 26</span> 
 <span class='line'> 27</span> </span><span class="COMM">/**
 <span class='line'> 28</span>  * Define a name property. Used to assign a class name and prefix an id.

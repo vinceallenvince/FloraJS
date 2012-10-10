@@ -43,7 +43,7 @@ body {
 	overflow: hidden;
 }
 
-.mover {
+.agent {
 	background: rgb(197, 177, 115); opacity: 0;
 	z-index: 1;
 }

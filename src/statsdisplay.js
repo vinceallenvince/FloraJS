@@ -147,6 +147,6 @@ StatsDisplay.prototype._update = function() {
 /**
  * Define a name property.
  */
-StatsDisplay.prototype.name = 'statsDisplay';
+StatsDisplay.prototype.name = 'statsdisplay';
 
 exports.StatsDisplay = StatsDisplay;

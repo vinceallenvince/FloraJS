@@ -15,11 +15,11 @@
       var point = new Flora.Point(),
           walkerA = new Flora.Walker(),
           walkerB = new Flora.Walker(),
-          mover = new Flora.Mover({followMouse: true}),
+          agent = new Flora.Agent({followMouse: true}),
           connector1 = new Flora.Connector(point, walkerA),
           connector2 = new Flora.Connector(walkerA, walkerB),
-          connector3 = new Flora.Connector(walkerB, mover),
-          connector4 = new Flora.Connector(mover, point);
+          connector3 = new Flora.Connector(walkerB, agent),
+          connector4 = new Flora.Connector(agent, point);
 
       Flora.universe.update({
         gravity: new Flora.Vector(0, 0)

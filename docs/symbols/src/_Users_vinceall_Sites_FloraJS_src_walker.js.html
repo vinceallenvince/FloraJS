@@ -10,7 +10,7 @@
 <span class='line'>  3</span>  * Creates a new Walker.
 <span class='line'>  4</span>  *
 <span class='line'>  5</span>  * @constructor
-<span class='line'>  6</span>  * @extends Mover
+<span class='line'>  6</span>  * @extends Agent
 <span class='line'>  7</span>  *
 <span class='line'>  8</span>  * @param {Object} [opt_options] Walker options.
 <span class='line'>  9</span>  * @param {string} [opt_options.className = 'walker'] The corresponding DOM element's class name.
@@ -39,7 +39,7 @@
 <span class='line'> 32</span> 
 <span class='line'> 33</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">options</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">opt_options</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 34</span> 
-<span class='line'> 35</span> </span><span class="WHIT">  </span><span class="NAME">exports.Mover.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="WHIT">  </span><span class="NAME">exports.Agent.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 36</span> 
 <span class='line'> 37</span> </span><span class="WHIT">  </span><span class="NAME">this.isPerlin</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options.isPerlin</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">options.isPerlin</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 38</span> </span><span class="WHIT">  </span><span class="NAME">this.remainsOnScreen</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="PUNC">!</span><span class="NAME">options.remainsOnScreen</span><span class="PUNC">;</span><span class="WHIT">
@@ -60,7 +60,7 @@
 <span class='line'> 53</span> </span><span class="WHIT">  </span><span class="NAME">this.wrapEdges</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="PUNC">!</span><span class="NAME">options.wrapEdges</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 54</span> </span><span class="WHIT">  </span><span class="NAME">this.isStatic</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="PUNC">!</span><span class="NAME">options.isStatic</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 55</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 56</span> </span><span class="NAME">exports.Utils.extend</span><span class="PUNC">(</span><span class="NAME">Walker</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">exports.Mover</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="NAME">exports.Utils.extend</span><span class="PUNC">(</span><span class="NAME">Walker</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">exports.Agent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 57</span> 
 <span class='line'> 58</span> </span><span class="COMM">/**
 <span class='line'> 59</span>  * Define a name property.

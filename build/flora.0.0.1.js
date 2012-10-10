@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 0.0.1 */
-/* Build time: October 10, 2012 07:48:40 */
+/* Build time: October 10, 2012 09:37:54 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -2511,15 +2511,15 @@ Obj.prototype.draw = function() {
 exports.Obj = Obj;
 /*global exports */
 /**
- * Creates a new Mover and appends it to Flora.elements.
+ * Creates a new Agent and appends it to Flora.elements.
  *
  * @constructor
  * @extends Obj
  *
- * @param {Object} [opt_options] Mover options.
- * @param {string} [opt_options.id = "m-" + Mover._idCount] An id. If an id is not provided, one is created.
- * @param {Object|function} [opt_options.view] HTML representing the Mover instance.
- * @param {string} [opt_options.className = 'mover'] The corresponding DOM element's class name.
+ * @param {Object} [opt_options] Agent options.
+ * @param {string} [opt_options.id = "m-" + Agent._idCount] An id. If an id is not provided, one is created.
+ * @param {Object|function} [opt_options.view] HTML representing the Agent instance.
+ * @param {string} [opt_options.className = 'agent'] The corresponding DOM element's class name.
  * @param {number} [opt_options.mass = 10] Mass
  * @param {number} [opt_options.maxSpeed = 10] Maximum speed
  * @param {number} [opt_options.minSpeed = 0] Minimum speed
@@ -2529,8 +2529,8 @@ exports.Obj = Obj;
  * @param {number} [opt_options.lifespan = -1] Life span. Set to -1 to live forever.
  * @param {number} [opt_options.width = 20] Width
  * @param {number} [opt_options.height = 20] Height
- * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the mover's parent.
- * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the mover.
+ * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the agent's parent.
+ * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the agent.
  * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
  * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
  * @param {number} [opt_options.zIndex = 10] z-index
@@ -2563,7 +2563,7 @@ exports.Obj = Obj;
  */
 
 
-function Mover(opt_options) {
+function Agent(opt_options) {
 
   'use strict';
 
@@ -2583,7 +2583,7 @@ function Mover(opt_options) {
 
   exports.Obj.call(this, options);
 
-  this.id = options.id || constructorName.toLowerCase() + "-" + Mover._idCount; // if no id, create one
+  this.id = options.id || constructorName.toLowerCase() + "-" + Agent._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
     this.el = options.view.call(this);
@@ -2639,7 +2639,7 @@ function Mover(opt_options) {
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
 
-  elements.push(this); // push new instance of Mover
+  elements.push(this); // push new instance of Agent
 
   this.el.id = this.id;
   this.el.className = this.className;
@@ -2648,7 +2648,7 @@ function Mover(opt_options) {
     world.el.appendChild(this.el); // append the view to the World
   }
 
-  Mover._idCount += 1; // increment id
+  Agent._idCount += 1; // increment id
 
   if (this.className.search('liquid') !== -1) {
     liquids.push(this); // push new instance of liquids to liquid list
@@ -2687,25 +2687,25 @@ function Mover(opt_options) {
     exports.Utils.addEvent(this.el, 'mouseout', exports.Obj.mouseout.bind(this));
   }
 }
-exports.Utils.extend(Mover, exports.Obj);
+exports.Utils.extend(Agent, exports.Obj);
 
 /**
  * Define a name property.
  */
-Mover.prototype.name = 'mover';
+Agent.prototype.name = 'agent';
 
 /**
- * Increments as each Mover is created.
+ * Increments as each Agent is created.
  * @type number
  * @default 0
  */
-Mover._idCount = 0;
+Agent._idCount = 0;
 
 
 /**
  * Called every frame, step() updates the instance's properties.
  */
-Mover.prototype.step = function() {
+Agent.prototype.step = function() {
 
   'use strict';
 
@@ -2767,7 +2767,7 @@ Mover.prototype.step = function() {
 
         if (sensor.activated) {
           this.applyForce(sensor.getActivationForce({
-            mover: this
+            agent: this
           }));
         }
 
@@ -2890,7 +2890,7 @@ Mover.prototype.step = function() {
  *
  * @param {Object} force The force to be applied (expressed as a vector).
  */
-Mover.prototype.applyForce = function(force) {
+Agent.prototype.applyForce = function(force) {
 
   'use strict';
 
@@ -2908,7 +2908,7 @@ Mover.prototype.applyForce = function(force) {
  * @param {boolean} arrive Set to true to for this object to arrive and stop at the target.
  * @returns {Object} The force to apply.
  */
-Mover.prototype.seek = function(target, arrive) {
+Agent.prototype.seek = function(target, arrive) {
 
   'use strict';
 
@@ -2936,7 +2936,7 @@ Mover.prototype.seek = function(target, arrive) {
  * @param {Object} target The object to seek.
  * @returns {Object} The force to apply.
  */
-Mover.prototype.follow = function(target) {
+Agent.prototype.follow = function(target) {
 
   'use strict';
 
@@ -2952,7 +2952,7 @@ Mover.prototype.follow = function(target) {
 /**
  * Bundles flocking behaviors (separate, align, cohesion) into one call.
  */
-Mover.prototype.flock = function(elements) {
+Agent.prototype.flock = function(elements) {
 
   'use strict';
 
@@ -2968,7 +2968,7 @@ Mover.prototype.flock = function(elements) {
  * @param {array} elements An array of Flora elements.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.separate = function(elements) {
+Agent.prototype.separate = function(elements) {
 
   'use strict';
 
@@ -3009,7 +3009,7 @@ Mover.prototype.separate = function(elements) {
  * @param {array} elements An array of Flora elements.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.align = function(elements) {
+Agent.prototype.align = function(elements) {
 
   'use strict';
 
@@ -3048,7 +3048,7 @@ Mover.prototype.align = function(elements) {
  * @param {array} elements An array of Flora elements.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.cohesion = function(elements) {
+Agent.prototype.cohesion = function(elements) {
 
   'use strict';
 
@@ -3088,7 +3088,7 @@ Mover.prototype.cohesion = function(elements) {
  * @param {Object} target The object to flee from.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.flee = function(target) {
+Agent.prototype.flee = function(target) {
 
   'use strict';
 
@@ -3106,7 +3106,7 @@ Mover.prototype.flee = function(target) {
  * @param {Object} target The object that is applying the drag force.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.drag = function(target) {
+Agent.prototype.drag = function(target) {
 
   'use strict';
 
@@ -3126,7 +3126,7 @@ Mover.prototype.drag = function(target) {
  * @param {Object} attractor The attracting object.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.attract = function(attractor) {
+Agent.prototype.attract = function(attractor) {
 
   'use strict';
 
@@ -3148,7 +3148,7 @@ Mover.prototype.attract = function(attractor) {
  * @param {Object} container The containing object.
  * @returns {boolean} Returns true if the object is inside the container.
  */
-Mover.prototype.isInside = function(container) {
+Agent.prototype.isInside = function(container) {
 
   'use strict';
 
@@ -3169,7 +3169,7 @@ Mover.prototype.isInside = function(container) {
  * @param {Object} world The world object.
  * @returns {boolean} Returns true if the object is outside the world.
  */
-Mover.prototype.checkWorldEdges = function(world) {
+Agent.prototype.checkWorldEdges = function(world) {
 
   'use strict';
 
@@ -3274,7 +3274,7 @@ Mover.prototype.checkWorldEdges = function(world) {
  * @param {Object} world The world object.
  * @returns {boolean} Returns true if the object is outside the world.
  */
-Mover.prototype.checkCameraEdges = function() {
+Agent.prototype.checkCameraEdges = function() {
 
   'use strict';
 
@@ -3290,7 +3290,7 @@ Mover.prototype.checkCameraEdges = function() {
                           Accepts 'x', 'y' to return their respective values.
  * @returns {boolean} Returns true if the object is outside the world.
  */
-Mover.prototype.getLocation = function (type) {
+Agent.prototype.getLocation = function (type) {
 
   'use strict';
 
@@ -3310,7 +3310,7 @@ Mover.prototype.getLocation = function (type) {
                           Accepts 'x', 'y' to return their respective values.
  * @returns {boolean} Returns true if the object is outside the world.
  */
-Mover.prototype.getVelocity = function (type) {
+Agent.prototype.getVelocity = function (type) {
 
   'use strict';
 
@@ -3323,13 +3323,13 @@ Mover.prototype.getVelocity = function (type) {
   }
 };
 
-exports.Mover = Mover;
+exports.Agent = Agent;
 /*global exports */
 /**
  * Creates a new Walker.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Walker options.
  * @param {string} [opt_options.className = 'walker'] The corresponding DOM element's class name.
@@ -3358,7 +3358,7 @@ function Walker(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.isPerlin = options.isPerlin === false ? false : options.isPerlin || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
@@ -3379,7 +3379,7 @@ function Walker(opt_options) {
   this.wrapEdges = !!options.wrapEdges;
   this.isStatic = !!options.isStatic;
 }
-exports.Utils.extend(Walker, exports.Mover);
+exports.Utils.extend(Walker, exports.Agent);
 
 /**
  * Define a name property.
@@ -3490,7 +3490,7 @@ exports.Walker = Walker;
  * amplitude and angular velocity.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Oscillator options.
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
@@ -3517,7 +3517,7 @@ function Oscillator(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.initialLocation = options.initialLocation ||
       new exports.Vector(this.world.width/2, this.world.height/2);
@@ -3537,7 +3537,7 @@ function Oscillator(opt_options) {
   this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
   this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
 }
-exports.Utils.extend(Oscillator, exports.Mover);
+exports.Utils.extend(Oscillator, exports.Agent);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
@@ -3603,7 +3603,7 @@ exports.Oscillator = Oscillator;
  * Creates a new Particle.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Particle options.
  * @param {number} [opt_options.lifespan = 40] The number of frames before particle dies. Set to -1 for infinite life.
@@ -3617,12 +3617,12 @@ function Particle(opt_options) {
 
 var options = opt_options || {};
 
-exports.Mover.call(this, options);
+exports.Agent.call(this, options);
 
 this.lifespan = options.lifespan || 40;
 this.borderRadius = options.borderRadius || '100%';
 }
-exports.Utils.extend(Particle, exports.Mover);
+exports.Utils.extend(Particle, exports.Agent);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
@@ -3695,7 +3695,7 @@ exports.Particle = Particle;
  * Creates a new ParticleSystem.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Particle options.
  * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move.
@@ -3715,7 +3715,7 @@ exports.Particle = Particle;
       f = exports.defaultColors.getColor('food'), // gets the food start and end colors
       pl = new exports.ColorPalette();
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   pl.addColor({ // adds a random sampling of colors to palette
     min: 12,
@@ -3767,7 +3767,7 @@ exports.Particle = Particle;
     };
   };
 }
-exports.Utils.extend(ParticleSystem, exports.Mover);
+exports.Utils.extend(ParticleSystem, exports.Agent);
 
 /**
  * Define a name property.
@@ -3780,7 +3780,7 @@ exports.ParticleSystem = ParticleSystem;
  * Creates a new Liquid.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.c = 1] Drag coefficient.
@@ -3796,7 +3796,7 @@ function Liquid(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.c = options.c === 0 ? 0 : options.c || 1;
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
@@ -3805,7 +3805,7 @@ function Liquid(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.extend(Liquid, exports.Mover);
+exports.Utils.extend(Liquid, exports.Agent);
 
 /**
  * Define a name property.
@@ -3818,7 +3818,7 @@ exports.Liquid = Liquid;
  * Creates a new Attractor object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.G = -1] Universal Gravitational Constant.
@@ -3834,7 +3834,7 @@ function Attractor(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.G = options.G === 0 ? 0 : options.G || 1;
   this.mass = options.mass === 0 ? 0 : options.mass || 100;
@@ -3843,7 +3843,7 @@ function Attractor(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.extend(Attractor, exports.Mover);
+exports.Utils.extend(Attractor, exports.Agent);
 
 /**
  * Define a name property.
@@ -3856,7 +3856,7 @@ exports.Attractor = Attractor;
  * Creates a new Repeller object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.G = -1] Universal Gravitational Constant.
@@ -3872,7 +3872,7 @@ function Repeller(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.G = options.G === 0 ? 0 : options.G || -1;
   this.mass = options.mass === 0 ? 0 : options.mass || 100;
@@ -3881,7 +3881,7 @@ function Repeller(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
 }
-exports.Utils.extend(Repeller, exports.Mover);
+exports.Utils.extend(Repeller, exports.Agent);
 
 /**
  * Define a name property.
@@ -3894,7 +3894,7 @@ exports.Repeller = Repeller;
  * Creates a new Heat object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
@@ -3909,7 +3909,7 @@ function Heat(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
@@ -3917,7 +3917,7 @@ function Heat(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.extend(Heat, exports.Mover);
+exports.Utils.extend(Heat, exports.Agent);
 
 /**
  * Define a name property.
@@ -3930,7 +3930,7 @@ exports.Heat = Heat;
  * Creates a new Cold object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
@@ -3945,7 +3945,7 @@ function Cold(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
@@ -3953,7 +3953,7 @@ function Cold(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.extend(Cold, exports.Mover);
+exports.Utils.extend(Cold, exports.Agent);
 
 /**
  * Define a name property.
@@ -3966,7 +3966,7 @@ exports.Cold = Cold;
  * Creates a new Light object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
@@ -3981,7 +3981,7 @@ function Light(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
@@ -3989,7 +3989,7 @@ function Light(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.extend(Light, exports.Mover);
+exports.Utils.extend(Light, exports.Agent);
 
 /**
  * Define a name property.
@@ -4002,7 +4002,7 @@ exports.Light = Light;
  * Creates a new Oxygen object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
@@ -4017,7 +4017,7 @@ function Oxygen(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
@@ -4025,7 +4025,7 @@ function Oxygen(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.extend(Oxygen, exports.Mover);
+exports.Utils.extend(Oxygen, exports.Agent);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
@@ -4038,7 +4038,7 @@ exports.Oxygen = Oxygen;
  * Creates a new Food object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
@@ -4053,7 +4053,7 @@ function Food(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
@@ -4061,7 +4061,7 @@ function Food(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 20;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.extend(Food, exports.Mover);
+exports.Utils.extend(Food, exports.Agent);
 
 /**
  * Define a name property.
@@ -4074,7 +4074,7 @@ exports.Food = Food;
  * Creates a new Predator object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
@@ -4089,7 +4089,7 @@ function Predator(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
@@ -4097,7 +4097,7 @@ function Predator(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 75;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
-exports.Utils.extend(Predator, exports.Mover);
+exports.Utils.extend(Predator, exports.Agent);
 
 /**
  * Define a name property.
@@ -4110,7 +4110,7 @@ exports.Predator = Predator;
  * Creates a new Sensor object.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  *
  * @param {Object} [opt_options] Options.
  * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
@@ -4130,7 +4130,7 @@ function Sensor(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
@@ -4143,7 +4143,7 @@ function Sensor(opt_options) {
   this.target = options.target || null;
   this.activated = !!options.activated;
 }
-exports.Utils.extend(Sensor, exports.Mover);
+exports.Utils.extend(Sensor, exports.Agent);
 
 /**
  * Define a name property.
@@ -4223,7 +4223,7 @@ Sensor.prototype.step = function() {
  * Returns the force to apply the vehicle when its sensor is activated.
  *
  * @param {Object} params A list of properties.
- * @param {Object} params.mover The vehicle carrying the sensor.
+ * @param {Object} params.agent The vehicle carrying the sensor.
  */
 Sensor.prototype.getActivationForce = function(params) {
 
@@ -4261,15 +4261,15 @@ Sensor.prototype.getActivationForce = function(params) {
       dvLoves.normalize();
 
       if (distanceToTarget > this.width) {
-        m = distanceToTarget/params.mover.maxSpeed;
+        m = distanceToTarget/params.agent.maxSpeed;
         dvLoves.mult(m);
-        steer = exports.Vector.VectorSub(dvLoves, params.mover.velocity);
-        steer.limit(params.mover.maxSteeringForce);
+        steer = exports.Vector.VectorSub(dvLoves, params.agent.velocity);
+        steer.limit(params.agent.maxSteeringForce);
         return steer;
       }
-      params.mover.velocity = new exports.Vector();
-      params.mover.acceleration = new exports.Vector();
-      params.mover.isStatic = true;
+      params.agent.velocity = new exports.Vector();
+      params.agent.acceleration = new exports.Vector();
+      params.agent.isStatic = true;
       return new exports.Vector();
     /**
      * Arrives at target but does not stop
@@ -4279,10 +4279,10 @@ Sensor.prototype.getActivationForce = function(params) {
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
 
-      m = distanceToTarget/params.mover.maxSpeed;
+      m = distanceToTarget/params.agent.maxSpeed;
       dvExplorer.mult(-m);
-      steer = exports.Vector.VectorSub(dvExplorer, params.mover.velocity);
-      steer.limit(params.mover.maxSteeringForce * 0.1);
+      steer = exports.Vector.VectorSub(dvExplorer, params.agent.velocity);
+      steer.limit(params.agent.maxSteeringForce * 0.1);
       return steer;
     /**
      * Moves in the opposite direction as fast as possible
@@ -4291,14 +4291,14 @@ Sensor.prototype.getActivationForce = function(params) {
       return this.flee(this.target);
 
     case "ACCELERATE":
-      var forceAccel = params.mover.velocity.clone();
+      var forceAccel = params.agent.velocity.clone();
       forceAccel.normalize(); // get direction
-      return forceAccel.mult(params.mover.minSpeed);
+      return forceAccel.mult(params.agent.minSpeed);
 
     case "DECELERATE":
-      var forceDecel = params.mover.velocity.clone();
+      var forceDecel = params.agent.velocity.clone();
       forceDecel.normalize(); // get direction
-      return forceDecel.mult(-params.mover.minSpeed);
+      return forceDecel.mult(-params.agent.minSpeed);
 
     default:
       return new exports.Vector();
@@ -4481,7 +4481,7 @@ exports.FlowField = FlowField;
  * Creates a new Connector.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
  * @param {Object} [opt_options] Options.
@@ -4494,7 +4494,7 @@ function Connector(parentA, parentB, opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   if (!parentA || !parentB) {
     throw new Error('Connector: both parentA and parentB are required.');
@@ -4509,7 +4509,7 @@ function Connector(parentA, parentB, opt_options) {
   this.zIndex = options.zIndex || 0;
 
 }
-exports.Utils.extend(Connector, exports.Mover);
+exports.Utils.extend(Connector, exports.Agent);
 
 /**
  * Define a name property. Used to assign a class name and prefix an id.
@@ -4537,7 +4537,7 @@ exports.Connector = Connector;
  * Creates a new Point.
  *
  * @constructor
- * @extends Mover
+ * @extends Agent
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.zIndex = 0] zIndex.
  * @param {number} [opt_options.width = 5] Width.
@@ -4551,7 +4551,7 @@ function Point(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Mover.call(this, options);
+  exports.Agent.call(this, options);
 
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 10;
@@ -4561,7 +4561,7 @@ function Point(opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.length = options.length === 0 ? 0 : options.length|| 30;
 }
-exports.Utils.extend(Point, exports.Mover);
+exports.Utils.extend(Point, exports.Agent);
 
 /**
  * Define a name property.
@@ -4791,7 +4791,7 @@ StatsDisplay.prototype._update = function() {
 /**
  * Define a name property.
  */
-StatsDisplay.prototype.name = 'statsDisplay';
+StatsDisplay.prototype.name = 'statsdisplay';
 
 exports.StatsDisplay = StatsDisplay;
 }(exports));
