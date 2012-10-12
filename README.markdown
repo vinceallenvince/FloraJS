@@ -138,7 +138,7 @@ In the example below, Agents flock to the mouse. We've also adjusted the 'width'
 
 #### Proximity
 
-FloraJS World's have some built in Proximity objects that exert a force on Agents that come in direct contact or land within the object's range of influence.
+FloraJS has some built in Proximity objects that exert a force on Agents that come in direct contact or land within the object's range of influence.
 
 * Liquid
 * Attractor
@@ -154,10 +154,6 @@ In the example below, we create a Liquid object and an Agent that follows the mo
             draggable: true
           });
         });
-
-Adjust the following property of Liquid objects to affect their drag. Higher values = more drag:
-
-* c (Drag coefficient) {number} default = 1
 
 You can replace 'Liquid' with 'Attractor' and 'Repeller' to view how the Proximity objects affect an Agent.
 
@@ -183,7 +179,7 @@ Sensors are tuned specifically to a Stimulant and can be configured to activate 
 * EXPLORER
 * RUN
 
-In the example below, the Agent carries a Sensor tuned to Cold Stimulus. When activated, it triggers the 'COWARD' behavior.
+In the example below, the Agent carries a Sensor that senses Heat. When activated, it triggers the 'COWARD' behavior.
 
         Flora.System.start(function () {
 
@@ -212,7 +208,7 @@ In the example below, the Agent carries a Sensor tuned to Cold Stimulus. When ac
           });
         });
 
-Notice, we've updated the World and removed any gravitational forces. We've also updated the 'motorSpeed' property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Cold Stimulus.
+Notice, we've updated the World and removed any gravitational forces. We've also updated the 'motorSpeed' property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Heat objects.
 
 #### A small World
 
