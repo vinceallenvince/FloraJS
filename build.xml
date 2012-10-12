@@ -22,10 +22,10 @@
     <delete dir="${jsdoc.output}"/>
   </target>
 
-  <target name="build.dev" depends="clean,init,concatenate,validate,validateDemos,copy">
+  <target name="build.dev" depends="clean,init,concatenate,validate,copyDev">
   </target>
 
-  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,document,copy">
+  <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,document,copyRelease">
   </target>
 
   <taskdef name="jshint" classname="com.philmander.jshint.JsHintAntTask"
@@ -128,7 +128,19 @@
   </target>
 
   <!-- Copy: copy build and css files to examples/demos -->
-  <target name="copy">
+  <target name="copyDev">
+    <!-- copy fat file in same folder with version number -->
+    <copy file="${build.dir}/flora.js" tofile="${build.dir}/flora.${version}.js" overwrite="true"/>
+    <!-- copy fat build file to demos/js -->
+    <copy file="${build.dir}/flora.js" todir="${demos.dir}/js" overwrite="true"/>
+    <!-- copy modernizr to demos/js -->
+    <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
+    <!-- copy css file to demos/css -->
+    <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
+  </target>
+
+  <!-- Copy: copy build and css files to examples/demos -->
+  <target name="copyRelease">
     <!-- copy fat file in same folder with version number -->
     <copy file="${build.dir}/flora.js" tofile="${build.dir}/flora.${version}.js" overwrite="true"/>
     <!-- copy minified file in same folder with version number -->

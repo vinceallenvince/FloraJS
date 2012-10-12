@@ -12,7 +12,7 @@
  * @param {number} [opt_options.width = 5] Width.
  * @param {number} [opt_options.height = 5] Height.
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the sensor's parent.
- * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the vehicle carrying the sensor.
+ * @param {number} [opt_options.offsetAngle = 0] The angle of rotation around the vehicle carrying the sensor.
  * @param {number} [opt_options.opacity = 1] Opacity.
  * @param {Object} [opt_options.target = null] A stimulator.
  * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.

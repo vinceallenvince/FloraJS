@@ -11,15 +11,15 @@
   <script type="text/javascript" charset="utf-8">
 
     // start the system; pass initial instuctions
-    Flora.System.start(function() {
-      for (i = 0; i < 20; i += 1) {
-        new Flora.Agent({
-          followMouse: true,
-          flocking: true,
-          width: 20,
-          height: 15
-        });
-      }
+    Flora.System.start(function () {
+      var universe = Flora.universe.first();
+      new Flora.Agent({
+        followMouse: true
+      });
+      new Flora.Liquid({
+        draggable: true,
+        location: new Flora.Vector(universe.width/1.25, universe.height/1.25)
+      });
     });
   </script>
 </body>

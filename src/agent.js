@@ -12,6 +12,7 @@
  * @param {number} [opt_options.mass = 10] Mass
  * @param {number} [opt_options.maxSpeed = 10] Maximum speed
  * @param {number} [opt_options.minSpeed = 0] Minimum speed
+ * @param {number} [opt_options.motorSpeed = 2] Motor speed
  * @param {number} [opt_options.scale = 1] Scale
  * @param {number} [opt_options.angle = 0] Angle
  * @param {number} [opt_options.opacity = 0.85] Opacity
@@ -91,6 +92,7 @@ function Agent(opt_options) {
   this.mass = options.mass || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
+  this.motorSpeed = options.motorSpeed || 0;
   this.scale = options.scale === 0 ? 0 : options.scale || 1;
   this.angle = options.angle === 0 ? 0 : options.angle || 0;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.85;
@@ -105,7 +107,7 @@ function Agent(opt_options) {
   this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
   this.followMouse = !!options.followMouse;
   this.isStatic = !!options.isStatic;
-  this.isDraggable = !!options.isDraggable;
+  this.draggable = !!options.draggable;
   this.checkEdges = options.checkEdges === false ? false : options.checkEdges || true;
   this.wrapEdges = !!options.wrapEdges;
   this.avoidEdges = !!options.avoidEdges;
@@ -131,7 +133,7 @@ function Agent(opt_options) {
   elements.push(this); // push new instance of Agent
 
   this.el.id = this.id;
-  this.el.className = this.className;
+  this.el.className = this.sensors.length > 0 ? (this.className + ' hasSensor') : this.className;
 
   if (world.el) {
     world.el.appendChild(this.el); // append the view to the World
@@ -168,7 +170,7 @@ function Agent(opt_options) {
     world.location.y = -world.height/2 + (exports.Utils.getWindowSize().height)/2 + (world.height/2 - this.location.y);
   }
 
-  if (this.isDraggable) {
+  if (this.draggable) {
     exports.Utils.addEvent(this.el, 'mouseover', exports.Obj.mouseover.bind(this));
     exports.Utils.addEvent(this.el, 'mousedown', exports.Obj.mousedown.bind(this));
     exports.Utils.addEvent(this.el, 'mousemove', exports.Obj.mousemove.bind(this));
@@ -198,7 +200,7 @@ Agent.prototype.step = function() {
 
   'use strict';
 
-  var i, max, dir, friction, force, nose, r, theta, x, y, sensor,
+  var i, max, dir, friction, force, nose, r, theta, x, y, sensor, className, sensorActivated,
     world = this.world, elements = exports.elementList.all();
 
   //
@@ -218,6 +220,8 @@ Agent.prototype.step = function() {
         if (this.id !== exports.liquids[i].id && this.isInside(exports.liquids[i])) {
           force = this.drag(exports.liquids[i]);
           this.applyForce(force);
+          className = exports.liquids[i].className + ' activated';
+          exports.liquids[i].el.className = className;
         }
       }
     }
@@ -231,7 +235,7 @@ Agent.prototype.step = function() {
       }
     }
 
-    if (exports.attractors.length > 0) { // repeller
+    if (exports.attractors.length > 0) { // attractor
       for (i = 0, max = exports.attractors.length; i < max; i += 1) {
         if (this.id !== exports.attractors[i].id) {
           force = this.attract(exports.attractors[i]);
@@ -258,9 +262,25 @@ Agent.prototype.step = function() {
           this.applyForce(sensor.getActivationForce({
             agent: this
           }));
+          sensorActivated = true;
         }
 
       }
+    }
+
+    /**
+     * If no sensor were activated and this.motorSpeed != 0,
+     * apply a force in the direction of the current velocity.
+     */
+    if (!sensorActivated && this.motorSpeed) {
+      dir = exports.Utils.clone(this.velocity);
+      dir.normalize();
+      if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
+        dir.mult(-this.motorSpeed);
+      } else {
+        dir.mult(this.motorSpeed);
+      }
+      this.applyForce(dir); // constantly applies a force
     }
 
     if (world.c) { // friction

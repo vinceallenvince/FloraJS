@@ -5,9 +5,15 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 /* */
 
-/*div {
+.floraElement {
 	position: absolute; left: 0; top: 0;
-}*/
+	border-radius: 10%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+}
 
 body {
 	background: #f6edd2;
@@ -20,11 +26,6 @@ body {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	/*border: 1px solid #999;*/
-}
-
-.floraElement {
-	position: absolute; left: 0; top: 0;
 }
 
 .world {
@@ -44,9 +45,19 @@ body {
 }
 
 .agent {
-	background: rgb(197, 177, 115); opacity: 0;
 	z-index: 1;
+	background: rgb(197, 177, 115);
+	border-color: rgb(255, 255, 255);
+	border-width: 0.25em;
+	border-style: solid;
+	border-bottom-right-radius: 50%;
+	border-top-right-radius: 50%;
 }
+
+.agent.hasSensor {
+	border-radius: 100%;
+}
+
 .nose {
 	position: absolute;
 	left: 80%;
@@ -54,10 +65,15 @@ body {
 	width: 20%; height: 20%;
 	background: rgb(255, 255, 255);
 }
+
 .walker {
-	background: rgb(255, 150, 50); opacity: 0;
+	background: rgb(255, 150, 50);
+	border-color: rgb(255, 255, 255);
+	border-width: 0.15em;
+	border-style: solid;
 	border-radius: 100%;
 }
+
 .oscillator {
 	background: rgb(200, 100, 0); opacity: 0;
 	border-bottom-right-radius: 100%;
@@ -66,40 +82,61 @@ body {
 	border-width: thick;
 	border-color: rgb(255, 150, 50);
 	box-shadow: 0 0 0 .5em rgba(255, 255, 255, 1);
-	/*-webkit-filter: blur(10px);*/
 }
+
 .particle {
 	background: rgb(200, 20, 20); opacity: 0;
 }
+
 .particle-system {
 	background: transparent; opacity: 0;
 }
+
 .liquid {
-	background: rgb(97, 210, 214);
-	opacity: .5;
+	background: rgb(105, 210, 231);
+	opacity: 0.75;
 	z-index: 10;
-	border: 3px solid rgba(0,210,214, .5);
-	border-radius: 50px;
+	border-width: 1em;
+	border-color: rgb(167, 219, 216);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(224, 228, 204);
 }
-.attractor {
-	background: rgb(97, 210, 214);
-	opacity: .5;
-}
+
 .repeller {
-	background: rgb(97, 210, 214);
-	opacity: .5;
+	background: rgb(250, 105, 0);
+	opacity: 0.75;
+	z-index: 10;
+	border-width: 1em;
+	border-color: rgb(224, 228, 204);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(243, 134, 48);
+}
+
+.attractor {
+	background: rgb(32, 102, 63);
+	opacity: 0.75;
+	z-index: 10;
+	border-width: 1em;
+	border-color: rgb(204, 238, 141);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(37, 153, 89);
 }
 
 .connector {
 	background: transparent; opacity: .1;
 	border-top: 2px dotted #ff0000;
 }
+
 .point {
 	background: rgb(255, 255, 255); opacity: 0;
 	z-index: 1;
 	border-radius: 100%;
 	border: 3px solid rgba(0, 0, 0, 1);
 }
+
 .sensor {
 	opacity: 0.5;
 	z-index: 1;
@@ -122,20 +159,32 @@ body {
 	border-radius: 50px; /* ? */
 	background: rgb(132, 192, 201);
 }
+
 .food {
 	background: rgb(155, 231, 93);
 }
+
 .heat {
 	background: rgb(255, 69, 0);
+	opacity: 0.75;
+	z-index: 10;
+	border-width: 1em;
+	border-color: rgb(224, 178, 154);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(243, 134, 48);
 }
+
 .light {
 	border-radius: 50px;
 	background: rgb(255, 200, 0);
 }
+
 .oxygen {
 	border-radius: 50px;
 	background: rgb(0, 174, 239);
 }
+
 .predator {
 	background: rgb(200, 0, 0);
 }
@@ -201,11 +250,13 @@ body {
 	font-family: Helvetica;
 	font-size: 0.85em;
 }
+
 .statsDisplayLabel {
 	display: inline-block;
 	color: rgb(150, 150, 150);
 	margin-left: 0.75em;
 }
+
 .statsDisplayLabel:first-child {
 	margin-left: 0;
 }

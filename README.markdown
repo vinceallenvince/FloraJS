@@ -131,11 +131,142 @@ In the example below, Agents flock to the mouse. We've also adjusted the 'width'
               followMouse: true,
               flocking: true,
               width: 20,
-              height: 5
+              height: 15
             });
           }
         });
 
+#### Proximity
+
+FloraJS World's have some built in Proximity objects that exert a force on Agents that come in direct contact or land within the object's range of influence.
+
+* Liquid
+* Attractor
+* Repeller
+
+In the example below, we create a Liquid object and an Agent that follows the mouse. You can click and drag to place the Liquid anywhere in the World. Use your mouse to make the Agent pass through the Liquid.
+
+        Flora.System.start(function() {
+          new Flora.Agent({
+            followMouse: true
+          });
+          new Flora.Liquid({
+            draggable: true
+          });
+        });
+
+Adjust the following property of Liquid objects to affect their drag. Higher values = more drag:
+
+* c (Drag coefficient) {number} default = 1
+
+You can replace 'Liquid' with 'Attractor' and 'Repeller' to view how the Proximity objects affect an Agent.
+
+#### Sensors and Stimuli
+
+Agents can carry an unlimited amount of Sensors that react to Flora's Stimulus objects. The following Stimulus objects are available:
+
+* Cold
+* Heat
+* Food
+* Light
+* Oxygen
+* Predator
+
+Sensors are tuned specifically to a Stimulant and can be configured to activate a specific behavior. The following behaviors are available:
+
+* ACCELERATE
+* DECELERATE
+* AGGRESSIVE
+* COWARD
+* LIKES
+* LOVES
+* EXPLORER
+* RUN
+
+In the example below, the Agent carries a Sensor tuned to Cold Stimulus. When activated, it triggers the 'COWARD' behavior.
+
+        Flora.System.start(function () {
+
+          var universe = Flora.universe.first(),
+              uw = universe.width,
+              uh = universe.height;
+
+          universe.update({
+            gravity: new Flora.Vector()
+          });
+
+          var heat1 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.75, uh * 0.75)
+          });
+
+          var sensor = new exports.Sensor({
+            type: 'heat',
+            behavior: 'COWARD'
+          });
+
+          new Flora.Agent({
+            sensors: [sensor],
+            velocity: new Flora.Vector(1, 0.5),
+            maxSpeed: 5,
+            motorSpeed: 10
+          });
+        });
+
+Notice, we've updated the World and removed any gravitational forces. We've also updated the 'motorSpeed' property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Cold Stimulus.
+
+#### A small World
+
+Putting it all together, we can observe our Agent try to navigate a World with multiple Stimuli and Proximity objects.
+
+        Flora.System.start(function () {
+
+          var universe = Flora.universe.first(),
+              uw = universe.width,
+              uh = universe.height;
+
+          universe.update({
+            gravity: new Flora.Vector()
+          });
+
+          var heat1 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.25, uh * 0.15)
+          });
+
+          var heat2 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.85, uh * 0.15)
+          });
+
+          var heat3 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.85, uh * 0.85)
+          });
+
+          var heat4 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.15, uh * 0.75)
+          });
+
+          var heat5 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.5, uh * 0.5)
+          });
+
+          var liquid1 = new Flora.Liquid({
+            location: new Flora.Vector(uw * 0.45, uh * 0.8)
+          });
+
+          var liquid2 = new Flora.Liquid({
+            location: new Flora.Vector(uw * 0.65, uh * 0.2)
+          });
+
+          var sensor = new exports.Sensor({
+            type: 'heat',
+            behavior: 'COWARD'
+          });
+
+          new Flora.Agent({
+            sensors: [sensor],
+            velocity: new Flora.Vector(1, 0.5),
+            motorSpeed: 5
+          });
+        });
 #### More to come
 
 I'll post more examples soon. You can see the examples above in action at http://www.florajs.com/examples. You can also find full documentation at http://www.florajs.com/docs.
