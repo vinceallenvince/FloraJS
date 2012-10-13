@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 0.0.1 */
-/* Build time: October 12, 2012 07:37:43 */
+/* Build time: October 12, 2012 07:56:54 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -3957,8 +3957,8 @@ exports.Heat = Heat;
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
- * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.width = 50] Width.
+ * @param {number} [opt_options.height = 50] Height.
  * @param {number} [opt_options.opacity = 0.5] Opacity.
  */
 function Cold(opt_options) {
@@ -3971,8 +3971,8 @@ function Cold(opt_options) {
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 20;
-  this.height = options.height === 0 ? 0 : options.height || 20;
+  this.width = options.width === 0 ? 0 : options.width || 50;
+  this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.extend(Cold, exports.Agent);
@@ -3993,8 +3993,8 @@ exports.Cold = Cold;
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
- * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.width = 50] Width.
+ * @param {number} [opt_options.height = 50] Height.
  * @param {number} [opt_options.opacity = 0.5] Opacity.
  */
 function Light(opt_options) {
@@ -4007,8 +4007,8 @@ function Light(opt_options) {
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 20;
-  this.height = options.height === 0 ? 0 : options.height || 20;
+  this.width = options.width === 0 ? 0 : options.width || 50;
+  this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.extend(Light, exports.Agent);
@@ -4029,8 +4029,8 @@ exports.Light = Light;
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
- * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.width = 50] Width.
+ * @param {number} [opt_options.height = 50] Height.
  * @param {number} [opt_options.opacity = 0.5] The particle's opacity.
  */
 function Oxygen(opt_options) {
@@ -4043,8 +4043,8 @@ function Oxygen(opt_options) {
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 20;
-  this.height = options.height === 0 ? 0 : options.height || 20;
+  this.width = options.width === 0 ? 0 : options.width || 50;
+  this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.extend(Oxygen, exports.Agent);
@@ -4065,8 +4065,8 @@ exports.Oxygen = Oxygen;
  * @param {Object} [opt_options] Options.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
- * @param {number} [opt_options.width = 20] Width.
- * @param {number} [opt_options.height = 20] Height.
+ * @param {number} [opt_options.width = 50] Width.
+ * @param {number} [opt_options.height = 50] Height.
  * @param {number} [opt_options.opacity = 0.5] The particle's opacity.
  */
 function Food(opt_options) {
@@ -4079,8 +4079,8 @@ function Food(opt_options) {
 
   this.mass = options.mass === 0 ? 0 : options.mass || 50;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 20;
-  this.height = options.height === 0 ? 0 : options.height || 20;
+  this.width = options.width === 0 ? 0 : options.width || 50;
+  this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
 }
 exports.Utils.extend(Food, exports.Agent);
