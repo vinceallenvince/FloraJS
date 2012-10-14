@@ -6,7 +6,9 @@
  * @param {Object} [opt_options] Options.
  * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
  * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
- * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
+ * @param {boolean} [opt_options.showStats = false] Set to true to render stats on startup.
+ * @param {boolean} [opt_options.isDeviceMotion = false] Set to true add the devicemotion event listener.
+ *    Typically use with accelerometer equipped devices.
  */
 function Universe(opt_options) {
 
@@ -15,9 +17,10 @@ function Universe(opt_options) {
   var i, max, records, me = this,
       options = opt_options || {};
 
-  this.isPlaying = options.isPlaying === false ? false : true;
+  this.isPlaying = options.isPlaying || true;
   this.zSorted = !!options.zSorted;
   this.showStats = !!options.showStats;
+  this.isDeviceMotion = !!options.isDeviceMotion;
 
   /**
    * Holds a list of references to worlds
@@ -44,32 +47,28 @@ function Universe(opt_options) {
     }
   });
 
-  // toggle the world playstate
+  // key input
   exports.Utils.addEvent(document, 'keyup', function(e) {
-    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) { // pause
-      me.isPlaying = !me.isPlaying;
-      if (me.isPlaying) {
-        window.requestAnimFrame(exports.animLoop);
-      }
-    } else if (e.keyCode === exports.config.keyMap.resetSystem) { // reset system
-        // loop thru each world and destroy all elements
-        records = me.all();
-        for (i = 0, max = records.length; i < max; i += 1) {
-          exports.elementList.destroyByWorld(records[i].id);
-        }
-        // call initial setup
-        exports.System.setup();
-        // if system is pause, restart
-        if (!me.isPlaying) {
-          me.isPlaying = true;
-          window.requestAnimFrame(exports.animLoop);
-        }
-    } else if (e.keyCode === exports.config.keyMap.toggleStatsDisplay) { // stats
-      if (!me._statsDisplay) {
-        me.createStats();
-      } else {
-        me.destroyStats();
-      }
+    if (e.keyCode === exports.config.keyMap.pause) { // pause
+      me.pauseSystem();
+    } else if (e.keyCode === exports.config.keyMap.reset) { // reset system
+      me.resetSystem();
+    } else if (e.keyCode === exports.config.keyMap.stats) { // stats
+      me.toggleStats();
+    }
+  });
+
+  // touch input
+  exports.Utils.addEvent(document, 'touchstart', function(e) {
+
+    var allTouches = e.touches;
+
+    if (allTouches.length === 2) { // stats
+      me.toggleStats();
+    } else if (allTouches.length === 3) { // pause
+      me.pauseSystem();
+    } else if (allTouches.length === 4) { // reset
+      me.resetSystem();
     }
   });
 
@@ -154,6 +153,12 @@ function Universe(opt_options) {
     }
   });
 
+  // device motion
+  if (window.addEventListener && this.isDeviceMotion) {
+    this.addDeviceMotionEventListener();
+  }
+
+  // stats
   if (this.showStats) {
     this.createStats();
   }
@@ -218,22 +223,25 @@ Universe.prototype.last = function() {
 /**
  * Update the properties of a world.
  *
+ * @param {Object} opt_props A map of properties to update.
+ * @param {string} opt_worldId The id of the world to update. If no id is passed,
+ *    we update the first world in the universe.
  * @returns {Object} The last world.
  */
-Universe.prototype.update = function(opt_props, opt_world) {
+Universe.prototype.update = function(opt_props, opt_worldId) {
 
   'use strict';
 
   var i, props = exports.Interface.getDataType(opt_props) === 'object' ? opt_props : {},
       world;
 
-  if (!opt_world) {
+  if (!opt_worldId) {
     world = this.first();
   } else {
-    if (exports.Interface.getDataType(opt_world) === 'string') {
-      world = this.getWorldById(opt_world);
-    } else if (exports.Interface.getDataType(opt_world) === 'object') {
-      world = opt_world;
+    if (exports.Interface.getDataType(opt_worldId) === 'string') {
+      world = this.getWorldById(opt_worldId);
+    } else if (exports.Interface.getDataType(opt_worldId) === 'object') {
+      world = opt_worldId;
     } else {
       exports.Utils.log('Universe: update: world param must be null, a string (an id) or reference to a world.');
       return;
@@ -249,6 +257,10 @@ Universe.prototype.update = function(opt_props, opt_world) {
   if (props.el) { // if updating the element; update the width and height
     world.width = parseInt(world.el.style.width.replace('px', ''), 10);
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
+  }
+
+  if (props.isDeviceMotion) {
+    this.addDeviceMotionEventListener();
   }
 };
 
@@ -350,6 +362,67 @@ Universe.prototype.updateClocks = function () {
 };
 
 /**
+ * Toggles pausing the FloraSystem animation loop.
+ *
+ * @returns {boolean} True if the system is playing. False if the
+ *    system is not playing.
+ */
+Universe.prototype.pauseSystem = function() {
+
+  'use strict';
+
+  this.isPlaying = !this.isPlaying;
+  if (this.isPlaying) {
+    window.requestAnimFrame(exports.animLoop);
+  }
+  return this.isPlaying;
+};
+
+/**
+ * Resets the FloraSystem.
+ *
+ * @returns {boolean} True if the system is playing. False if the
+ *    system is not playing.
+ */
+Universe.prototype.resetSystem = function() {
+
+  'use strict';
+
+  var i, max, records;
+
+  // loop thru each world and destroy all elements
+  records = this.all();
+  for (i = 0, max = records.length; i < max; i += 1) {
+    exports.elementList.destroyByWorld(records[i].id);
+  }
+  // call initial setup
+  exports.System.setup();
+  // if system is paused, restart
+  if (!this.isPlaying) {
+    this.isPlaying = true;
+    window.requestAnimFrame(exports.animLoop);
+  }
+};
+
+/**
+ * Toggles StatsDisplay.
+ *
+ * @returns {Object} An instance of StatsDisplay if display is active.
+ *    Null if display is inactive.
+ */
+Universe.prototype.toggleStats = function() {
+
+  'use strict';
+
+  if (!this._statsDisplay) {
+    this.createStats();
+  } else {
+    this.destroyStats();
+  }
+  return this._statsDisplay;
+};
+
+/**
  * Creates a new instance of the StatsDisplay.
  */
 Universe.prototype.createStats = function() {
@@ -372,6 +445,44 @@ Universe.prototype.destroyStats = function() {
 
   if (el) {
     el.parentNode.removeChild(el);
+  }
+};
+
+Universe.prototype.addDeviceMotionEventListener = function() {
+
+  'use strict';
+
+  var me = this;
+
+  window.addEventListener("devicemotion", function(e) {
+    me.devicemotion.call(me, e);
+  }, false);
+};
+
+/**
+ * Called from a window devicemotion event, updates the world's gravity
+ * relative to the accelerometer values.
+ * @param {Object} e Event object.
+ */
+Universe.prototype.devicemotion = function(e) {
+
+  'use strict';
+
+  if (window.orientation === 0) {
+    this.update({
+      gravity: new exports.Vector(e.accelerationIncludingGravity.x,
+        e.accelerationIncludingGravity.y * -1)
+    });
+  } else if (window.orientation === -90) {
+    this.update({
+      gravity: new exports.Vector(e.accelerationIncludingGravity.y,
+        e.accelerationIncludingGravity.x )
+    });
+  } else {
+    this.update({
+      gravity: new exports.Vector(e.accelerationIncludingGravity.y * -1,
+        e.accelerationIncludingGravity.x * -1)
+    });
   }
 };
 exports.Universe = Universe;

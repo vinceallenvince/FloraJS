@@ -12,6 +12,7 @@
  *    'bottom left', 'bottom center', 'bottom right', 'center'.
  * @param {string} [opt_options.text = ''] The caption's text.
  * @param {number} [opt_options.opacity = 0.75] The caption's opacity.
+ * @param {number} [opt_options.color = [255, 255, 255]] The caption's color.
  * @param {string} [opt_options.borderWidth = '1px'] The caption's border width.
  * @param {string} [opt_options.borderStyle = 'solid'] The caption's border style.
  * @param {Array|string} [opt_options.borderColor = 0.75] The caption's border color.
@@ -27,6 +28,7 @@ function Caption(opt_options) {
   this.position = options.position || 'top left';
   this.text = options.text || '';
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || '1px';
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [204, 204, 204];
@@ -40,6 +42,8 @@ function Caption(opt_options) {
   this._el.id = 'caption';
   this._el.className = 'caption ' + this.position;
   this._el.style.opacity = this.opacity;
+  this._el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+        ', ' + this.color[2] + ')';
   this._el.style.borderWidth = this.borderWidth;
   this._el.style.borderStyle = this.borderStyle;
   if (typeof this.borderColor === 'string') {

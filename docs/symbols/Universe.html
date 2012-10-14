@@ -219,6 +219,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/Heat.html">Heat</a></li>
 	
+	<li><a href="../symbols/InputMenu.html">InputMenu</a></li>
+	
 	<li><a href="../symbols/Interface.html">Interface</a></li>
 	
 	<li><a href="../symbols/Light.html">Light</a></li>
@@ -418,6 +420,16 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Universe.html#devicemotion">devicemotion</a></b>(e)
+								</div>
+								<div class="description">Called from a window devicemotion event, updates the world's gravity
+relative to the accelerometer values.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Universe.html#first">first</a></b>()
 								</div>
 								<div class="description">Returns the first item in 'records' array.</div>
@@ -445,7 +457,34 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/Universe.html#update">update</a></b>(opt_props, opt_world)
+								<div class="fixedFont"><b><a href="../symbols/Universe.html#pauseSystem">pauseSystem</a></b>()
+								</div>
+								<div class="description">Toggles pausing the FloraSystem animation loop.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Universe.html#resetSystem">resetSystem</a></b>()
+								</div>
+								<div class="description">Resets the FloraSystem.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Universe.html#toggleStats">toggleStats</a></b>()
+								</div>
+								<div class="description">Toggles StatsDisplay.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Universe.html#update">update</a></b>(opt_props, opt_worldId)
 								</div>
 								<div class="description">Update the properties of a world.</div>
 							</td>
@@ -514,7 +553,14 @@ ul.inheritsList
 								<span class="light fixedFont">{boolean}</span>  <b>opt_options.showStats</b>
 								<i>Optional, Default:  false</i>
 							</dt>
-								<dd>Set to true to render mr doob stats on startup.</dd>
+								<dd>Set to true to render stats on startup.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{boolean}</span>  <b>opt_options.isDeviceMotion</b>
+								<i>Optional, Default:  false</i>
+							</dt>
+								<dd>Set to true add the devicemotion event listener.
+   Typically use with accelerometer equipped devices.</dd>
 						
 						</dl>
 					
@@ -782,6 +828,43 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="devicemotion"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>devicemotion</b>(e)
+					
+					</div>
+					<div class="description">
+						Called from a window devicemotion event, updates the world's gravity
+relative to the accelerometer values.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>e</b>
+									
+								</dt>
+								<dd>Event object.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="first"> </a>
 					<div class="fixedFont">
 					
@@ -889,11 +972,110 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="pauseSystem"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{boolean}</span>
+					<b>pauseSystem</b>()
+					
+					</div>
+					<div class="description">
+						Toggles pausing the FloraSystem animation loop.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> True if the system is playing. False if the
+   system is not playing.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="resetSystem"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{boolean}</span>
+					<b>resetSystem</b>()
+					
+					</div>
+					<div class="description">
+						Resets the FloraSystem.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> True if the system is playing. False if the
+   system is not playing.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="toggleStats"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Object}</span>
+					<b>toggleStats</b>()
+					
+					</div>
+					<div class="description">
+						Toggles StatsDisplay.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Object}</span> An instance of StatsDisplay if display is active.
+   Null if display is inactive.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="update"> </a>
 					<div class="fixedFont">
 					
 					<span class="light">{Object}</span>
-					<b>update</b>(opt_props, opt_world)
+					<b>update</b>(opt_props, opt_worldId)
 					
 					</div>
 					<div class="description">
@@ -909,16 +1091,17 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>opt_props</b>
+									<span class="light fixedFont">{Object}</span> <b>opt_props</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>A map of properties to update.</dd>
 							
 								<dt>
-									<b>opt_world</b>
+									<span class="light fixedFont">{string}</span> <b>opt_worldId</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The id of the world to update. If no id is passed,
+   we update the first world in the universe.</dd>
 							
 							</dl>
 						
@@ -975,7 +1158,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Fri Oct 12 2012 19:57:25 GMT-0400 (EDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Oct 13 2012 19:36:19 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>

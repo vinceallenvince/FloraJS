@@ -12,6 +12,7 @@
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Repeller(opt_options) {
 
@@ -27,6 +28,7 @@ function Repeller(opt_options) {
   this.width = options.width === 0 ? 0 : options.width || 100;
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Repeller, exports.Agent);
 

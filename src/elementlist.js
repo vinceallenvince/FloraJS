@@ -60,7 +60,7 @@ ElementList.prototype.count = function() {
 /**
  * Returns an array of elements created from the same constructor.
  *
- * @param {string} name The constructor name.
+ * @param {string} name The 'name' property.
  * @returns {Array} An array of elements.
  */
 ElementList.prototype.getAllByClass = function(name) {
@@ -70,7 +70,7 @@ ElementList.prototype.getAllByClass = function(name) {
   var i, max, arr = [];
 
   for (i = 0, max = this._records.length; i < max; i++) {
-    if (this._records[i].constructor.name === name) {
+    if (this._records[i].name === name) {
       arr[arr.length] = this._records[i];
     }
   }
@@ -84,7 +84,7 @@ ElementList.prototype.getAllByClass = function(name) {
  * @param {Object} props A map of properties to update.
  * @returns {Array} An array of elements.
  * @example
- * exports.elementList.updatePropsByClass('Point', {
+ * exports.elementList.updatePropsByClass('point', {
  *    color: [0, 0, 0],
  *    scale: 2
  * }); // all point will turn black and double in size

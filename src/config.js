@@ -38,13 +38,18 @@ var config = {
     }
   ],
   keyMap: {
-    toggleWorldPlaystate: 80,
-    resetSystem: 82,
-    toggleStatsDisplay: 83,
+    pause: 80,
+    reset: 82,
+    stats: 83,
     thrustLeft: 37,
     thrustUp: 38,
     thrustRight: 39,
     thrustDown: 40
+  },
+  touchMap: {
+    stats: 2,
+    pause: 3,
+    reset: 4
   }
 };
 exports.config = config;

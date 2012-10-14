@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 0.0.1 */
-/* Build time: October 12, 2012 07:56:54 */
+/* Build time: October 13, 2012 07:35:44 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -85,13 +85,18 @@ var config = {
     }
   ],
   keyMap: {
-    toggleWorldPlaystate: 80,
-    resetSystem: 82,
-    toggleStatsDisplay: 83,
+    pause: 80,
+    reset: 82,
+    stats: 83,
     thrustLeft: 37,
     thrustUp: 38,
     thrustRight: 39,
     thrustDown: 40
+  },
+  touchMap: {
+    stats: 2,
+    pause: 3,
+    reset: 4
   }
 };
 exports.config = config;
@@ -157,7 +162,7 @@ ElementList.prototype.count = function() {
 /**
  * Returns an array of elements created from the same constructor.
  *
- * @param {string} name The constructor name.
+ * @param {string} name The 'name' property.
  * @returns {Array} An array of elements.
  */
 ElementList.prototype.getAllByClass = function(name) {
@@ -167,7 +172,7 @@ ElementList.prototype.getAllByClass = function(name) {
   var i, max, arr = [];
 
   for (i = 0, max = this._records.length; i < max; i++) {
-    if (this._records[i].constructor.name === name) {
+    if (this._records[i].name === name) {
       arr[arr.length] = this._records[i];
     }
   }
@@ -181,7 +186,7 @@ ElementList.prototype.getAllByClass = function(name) {
  * @param {Object} props A map of properties to update.
  * @returns {Array} An array of elements.
  * @example
- * exports.elementList.updatePropsByClass('Point', {
+ * exports.elementList.updatePropsByClass('point', {
  *    color: [0, 0, 0],
  *    scale: 2
  * }); // all point will turn black and double in size
@@ -1610,7 +1615,9 @@ exports.Interface = Interface;
  * @param {Object} [opt_options] Options.
  * @param {boolean} [opt_options.isPlaying = true] Set to false to suspend the render loop.
  * @param {boolean} [opt_options.zSorted = false] Set to true to sort all elements by their zIndex before rendering.
- * @param {boolean} [opt_options.showStats = false] Set to true to render mr doob stats on startup.
+ * @param {boolean} [opt_options.showStats = false] Set to true to render stats on startup.
+ * @param {boolean} [opt_options.isDeviceMotion = false] Set to true add the devicemotion event listener.
+ *    Typically use with accelerometer equipped devices.
  */
 function Universe(opt_options) {
 
@@ -1619,9 +1626,10 @@ function Universe(opt_options) {
   var i, max, records, me = this,
       options = opt_options || {};
 
-  this.isPlaying = options.isPlaying === false ? false : true;
+  this.isPlaying = options.isPlaying || true;
   this.zSorted = !!options.zSorted;
   this.showStats = !!options.showStats;
+  this.isDeviceMotion = !!options.isDeviceMotion;
 
   /**
    * Holds a list of references to worlds
@@ -1648,32 +1656,28 @@ function Universe(opt_options) {
     }
   });
 
-  // toggle the world playstate
+  // key input
   exports.Utils.addEvent(document, 'keyup', function(e) {
-    if (e.keyCode === exports.config.keyMap.toggleWorldPlaystate) { // pause
-      me.isPlaying = !me.isPlaying;
-      if (me.isPlaying) {
-        window.requestAnimFrame(exports.animLoop);
-      }
-    } else if (e.keyCode === exports.config.keyMap.resetSystem) { // reset system
-        // loop thru each world and destroy all elements
-        records = me.all();
-        for (i = 0, max = records.length; i < max; i += 1) {
-          exports.elementList.destroyByWorld(records[i].id);
-        }
-        // call initial setup
-        exports.System.setup();
-        // if system is pause, restart
-        if (!me.isPlaying) {
-          me.isPlaying = true;
-          window.requestAnimFrame(exports.animLoop);
-        }
-    } else if (e.keyCode === exports.config.keyMap.toggleStatsDisplay) { // stats
-      if (!me._statsDisplay) {
-        me.createStats();
-      } else {
-        me.destroyStats();
-      }
+    if (e.keyCode === exports.config.keyMap.pause) { // pause
+      me.pauseSystem();
+    } else if (e.keyCode === exports.config.keyMap.reset) { // reset system
+      me.resetSystem();
+    } else if (e.keyCode === exports.config.keyMap.stats) { // stats
+      me.toggleStats();
+    }
+  });
+
+  // touch input
+  exports.Utils.addEvent(document, 'touchstart', function(e) {
+
+    var allTouches = e.touches;
+
+    if (allTouches.length === 2) { // stats
+      me.toggleStats();
+    } else if (allTouches.length === 3) { // pause
+      me.pauseSystem();
+    } else if (allTouches.length === 4) { // reset
+      me.resetSystem();
     }
   });
 
@@ -1758,6 +1762,12 @@ function Universe(opt_options) {
     }
   });
 
+  // device motion
+  if (window.addEventListener && this.isDeviceMotion) {
+    this.addDeviceMotionEventListener();
+  }
+
+  // stats
   if (this.showStats) {
     this.createStats();
   }
@@ -1822,22 +1832,25 @@ Universe.prototype.last = function() {
 /**
  * Update the properties of a world.
  *
+ * @param {Object} opt_props A map of properties to update.
+ * @param {string} opt_worldId The id of the world to update. If no id is passed,
+ *    we update the first world in the universe.
  * @returns {Object} The last world.
  */
-Universe.prototype.update = function(opt_props, opt_world) {
+Universe.prototype.update = function(opt_props, opt_worldId) {
 
   'use strict';
 
   var i, props = exports.Interface.getDataType(opt_props) === 'object' ? opt_props : {},
       world;
 
-  if (!opt_world) {
+  if (!opt_worldId) {
     world = this.first();
   } else {
-    if (exports.Interface.getDataType(opt_world) === 'string') {
-      world = this.getWorldById(opt_world);
-    } else if (exports.Interface.getDataType(opt_world) === 'object') {
-      world = opt_world;
+    if (exports.Interface.getDataType(opt_worldId) === 'string') {
+      world = this.getWorldById(opt_worldId);
+    } else if (exports.Interface.getDataType(opt_worldId) === 'object') {
+      world = opt_worldId;
     } else {
       exports.Utils.log('Universe: update: world param must be null, a string (an id) or reference to a world.');
       return;
@@ -1853,6 +1866,10 @@ Universe.prototype.update = function(opt_props, opt_world) {
   if (props.el) { // if updating the element; update the width and height
     world.width = parseInt(world.el.style.width.replace('px', ''), 10);
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
+  }
+
+  if (props.isDeviceMotion) {
+    this.addDeviceMotionEventListener();
   }
 };
 
@@ -1954,6 +1971,67 @@ Universe.prototype.updateClocks = function () {
 };
 
 /**
+ * Toggles pausing the FloraSystem animation loop.
+ *
+ * @returns {boolean} True if the system is playing. False if the
+ *    system is not playing.
+ */
+Universe.prototype.pauseSystem = function() {
+
+  'use strict';
+
+  this.isPlaying = !this.isPlaying;
+  if (this.isPlaying) {
+    window.requestAnimFrame(exports.animLoop);
+  }
+  return this.isPlaying;
+};
+
+/**
+ * Resets the FloraSystem.
+ *
+ * @returns {boolean} True if the system is playing. False if the
+ *    system is not playing.
+ */
+Universe.prototype.resetSystem = function() {
+
+  'use strict';
+
+  var i, max, records;
+
+  // loop thru each world and destroy all elements
+  records = this.all();
+  for (i = 0, max = records.length; i < max; i += 1) {
+    exports.elementList.destroyByWorld(records[i].id);
+  }
+  // call initial setup
+  exports.System.setup();
+  // if system is paused, restart
+  if (!this.isPlaying) {
+    this.isPlaying = true;
+    window.requestAnimFrame(exports.animLoop);
+  }
+};
+
+/**
+ * Toggles StatsDisplay.
+ *
+ * @returns {Object} An instance of StatsDisplay if display is active.
+ *    Null if display is inactive.
+ */
+Universe.prototype.toggleStats = function() {
+
+  'use strict';
+
+  if (!this._statsDisplay) {
+    this.createStats();
+  } else {
+    this.destroyStats();
+  }
+  return this._statsDisplay;
+};
+
+/**
  * Creates a new instance of the StatsDisplay.
  */
 Universe.prototype.createStats = function() {
@@ -1976,6 +2054,44 @@ Universe.prototype.destroyStats = function() {
 
   if (el) {
     el.parentNode.removeChild(el);
+  }
+};
+
+Universe.prototype.addDeviceMotionEventListener = function() {
+
+  'use strict';
+
+  var me = this;
+
+  window.addEventListener("devicemotion", function(e) {
+    me.devicemotion.call(me, e);
+  }, false);
+};
+
+/**
+ * Called from a window devicemotion event, updates the world's gravity
+ * relative to the accelerometer values.
+ * @param {Object} e Event object.
+ */
+Universe.prototype.devicemotion = function(e) {
+
+  'use strict';
+
+  if (window.orientation === 0) {
+    this.update({
+      gravity: new exports.Vector(e.accelerationIncludingGravity.x,
+        e.accelerationIncludingGravity.y * -1)
+    });
+  } else if (window.orientation === -90) {
+    this.update({
+      gravity: new exports.Vector(e.accelerationIncludingGravity.y,
+        e.accelerationIncludingGravity.x )
+    });
+  } else {
+    this.update({
+      gravity: new exports.Vector(e.accelerationIncludingGravity.y * -1,
+        e.accelerationIncludingGravity.x * -1)
+    });
   }
 };
 exports.Universe = Universe;
@@ -2006,10 +2122,6 @@ exports.Universe = Universe;
  * @param {number} [opt_options.width = window.width] The world width.
  * @param {number} [opt_options.height = window.height] The world height.
  * @param {number} [opt_options.zIndex = 0] The world z-index.
- * @param {boolean} [opt_options.isTopDown = true] Set to true to orient the gravity vector when listening to the devicemotion event.
- * @param {number} [opt_options.compassHeading = 0] The compass heading. Value is set via the deviceorientation event.
- * @param {number} [opt_options.compassAccuracy = 0] The compass accuracy. Value is set via the deviceorientation event.
- * @param {boolean} [opt_options.isDeviceMotion = false] Set to true add the devicemotion event listener. Typically use with accelerometer equipped devices.
  * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
  * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
  */
@@ -2037,12 +2149,7 @@ function World(opt_options) {
   this.borderColor = options.borderColor || null;
   this.borderRadius = options.borderRadius || 0;
   this.boxShadow = options.boxShadow || 0;
-
   this.zIndex = 0;
-  this.isTopDown = true;
-  this.compassHeading = 0;
-  this.compassAccuracy = 0;
-  this.isDeviceMotion = !options.isDeviceMotion;
 
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
@@ -2075,18 +2182,6 @@ function World(opt_options) {
   exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
     me.resize.call(me);
   });
-
-  /*if (window.addEventListener && this.isDeviceMotion) {
-    window.addEventListener("devicemotion", function(e) { // listens for device motion events
-      me.devicemotion.call(me, e);
-    }, false);
-  }
-
-  if (window.addEventListener && this.isDeviceOrientation) {
-    window.addEventListener("deviceorientation", function(e) { // listens for device orientation events
-      me.deviceorientation.call(me, e);
-    }, false);
-  }*/
 }
 
 /**
@@ -2201,58 +2296,11 @@ World.prototype.resize = function() {
     if (this.el === document.body) {
       this.width = windowWidth;
       this.height = windowHeight;
+      this.el.style.width = this.width + 'px';
+      this.el.style.height = this.height + 'px';
     }
   }
 };
-
-/**
- * Called from a window devicemotion event, updates the world's gravity
- * relative to the accelerometer's values.
- */
-World.prototype.devicemotion = function(e) {
-
-  'use strict';
-
-  if (window.orientation === 0) {
-    if (this.isTopDown) {
-      this.gravity = new exports.Vector(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
-    } else {
-      this.gravity = new exports.Vector(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
-    }
-  } else if (window.orientation === -90) {
-    this.gravity = new exports.Vector(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
-  } else {
-    this.gravity = new exports.Vector(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
-  }
-
-  if (this.showDeviceOrientation) {
-    document.getElementById('compassDisplay').val("orientation: " + window.orientation + " x: " +
-        e.accelerationIncludingGravity.x.toFixed(2) + " y: " + e.accelerationIncludingGravity.y.toFixed(2) + " z: " +
-        e.accelerationIncludingGravity.z.toFixed(2));
-  }
-};
-
-/**
- * Called from a window deviceorientation event, updates the world's compass values.
- *
- * @param {Object} e An event object passed from the event listener.
- */
-World.prototype.deviceorientation = function(e) {
-
-  'use strict';
-
-  var compassHeading = e.webkitCompassHeading,
-    compassAccuracy = e.webkitCompassAccuracy;
-
-  this.compassAccuracy = compassAccuracy;
-  this.compassHeading = compassHeading;
-
-  if (this.showCompassHeading) {
-    document.getElementById('compassDisplay').val("heading: " + compassHeading.toFixed(2) +
-        " accuracy: +/- " +compassAccuracy);
-  }
-};
-
 
 /**
  * Called every frame, step() updates the world's properties.
@@ -2536,7 +2584,7 @@ exports.Obj = Obj;
  * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the agent.
  * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
  * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
- * @param {number} [opt_options.zIndex = 10] z-index
+ * @param {number} [opt_options.zIndex = 1] z-index
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
@@ -2616,7 +2664,7 @@ function Agent(opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || null;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
   this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
   this.followMouse = !!options.followMouse;
   this.isStatic = !!options.isStatic;
@@ -3811,6 +3859,7 @@ exports.ParticleSystem = ParticleSystem;
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Liquid(opt_options) {
 
@@ -3826,6 +3875,7 @@ function Liquid(opt_options) {
   this.width = options.width === 0 ? 0 : options.width || 100;
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Liquid, exports.Agent);
 
@@ -3848,7 +3898,8 @@ exports.Liquid = Liquid;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 10] Width.
  * @param {number} [opt_options.height = 10] Height.
- * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
+ * @param {number} [opt_options.opacity = 0.75] The object's opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Attractor(opt_options) {
 
@@ -3864,6 +3915,7 @@ function Attractor(opt_options) {
   this.width = options.width === 0 ? 0 : options.width || 100;
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Attractor, exports.Agent);
 
@@ -3887,6 +3939,7 @@ exports.Attractor = Attractor;
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Repeller(opt_options) {
 
@@ -3902,6 +3955,7 @@ function Repeller(opt_options) {
   this.width = options.width === 0 ? 0 : options.width || 100;
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Repeller, exports.Agent);
 
@@ -3923,7 +3977,8 @@ exports.Repeller = Repeller;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
- * @param {number} [opt_options.opacity = 0.5] Opacity.
+ * @param {number} [opt_options.opacity = 0.75] Opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Heat(opt_options) {
 
@@ -3937,7 +3992,8 @@ function Heat(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 50;
   this.height = options.height === 0 ? 0 : options.height || 50;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Heat, exports.Agent);
 
@@ -3959,7 +4015,8 @@ exports.Heat = Heat;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
- * @param {number} [opt_options.opacity = 0.5] Opacity.
+ * @param {number} [opt_options.opacity = 0.75] Opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Cold(opt_options) {
 
@@ -3973,7 +4030,8 @@ function Cold(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 50;
   this.height = options.height === 0 ? 0 : options.height || 50;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Cold, exports.Agent);
 
@@ -3995,7 +4053,8 @@ exports.Cold = Cold;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
- * @param {number} [opt_options.opacity = 0.5] Opacity.
+ * @param {number} [opt_options.opacity = 0.85] Opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Light(opt_options) {
 
@@ -4009,7 +4068,8 @@ function Light(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 50;
   this.height = options.height === 0 ? 0 : options.height || 50;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.85;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Light, exports.Agent);
 
@@ -4031,7 +4091,8 @@ exports.Light = Light;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
- * @param {number} [opt_options.opacity = 0.5] The particle's opacity.
+ * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Oxygen(opt_options) {
 
@@ -4045,7 +4106,8 @@ function Oxygen(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 50;
   this.height = options.height === 0 ? 0 : options.height || 50;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Oxygen, exports.Agent);
 
@@ -4067,7 +4129,8 @@ exports.Oxygen = Oxygen;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
- * @param {number} [opt_options.opacity = 0.5] The particle's opacity.
+ * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Food(opt_options) {
 
@@ -4081,7 +4144,8 @@ function Food(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 50;
   this.height = options.height === 0 ? 0 : options.height || 50;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Food, exports.Agent);
 
@@ -4103,7 +4167,8 @@ exports.Food = Food;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 75] Width.
  * @param {number} [opt_options.height = 75] Height.
- * @param {number} [opt_options.opacity = 0.5] The particle's opacity.
+ * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
+ * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Predator(opt_options) {
 
@@ -4117,7 +4182,8 @@ function Predator(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.width = options.width === 0 ? 0 : options.width || 75;
   this.height = options.height === 0 ? 0 : options.height || 75;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
 }
 exports.Utils.extend(Predator, exports.Agent);
 
@@ -4142,9 +4208,10 @@ exports.Predator = Predator;
  * @param {number} [opt_options.height = 5] Height.
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the sensor's parent.
  * @param {number} [opt_options.offsetAngle = 0] The angle of rotation around the vehicle carrying the sensor.
- * @param {number} [opt_options.opacity = 1] Opacity.
+ * @param {number} [opt_options.opacity = 0.75] Opacity.
  * @param {Object} [opt_options.target = null] A stimulator.
  * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
+ * @param {boolean} [opt_options.activatedColor = [200, 200, 200]] The color the sensor will display when activated.
  */
 function Sensor(opt_options) {
 
@@ -4157,13 +4224,14 @@ function Sensor(opt_options) {
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
   this.sensitivity = options.sensitivity === 0 ? 0 : options.sensitivity || 2;
-  this.width = options.width === 0 ? 0 : options.width || 5;
-  this.height = options.height === 0 ? 0 : options.height || 5;
+  this.width = options.width === 0 ? 0 : options.width || 7;
+  this.height = options.height === 0 ? 0 : options.height || 7;
   this.offsetDistance = options.offsetDistance === 0 ? 0 : options.offsetDistance|| 30;
   this.offsetAngle = options.offsetAngle || 0;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.target = options.target || null;
   this.activated = !!options.activated;
+  this.activatedColor = options.activatedColor || [200, 200, 200];
 }
 exports.Utils.extend(Sensor, exports.Agent);
 
@@ -4234,6 +4302,9 @@ Sensor.prototype.step = function() {
   if (!check) {
     this.target = null;
     this.activated = false;
+    this.color = 'transparent';
+  } else {
+    this.color = this.activatedColor;
   }
   if (this.afterStep) {
     this.afterStep.apply(this);
@@ -4605,6 +4676,7 @@ exports.Point = Point;
  *    'bottom left', 'bottom center', 'bottom right', 'center'.
  * @param {string} [opt_options.text = ''] The caption's text.
  * @param {number} [opt_options.opacity = 0.75] The caption's opacity.
+ * @param {number} [opt_options.color = [255, 255, 255]] The caption's color.
  * @param {string} [opt_options.borderWidth = '1px'] The caption's border width.
  * @param {string} [opt_options.borderStyle = 'solid'] The caption's border style.
  * @param {Array|string} [opt_options.borderColor = 0.75] The caption's border color.
@@ -4620,6 +4692,7 @@ function Caption(opt_options) {
   this.position = options.position || 'top left';
   this.text = options.text || '';
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || '1px';
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [204, 204, 204];
@@ -4633,6 +4706,8 @@ function Caption(opt_options) {
   this._el.id = 'caption';
   this._el.className = 'caption ' + this.position;
   this._el.style.opacity = this.opacity;
+  this._el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+        ', ' + this.color[2] + ')';
   this._el.style.borderWidth = this.borderWidth;
   this._el.style.borderStyle = this.borderStyle;
   if (typeof this.borderColor === 'string') {
@@ -4664,6 +4739,102 @@ Caption.prototype.destroy = function() {
 };
 
 exports.Caption = Caption;
+/*global exports, Modernizr */
+/**
+ * Creates a new InputMenu object.
+ * An Input Menu lists key strokes and other input available
+ * for the user to interact with the system.
+ *
+ * @constructor
+ *
+ * @param {Object} [opt_options] Options.
+ * @param {string} [opt_options.position = 'top left'] A text representation
+ *    of the menu's location. Possible values are 'top left', 'top center', 'top right',
+ *    'bottom left', 'bottom center', 'bottom right', 'center'.
+ * @param {number} [opt_options.opacity = 0.75] The menu's opacity.
+ * @param {number} [opt_options.color = [255, 255, 255]] The menu's color.
+ * @param {string} [opt_options.borderWidth = '1px'] The menu's border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] The menu's border style.
+ * @param {Array|string} [opt_options.borderColor = 0.75] The menu's border color.
+ */
+function InputMenu(opt_options) {
+
+  'use strict';
+
+  var me = this, options = opt_options || {};
+
+  // if a world is not passed, use the first world in the universe
+  this.world = options.world || exports.universe.first();
+  this.position = options.position || 'top left';
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.color = options.color || [255, 255, 255];
+  this.borderWidth = options.borderWidth || '1px';
+  this.borderStyle = options.borderStyle || 'solid';
+  this.borderColor = options.borderColor || [204, 204, 204];
+  this.colorMode = options.colorMode || 'rgb';
+
+  if (Modernizr.touch) {
+    this.text =  exports.config.touchMap.stats + '-finger tap = stats | ' +
+        exports.config.touchMap.pause + '-finger tap = pause | ' +
+        exports.config.touchMap.reset + '-finger tap = reset';
+  } else {
+    this.text = '\'' + String.fromCharCode(exports.config.keyMap.pause).toLowerCase() + '\' = pause | ' +
+      '\'' + String.fromCharCode(exports.config.keyMap.reset).toLowerCase() + '\' = reset | ' +
+      '\'' + String.fromCharCode(exports.config.keyMap.stats).toLowerCase() + '\' = stats';
+  }
+
+  /**
+   * Holds a reference to the caption's DOM elements.
+   * @private
+   */
+  this._el = document.createElement('div');
+  this._el.id = 'inputMenu';
+  this._el.className = 'inputMenu ' + this.position;
+  this._el.style.opacity = this.opacity;
+  this._el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+        ', ' + this.color[2] + ')';
+  this._el.style.borderWidth = this.borderWidth;
+  this._el.style.borderStyle = this.borderStyle;
+  if (typeof this.borderColor === 'string') {
+    this._el.style.borderColor = this.borderColor;
+  } else {
+    this._el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
+        ', ' + this.borderColor[2] + ')';
+  }
+  this._el.appendChild(document.createTextNode(this.text));
+  if (document.getElementById('inputMenu')) {
+    document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
+  }
+
+  if (Modernizr.touch) {
+    exports.Utils.addEvent(this._el, 'touchstart', function(e) {
+      me.destroy();
+    });
+  } else {
+    exports.Utils.addEvent(this._el, 'mouseup', function(e) {
+      me.destroy();
+    });
+  }
+
+  this.world.el.appendChild(this._el);
+}
+
+/**
+ * Define a name property.
+ */
+InputMenu.prototype.name = 'inputmenu';
+
+/**
+ * Removes the menu's DOM element.
+ */
+InputMenu.prototype.destroy = function() {
+
+  'use strict';
+
+  this._el.parentNode.removeChild(this._el);
+};
+
+exports.InputMenu = InputMenu;
 /*global exports */
 /**
  * Creates a new StatsDisplay object.

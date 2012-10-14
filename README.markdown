@@ -212,7 +212,7 @@ Notice, we've updated the World and removed any gravitational forces. We've also
 
 #### A small World
 
-Putting it all together, we can observe our Agent try to navigate a World with multiple Stimuli and Proximity objects.
+Putting it all together, we can observe Agents navigate a World with multiple Stimuli and Proximity objects.
 
         Flora.System.start(function () {
 
@@ -225,7 +225,8 @@ Putting it all together, we can observe our Agent try to navigate a World with m
           });
 
           var heat1 = new Flora.Heat({
-            location: new Flora.Vector(uw * 0.25, uh * 0.15)
+            locati
+            on: new Flora.Vector(uw * 0.25, uh * 0.15)
           });
 
           var heat2 = new Flora.Heat({
@@ -240,7 +241,7 @@ Putting it all together, we can observe our Agent try to navigate a World with m
             location: new Flora.Vector(uw * 0.15, uh * 0.75)
           });
 
-          var heat5 = new Flora.Heat({
+          var cold = new Flora.Cold({
             location: new Flora.Vector(uw * 0.5, uh * 0.5)
           });
 
@@ -252,17 +253,29 @@ Putting it all together, we can observe our Agent try to navigate a World with m
             location: new Flora.Vector(uw * 0.65, uh * 0.2)
           });
 
-          var sensor = new exports.Sensor({
-            type: 'heat',
-            behavior: 'COWARD'
-          });
+          var i, agent, sensorHeat, sensorCold;
 
-          new Flora.Agent({
-            sensors: [sensor],
-            velocity: new Flora.Vector(1, 0.5),
-            motorSpeed: 5
-          });
+          for (i = 0; i < 5; i += 1) {
+
+            sensorHeat = new exports.Sensor({
+              type: 'heat',
+              behavior: 'COWARD'
+            });
+
+            sensorCold = new exports.Sensor({
+              type: 'cold',
+              behavior: 'ACCELERATE'
+            });
+
+            agent = new Flora.Agent({
+              sensors: [sensorHeat, sensorCold],
+              velocity: new Flora.Vector(Flora.Utils.getRandomNumber(-1, 1, true),
+                  Flora.Utils.getRandomNumber(-1, 1, true)),
+              motorSpeed: 4
+            });
+          }
         });
+
 #### More to come
 
 I'll post more examples soon. You can see the examples above in action at http://www.florajs.com/examples. You can also find full documentation at http://www.florajs.com/docs.

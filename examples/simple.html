@@ -9,13 +9,45 @@
   <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8" />
   <script src="js/modernizr.js" type="text/javascript" charset="utf-8"></script>
   <script src="js/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-9773576-12']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
 </head>
 <body>
   <script type="text/javascript" charset="utf-8">
 
     // start the system; pass initial instuctions
     Flora.System.start(function() {
+
       new Flora.Agent();
+
+      Flora.universe.update({
+        isDeviceMotion: true
+      });
+
+      var caption = new Flora.Caption({
+        text: 'Simple',
+        opacity: 0.4,
+        borderColor: 'transparent',
+        position: 'top center'
+      });
+
+      var inputMenu = new Flora.InputMenu({
+        opacity: 0.4,
+        borderColor: 'transparent',
+        position: 'bottom center'
+      });
+
     });
   </script>
 </body>

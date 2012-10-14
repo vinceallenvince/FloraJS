@@ -336,18 +336,18 @@ describe("A new ElementList", function() {
 
       expect(typeof obj).toEqual('object');
   });
-  it("getAllByClass() should return an array of records with the same constructor.", function() {
+  it("getAllByClass() should return an array of records with the same 'name' property.", function() {
 
     var i, max, check = null,
         point = new exports.Point(),
         arr;
 
-    arr = exports.elementList.getAllByClass('Point');
+    arr = exports.elementList.getAllByClass('point');
 
     expect(interfaceCheck.getDataType(arr)).toEqual('array');
 
     for (i = 0, max = arr.length; i < max; i++) {
-      if (arr[i].constructor.name === 'Point') {
+      if (arr[i].name === 'point') {
         check = true;
       } else {
         check = false;
@@ -392,13 +392,13 @@ describe("A new ElementList", function() {
         point = new exports.Point();
       }
 
-      exports.elementList.updatePropsByClass('Point', {
+      exports.elementList.updatePropsByClass('point', {
         color: [0, 0, 0],
         scale: 2
       });
 
       for (i = 0, max = exports.elementList.all().length; i < max; i += 1) {
-        if (exports.elementList.all()[i].constructor.name === 'Point' &&
+        if (exports.elementList.all()[i].name === 'point' &&
             (!exports.elementList.all()[i].color || exports.elementList.all()[i].scale !== 2)) {
           check = false;
         }
@@ -507,6 +507,29 @@ describe("A new Heat", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
     expect(obj.name).toEqual('heat');
+  });
+});
+
+describe("A new InputMenu", function() {
+
+  var system, obj;
+
+  beforeEach(function() {
+    Flora.System.start(function() {
+      obj = new exports.InputMenu();
+    });
+  });
+
+  afterEach(function() {
+    Flora.System.destroy();
+  });
+
+  it("should have its required properties.", function() {
+    expect(typeof obj.position).toEqual('string');
+    expect(typeof obj.text).toEqual('string');
+    expect(typeof obj.opacity).toEqual('number');
+    expect(typeof obj._el).toEqual('object');
+    expect(obj.name).toEqual('inputmenu');
   });
 });
 
@@ -974,7 +997,7 @@ describe("A new Universe", function() {
   it("addWorld() should add a new World to the 'records' array.", function() {
     obj.addWorld();
     expect(obj.all().length).toEqual(1);
-    expect(obj.all()[obj.all().length - 1].constructor.name).toEqual('World');
+    expect(obj.all()[obj.all().length - 1].name).toEqual('world');
   });
   it("first() should return the first record in the 'records' array.", function() {
     obj.addWorld();

@@ -23,7 +23,7 @@
  * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the agent.
  * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
  * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
- * @param {number} [opt_options.zIndex = 10] z-index
+ * @param {number} [opt_options.zIndex = 1] z-index
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
@@ -103,7 +103,7 @@ function Agent(opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || null;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
   this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
   this.followMouse = !!options.followMouse;
   this.isStatic = !!options.isStatic;

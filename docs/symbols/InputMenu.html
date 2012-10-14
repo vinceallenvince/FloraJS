@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - FlowFieldMarker</title>
+		<title>JsDoc Reference - InputMenu</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -270,7 +270,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class FlowFieldMarker
+				Class InputMenu
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -281,13 +281,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_vinceall_Sites_FloraJS_src_flowfieldmarker.js.html">flowfieldmarker.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_vinceall_Sites_FloraJS_src_inputmenu.js.html">inputmenu.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class FlowFieldMarker.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class InputMenu.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -300,9 +300,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/FlowFieldMarker.html#constructor">FlowFieldMarker</a></b>(options)
+								<b><a href="../symbols/InputMenu.html#constructor">InputMenu</a></b>(opt_options)
 							</div>
-							<div class="description">Creates a new FlowFieldMarker.</div>
+							<div class="description">Creates a new InputMenu object.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -313,7 +313,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class FlowFieldMarker.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class InputMenu.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -327,7 +327,7 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/FlowFieldMarker.html#name">name</a></b>
+								<b><a href="../symbols/InputMenu.html#name">name</a></b>
 								</div>
 								<div class="description">Define a name property.</div>
 							</td>
@@ -342,6 +342,33 @@ ul.inheritsList
 
 <!-- ============================== methods summary ======================== -->
 			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class InputMenu.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/InputMenu.html#destroy">destroy</a></b>()
+								</div>
+								<div class="description">Removes the menu's DOM element.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
 <!-- ============================== events summary ======================== -->
 			
 
@@ -353,11 +380,13 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>FlowFieldMarker</b>(options)
+						<b>InputMenu</b>(opt_options)
 				</div>
 				
 				<div class="description">
-					Creates a new FlowFieldMarker.
+					Creates a new InputMenu object.
+An Input Menu lists key strokes and other input available
+for the user to interact with the system.
 					
 				</div>
 				
@@ -369,58 +398,48 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{Object}</span>  <b>options</b>
-								
+								<span class="light fixedFont">{Object}</span>  <b>opt_options</b>
+								<i>Optional</i>
 							</dt>
 								<dd>Options.</dd>
 						
 							<dt>
-								<span class="light fixedFont">{Object}</span>  <b>options.location</b>
-								
+								<span class="light fixedFont">{string}</span>  <b>opt_options.position</b>
+								<i>Optional, Default:  'top left'</i>
 							</dt>
-								<dd>Location.</dd>
+								<dd>A text representation
+   of the menu's location. Possible values are 'top left', 'top center', 'top right',
+   'bottom left', 'bottom center', 'bottom right', 'center'.</dd>
 						
 							<dt>
-								<span class="light fixedFont">{number}</span>  <b>options.scale</b>
-								
+								<span class="light fixedFont">{number}</span>  <b>opt_options.opacity</b>
+								<i>Optional, Default:  0.75</i>
 							</dt>
-								<dd>Scale.</dd>
+								<dd>The menu's opacity.</dd>
 						
 							<dt>
-								<span class="light fixedFont">{number}</span>  <b>options.opacity</b>
-								
+								<span class="light fixedFont">{number}</span>  <b>opt_options.color</b>
+								<i>Optional, Default:  [255, 255, 255]</i>
 							</dt>
-								<dd>Opacity</dd>
+								<dd>The menu's color.</dd>
 						
 							<dt>
-								<span class="light fixedFont">{number}</span>  <b>options.width</b>
-								
+								<span class="light fixedFont">{string}</span>  <b>opt_options.borderWidth</b>
+								<i>Optional, Default:  '1px'</i>
 							</dt>
-								<dd>Width.</dd>
+								<dd>The menu's border width.</dd>
 						
 							<dt>
-								<span class="light fixedFont">{number}</span>  <b>options.height</b>
-								
+								<span class="light fixedFont">{string}</span>  <b>opt_options.borderStyle</b>
+								<i>Optional, Default:  'solid'</i>
 							</dt>
-								<dd>Height.</dd>
+								<dd>The menu's border style.</dd>
 						
 							<dt>
-								<span class="light fixedFont">{number}</span>  <b>options.angle</b>
-								
+								<span class="light fixedFont">{Array|string}</span>  <b>opt_options.borderColor</b>
+								<i>Optional, Default:  0.75</i>
 							</dt>
-								<dd>Angle.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{string}</span>  <b>options.colorMode</b>
-								
-							</dt>
-								<dd>Color mode.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{Object}</span>  <b>options.color</b>
-								
-							</dt>
-								<dd>Color.</dd>
+								<dd>The menu's border color.</dd>
 						
 						</dl>
 					
@@ -465,6 +484,36 @@ ul.inheritsList
 			
 
 <!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="destroy"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>destroy</b>()
+					
+					</div>
+					<div class="description">
+						Removes the menu's DOM element.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
 			
 			
 <!-- ============================== event details ========================= -->		

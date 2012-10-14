@@ -67,7 +67,7 @@
 <span class='line'> 60</span> </span><span class="COMM">/**
 <span class='line'> 61</span>  * Returns an array of elements created from the same constructor.
 <span class='line'> 62</span>  *
-<span class='line'> 63</span>  * @param {string} name The constructor name.
+<span class='line'> 63</span>  * @param {string} name The 'name' property.
 <span class='line'> 64</span>  * @returns {Array} An array of elements.
 <span class='line'> 65</span>  */</span><span class="WHIT">
 <span class='line'> 66</span> </span><span class="NAME">ElementList.prototype.getAllByClass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -77,7 +77,7 @@
 <span class='line'> 70</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 71</span> 
 <span class='line'> 72</span> </span><span class="WHIT">  </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._records.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 73</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._records</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">constructor.name</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this._records</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 74</span> </span><span class="WHIT">      </span><span class="NAME">arr</span><span class="PUNC">[</span><span class="NAME">arr.length</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this._records</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 75</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 76</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
@@ -91,7 +91,7 @@
 <span class='line'> 84</span>  * @param {Object} props A map of properties to update.
 <span class='line'> 85</span>  * @returns {Array} An array of elements.
 <span class='line'> 86</span>  * @example
-<span class='line'> 87</span>  * exports.elementList.updatePropsByClass('Point', {
+<span class='line'> 87</span>  * exports.elementList.updatePropsByClass('point', {
 <span class='line'> 88</span>  *    color: [0, 0, 0],
 <span class='line'> 89</span>  *    scale: 2
 <span class='line'> 90</span>  * }); // all point will turn black and double in size

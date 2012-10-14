@@ -16,26 +16,14 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 }
 
 body {
-	background: #f6edd2;
-	background-image: -webkit-radial-gradient(circle, #fefefe, #f6edd2);
-	background-image: -webkit-gradient(circle, #fefefe, #f6edd2);
-	background-image: -moz-radial-gradient(circle, #fefefe, #f6edd2);
-	background-image: -o-radial-gradient(circle, #fefefe, #f6edd2);
-	background-image: -ms-radial-gradient(circle, #fefefe, #f6edd2);
-	background-image: radial-gradient(circle, #fefefe, #f6edd2);
+	background: rgb(0, 0, 0);
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
 }
 
 .world {
-	background: #000;
-	background-image: -webkit-radial-gradient(circle, #fff, #000);
-	background-image: -webkit-gradient(circle, #fff, #000);
-	background-image: -moz-radial-gradient(circle, #fff, #000);
-	background-image: -o-radial-gradient(circle, #fff, #000);
-	background-image: -ms-radial-gradient(circle, #fff, #000);
-	background-image: radial-gradient(circle, #fff, #000);
+	background: rgb(0, 0, 0);
 	position: absolute;
 	margin: 0 auto;
 	z-index: 0;
@@ -45,7 +33,6 @@ body {
 }
 
 .agent {
-	z-index: 1;
 	background: rgb(197, 177, 115);
 	border-color: rgb(255, 255, 255);
 	border-width: 0.25em;
@@ -94,8 +81,6 @@ body {
 
 .liquid {
 	background: rgb(105, 210, 231);
-	opacity: 0.75;
-	z-index: 10;
 	border-width: 1em;
 	border-color: rgb(167, 219, 216);
 	border-style: double;
@@ -105,8 +90,6 @@ body {
 
 .repeller {
 	background: rgb(250, 105, 0);
-	opacity: 0.75;
-	z-index: 10;
 	border-width: 1em;
 	border-color: rgb(224, 228, 204);
 	border-style: double;
@@ -116,8 +99,6 @@ body {
 
 .attractor {
 	background: rgb(32, 102, 63);
-	opacity: 0.75;
-	z-index: 10;
 	border-width: 1em;
 	border-color: rgb(204, 238, 141);
 	border-style: double;
@@ -126,48 +107,42 @@ body {
 }
 
 .connector {
-	background: transparent; opacity: .1;
+	background: transparent;
 	border-top: 2px dotted #ff0000;
 }
 
 .point {
-	background: rgb(255, 255, 255); opacity: 0;
-	z-index: 1;
+	background: rgb(255, 255, 255);
 	border-radius: 100%;
 	border: 3px solid rgba(0, 0, 0, 1);
 }
 
 .sensor {
-	opacity: 0.5;
-	z-index: 1;
 	border-radius: 100%;
 	border: 1px solid rgb(255, 255, 255);
 }
-.flowFieldMarker {
 
-}
-
-.cyclone {
-	position: absolute; left: 0; top: 0;
-	width: 0; height: 0;
-	background: transparent; opacity: 0;
-	border-radius: 5px;
-}
-
-/* STIMULATORS - start */
+/* STIMULI - start */
 .cold {
-	border-radius: 50px; /* ? */
 	background: rgb(132, 192, 201);
+	border-width: 1em;
+	border-color: rgb(0, 89, 102);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(0, 150, 172);
 }
 
 .food {
-	background: rgb(155, 231, 93);
+	background: rgb(57, 128, 0);
+	border-width: 1em;
+	border-color: rgb(115, 255, 0);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(104, 173, 48);
 }
 
 .heat {
 	background: rgb(255, 69, 0);
-	opacity: 0.75;
-	z-index: 10;
 	border-width: 1em;
 	border-color: rgb(224, 178, 154);
 	border-style: double;
@@ -176,29 +151,42 @@ body {
 }
 
 .light {
-	border-radius: 50px;
-	background: rgb(255, 200, 0);
+	background: rgb(255, 255, 255);
+	border-width: 1em;
+	border-color: rgb(210, 210, 0);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(255, 255, 100);
 }
 
 .oxygen {
-	border-radius: 50px;
 	background: rgb(0, 174, 239);
+	border-width: 1em;
+	border-color: rgb(64, 255, 255);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(183, 219, 219);
 }
 
 .predator {
-	background: rgb(200, 0, 0);
+	background: rgb(255, 0, 0);
+	border-width: 1em;
+	border-color: rgb(190, 0, 0);
+	border-style: double;
+	border-radius: 100%;
+	box-shadow: 0 0 0 1em rgb(150, 0, 0);
 }
-/* STIMULATORS - end */
+/* STIMULI - end */
 
 
-/* CAPTION */
-.caption {
+/* CAPTION / INPUT MENU */
+.caption, .inputMenu {
   width: auto;
-  position: fixed;
+	position: absolute;
   font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
-  color: #000;
+  color: rgb(0, 0, 0);
   text-align: center;
-  padding: 0.75em;
+  cursor: default;
   -webkit-user-select: none;
   -moz-user-select: none;
   -o-user-select: none;
@@ -206,34 +194,33 @@ body {
   user-select: none;
 }
 
-.caption.top.left {
-	top: 0; left: 0;
+.caption.top.left, .inputMenu.top.left {
+	bottom: 90%; left: 0;
 }
 
-.caption.top.center {
+.caption.top.center, .inputMenu.top.center {
 	width: 100%;
 	text-align: center;
 	margin: 0 auto;
-	position: relative;
-	top: 0%;
+	bottom: 90%;
 }
 
-.caption.top.right {
-	top: 0; right: 0;
+.caption.top.right, .inputMenu.top.right {
+	bottom: 90%; right: 0;
 }
 
-.caption.bottom.left {
+.caption.bottom.left, .inputMenu.bottom.left {
 	top: 90%; left: 0;
 }
 
-.caption.bottom.center {
+.caption.bottom.center, .inputMenu.bottom.center {
 	width: 100%;
 	text-align: center;
 	margin: 0 auto;
 	top: 90%;
 }
 
-.caption.bottom.right {
+.caption.bottom.right, .inputMenu.bottom.right {
 	top: 90%; right: 0;
 }
 

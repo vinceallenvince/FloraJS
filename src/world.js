@@ -25,10 +25,6 @@
  * @param {number} [opt_options.width = window.width] The world width.
  * @param {number} [opt_options.height = window.height] The world height.
  * @param {number} [opt_options.zIndex = 0] The world z-index.
- * @param {boolean} [opt_options.isTopDown = true] Set to true to orient the gravity vector when listening to the devicemotion event.
- * @param {number} [opt_options.compassHeading = 0] The compass heading. Value is set via the deviceorientation event.
- * @param {number} [opt_options.compassAccuracy = 0] The compass accuracy. Value is set via the deviceorientation event.
- * @param {boolean} [opt_options.isDeviceMotion = false] Set to true add the devicemotion event listener. Typically use with accelerometer equipped devices.
  * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
  * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
  */
@@ -56,12 +52,7 @@ function World(opt_options) {
   this.borderColor = options.borderColor || null;
   this.borderRadius = options.borderRadius || 0;
   this.boxShadow = options.boxShadow || 0;
-
   this.zIndex = 0;
-  this.isTopDown = true;
-  this.compassHeading = 0;
-  this.compassAccuracy = 0;
-  this.isDeviceMotion = !options.isDeviceMotion;
 
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
@@ -94,18 +85,6 @@ function World(opt_options) {
   exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
     me.resize.call(me);
   });
-
-  /*if (window.addEventListener && this.isDeviceMotion) {
-    window.addEventListener("devicemotion", function(e) { // listens for device motion events
-      me.devicemotion.call(me, e);
-    }, false);
-  }
-
-  if (window.addEventListener && this.isDeviceOrientation) {
-    window.addEventListener("deviceorientation", function(e) { // listens for device orientation events
-      me.deviceorientation.call(me, e);
-    }, false);
-  }*/
 }
 
 /**
@@ -220,58 +199,11 @@ World.prototype.resize = function() {
     if (this.el === document.body) {
       this.width = windowWidth;
       this.height = windowHeight;
+      this.el.style.width = this.width + 'px';
+      this.el.style.height = this.height + 'px';
     }
   }
 };
-
-/**
- * Called from a window devicemotion event, updates the world's gravity
- * relative to the accelerometer's values.
- */
-World.prototype.devicemotion = function(e) {
-
-  'use strict';
-
-  if (window.orientation === 0) {
-    if (this.isTopDown) {
-      this.gravity = new exports.Vector(e.accelerationIncludingGravity.x, e.accelerationIncludingGravity.y * -1); // portrait
-    } else {
-      this.gravity = new exports.Vector(e.accelerationIncludingGravity.x, (e.accelerationIncludingGravity.z + 7.5) * 2); // portrait 45 degree angle
-    }
-  } else if (window.orientation === -90) {
-    this.gravity = new exports.Vector(e.accelerationIncludingGravity.y, e.accelerationIncludingGravity.x );
-  } else {
-    this.gravity = new exports.Vector(e.accelerationIncludingGravity.y * -1, e.accelerationIncludingGravity.x * -1);
-  }
-
-  if (this.showDeviceOrientation) {
-    document.getElementById('compassDisplay').val("orientation: " + window.orientation + " x: " +
-        e.accelerationIncludingGravity.x.toFixed(2) + " y: " + e.accelerationIncludingGravity.y.toFixed(2) + " z: " +
-        e.accelerationIncludingGravity.z.toFixed(2));
-  }
-};
-
-/**
- * Called from a window deviceorientation event, updates the world's compass values.
- *
- * @param {Object} e An event object passed from the event listener.
- */
-World.prototype.deviceorientation = function(e) {
-
-  'use strict';
-
-  var compassHeading = e.webkitCompassHeading,
-    compassAccuracy = e.webkitCompassAccuracy;
-
-  this.compassAccuracy = compassAccuracy;
-  this.compassHeading = compassHeading;
-
-  if (this.showCompassHeading) {
-    document.getElementById('compassDisplay').val("heading: " + compassHeading.toFixed(2) +
-        " accuracy: +/- " +compassAccuracy);
-  }
-};
-
 
 /**
  * Called every frame, step() updates the world's properties.

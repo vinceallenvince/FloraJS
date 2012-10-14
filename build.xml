@@ -22,7 +22,10 @@
     <delete dir="${jsdoc.output}"/>
   </target>
 
-  <target name="build.dev" depends="clean,init,concatenate,validate,copyDev">
+  <target name="build.dev" depends="clean,init,concatenate,copyDev">
+  </target>
+
+  <target name="build.touch" depends="clean,init,concatenate,minify,bake,copyRelease">
   </target>
 
   <target name="build.release" depends="clean,init,validate,validateDemos,concatenate,minify,bake,document,copyRelease">
@@ -59,7 +62,7 @@
 
         (function(exports) {
       </header>
-      <filelist dir="${src.dir}" files="requestanimframe.js,config.js,elementlist.js,system.js,utils.js,vector.js,colorpalette.js,colortable.js,borderpalette.js,simplexnoise.js,interface.js,universe.js,world.js,camera.js,obj.js,agent.js,walker.js,oscillator.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,caption.js,statsdisplay.js"/>
+      <filelist dir="${src.dir}" files="requestanimframe.js,config.js,elementlist.js,system.js,utils.js,vector.js,colorpalette.js,colortable.js,borderpalette.js,simplexnoise.js,interface.js,universe.js,world.js,camera.js,obj.js,agent.js,walker.js,oscillator.js,particle.js,particlesystem.js,liquid.js,attractor.js,repeller.js,heat.js,cold.js,light.js,oxygen.js,food.js,predator.js,sensor.js,flowfieldmarker.js,flowfield.js,connector.js,point.js,caption.js,inputmenu.js,statsdisplay.js"/>
       <footer trimleading="yes">}(exports));</footer>
     </concat>
   </target>
@@ -137,6 +140,10 @@
     <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
     <!-- copy css file to demos/css -->
     <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
+    <!-- copy fat build file to tests/lib -->
+    <copy file="${build.dir}/flora.js" todir="${tests.dir}/lib" overwrite="true"/>
+    <!-- copy modernizr to tests/lib -->
+    <copy file="${lib.dir}/modernizr.js" todir="${tests.dir}/lib" overwrite="true"/>
   </target>
 
   <!-- Copy: copy build and css files to examples/demos -->
@@ -155,16 +162,27 @@
     <copy file="${build.dir}/flora.js" todir="${demos.dir}/js" overwrite="true"/>
     <!-- copy modernizr to demos/js -->
     <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
+    <!-- copy fat build file to tests/lib -->
+    <copy file="${build.dir}/flora.js" todir="${tests.dir}/lib" overwrite="true"/>
+    <!-- copy modernizr to tests/lib -->
+    <copy file="${lib.dir}/modernizr.js" todir="${tests.dir}/lib" overwrite="true"/>
     <!-- copy css file to demos/css -->
     <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
+    <!-- copy examples folder to FloraJS.com /examples -->
     <copy todir="../FloraJS.com/examples" overwrite="true">
       <fileset dir="${examples.dir}"/>
     </copy>
+    <!-- copy docs folder to FloraJS.com /docs -->
     <copy todir="../FloraJS.com/docs" overwrite="true">
       <fileset dir="${jsdoc.output}"/>
     </copy>
+    <!-- copy demos folder to FloraJS.com /demos -->
     <copy todir="../FloraJS.com/demos" overwrite="true">
       <fileset dir="${demos.dir}"/>
+    </copy>
+    <!-- copy tests folder to FloraJS.com /tests -->
+    <copy todir="../FloraJS.com/tests" overwrite="true">
+      <fileset dir="${tests.dir}"/>
     </copy>
   </target>
 
