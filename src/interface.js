@@ -61,7 +61,9 @@ Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_fro
           throw new Error(msg);
         }
       } catch (err) {
-        console.log('ERROR: ' + err.message + (opt_from ? ' from: ' + opt_from : ''));
+        if (typeof console !== 'undefined') {
+          console.log('ERROR: ' + err.message + (opt_from ? ' from: ' + opt_from : ''));
+        }
       }
     }
   }

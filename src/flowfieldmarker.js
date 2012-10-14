@@ -1,4 +1,4 @@
-/*global console, exports */
+/*global exports */
 /**
  * Creates a new FlowFieldMarker.
  *

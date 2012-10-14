@@ -4,8 +4,12 @@
  *
  * Use this class to create a field in the
  * top-left corner that displays the current
- * frames per second and total number of
+ * frames per second and total number of elements
  * processed in the System.animLoop.
+ *
+ * Note: StatsDisplay will not function in browsers
+ * whose Date object does not support Date.now().
+ * These include IE6, IE7, and IE8.
  *
  * @constructor
  */
@@ -14,10 +18,6 @@ function StatsDisplay() {
   'use strict';
 
   var labelContainer, label;
-
-  if (!Date.now) {
-    return;
-  }
 
   /**
    * Frames per second.
@@ -29,7 +29,11 @@ function StatsDisplay() {
    * The current time.
    * @private
    */
-  this._time = Date.now();
+  if (Date.now) {
+    this._time = Date.now();
+  } else {
+    this._time = 0;
+  }
 
   /**
    * The time at the last frame.
@@ -128,7 +132,11 @@ StatsDisplay.prototype._update = function() {
 
   var elementCount = exports.elementList.count();
 
-  this._time = Date.now();
+  if (Date.now) {
+    this._time = Date.now();
+  } else {
+    this._time = 0;
+  }
   this._frameCount++;
 
   // at least a second has passed

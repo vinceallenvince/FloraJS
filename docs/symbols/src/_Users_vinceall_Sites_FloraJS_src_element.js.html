@@ -5,12 +5,12 @@
 	.STRN {color: #393;}
 	.REGX {color: #339;}
 	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
-	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*global exports, console */</span><span class="WHIT">
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*global exports */</span><span class="WHIT">
 <span class='line'>  2</span> </span><span class="COMM">/**
-<span class='line'>  3</span>  * Creates a new Obj. All Flora elements extend Obj.
+<span class='line'>  3</span>  * Creates a new Element. All Flora elements extend Element.
 <span class='line'>  4</span>  * @constructor
 <span class='line'>  5</span>  */</span><span class="WHIT">
-<span class='line'>  6</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">Obj</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  6</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">Element</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>  7</span> 
 <span class='line'>  8</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>  9</span> 
@@ -26,7 +26,7 @@
 <span class='line'> 19</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 20</span> </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 21</span> 
-<span class='line'> 22</span> </span><span class="NAME">Obj.events</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="NAME">Element.events</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="PUNC">[</span><span class="WHIT">
 <span class='line'> 23</span> </span><span class="WHIT">  </span><span class="STRN">"mouseenter"</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'> 24</span> </span><span class="WHIT">  </span><span class="STRN">"mousedown"</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'> 25</span> </span><span class="WHIT">  </span><span class="STRN">"mousemove"</span><span class="PUNC">,</span><span class="WHIT">
@@ -37,14 +37,14 @@
 <span class='line'> 30</span> </span><span class="COMM">/**
 <span class='line'> 31</span>  * Define a name property.
 <span class='line'> 32</span>  */</span><span class="WHIT">
-<span class='line'> 33</span> </span><span class="NAME">Obj.prototype.name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'obj'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="NAME">Element.prototype.name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'obj'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 34</span> 
 <span class='line'> 35</span> </span><span class="COMM">/**
 <span class='line'> 36</span>  * Called by a mouseover event listener.
 <span class='line'> 37</span>  *
 <span class='line'> 38</span>  * @param {Object} e The event object passed by the listener.
 <span class='line'> 39</span>  */</span><span class="WHIT">
-<span class='line'> 40</span> </span><span class="NAME">Obj.mouseover</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="NAME">Element.mouseover</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 41</span> 
 <span class='line'> 42</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 43</span> 
@@ -57,7 +57,7 @@
 <span class='line'> 50</span>  *
 <span class='line'> 51</span>  * @param {Object} e The event object passed by the listener.
 <span class='line'> 52</span>  */</span><span class="WHIT">
-<span class='line'> 53</span> </span><span class="NAME">Obj.mousedown</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="NAME">Element.mousedown</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 54</span> 
 <span class='line'> 55</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 56</span> 
@@ -74,7 +74,7 @@
 <span class='line'> 67</span>  *
 <span class='line'> 68</span>  * @param {Object} e The event object passed by the listener.
 <span class='line'> 69</span>  */</span><span class="WHIT">
-<span class='line'> 70</span> </span><span class="NAME">Obj.mousemove</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="NAME">Element.mousemove</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 71</span> 
 <span class='line'> 72</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 73</span> 
@@ -87,7 +87,7 @@
 <span class='line'> 80</span> </span><span class="WHIT">    </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">e.pageX</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.world.el.offsetLeft</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 81</span> </span><span class="WHIT">    </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">e.pageY</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.world.el.offsetTop</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 82</span> 
-<span class='line'> 83</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Obj.mouseIsInsideWorld</span><span class="PUNC">(</span><span class="NAME">this.world</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Element.mouseIsInsideWorld</span><span class="PUNC">(</span><span class="NAME">this.world</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 84</span> </span><span class="WHIT">      </span><span class="NAME">this.location</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">exports.Vector</span><span class="PUNC">(</span><span class="NAME">x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 85</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 86</span> </span><span class="WHIT">      </span><span class="NAME">this.isPressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
@@ -100,7 +100,7 @@
 <span class='line'> 93</span>  *
 <span class='line'> 94</span>  * @param {Object} e The event object passed by the listener.
 <span class='line'> 95</span>  */</span><span class="WHIT">
-<span class='line'> 96</span> </span><span class="NAME">Obj.mouseup</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="NAME">Element.mouseup</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 97</span> 
 <span class='line'> 98</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 99</span> 
@@ -112,7 +112,7 @@
 <span class='line'>105</span>  *
 <span class='line'>106</span>  * @param {Object} e The event object passed by the listener.
 <span class='line'>107</span>  */</span><span class="WHIT">
-<span class='line'>108</span> </span><span class="NAME">Obj.mouseout</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="NAME">Element.mouseout</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>109</span> 
 <span class='line'>110</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>111</span> 
@@ -143,7 +143,7 @@
 <span class='line'>136</span>  * @returns {boolean} True if mouse is inside world; False if
 <span class='line'>137</span>  *    mouse is outside world.
 <span class='line'>138</span>  */</span><span class="WHIT">
-<span class='line'>139</span> </span><span class="NAME">Obj.mouseIsInsideWorld</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">world</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="NAME">Element.mouseIsInsideWorld</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">world</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>140</span> 
 <span class='line'>141</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>142</span> 
@@ -164,7 +164,7 @@
 <span class='line'>157</span> </span><span class="COMM">/**
 <span class='line'>158</span>  * Renders the element to the DOM. Called every frame.
 <span class='line'>159</span>  */</span><span class="WHIT">
-<span class='line'>160</span> </span><span class="NAME">Obj.prototype.draw</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="NAME">Element.prototype.draw</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>161</span> 
 <span class='line'>162</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>163</span> 
@@ -187,4 +187,4 @@
 <span class='line'>180</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>181</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>182</span> 
-<span class='line'>183</span> </span><span class="NAME">exports.Obj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Obj</span><span class="PUNC">;</span></pre></body></html>
+<span class='line'>183</span> </span><span class="NAME">exports.Element</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Element</span><span class="PUNC">;</span></pre></body></html>

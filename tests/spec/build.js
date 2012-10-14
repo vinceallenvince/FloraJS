@@ -336,13 +336,13 @@ describe("A new ElementList", function() {
 
       expect(typeof obj).toEqual('object');
   });
-  it("getAllByClass() should return an array of records with the same 'name' property.", function() {
+  it("getAllByName() should return an array of records with the same 'name' property.", function() {
 
     var i, max, check = null,
         point = new exports.Point(),
         arr;
 
-    arr = exports.elementList.getAllByClass('point');
+    arr = exports.elementList.getAllByName('point');
 
     expect(interfaceCheck.getDataType(arr)).toEqual('array');
 
@@ -383,7 +383,7 @@ describe("A new ElementList", function() {
       exports.elementList.destroyAll();
       expect(exports.elementList.all().length).toEqual(0);
   });
-  it("updatePropsByClass() should update the properties of elements created " +
+  it("updatePropsByName() should update the properties of elements created " +
       "from the same constructor.", function() {
 
       var i, check = true, point;
@@ -392,7 +392,7 @@ describe("A new ElementList", function() {
         point = new exports.Point();
       }
 
-      exports.elementList.updatePropsByClass('point', {
+      exports.elementList.updatePropsByName('point', {
         color: [0, 0, 0],
         scale: 2
       });
@@ -679,13 +679,13 @@ describe("A new Agent", function() {
   });
 });
 
-describe("A new Obj", function() {
+describe("A new Element", function() {
 
   var system, obj, agent;
 
   beforeEach(function() {
     Flora.System.start(function() {
-      obj = new exports.Obj({
+      obj = new exports.Element({
         hello: 'hello'
       });
       agent = new exports.Agent();
@@ -700,10 +700,10 @@ describe("A new Obj", function() {
     expect(obj.hello).toEqual('hello');
     expect(obj.name).toEqual('obj');
   });
-  it("Obj should should have a static method to check if mouse is inside World.", function() {
+  it("Element should should have a static method to check if mouse is inside World.", function() {
     exports.mouse.loc.x = 1;
     exports.mouse.loc.y = 1;
-    expect(exports.Obj.mouseIsInsideWorld(agent.world)).toEqual(true);
+    expect(exports.Element.mouseIsInsideWorld(agent.world)).toEqual(true);
   });
 });
 
@@ -1111,7 +1111,7 @@ describe("Utils", function() {
 
   });
   it("getCSSText() should return a text string.", function() {
-    var obj = new exports.Obj({
+    var obj = new exports.Element({
       location: {x: 100, y: 100},
       scale: 1,
       angle: 90,

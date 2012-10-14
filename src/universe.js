@@ -1,4 +1,4 @@
-/*global exports */
+/*global Modernizr, exports */
 /**
  * Creates a new Universe.
  *
@@ -154,7 +154,7 @@ function Universe(opt_options) {
   });
 
   // device motion
-  if (window.addEventListener && this.isDeviceMotion) {
+  if (Modernizr.touch && this.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 
@@ -259,7 +259,7 @@ Universe.prototype.update = function(opt_props, opt_worldId) {
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
 
-  if (props.isDeviceMotion) {
+  if (Modernizr.touch && props.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 };
@@ -454,9 +454,9 @@ Universe.prototype.addDeviceMotionEventListener = function() {
 
   var me = this;
 
-  window.addEventListener("devicemotion", function(e) {
+  exports.Utils.addEvent(window, 'devicemotion', function(e) {
     me.devicemotion.call(me, e);
-  }, false);
+  });
 };
 
 /**

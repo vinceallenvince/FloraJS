@@ -63,7 +63,7 @@ ElementList.prototype.count = function() {
  * @param {string} name The 'name' property.
  * @returns {Array} An array of elements.
  */
-ElementList.prototype.getAllByClass = function(name) {
+ElementList.prototype.getAllByName = function(name) {
 
   'use strict';
 
@@ -84,16 +84,16 @@ ElementList.prototype.getAllByClass = function(name) {
  * @param {Object} props A map of properties to update.
  * @returns {Array} An array of elements.
  * @example
- * exports.elementList.updatePropsByClass('point', {
+ * exports.elementList.updatePropsByName('point', {
  *    color: [0, 0, 0],
  *    scale: 2
  * }); // all point will turn black and double in size
  */
-ElementList.prototype.updatePropsByClass = function(name, props) {
+ElementList.prototype.updatePropsByName = function(name, props) {
 
   'use strict';
 
-  var i, max, p, arr = this.getAllByClass(name);
+  var i, max, p, arr = this.getAllByName(name);
 
   for (i = 0, max = arr.length; i < max; i++) {
     for (p in props) {

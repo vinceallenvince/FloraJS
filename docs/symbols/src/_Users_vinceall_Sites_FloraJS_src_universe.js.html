@@ -5,7 +5,7 @@
 	.STRN {color: #393;}
 	.REGX {color: #339;}
 	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
-	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*global exports */</span><span class="WHIT">
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*global Modernizr, exports */</span><span class="WHIT">
 <span class='line'>  2</span> </span><span class="COMM">/**
 <span class='line'>  3</span>  * Creates a new Universe.
 <span class='line'>  4</span>  *
@@ -161,7 +161,7 @@
 <span class='line'>154</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>155</span> 
 <span class='line'>156</span> </span><span class="WHIT">  </span><span class="COMM">// device motion</span><span class="WHIT">
-<span class='line'>157</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.addEventListener</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.isDeviceMotion</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Modernizr.touch</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.isDeviceMotion</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>158</span> </span><span class="WHIT">    </span><span class="NAME">this.addDeviceMotionEventListener</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>159</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'>160</span> 
@@ -266,7 +266,7 @@
 <span class='line'>259</span> </span><span class="WHIT">    </span><span class="NAME">world.height</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">parseInt</span><span class="PUNC">(</span><span class="NAME">world.el.style.height.replace</span><span class="PUNC">(</span><span class="STRN">'px'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">10</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>260</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'>261</span> 
-<span class='line'>262</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">props.isDeviceMotion</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>262</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Modernizr.touch</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">props.isDeviceMotion</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>263</span> </span><span class="WHIT">    </span><span class="NAME">this.addDeviceMotionEventListener</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>264</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'>265</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
@@ -461,9 +461,9 @@
 <span class='line'>454</span> 
 <span class='line'>455</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">me</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>456</span> 
-<span class='line'>457</span> </span><span class="WHIT">  </span><span class="NAME">window.addEventListener</span><span class="PUNC">(</span><span class="STRN">"devicemotion"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>457</span> </span><span class="WHIT">  </span><span class="NAME">exports.Utils.addEvent</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'devicemotion'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>458</span> </span><span class="WHIT">    </span><span class="NAME">me.devicemotion.call</span><span class="PUNC">(</span><span class="NAME">me</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>459</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>459</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>460</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>461</span> 
 <span class='line'>462</span> </span><span class="COMM">/**

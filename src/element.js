@@ -1,9 +1,9 @@
-/*global exports, console */
+/*global exports */
 /**
- * Creates a new Obj. All Flora elements extend Obj.
+ * Creates a new Element. All Flora elements extend Element.
  * @constructor
  */
-function Obj() {
+function Element() {
 
   'use strict';
 
@@ -19,7 +19,7 @@ function Obj() {
   }
 }
 
-Obj.events =[
+Element.events =[
   "mouseenter",
   "mousedown",
   "mousemove",
@@ -30,14 +30,14 @@ Obj.events =[
 /**
  * Define a name property.
  */
-Obj.prototype.name = 'obj';
+Element.prototype.name = 'obj';
 
 /**
  * Called by a mouseover event listener.
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseover = function(e) {
+Element.mouseover = function(e) {
 
   'use strict';
 
@@ -50,7 +50,7 @@ Obj.mouseover = function(e) {
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mousedown = function(e) {
+Element.mousedown = function(e) {
 
   'use strict';
 
@@ -67,7 +67,7 @@ Obj.mousedown = function(e) {
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mousemove = function(e) {
+Element.mousemove = function(e) {
 
   'use strict';
 
@@ -80,7 +80,7 @@ Obj.mousemove = function(e) {
     x = e.pageX - this.world.el.offsetLeft;
     y = e.pageY - this.world.el.offsetTop;
 
-    if (Obj.mouseIsInsideWorld(this.world)) {
+    if (Element.mouseIsInsideWorld(this.world)) {
       this.location = new exports.Vector(x, y);
     } else {
       this.isPressed = false;
@@ -93,7 +93,7 @@ Obj.mousemove = function(e) {
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseup = function(e) {
+Element.mouseup = function(e) {
 
   'use strict';
 
@@ -105,7 +105,7 @@ Obj.mouseup = function(e) {
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseout = function(e) {
+Element.mouseout = function(e) {
 
   'use strict';
 
@@ -136,7 +136,7 @@ Obj.mouseout = function(e) {
  * @returns {boolean} True if mouse is inside world; False if
  *    mouse is outside world.
  */
-Obj.mouseIsInsideWorld = function(world) {
+Element.mouseIsInsideWorld = function(world) {
 
   'use strict';
 
@@ -157,7 +157,7 @@ Obj.mouseIsInsideWorld = function(world) {
 /**
  * Renders the element to the DOM. Called every frame.
  */
-Obj.prototype.draw = function() {
+Element.prototype.draw = function() {
 
   'use strict';
 
@@ -180,4 +180,4 @@ Obj.prototype.draw = function() {
   });
 };
 
-exports.Obj = Obj;
+exports.Element = Element;

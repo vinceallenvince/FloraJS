@@ -68,55 +68,57 @@
 <span class='line'> 61</span> </span><span class="WHIT">          </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Error</span><span class="PUNC">(</span><span class="NAME">msg</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 62</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 63</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">err</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 64</span> </span><span class="WHIT">        </span><span class="NAME">console.log</span><span class="PUNC">(</span><span class="STRN">'ERROR: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">err.message</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">opt_from</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="STRN">' from: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">opt_from</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 65</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 66</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 67</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 68</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">check</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 69</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 70</span> 
-<span class='line'> 71</span> </span><span class="COMM">/**
-<span class='line'> 72</span>  * Loops through an array of data types and checks if the
-<span class='line'> 73</span>  * passed option matches any entry.
-<span class='line'> 74</span>  *
-<span class='line'> 75</span>  * @param {string} option The data type to check.
-<span class='line'> 76</span>  * @param {array} typesToMatch An array of data types to check option against.
-<span class='line'> 77</span>  * @returns {boolean} If option matches any entry in typesToMatch,
-<span class='line'> 78</span>  * return true. Else, returns false.
-<span class='line'> 79</span>  */</span><span class="WHIT">
-<span class='line'> 80</span> </span><span class="NAME">Interface.checkDataType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">option</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">typesToMatch</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 81</span> 
-<span class='line'> 82</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">console</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="STRN">'undefined'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="WHIT">          </span><span class="NAME">console.log</span><span class="PUNC">(</span><span class="STRN">'ERROR: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">err.message</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">opt_from</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="STRN">' from: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">opt_from</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">check</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 72</span> 
+<span class='line'> 73</span> </span><span class="COMM">/**
+<span class='line'> 74</span>  * Loops through an array of data types and checks if the
+<span class='line'> 75</span>  * passed option matches any entry.
+<span class='line'> 76</span>  *
+<span class='line'> 77</span>  * @param {string} option The data type to check.
+<span class='line'> 78</span>  * @param {array} typesToMatch An array of data types to check option against.
+<span class='line'> 79</span>  * @returns {boolean} If option matches any entry in typesToMatch,
+<span class='line'> 80</span>  * return true. Else, returns false.
+<span class='line'> 81</span>  */</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="NAME">Interface.checkDataType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">option</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">typesToMatch</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 83</span> 
-<span class='line'> 84</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 85</span> 
-<span class='line'> 86</span> </span><span class="WHIT">  </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">typesToMatch.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 87</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">option</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">typesToMatch</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 88</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 89</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 90</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 91</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 92</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 93</span> 
-<span class='line'> 94</span> </span><span class="COMM">/**
-<span class='line'> 95</span>  * Checks for data type.
-<span class='line'> 96</span>  *
-<span class='line'> 97</span>  * @returns {string} The data type of the passed variable.
-<span class='line'> 98</span>  */</span><span class="WHIT">
-<span class='line'> 99</span> </span><span class="NAME">Interface.getDataType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>100</span> 
-<span class='line'>101</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 87</span> 
+<span class='line'> 88</span> </span><span class="WHIT">  </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">typesToMatch.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">option</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">typesToMatch</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 95</span> 
+<span class='line'> 96</span> </span><span class="COMM">/**
+<span class='line'> 97</span>  * Checks for data type.
+<span class='line'> 98</span>  *
+<span class='line'> 99</span>  * @returns {string} The data type of the passed variable.
+<span class='line'>100</span>  */</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="NAME">Interface.getDataType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>102</span> 
-<span class='line'>103</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Object.prototype.toString.call</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'[object Array]'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>104</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">'array'</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>105</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>106</span> 
-<span class='line'>107</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Object.prototype.toString.call</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'[object NodeList]'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>108</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">'nodeList'</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>109</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>110</span> 
-<span class='line'>111</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">element</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>112</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>113</span> 
-<span class='line'>114</span> </span><span class="NAME">exports.Interface</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Interface</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>115</span> </span></pre></body></html>
+<span class='line'>103</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>104</span> 
+<span class='line'>105</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Object.prototype.toString.call</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'[object Array]'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">'array'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>108</span> 
+<span class='line'>109</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Object.prototype.toString.call</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'[object NodeList]'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">'nodeList'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>112</span> 
+<span class='line'>113</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">element</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>115</span> 
+<span class='line'>116</span> </span><span class="NAME">exports.Interface</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Interface</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>117</span> </span></pre></body></html>

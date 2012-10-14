@@ -70,7 +70,7 @@
 <span class='line'> 63</span>  * @param {string} name The 'name' property.
 <span class='line'> 64</span>  * @returns {Array} An array of elements.
 <span class='line'> 65</span>  */</span><span class="WHIT">
-<span class='line'> 66</span> </span><span class="NAME">ElementList.prototype.getAllByClass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="NAME">ElementList.prototype.getAllByName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 67</span> 
 <span class='line'> 68</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 69</span> 
@@ -91,16 +91,16 @@
 <span class='line'> 84</span>  * @param {Object} props A map of properties to update.
 <span class='line'> 85</span>  * @returns {Array} An array of elements.
 <span class='line'> 86</span>  * @example
-<span class='line'> 87</span>  * exports.elementList.updatePropsByClass('point', {
+<span class='line'> 87</span>  * exports.elementList.updatePropsByName('point', {
 <span class='line'> 88</span>  *    color: [0, 0, 0],
 <span class='line'> 89</span>  *    scale: 2
 <span class='line'> 90</span>  * }); // all point will turn black and double in size
 <span class='line'> 91</span>  */</span><span class="WHIT">
-<span class='line'> 92</span> </span><span class="NAME">ElementList.prototype.updatePropsByClass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">props</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="NAME">ElementList.prototype.updatePropsByName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">props</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 93</span> 
 <span class='line'> 94</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 95</span> 
-<span class='line'> 96</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getAllByClass</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">p</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getAllByName</span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 97</span> 
 <span class='line'> 98</span> </span><span class="WHIT">  </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">max</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">arr.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">max</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 99</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">p</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">props</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">

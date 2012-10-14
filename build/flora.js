@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 0.0.1 */
-/* Build time: October 13, 2012 07:35:44 */
+/* Build time: October 14, 2012 02:40:19 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -165,7 +165,7 @@ ElementList.prototype.count = function() {
  * @param {string} name The 'name' property.
  * @returns {Array} An array of elements.
  */
-ElementList.prototype.getAllByClass = function(name) {
+ElementList.prototype.getAllByName = function(name) {
 
   'use strict';
 
@@ -186,16 +186,16 @@ ElementList.prototype.getAllByClass = function(name) {
  * @param {Object} props A map of properties to update.
  * @returns {Array} An array of elements.
  * @example
- * exports.elementList.updatePropsByClass('point', {
+ * exports.elementList.updatePropsByName('point', {
  *    color: [0, 0, 0],
  *    scale: 2
  * }); // all point will turn black and double in size
  */
-ElementList.prototype.updatePropsByClass = function(name, props) {
+ElementList.prototype.updatePropsByName = function(name, props) {
 
   'use strict';
 
-  var i, max, p, arr = this.getAllByClass(name);
+  var i, max, p, arr = this.getAllByName(name);
 
   for (i = 0, max = arr.length; i < max; i++) {
     for (p in props) {
@@ -1556,7 +1556,9 @@ Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_fro
           throw new Error(msg);
         }
       } catch (err) {
-        console.log('ERROR: ' + err.message + (opt_from ? ' from: ' + opt_from : ''));
+        if (typeof console !== 'undefined') {
+          console.log('ERROR: ' + err.message + (opt_from ? ' from: ' + opt_from : ''));
+        }
       }
     }
   }
@@ -1607,7 +1609,7 @@ Interface.getDataType = function(element) {
 };
 
 exports.Interface = Interface;
-/*global exports */
+/*global Modernizr, exports */
 /**
  * Creates a new Universe.
  *
@@ -1763,7 +1765,7 @@ function Universe(opt_options) {
   });
 
   // device motion
-  if (window.addEventListener && this.isDeviceMotion) {
+  if (Modernizr.touch && this.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 
@@ -1868,7 +1870,7 @@ Universe.prototype.update = function(opt_props, opt_worldId) {
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
 
-  if (props.isDeviceMotion) {
+  if (Modernizr.touch && props.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 };
@@ -2063,9 +2065,9 @@ Universe.prototype.addDeviceMotionEventListener = function() {
 
   var me = this;
 
-  window.addEventListener("devicemotion", function(e) {
+  exports.Utils.addEvent(window, 'devicemotion', function(e) {
     me.devicemotion.call(me, e);
-  }, false);
+  });
 };
 
 /**
@@ -2376,12 +2378,12 @@ function Camera(opt_options) {
 Camera.prototype.name = 'camera';
 
 exports.Camera = Camera;
-/*global exports, console */
+/*global exports */
 /**
- * Creates a new Obj. All Flora elements extend Obj.
+ * Creates a new Element. All Flora elements extend Element.
  * @constructor
  */
-function Obj() {
+function Element() {
 
   'use strict';
 
@@ -2397,7 +2399,7 @@ function Obj() {
   }
 }
 
-Obj.events =[
+Element.events =[
   "mouseenter",
   "mousedown",
   "mousemove",
@@ -2408,14 +2410,14 @@ Obj.events =[
 /**
  * Define a name property.
  */
-Obj.prototype.name = 'obj';
+Element.prototype.name = 'obj';
 
 /**
  * Called by a mouseover event listener.
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseover = function(e) {
+Element.mouseover = function(e) {
 
   'use strict';
 
@@ -2428,7 +2430,7 @@ Obj.mouseover = function(e) {
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mousedown = function(e) {
+Element.mousedown = function(e) {
 
   'use strict';
 
@@ -2445,7 +2447,7 @@ Obj.mousedown = function(e) {
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mousemove = function(e) {
+Element.mousemove = function(e) {
 
   'use strict';
 
@@ -2458,7 +2460,7 @@ Obj.mousemove = function(e) {
     x = e.pageX - this.world.el.offsetLeft;
     y = e.pageY - this.world.el.offsetTop;
 
-    if (Obj.mouseIsInsideWorld(this.world)) {
+    if (Element.mouseIsInsideWorld(this.world)) {
       this.location = new exports.Vector(x, y);
     } else {
       this.isPressed = false;
@@ -2471,7 +2473,7 @@ Obj.mousemove = function(e) {
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseup = function(e) {
+Element.mouseup = function(e) {
 
   'use strict';
 
@@ -2483,7 +2485,7 @@ Obj.mouseup = function(e) {
  *
  * @param {Object} e The event object passed by the listener.
  */
-Obj.mouseout = function(e) {
+Element.mouseout = function(e) {
 
   'use strict';
 
@@ -2514,7 +2516,7 @@ Obj.mouseout = function(e) {
  * @returns {boolean} True if mouse is inside world; False if
  *    mouse is outside world.
  */
-Obj.mouseIsInsideWorld = function(world) {
+Element.mouseIsInsideWorld = function(world) {
 
   'use strict';
 
@@ -2535,7 +2537,7 @@ Obj.mouseIsInsideWorld = function(world) {
 /**
  * Renders the element to the DOM. Called every frame.
  */
-Obj.prototype.draw = function() {
+Element.prototype.draw = function() {
 
   'use strict';
 
@@ -2558,13 +2560,13 @@ Obj.prototype.draw = function() {
   });
 };
 
-exports.Obj = Obj;
+exports.Element = Element;
 /*global exports */
 /**
  * Creates a new Agent and appends it to Flora.elements.
  *
  * @constructor
- * @extends Obj
+ * @extends Element
  *
  * @param {Object} [opt_options] Agent options.
  * @param {string} [opt_options.id = "m-" + Agent._idCount] An id. If an id is not provided, one is created.
@@ -2632,7 +2634,7 @@ function Agent(opt_options) {
       i, max, evt, world,
       constructorName = this.name || 'anon'; // this a problem when code is minified
 
-  exports.Obj.call(this, options);
+  exports.Element.call(this, options);
 
   this.id = options.id || constructorName.toLowerCase() + "-" + Agent._idCount; // if no id, create one
 
@@ -2732,14 +2734,14 @@ function Agent(opt_options) {
   }
 
   if (this.draggable) {
-    exports.Utils.addEvent(this.el, 'mouseover', exports.Obj.mouseover.bind(this));
-    exports.Utils.addEvent(this.el, 'mousedown', exports.Obj.mousedown.bind(this));
-    exports.Utils.addEvent(this.el, 'mousemove', exports.Obj.mousemove.bind(this));
-    exports.Utils.addEvent(this.el, 'mouseup', exports.Obj.mouseup.bind(this));
-    exports.Utils.addEvent(this.el, 'mouseout', exports.Obj.mouseout.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseover', exports.Element.mouseover.bind(this));
+    exports.Utils.addEvent(this.el, 'mousedown', exports.Element.mousedown.bind(this));
+    exports.Utils.addEvent(this.el, 'mousemove', exports.Element.mousemove.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseup', exports.Element.mouseup.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseout', exports.Element.mouseout.bind(this));
   }
 }
-exports.Utils.extend(Agent, exports.Obj);
+exports.Utils.extend(Agent, exports.Element);
 
 /**
  * Define a name property.
@@ -4418,7 +4420,7 @@ Sensor.prototype.isInside = function(item, container, sensitivity) {
   return false;
 };
 exports.Sensor = Sensor;
-/*global console, exports */
+/*global exports */
 /**
  * Creates a new FlowFieldMarker.
  *
@@ -4841,8 +4843,12 @@ exports.InputMenu = InputMenu;
  *
  * Use this class to create a field in the
  * top-left corner that displays the current
- * frames per second and total number of
+ * frames per second and total number of elements
  * processed in the System.animLoop.
+ *
+ * Note: StatsDisplay will not function in browsers
+ * whose Date object does not support Date.now().
+ * These include IE6, IE7, and IE8.
  *
  * @constructor
  */
@@ -4851,10 +4857,6 @@ function StatsDisplay() {
   'use strict';
 
   var labelContainer, label;
-
-  if (!Date.now) {
-    return;
-  }
 
   /**
    * Frames per second.
@@ -4866,7 +4868,11 @@ function StatsDisplay() {
    * The current time.
    * @private
    */
-  this._time = Date.now();
+  if (Date.now) {
+    this._time = Date.now();
+  } else {
+    this._time = 0;
+  }
 
   /**
    * The time at the last frame.
@@ -4965,7 +4971,11 @@ StatsDisplay.prototype._update = function() {
 
   var elementCount = exports.elementList.count();
 
-  this._time = Date.now();
+  if (Date.now) {
+    this._time = Date.now();
+  } else {
+    this._time = 0;
+  }
   this._frameCount++;
 
   // at least a second has passed

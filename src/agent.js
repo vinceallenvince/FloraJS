@@ -3,7 +3,7 @@
  * Creates a new Agent and appends it to Flora.elements.
  *
  * @constructor
- * @extends Obj
+ * @extends Element
  *
  * @param {Object} [opt_options] Agent options.
  * @param {string} [opt_options.id = "m-" + Agent._idCount] An id. If an id is not provided, one is created.
@@ -71,7 +71,7 @@ function Agent(opt_options) {
       i, max, evt, world,
       constructorName = this.name || 'anon'; // this a problem when code is minified
 
-  exports.Obj.call(this, options);
+  exports.Element.call(this, options);
 
   this.id = options.id || constructorName.toLowerCase() + "-" + Agent._idCount; // if no id, create one
 
@@ -171,14 +171,14 @@ function Agent(opt_options) {
   }
 
   if (this.draggable) {
-    exports.Utils.addEvent(this.el, 'mouseover', exports.Obj.mouseover.bind(this));
-    exports.Utils.addEvent(this.el, 'mousedown', exports.Obj.mousedown.bind(this));
-    exports.Utils.addEvent(this.el, 'mousemove', exports.Obj.mousemove.bind(this));
-    exports.Utils.addEvent(this.el, 'mouseup', exports.Obj.mouseup.bind(this));
-    exports.Utils.addEvent(this.el, 'mouseout', exports.Obj.mouseout.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseover', exports.Element.mouseover.bind(this));
+    exports.Utils.addEvent(this.el, 'mousedown', exports.Element.mousedown.bind(this));
+    exports.Utils.addEvent(this.el, 'mousemove', exports.Element.mousemove.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseup', exports.Element.mouseup.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseout', exports.Element.mouseout.bind(this));
   }
 }
-exports.Utils.extend(Agent, exports.Obj);
+exports.Utils.extend(Agent, exports.Element);
 
 /**
  * Define a name property.
