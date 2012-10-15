@@ -28,13 +28,27 @@
 
     // start the system; pass initial instuctions
     Flora.System.start(function() {
-      for (i = 0; i < 20; i += 1) {
-        new Flora.Agent({
-          followMouse: true,
-          flocking: true,
-          width: 20,
-          height: 15
+
+      if (Modernizr.touch) {
+        Flora.universe.update({
+          isDeviceMotion: true
         });
+        for (i = 0; i < 20; i += 1) {
+          new Flora.Agent({
+            flocking: true,
+            width: 20,
+            height: 15
+          });
+        }
+      } else {
+        for (i = 0; i < 20; i += 1) {
+          new Flora.Agent({
+            followMouse: true,
+            flocking: true,
+            width: 20,
+            height: 15
+          });
+        }
       }
 
       var caption = new Flora.Caption({

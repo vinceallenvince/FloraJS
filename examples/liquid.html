@@ -31,9 +31,16 @@
 
       var universe = Flora.universe.first();
 
-      new Flora.Agent({
-        followMouse: true
-      });
+      if (Modernizr.touch) {
+        Flora.universe.update({
+          isDeviceMotion: true
+        });
+        new Flora.Agent();
+      } else {
+        new Flora.Agent({
+          followMouse: true
+        });
+      }
 
       new Flora.Liquid({
         draggable: true,

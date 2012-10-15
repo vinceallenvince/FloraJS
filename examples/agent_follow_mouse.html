@@ -29,9 +29,16 @@
     // start the system; pass initial instuctions
     Flora.System.start(function() {
 
-      new Flora.Agent({
-        followMouse: true
-      });
+      if (Modernizr.touch) {
+        Flora.universe.update({
+          isDeviceMotion: true
+        });
+        new Flora.Agent();
+      } else {
+        new Flora.Agent({
+          followMouse: true
+        });
+      }
 
       var caption = new Flora.Caption({
         text: 'Agent follows mouse',

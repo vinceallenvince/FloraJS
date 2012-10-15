@@ -36,6 +36,8 @@ The following is taken from examples/simple.html.
 
 You should see a block fall and bounce off the bottom of your browser window.
 
+http://www.florajs.com/examples/simple.html
+
 #### The Universe and its Worlds
 
 Every Flora system starts with one Universe and one World. While a universe may have many Worlds, by default, Flora's system uses the &lt;body&gt; as the only World.
@@ -59,6 +61,8 @@ We can change these defaults after the system starts via the Universe's update()
 
 We've reversed the World's gravity and increased its friction. Now the block slowly drifts upwards.
 
+http://www.florajs.com/examples/universe_update.html
+
 #### Agents
 
 Agents are basic Flora elements that respond to forces like gravity, attraction, repulsion, etc. They can also chase after other Agents, organize with other Agents in a flocking behavior, and steer away from obstacles.
@@ -75,6 +79,9 @@ For an example of the Agent's seek behavior, set 'followMouse' to 'true' when cr
           });
         });
 
+
+http://www.florajs.com/examples/agent_follow_mouse.html
+
 #### Walkers
 
 Walkers are a step down on the evolutionary chain from Agents. They have no seeking, steering or directional behavior and just randomly explore their World. Use Walkers to create wandering objects or targets for Agents to seek.
@@ -90,6 +97,9 @@ By default, Walkers use an algorithm called Perlin Noise (http://en.wikipedia.or
           new Flora.Walker();
         });
 
+
+http://www.florajs.com/examples/walker.html
+
 #### Targets
 
 In the Agent example above, the Agent targeted the mouse. By saving a reference to a new Walker and passing at as a 'target' for a new Agent, we can make the Agent seek the Walker.
@@ -100,6 +110,9 @@ In the Agent example above, the Agent targeted the mouse. By saving a reference 
             target: walker
           });
         });
+
+
+http://www.florajs.com/examples/agent_seeks_walker.html
 
 #### Flocking
 
@@ -123,6 +136,8 @@ In the example below, we create 20 Agents and set their target to the Walker. We
           }
         });
 
+http://www.florajs.com/examples/agents_flock_to_walker.html
+
 In the example below, Agents flock to the mouse. We've also adjusted the 'width' and 'height' properties.
 
         Flora.System.start(function() {
@@ -135,6 +150,9 @@ In the example below, Agents flock to the mouse. We've also adjusted the 'width'
             });
           }
         });
+
+
+http://www.florajs.com/examples/agents_flock_to_mouse.html
 
 #### Proximity
 
@@ -156,6 +174,8 @@ In the example below, we create a Liquid object and an Agent that follows the mo
         });
 
 You can replace 'Liquid' with 'Attractor' and 'Repeller' to view how the Proximity objects affect an Agent.
+
+http://www.florajs.com/examples/liquid.html
 
 #### Sensors and Stimuli
 
@@ -209,6 +229,8 @@ In the example below, the Agent carries a Sensor that senses Heat. When activate
         });
 
 Notice, we've updated the World and removed any gravitational forces. We've also updated the 'motorSpeed' property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Heat objects.
+
+http://www.florajs.com/examples/sensor.html
 
 #### A small World
 
@@ -275,6 +297,9 @@ Putting it all together, we can observe Agents navigate a World with multiple St
             });
           }
         });
+
+
+http://www.florajs.com/examples/sensor_stimuli.html
 
 #### More to come
 

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 0.0.1 */
-/* Build time: October 14, 2012 02:40:19 */
+/* Build time: October 15, 2012 09:32:52 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -716,7 +716,7 @@ Vector.VectorAdd = function(v1, v2) {
 };
 
 /**
- * Multiply two vectors. Uses clone to avoid affecting the values of the vectors.
+ * Multiply a vector by a scalar value. Uses clone to avoid affecting the values of the vectors.
  *
  * @returns {Object} A vector.
  */

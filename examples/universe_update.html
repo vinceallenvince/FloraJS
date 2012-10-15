@@ -29,12 +29,19 @@
     // start the system; pass initial instuctions
     Flora.System.start(function() {
 
-      Flora.universe.update({
-        gravity: new Flora.Vector(0, -1),
-        c: 0.75
-      });
+      if (Modernizr.touch) {
+        Flora.universe.update({
+          isDeviceMotion: true
+        });
+        new Flora.Agent();
+      } else {
+        Flora.universe.update({
+          gravity: new Flora.Vector(0, -1),
+          c: 0.75
+        });
 
-      new Flora.Agent();
+        new Flora.Agent();
+      }
 
       var caption = new Flora.Caption({
         text: 'Universe update',

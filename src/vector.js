@@ -35,7 +35,7 @@ Vector.VectorAdd = function(v1, v2) {
 };
 
 /**
- * Multiply two vectors. Uses clone to avoid affecting the values of the vectors.
+ * Multiply a vector by a scalar value. Uses clone to avoid affecting the values of the vectors.
  *
  * @returns {Object} A vector.
  */
