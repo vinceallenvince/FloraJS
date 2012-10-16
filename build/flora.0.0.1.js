@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 0.0.1 */
-/* Build time: October 15, 2012 09:32:52 */
+/* Build time: October 15, 2012 09:22:47 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -2563,7 +2563,12 @@ Element.prototype.draw = function() {
 exports.Element = Element;
 /*global exports */
 /**
- * Creates a new Agent and appends it to Flora.elements.
+ * Creates a new Agent.
+ *
+ * Agents are affected by World forces (gravity, wind) and Proximity forces (Attractors, Repellers, Liquid).
+ * Their primary purpose is to navigate their World. They carry have navigational properties like 'avoidEdges',
+ * 'maxSteeringForce' or 'turningRadius' which can be manipulated to adjust their observed behavior.
+ * They can also carry sensors which react to Stimuli and return information about the World.
  *
  * @constructor
  * @extends Element
