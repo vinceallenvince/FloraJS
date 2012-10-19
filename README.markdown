@@ -303,20 +303,25 @@ http://www.florajs.com/examples/sensor_stimuli.html
 
 #### Camera
 
-In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course there can only be one agent controlling the World's Camera.
+In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course, there can only be one agent controlling the World's Camera.
 
         Flora.System.start(function () {
 
           var universe = Flora.universe.first(),
-              uw = universe.width,
-              uh = universe.height;
+              windowSize = Flora.Utils.getWindowSize(),
+              uw, uh;
 
           universe.update({
             gravity: new Flora.Vector(),
             borderWidth: 1,
             borderStyle: 'solid',
-            borderColor: [100, 100, 100]
+            borderColor: [100, 100, 100],
+            width: windowSize.width * 1.5,
+            height: windowSize.height * 1.5
           });
+
+          uw = universe.width;
+          uh = universe.height;
 
           var heat1 = new Flora.Heat({
             location: new Flora.Vector(uw * 0.25, uh * 0.15)
