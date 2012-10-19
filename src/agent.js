@@ -2,10 +2,10 @@
 /**
  * Creates a new Agent.
  *
- * Agents are affected by World forces (gravity, wind) and Proximity forces (Attractors, Repellers, Liquid).
- * Their primary purpose is to navigate their World. They carry have navigational properties like 'avoidEdges',
- * 'maxSteeringForce' or 'turningRadius' which can be manipulated to adjust their observed behavior.
- * They can also carry sensors which react to Stimuli and return information about the World.
+ * Agents are autonomous objects affected by World forces (gravity, wind) and Proximity forces (Attractors, Repellers, Liquid).
+ * Because their primary purpose is to navigate their World, they carry navigational properties like 'avoidEdges',
+ * 'maxSteeringForce' or 'turningRadius' which can be manipulated to adjust their observed behavior. They can also carry
+ * Sensors which react to Stimuli and return information about the World.
  *
  * @constructor
  * @extends Element
@@ -307,8 +307,13 @@ Agent.prototype.step = function() {
       this.applyForce(this.seek(t));
     }
 
-    if (this.target) { // follow target
+    if (this.target) { // seek target
       this.applyForce(this.seek(this.target));
+    }
+
+    if (this.followTarget) { // follow target
+      //this.applyForce(this.follow(this.followTarget));
+      console.log(this);
     }
 
     if (this.flowField) { // follow flow field
@@ -447,7 +452,7 @@ Agent.prototype.seek = function(target, arrive) {
 /**
  * Calculates a steering force to apply to an object following another object.
  *
- * @param {Object} target The object to seek.
+ * @param {Object} target The object to follow.
  * @returns {Object} The force to apply.
  */
 Agent.prototype.follow = function(target) {

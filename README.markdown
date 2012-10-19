@@ -301,6 +301,92 @@ Putting it all together, we can observe Agents navigate a World with multiple St
 
 http://www.florajs.com/examples/sensor_stimuli.html
 
+#### Camera
+
+In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course there can only be one agent controlling the World's Camera.
+
+        Flora.System.start(function () {
+
+          var universe = Flora.universe.first(),
+              uw = universe.width,
+              uh = universe.height;
+
+          universe.update({
+            gravity: new Flora.Vector(),
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: [100, 100, 100]
+          });
+
+          var heat1 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.25, uh * 0.15)
+          });
+
+          var heat2 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.85, uh * 0.15)
+          });
+
+          var heat3 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.85, uh * 0.85)
+          });
+
+          var heat4 = new Flora.Heat({
+            location: new Flora.Vector(uw * 0.15, uh * 0.75)
+          });
+
+          var cold = new Flora.Cold({
+            location: new Flora.Vector(uw * 0.5, uh * 0.5)
+          });
+
+          var liquid1 = new Flora.Liquid({
+            location: new Flora.Vector(uw * 0.45, uh * 0.8)
+          });
+
+          var liquid2 = new Flora.Liquid({
+            location: new Flora.Vector(uw * 0.65, uh * 0.2)
+          });
+
+          var i, agent, sensorHeat, sensorCold;
+
+          for (i = 0; i < 5; i += 1) {
+
+            sensorHeat = new exports.Sensor({
+              type: 'heat',
+              behavior: 'COWARD'
+            });
+
+            sensorCold = new exports.Sensor({
+              type: 'cold',
+              behavior: 'ACCELERATE'
+            });
+
+            agent = new Flora.Agent({
+              sensors: [sensorHeat, sensorCold],
+              velocity: new Flora.Vector(Flora.Utils.getRandomNumber(-1, 1, true),
+                  Flora.Utils.getRandomNumber(-1, 1, true)),
+              motorSpeed: 4,
+              minSpeed: 1,
+              controlCamera: !i,
+              color: !i ? [255, 100, 0] : null
+            });
+          }
+
+          var caption = new Flora.Caption({
+            text: 'Sensor, Stimuli and Proximity Objects',
+            opacity: 0.4,
+            borderColor: 'transparent',
+            position: 'top center'
+          });
+
+          var inputMenu = new Flora.InputMenu({
+            opacity: 0.4,
+            borderColor: 'transparent',
+            position: 'bottom center'
+          });
+        });
+
+http://www.florajs.com/examples/camera.html
+
 #### More to come
 
 I'll post more examples soon. You can see the examples above in action at http://www.florajs.com/examples. You can also find full documentation at http://www.florajs.com/docs.
