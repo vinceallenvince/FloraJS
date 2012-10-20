@@ -117,8 +117,8 @@ Walker.prototype.step = function () {
       };
     }
 
-    if (this.target) { // follow target
-      this.applyForce(this.seek(this.target));
+    if (this.seekTarget) { // follow seek target
+      this.applyForce(this.seek(this.seekTarget));
     }
 
     // end -- APPLY FORCES

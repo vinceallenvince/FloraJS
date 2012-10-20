@@ -143,13 +143,19 @@ Sensor.prototype.getActivationForce = function(params) {
       var forceCoward = this.seek(this.target);
       return forceCoward.mult(-1);
     /**
-     * Arrives at target and keeps moving
+     * Speeds toward target and keeps moving
      */
     case "LIKES":
-      var dvLikes = exports.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
+      var dvLikes = exports.Vector.VectorSub(this.target.location, this.location);
+      distanceToTarget = dvLikes.mag();
       dvLikes.normalize();
-      dvLikes.mult(0.5);
-      return dvLikes;
+
+      m = distanceToTarget/params.agent.maxSpeed;
+      dvLikes.mult(m);
+
+      steer = exports.Vector.VectorSub(dvLikes, params.agent.velocity);
+      steer.limit(params.agent.maxSteeringForce * 0.01);
+      return steer;
     /**
      * Arrives at target and remains
      */
@@ -167,20 +173,21 @@ Sensor.prototype.getActivationForce = function(params) {
       }
       params.agent.velocity = new exports.Vector();
       params.agent.acceleration = new exports.Vector();
-      params.agent.isStatic = true;
       return new exports.Vector();
     /**
      * Arrives at target but does not stop
      */
     case "EXPLORER":
+
       var dvExplorer = exports.Vector.VectorSub(this.target.location, this.location);
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
 
       m = distanceToTarget/params.agent.maxSpeed;
       dvExplorer.mult(-m);
+
       steer = exports.Vector.VectorSub(dvExplorer, params.agent.velocity);
-      steer.limit(params.agent.maxSteeringForce * 0.1);
+      steer.limit(params.agent.maxSteeringForce * 0.01);
       return steer;
     /**
      * Moves in the opposite direction as fast as possible

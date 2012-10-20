@@ -31,6 +31,7 @@
  * @param {number} [opt_options.zIndex = 1] z-index
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
+ * @param {boolean} [opt_options.seekTarget = null] An object to seek.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
  * @param {boolean} [opt_options.checkEdges = true] Set to true to check the object's location against the world's bounds.
  * @param {boolean} [opt_options.wrapEdges = false] Set to true to set the object's location to the opposite
@@ -81,7 +82,7 @@ function Agent(opt_options) {
   this.id = options.id || constructorName.toLowerCase() + "-" + Agent._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-    this.el = options.view.call(this);
+    this.el = options.view.apply(this, options.viewArgs);
   } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
     this.el = options.view;
   } else {
@@ -111,6 +112,8 @@ function Agent(opt_options) {
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
   this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
   this.followMouse = !!options.followMouse;
+  this.seekTarget = options.seekTarget || null;
+  this.followTarget = options.followTarget || null;
   this.isStatic = !!options.isStatic;
   this.draggable = !!options.draggable;
   this.checkEdges = options.checkEdges === false ? false : options.checkEdges || true;
@@ -274,7 +277,7 @@ Agent.prototype.step = function() {
     }
 
     /**
-     * If no sensor were activated and this.motorSpeed != 0,
+     * If no sensors were activated and this.motorSpeed != 0,
      * apply a force in the direction of the current velocity.
      */
     if (!sensorActivated && this.motorSpeed) {
@@ -307,13 +310,8 @@ Agent.prototype.step = function() {
       this.applyForce(this.seek(t));
     }
 
-    if (this.target) { // seek target
-      this.applyForce(this.seek(this.target));
-    }
-
-    if (this.followTarget) { // follow target
-      //this.applyForce(this.follow(this.followTarget));
-      console.log(this);
+    if (this.seekTarget) { // seek target
+      this.applyForce(this.seek(this.seekTarget));
     }
 
     if (this.flowField) { // follow flow field
@@ -459,7 +457,7 @@ Agent.prototype.follow = function(target) {
 
   'use strict';
 
-  var desiredVelocity = target.location;
+  var desiredVelocity = target.location.clone();
 
   desiredVelocity.mult(this.maxSpeed);
 
