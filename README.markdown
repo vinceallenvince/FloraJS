@@ -102,12 +102,12 @@ http://www.florajs.com/examples/walker.html
 
 #### Targets
 
-In the Agent example above, the Agent targeted the mouse. By saving a reference to a new Walker and passing at as a 'target' for a new Agent, we can make the Agent seek the Walker.
+In the Agent example above, the Agent targeted the mouse. By saving a reference to a new Walker and passing at as a 'seekTarget' for a new Agent, we can make the Agent seek the Walker.
 
         Flora.System.start(function() {
           var walker = new Flora.Walker();
           new Flora.Agent({
-            target: walker
+            seekTarget: walker
           });
         });
 
@@ -124,13 +124,13 @@ Agents can also organize in flocks. The following properties affect flocking beh
 * alignStrength {number} default: 0.2
 * cohesionStrength {number} default: 0.1
 
-In the example below, we create 20 Agents and set their target to the Walker. We also set 'flocking' to true to enable the flocking behavior.
+In the example below, we create 20 Agents and set their 'seekTarget' to the Walker. We also set 'flocking' to true to enable the flocking behavior.
 
         Flora.System.start(function() {
           var i, walker = new Flora.Walker();
           for (i = 0; i < 20; i += 1) {
             new Flora.Agent({
-              target: walker,
+              seekTarget: walker,
               flocking: true
             });
           }
