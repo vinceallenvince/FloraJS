@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - Light</title>
+		<title>JsDoc Reference - FeatureDetector</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -272,26 +272,24 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class Light
+				Class FeatureDetector
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
-				<br />Extends
-					<a href="../symbols/Agent.html">Agent</a>.<br />
 				
 			
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_vinceall_Sites_FloraJS_src_light.js.html">light.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_vinceall_Sites_FloraJS_src_featuredetector.js.html">featuredetector.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class Light.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class FeatureDetector.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -304,9 +302,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/Light.html#constructor">Light</a></b>(opt_options)
+								<b><a href="../symbols/FeatureDetector.html#constructor">FeatureDetector</a></b>(options)
 							</div>
-							<div class="description">Creates a new Light object.</div>
+							<div class="description">Creates a new FeatureDetector.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -317,7 +315,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Light.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class FeatureDetector.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -331,7 +329,7 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/Light.html#name">name</a></b>
+								<b><a href="../symbols/FeatureDetector.html#name">name</a></b>
 								</div>
 								<div class="description">Define a name property.</div>
 							</td>
@@ -342,21 +340,62 @@ ul.inheritsList
 				
 				
 				
-				<dl class="inheritsList">
-				
-				</dl>
-				
 			
 
 <!-- ============================== methods summary ======================== -->
 			
 				
 				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class FeatureDetector.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/FeatureDetector.html#csstransforms">csstransforms</a></b>()
+								</div>
+								<div class="description">Checks if CSS Transforms are supported.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/FeatureDetector.html#csstransforms3d">csstransforms3d</a></b>()
+								</div>
+								<div class="description">Checks if CSS 3D transforms are supported.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/FeatureDetector.html#detect">detect</a></b>(feature)
+								</div>
+								<div class="description">Checks if the class has a method to detect the passed feature.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/FeatureDetector.html#touch">touch</a></b>()
+								</div>
+								<div class="description">Checks if touch events are supported.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
 				
 				
-				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/Agent.html">Agent</a>: </dt><dd><a href="../symbols/Agent.html#align">align</a>, <a href="../symbols/Agent.html#applyForce">applyForce</a>, <a href="../symbols/Agent.html#attract">attract</a>, <a href="../symbols/Agent.html#checkCameraEdges">checkCameraEdges</a>, <a href="../symbols/Agent.html#checkWorldEdges">checkWorldEdges</a>, <a href="../symbols/Agent.html#cohesion">cohesion</a>, <a href="../symbols/Agent.html#drag">drag</a>, <a href="../symbols/Agent.html#flee">flee</a>, <a href="../symbols/Agent.html#flock">flock</a>, <a href="../symbols/Agent.html#follow">follow</a>, <a href="../symbols/Agent.html#getLocation">getLocation</a>, <a href="../symbols/Agent.html#getVelocity">getVelocity</a>, <a href="../symbols/Agent.html#isInside">isInside</a>, <a href="../symbols/Agent.html#seek">seek</a>, <a href="../symbols/Agent.html#separate">separate</a>, <a href="../symbols/Agent.html#step">step</a></dd><dt>Methods borrowed from class <a href="../symbols/Element.html">Element</a>: </dt><dd><a href="../symbols/Element.html#draw">draw</a></dd>
-				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -370,11 +409,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>Light</b>(opt_options)
+						<b>FeatureDetector</b>(options)
 				</div>
 				
 				<div class="description">
-					Creates a new Light object.
+					Creates a new FeatureDetector.
 					
 				</div>
 				
@@ -386,46 +425,10 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{Object}</span>  <b>opt_options</b>
-								<i>Optional</i>
+								 <b>options</b>
+								
 							</dt>
-								<dd>Options.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.mass</b>
-								<i>Optional, Default:  50</i>
-							</dt>
-								<dd>Mass. Increase for a greater gravitational effect.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{boolean}</span>  <b>opt_options.isStatic</b>
-								<i>Optional, Default:  true</i>
-							</dt>
-								<dd>If true, object will not move.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.width</b>
-								<i>Optional, Default:  50</i>
-							</dt>
-								<dd>Width.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.height</b>
-								<i>Optional, Default:  50</i>
-							</dt>
-								<dd>Height.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.opacity</b>
-								<i>Optional, Default:  0.85</i>
-							</dt>
-								<dd>Opacity.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.zIndex</b>
-								<i>Optional, Default:  10</i>
-							</dt>
-								<dd>The object's zIndex.</dd>
+								<dd></dd>
 						
 						</dl>
 					
@@ -471,6 +474,151 @@ ul.inheritsList
 
 <!-- ============================== method details ========================= -->		
 			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="csstransforms"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>csstransforms</b>()
+					
+					</div>
+					<div class="description">
+						Checks if CSS Transforms are supported.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>True if the feature is supported, false if not.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="csstransforms3d"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>csstransforms3d</b>()
+					
+					</div>
+					<div class="description">
+						Checks if CSS 3D transforms are supported.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>True if the feature is supported, false if not.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="detect"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>detect</b>(feature)
+					
+					</div>
+					<div class="description">
+						Checks if the class has a method to detect the passed feature.
+If so, it calls the method.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>feature</b>
+									
+								</dt>
+								<dd>The feature to check.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>True if the feature is supported, false if not.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="touch"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>touch</b>()
+					
+					</div>
+					<div class="description">
+						Checks if touch events are supported.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>True if the feature is supported, false if not.</dd>
+							
+							</dl>
+						
+						
+						
+
+					
+				
+			
 			
 <!-- ============================== event details ========================= -->		
 			
@@ -482,7 +630,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Oct 27 2012 17:07:27 GMT-0400 (EDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Oct 27 2012 17:07:26 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>

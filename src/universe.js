@@ -1,4 +1,4 @@
-/*global Modernizr, exports */
+/*global exports */
 /**
  * Creates a new Universe.
  *
@@ -154,7 +154,7 @@ function Universe(opt_options) {
   });
 
   // device motion
-  if (Modernizr.touch && this.isDeviceMotion) {
+  if (exports.System.supportedFeatures.touch && this.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 
@@ -172,6 +172,7 @@ Universe.prototype.name = 'universe';
 /**
  * Adds a new World to the 'records' array.
  *
+ * @param {Object} opt_options See options for World.
  * @returns {Array} An array of elements.
  */
 Universe.prototype.addWorld = function(opt_options) {
@@ -259,7 +260,7 @@ Universe.prototype.update = function(opt_props, opt_worldId) {
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
 
-  if (Modernizr.touch && props.isDeviceMotion) {
+  if (exports.System.supportedFeatures.touch && props.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 };
@@ -307,7 +308,7 @@ Universe.prototype.getWorldById = function (id) {
 /**
  * Removes a world and its elements.
  *
- * @param {string} id The element's id.
+ * @param {string} id The world's id.
  */
 Universe.prototype.destroyWorld = function (id) {
 
@@ -331,6 +332,25 @@ Universe.prototype.destroyWorld = function (id) {
       }
       records.splice(i, 1);
       break;
+    }
+  }
+};
+
+/**
+ * Removes all elements from a World.
+ *
+ * @param {string} id The world's id.
+ */
+Universe.prototype.clearWorld = function (id) {
+
+  'use strict';
+
+  var i, max, records = this._records;
+
+  for (i = 0, max = records.length; i < max; i += 1) {
+    if (records[i].id === id) {
+      exports.elementList.destroyByWorld(records[i]);
+      return true;
     }
   }
 };

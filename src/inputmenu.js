@@ -1,4 +1,4 @@
-/*global exports, Modernizr */
+/*global exports */
 /**
  * Creates a new InputMenu object.
  * An Input Menu lists key strokes and other input available
@@ -32,7 +32,7 @@ function InputMenu(opt_options) {
   this.borderColor = options.borderColor || [204, 204, 204];
   this.colorMode = options.colorMode || 'rgb';
 
-  if (Modernizr.touch) {
+  if (exports.System.supportedFeatures.touch) {
     this.text =  exports.config.touchMap.stats + '-finger tap = stats | ' +
         exports.config.touchMap.pause + '-finger tap = pause | ' +
         exports.config.touchMap.reset + '-finger tap = reset';
@@ -65,7 +65,7 @@ function InputMenu(opt_options) {
     document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
   }
 
-  if (Modernizr.touch) {
+  if (exports.System.supportedFeatures.touch) {
     exports.Utils.addEvent(this._el, 'touchstart', function(e) {
       me.destroy();
     });

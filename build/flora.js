@@ -21,8 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 0.0.1 */
-/* Build time: October 20, 2012 05:10:26 */
+/* Version: 0.0.2 */
+/* Build time: October 27, 2012 05:06:47 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -324,6 +324,13 @@ System.start = function (func, opt_universe, opt_worlds) {
   this.universeOptions = opt_universe || null;
   this.worlds = opt_worlds || null;
 
+  this._featureDetector = new exports.FeatureDetector();
+
+  this.supportedFeatures = {};
+  this.supportedFeatures.csstransforms = this._featureDetector.detect('csstransforms');
+  this.supportedFeatures.csstransforms3d = this._featureDetector.detect('csstransforms3d');
+  this.supportedFeatures.touch = this._featureDetector.detect('touch');
+
   exports.liquids = [];
   exports.repellers = [];
   exports.attractors = [];
@@ -407,7 +414,7 @@ System.destroy = function () {
 };
 
 exports.System = System;
-/*global console, Modernizr */
+/*global console, exports */
 /*jshint supernew:true */
 
 /**
@@ -641,14 +648,14 @@ Utils.getCSSText = function(props) {
     props.borderColorStr = props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')';
   }
 
-  if (Modernizr.csstransforms3d) {
+  if (exports.System.supportedFeatures.csstransforms3d) {
     positionStr = [
       '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
     ].join(';');
-  } else if (Modernizr.csstransforms) {
+  } else if (exports.System.supportedFeatures.csstransforms) {
     positionStr = [
       '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
@@ -1609,7 +1616,7 @@ Interface.getDataType = function(element) {
 };
 
 exports.Interface = Interface;
-/*global Modernizr, exports */
+/*global exports */
 /**
  * Creates a new Universe.
  *
@@ -1765,7 +1772,7 @@ function Universe(opt_options) {
   });
 
   // device motion
-  if (Modernizr.touch && this.isDeviceMotion) {
+  if (exports.System.supportedFeatures.touch && this.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 
@@ -1783,6 +1790,7 @@ Universe.prototype.name = 'universe';
 /**
  * Adds a new World to the 'records' array.
  *
+ * @param {Object} opt_options See options for World.
  * @returns {Array} An array of elements.
  */
 Universe.prototype.addWorld = function(opt_options) {
@@ -1870,7 +1878,7 @@ Universe.prototype.update = function(opt_props, opt_worldId) {
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
 
-  if (Modernizr.touch && props.isDeviceMotion) {
+  if (exports.System.supportedFeatures.touch && props.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 };
@@ -1918,7 +1926,7 @@ Universe.prototype.getWorldById = function (id) {
 /**
  * Removes a world and its elements.
  *
- * @param {string} id The element's id.
+ * @param {string} id The world's id.
  */
 Universe.prototype.destroyWorld = function (id) {
 
@@ -1942,6 +1950,25 @@ Universe.prototype.destroyWorld = function (id) {
       }
       records.splice(i, 1);
       break;
+    }
+  }
+};
+
+/**
+ * Removes all elements from a World.
+ *
+ * @param {string} id The world's id.
+ */
+Universe.prototype.clearWorld = function (id) {
+
+  'use strict';
+
+  var i, max, records = this._records;
+
+  for (i = 0, max = records.length; i < max; i += 1) {
+    if (records[i].id === id) {
+      exports.elementList.destroyByWorld(records[i]);
+      return true;
     }
   }
 };
@@ -4756,7 +4783,7 @@ Caption.prototype.destroy = function() {
 };
 
 exports.Caption = Caption;
-/*global exports, Modernizr */
+/*global exports */
 /**
  * Creates a new InputMenu object.
  * An Input Menu lists key strokes and other input available
@@ -4790,7 +4817,7 @@ function InputMenu(opt_options) {
   this.borderColor = options.borderColor || [204, 204, 204];
   this.colorMode = options.colorMode || 'rgb';
 
-  if (Modernizr.touch) {
+  if (exports.System.supportedFeatures.touch) {
     this.text =  exports.config.touchMap.stats + '-finger tap = stats | ' +
         exports.config.touchMap.pause + '-finger tap = pause | ' +
         exports.config.touchMap.reset + '-finger tap = reset';
@@ -4823,7 +4850,7 @@ function InputMenu(opt_options) {
     document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
   }
 
-  if (Modernizr.touch) {
+  if (exports.System.supportedFeatures.touch) {
     exports.Utils.addEvent(this._el, 'touchstart', function(e) {
       me.destroy();
     });
@@ -5012,4 +5039,165 @@ StatsDisplay.prototype._update = function() {
 StatsDisplay.prototype.name = 'statsdisplay';
 
 exports.StatsDisplay = StatsDisplay;
+/*global exports */
+/**
+ * Creates a new FeatureDetector.
+ *
+ * @constructor
+ */
+function FeatureDetector(options) {
+  'use strict';
+}
+
+/**
+ * Define a name property.
+ */
+FeatureDetector.prototype.name = 'FeatureDetector';
+
+/**
+ * Checks if the class has a method to detect the passed feature.
+ * If so, it calls the method.
+ *
+ * @param {string} feature The feature to check.
+ * @returns True if the feature is supported, false if not.
+ */
+FeatureDetector.prototype.detect = function(feature) {
+
+  'use strict';
+
+  if (!this[feature]) {
+    return false;
+  }
+
+  return this[feature].call(this);
+};
+
+/**
+ * Checks if CSS Transforms are supported.
+ *
+ * @returns True if the feature is supported, false if not.
+ */
+FeatureDetector.prototype.csstransforms = function() {
+
+  'use strict';
+
+  var transforms = [
+    '-webkit-transform: translateX(1px) translateY(1px)',
+    '-moz-transform: translateX(1px) translateY(1px)',
+    '-o-transform: translateX(1px) translateY(1px)',
+    '-ms-transform: translateX(1px) translateY(1px)'
+  ].join(';');
+
+  var docFrag = document.createDocumentFragment();
+  var div = document.createElement('div');
+  docFrag.appendChild(div);
+  div.style.cssText = transforms;
+
+  var styles = [
+    div.style.transform,
+    div.style.webkitTransform,
+    div.style.MozTransform,
+    div.style.OTransform,
+    div.style.msTransform
+  ];
+  var check = false;
+
+  for (var i = 0; i < styles.length; i += 1) {
+    if (styles[i]) {
+      check = true;
+      break;
+    }
+  }
+
+  return check;
+};
+
+/**
+ * Checks if CSS 3D transforms are supported.
+ *
+ * @returns True if the feature is supported, false if not.
+ */
+FeatureDetector.prototype.csstransforms3d = function() {
+
+  'use strict';
+
+  var transforms = [
+    '-webkit-transform: translateX(1px) translateY(1px) translateZ(0)',
+    '-moz-transform: translateX(1px) translateY(1px) translateZ(0)',
+    '-o-transform: translateX(1px) translateY(1px) translateZ(0)',
+    '-ms-transform: translateX(1px) translateY(1px) translateZ(0)'
+  ].join(';');
+
+  var docFrag = document.createDocumentFragment();
+  var div = document.createElement('div');
+  docFrag.appendChild(div);
+  div.style.cssText = transforms;
+
+  var styles = [
+    div.style.transform,
+    div.style.webkitTransform,
+    div.style.MozTransform,
+    div.style.OTransform,
+    div.style.msTransform
+  ];
+  var check = false;
+
+  for (var i = 0; i < styles.length; i += 1) {
+    if (styles[i]) {
+      check = true;
+      break;
+    }
+  }
+
+  return check;
+};
+
+/**
+ * Checks if touch events are supported.
+ *
+ * @returns True if the feature is supported, false if not.
+ */
+FeatureDetector.prototype.touch = function() {
+
+  'use strict';
+
+  //
+// The Modernizr.touch test only indicates if the browser supports
+//    touch events, which does not necessarily reflect a touchscreen
+//    device, as evidenced by tablets running Windows 7 or, alas,
+//    the Palm Pre / WebOS (touch) phones.
+//
+// Additionally, Chrome (desktop) used to lie about its support on this,
+//    but that has since been rectified: crbug.com/36415
+//
+// We also test for Firefox 4 Multitouch Support.
+//
+// For more info, see: modernizr.github.com/Modernizr/touch.html
+//
+/*
+Modernizr.addTest('touch', function() {
+    var bool;
+
+    if(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+        bool = true;
+    } else {
+        var query = ['@media (',Modernizr._prefixes.join('touch-enabled),('),'heartz',')','{#modernizr{top:9px;position:absolute}}'].join('');
+        Modernizr.testStyles(query, function( node ) {
+            bool = node.offsetTop === 9;
+        });
+    }
+
+    return bool;
+});*/
+
+
+  var el = document.createElement('div');
+  el.setAttribute('ongesturestart', 'return;');
+  if (typeof el.ongesturestart === "function") {
+    return true;
+  }
+  return false;
+};
+
+exports.FeatureDetector = FeatureDetector;
 }(exports));

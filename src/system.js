@@ -35,6 +35,13 @@ System.start = function (func, opt_universe, opt_worlds) {
   this.universeOptions = opt_universe || null;
   this.worlds = opt_worlds || null;
 
+  this._featureDetector = new exports.FeatureDetector();
+
+  this.supportedFeatures = {};
+  this.supportedFeatures.csstransforms = this._featureDetector.detect('csstransforms');
+  this.supportedFeatures.csstransforms3d = this._featureDetector.detect('csstransforms3d');
+  this.supportedFeatures.touch = this._featureDetector.detect('touch');
+
   exports.liquids = [];
   exports.repellers = [];
   exports.attractors = [];

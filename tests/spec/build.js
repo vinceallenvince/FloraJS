@@ -408,6 +408,30 @@ describe("A new ElementList", function() {
   // destroyByWorld
 });
 
+describe("A new FeatureDetector", function() {
+
+  var system, obj;
+
+  beforeEach(function() {
+    Flora.System.start(function() {
+      obj = new exports.FeatureDetector();
+    });
+  });
+
+  afterEach(function() {
+    Flora.System.destroy();
+  });
+
+  it("should have its required properties.", function() {
+    expect(obj.name).toEqual('FeatureDetector');
+  });
+  it("should have a method detect() that returns true if feature is detected, false if not.", function() {
+    expect(interfaceCheck.getDataType(obj.detect('csstransforms'))).toEqual('boolean');
+    expect(interfaceCheck.getDataType(obj.detect('csstransforms3d'))).toEqual('boolean');
+    expect(interfaceCheck.getDataType(obj.detect('touch'))).toEqual('boolean');
+  });
+});
+
 describe("A new FlowField", function() {
 
   var system, obj;
