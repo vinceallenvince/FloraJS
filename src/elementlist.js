@@ -178,7 +178,7 @@ ElementList.prototype.destroyByWorld = function (world) {
   var i, records = this._records;
 
   for (i = records.length - 1; i >= 0; i -= 1) {
-    if (records[i].world && records[i].world.id === world) {
+    if (records[i].world && records[i].world === world) {
       records[i].world.el.removeChild(records[i].el);
       records.splice(i, 1);
     }
