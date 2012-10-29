@@ -78,10 +78,7 @@ function InputMenu(opt_options) {
   this.world.el.appendChild(this._el);
 }
 
-/**
- * Define a name property.
- */
-InputMenu.prototype.name = 'inputmenu';
+InputMenu.prototype.name = 'InputMenu';
 
 /**
  * Removes the menu's DOM element.

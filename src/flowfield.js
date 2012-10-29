@@ -25,10 +25,7 @@ function FlowField(opt_options) {
   this.world = options.world || exports.universe.first();
 }
 
-/**
- * Define a name property.
- */
-FlowField.prototype.name = 'flowfield';
+FlowField.prototype.name = 'FlowField';
 
 /**
  * Builds a FlowField.

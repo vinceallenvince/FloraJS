@@ -33,10 +33,7 @@ function Connector(parentA, parentB, opt_options) {
 }
 exports.Utils.extend(Connector, exports.Agent);
 
-/**
- * Define a name property. Used to assign a class name and prefix an id.
- */
-Connector.prototype.name = 'connector';
+Connector.prototype.name = 'Connector';
 
 /**
  * Called every frame, step() updates the instance's properties.

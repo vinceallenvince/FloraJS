@@ -58,9 +58,6 @@ function FlowFieldMarker(options) {
   }
 }
 
-/**
- * Define a name property.
- */
-FlowFieldMarker.prototype.name = 'flowfieldmarker';
+FlowFieldMarker.prototype.name = 'FlowFieldMarker';
 
 exports.FlowFieldMarker = FlowFieldMarker;

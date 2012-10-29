@@ -87,10 +87,7 @@ function World(opt_options) {
   });
 }
 
-/**
- * Define a name property.
- */
-World.prototype.name = 'world';
+World.prototype.name = 'World';
 
 /**
  * Increments as each World is created.

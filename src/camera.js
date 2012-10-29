@@ -17,9 +17,6 @@ function Camera(opt_options) {
   this.controlObj = options.controlObj || null;
 }
 
-/**
- * Define a name property.
- */
-Camera.prototype.name = 'camera';
+Camera.prototype.name = 'Camera';
 
 exports.Camera = Camera;

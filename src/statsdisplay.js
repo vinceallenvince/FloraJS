@@ -152,9 +152,6 @@ StatsDisplay.prototype._update = function() {
   window.requestAnimFrame(this._update.bind(this));
 };
 
-/**
- * Define a name property.
- */
-StatsDisplay.prototype.name = 'statsdisplay';
+StatsDisplay.prototype.name = 'StatsDisplay';
 
 exports.StatsDisplay = StatsDisplay;

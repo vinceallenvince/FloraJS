@@ -30,9 +30,6 @@ function Food(opt_options) {
 }
 exports.Utils.extend(Food, exports.Agent);
 
-/**
- * Define a name property.
- */
-Food.prototype.name = 'food';
+Food.prototype.name = 'Food';
 
 exports.Food = Food;

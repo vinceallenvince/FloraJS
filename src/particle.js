@@ -24,11 +24,11 @@ this.borderRadius = options.borderRadius || '100%';
 }
 exports.Utils.extend(Particle, exports.Agent);
 
-/**
- * Define a name property. Used to assign a class name and prefix an id.
- */
-Particle.prototype.name = 'particle';
+Particle.prototype.name = 'Particle';
 
+/**
+ * Updates particle properties.
+ */
 Particle.prototype.step = function () {
 
   'use strict';

@@ -48,10 +48,7 @@ ColorTable.prototype.addColor = function(options) {
   return this;
 };
 
-/**
- * Define a name property.
- */
-ColorTable.prototype.name = 'colortable';
+ColorTable.prototype.name = 'ColorTable';
 
 /**
  * Returns start and end colors from a key in the color table.

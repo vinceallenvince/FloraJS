@@ -302,7 +302,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/Element.html#constructor">Element</a></b>()
+								<b><a href="../symbols/Element.html#constructor">Element</a></b>(opt_options)
 							</div>
 							<div class="description">Creates a new Element.</div>
 						</td>
@@ -312,34 +312,6 @@ ul.inheritsList
 			
 
 <!-- ============================== properties summary ===================== -->
-			
-				
-				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Element.">
-					<caption>Field Summary</caption>
-					<thead>
-						<tr>
-							<th scope="col">Field Attributes</th>
-							<th scope="col">Field Name and Description</th>
-						</tr>
-					</thead>
-					<tbody>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/Element.html#name">name</a></b>
-								</div>
-								<div class="description">Define a name property.</div>
-							</td>
-						</tr>
-					
-					</tbody>
-				</table>
-				
-				
-				
 			
 
 <!-- ============================== methods summary ======================== -->
@@ -419,6 +391,15 @@ ul.inheritsList
 							</td>
 						</tr>
 					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/Element.html#step">step</a></b>()
+								</div>
+								<div class="description">Updates properties of this element.</div>
+							</td>
+						</tr>
+					
 					</tbody>
 				</table>
 				
@@ -436,17 +417,157 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>Element</b>()
+						<b>Element</b>(opt_options)
 				</div>
 				
 				<div class="description">
-					Creates a new Element. All Flora elements extend Element.
+					Creates a new Element. All Flora elements extend Element. Element holds the minimum properties
+need to render the element via draw().
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{Object}</span>  <b>opt_options</b>
+								<i>Optional</i>
+							</dt>
+								<dd>Element options.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opt_options.id</b>
+								<i>Optional, Default:  "m-" + Element._idCount</i>
+							</dt>
+								<dd>An id. If an id is not provided, one is created.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{Object|function}</span>  <b>opt_options.view</b>
+								<i>Optional</i>
+							</dt>
+								<dd>HTML representing the Element instance.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opt_options.className</b>
+								<i>Optional, Default:  'agent'</i>
+							</dt>
+								<dd>The corresponding DOM element's class name.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{array}</span>  <b>opt_options.sensors</b>
+								<i>Optional, Default:  []</i>
+							</dt>
+								<dd>A list of sensors attached to this object.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{boolean}</span>  <b>opt_options.controlCamera</b>
+								<i>Optional, Default:  false</i>
+							</dt>
+								<dd>If true, camera will follow this object.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>opt_options.width</b>
+								<i>Optional, Default:  20</i>
+							</dt>
+								<dd>Width</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>opt_options.height</b>
+								<i>Optional, Default:  20</i>
+							</dt>
+								<dd>Height</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>opt_options.scale</b>
+								<i>Optional, Default:  1</i>
+							</dt>
+								<dd>Scale</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>opt_options.angle</b>
+								<i>Optional, Default:  0</i>
+							</dt>
+								<dd>Angle</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>opt_options.opacity</b>
+								<i>Optional, Default:  0.85</i>
+							</dt>
+								<dd>Opacity</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opt_options.colorMode</b>
+								<i>Optional, Default:  'rgb'</i>
+							</dt>
+								<dd>Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{Array}</span>  <b>opt_options.color</b>
+								<i>Optional, Default:  null</i>
+							</dt>
+								<dd>The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>opt_options.zIndex</b>
+								<i>Optional, Default:  1</i>
+							</dt>
+								<dd>z-index</dd>
+						
+							<dt>
+								<span class="light fixedFont">{number}</span>  <b>opt_options.borderWidth</b>
+								<i>Optional, Default:  false</i>
+							</dt>
+								<dd>borderWidth The object's border width in pixels.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opt_options.borderStyle</b>
+								<i>Optional, Default:  false</i>
+							</dt>
+								<dd>borderStyle The object's border style. Valid options are 'none',
+   'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset', 'inherit'.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opt_options.borderColor</b>
+								<i>Optional, Default:  false</i>
+							</dt>
+								<dd>borderColor The object's border color expressed as an
+   rbg or hsl value. ex: [255, 100, 0]</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opt_options.borderRadius</b>
+								<i>Optional, Default:  false</i>
+							</dt>
+								<dd>borderRadius The object's border radius as a percentage.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{string}</span>  <b>opt_options.boxShadow</b>
+								<i>Optional, Default:   false</i>
+							</dt>
+								<dd>boxShadow The object's box shadow.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{Object}</span>  <b>opt_options.location</b>
+								<i>Optional, Default:  The center of the world</i>
+							</dt>
+								<dd>The object's initial location.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{Object}</span>  <b>opt_options.acceleration</b>
+								<i>Optional, Default:  {x: 0, y: 0}</i>
+							</dt>
+								<dd>The object's initial acceleration.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{Object}</span>  <b>opt_options.velocity</b>
+								<i>Optional, Default:  {x: 0, y: 0}</i>
+							</dt>
+								<dd>The object's initial velocity.</dd>
+						
+						</dl>
 					
 					
 					
@@ -459,33 +580,6 @@ ul.inheritsList
 			
 
 <!-- ============================== field details ========================== -->		
-			
-				<div class="sectionTitle">
-					Field Detail
-				</div>
-				
-					<a name="name"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>name</b>
-					
-					</div>
-					<div class="description">
-						Define a name property.
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					
-				
 			
 
 <!-- ============================== method details ========================= -->		
@@ -741,6 +835,32 @@ ul.inheritsList
 						
 						
 
+					<hr />
+				
+					<a name="step"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>step</b>()
+					
+					</div>
+					<div class="description">
+						Updates properties of this element. Flora elements extending
+Element should implement their own step() function.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -755,7 +875,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Oct 27 2012 17:07:26 GMT-0400 (EDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Oct 29 2012 15:04:59 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>

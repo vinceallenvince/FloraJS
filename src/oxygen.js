@@ -30,9 +30,6 @@ function Oxygen(opt_options) {
 }
 exports.Utils.extend(Oxygen, exports.Agent);
 
-/**
- * Define a name property. Used to assign a class name and prefix an id.
- */
-Oxygen.prototype.name = 'oxygen';
+Oxygen.prototype.name = 'Oxygen';
 
 exports.Oxygen = Oxygen;

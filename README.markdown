@@ -396,3 +396,14 @@ http://www.florajs.com/examples/camera.html
 
 I'll post more examples soon. You can see the examples above in action at http://www.florajs.com/examples. You can also find full documentation at http://www.florajs.com/docs.
 
+#### History
+
+0.0.2
+* added feature detection
+* added Universe.clearWorld(id) to remove all elements from a World
+* separated Agent and Element properties
+* changed Agent.target to Agent.seekTarget
+* bug fixes in Vector class w midpoint()
+* added static methods in Vector class and updated docs
+* camel casing class 'name' property
+* updated tests

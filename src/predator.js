@@ -30,9 +30,6 @@ function Predator(opt_options) {
 }
 exports.Utils.extend(Predator, exports.Agent);
 
-/**
- * Define a name property.
- */
-Predator.prototype.name = 'predator';
+Predator.prototype.name = 'Predator';
 
 exports.Predator = Predator;

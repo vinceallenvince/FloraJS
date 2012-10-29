@@ -32,9 +32,6 @@ function Attractor(opt_options) {
 }
 exports.Utils.extend(Attractor, exports.Agent);
 
-/**
- * Define a name property.
- */
-Attractor.prototype.name = 'attractor';
+Attractor.prototype.name = 'Attractor';
 
 exports.Attractor = Attractor;

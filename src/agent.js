@@ -11,24 +11,13 @@
  * @extends Element
  *
  * @param {Object} [opt_options] Agent options.
- * @param {string} [opt_options.id = "m-" + Agent._idCount] An id. If an id is not provided, one is created.
- * @param {Object|function} [opt_options.view] HTML representing the Agent instance.
- * @param {string} [opt_options.className = 'agent'] The corresponding DOM element's class name.
  * @param {number} [opt_options.mass = 10] Mass
  * @param {number} [opt_options.maxSpeed = 10] Maximum speed
  * @param {number} [opt_options.minSpeed = 0] Minimum speed
  * @param {number} [opt_options.motorSpeed = 2] Motor speed
- * @param {number} [opt_options.scale = 1] Scale
- * @param {number} [opt_options.angle = 0] Angle
- * @param {number} [opt_options.opacity = 0.85] Opacity
  * @param {number} [opt_options.lifespan = -1] Life span. Set to -1 to live forever.
- * @param {number} [opt_options.width = 20] Width
- * @param {number} [opt_options.height = 20] Height
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the agent's parent.
  * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the agent.
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
- * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
- * @param {number} [opt_options.zIndex = 1] z-index
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {boolean} [opt_options.seekTarget = null] An object to seek.
@@ -49,13 +38,9 @@
  * @param {number} [opt_options.separateStrength = 1] The strength of the force to apply to separating when flocking = true.
  * @param {number} [opt_options.alignStrength = 1] The strength of the force to apply to aligning when flocking = true.
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
- * @param {array} [opt_options.sensors = []] A list of sensors attached to this object.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
  * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
  * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
- * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's initial acceleration.
- * @param {Object} [opt_options.velocity = {x: 0, y: 0}] The object's initial velocity.
- * @param {Object} [opt_options.location = The center of the world] The object's initial location.
  */
 
 
@@ -63,53 +48,17 @@ function Agent(opt_options) {
 
   'use strict';
 
-  var options = opt_options || {},
-      elements = exports.elementList.all() || [],
-      liquids = exports.liquids || [],
-      repellers = exports.repellers || [],
-      attractors = exports.attractors || [],
-      heats = exports.heats || [],
-      colds = exports.colds || [],
-      predators = exports.predators || [],
-      lights = exports.lights || [],
-      oxygen = exports.oxygen || [],
-      food = exports.food || [],
-      i, max, evt, world,
-      constructorName = this.name || 'anon'; // this a problem when code is minified
+  var options = opt_options || {};
 
   exports.Element.call(this, options);
 
-  this.id = options.id || constructorName.toLowerCase() + "-" + Agent._idCount; // if no id, create one
-
-  if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-    this.el = options.view.apply(this, options.viewArgs);
-  } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
-    this.el = options.view;
-  } else {
-    this.el = document.createElement("div");
-  }
-
-  // if a world is not passed, use the first world in the universe
-  this.world = options.world || exports.universe.first();
-  world = this.world;
-
-  this.className = options.className || constructorName.toLowerCase(); // constructorName.toLowerCase()
-  this.className += ' floraElement';
   this.mass = options.mass || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
   this.motorSpeed = options.motorSpeed || 0;
-  this.scale = options.scale === 0 ? 0 : options.scale || 1;
-  this.angle = options.angle === 0 ? 0 : options.angle || 0;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.85;
   this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
-  this.width = options.width === 0 ? 0 : options.width || 20;
-  this.height = options.height === 0 ? 0 : options.height || 20;
   this.offsetDistance = options.offsetDistance === 0 ? 0 : options.offsetDistance|| 30;
   this.offsetAngle = options.offsetAngle || 0;
-  this.colorMode = options.colorMode || 'rgb';
-  this.color = options.color || null;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
   this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
   this.followMouse = !!options.followMouse;
   this.seekTarget = options.seekTarget || null;
@@ -129,54 +78,9 @@ function Agent(opt_options) {
   this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;
   this.alignStrength = options.alignStrength === 0 ? 0 : options.alignStrength || 0.2;
   this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;
-  this.sensors = options.sensors || [];
   this.flowField = options.flowField || null;
-  this.acceleration = options.acceleration || new exports.Vector();
-  this.velocity = options.velocity || new exports.Vector();
-  this.location = options.location || new exports.Vector(world.width/2, world.height/2);
-  this.controlCamera = !!options.controlCamera;
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
-
-  elements.push(this); // push new instance of Agent
-
-  this.el.id = this.id;
-  this.el.className = this.sensors.length > 0 ? (this.className + ' hasSensor') : this.className;
-
-  if (world.el) {
-    world.el.appendChild(this.el); // append the view to the World
-  }
-
-  Agent._idCount += 1; // increment id
-
-  if (this.className.search('liquid') !== -1) {
-    liquids.push(this); // push new instance of liquids to liquid list
-  } else if (this.className.search('repeller') !== -1) {
-    repellers.push(this); // push new instance of repeller to repeller list
-  } else if (this.className.search('attractor') !== -1) {
-    attractors.push(this); // push new instance of attractor to attractor list
-  } else if (this.className.search('heat') !== -1) {
-    heats.push(this);
-  } else if (this.className.search('cold') !== -1) {
-    colds.push(this);
-  } else if (this.className.search('predator') !== -1) {
-    predators.push(this);
-  } else if (this.className.search('light') !== -1) {
-    lights.push(this);
-  } else if (this.className.search('oxygen') !== -1) {
-    oxygen.push(this);
-  } else if (this.className.search('food') !== -1) {
-    food.push(this);
-  }
-
-  if (this.controlCamera) { // if this object controls the camera
-
-    exports.camera.controlObj = this;
-
-    // need to position world so controlObj is centered on screen
-    world.location.x = -world.width/2 + (exports.Utils.getWindowSize().width)/2 + (world.width/2 - this.location.x);
-    world.location.y = -world.height/2 + (exports.Utils.getWindowSize().height)/2 + (world.height/2 - this.location.y);
-  }
 
   if (this.draggable) {
     exports.Utils.addEvent(this.el, 'mouseover', exports.Element.mouseover.bind(this));
@@ -188,18 +92,7 @@ function Agent(opt_options) {
 }
 exports.Utils.extend(Agent, exports.Element);
 
-/**
- * Define a name property.
- */
-Agent.prototype.name = 'agent';
-
-/**
- * Increments as each Agent is created.
- * @type number
- * @default 0
- */
-Agent._idCount = 0;
-
+Agent.prototype.name = 'Agent';
 
 /**
  * Called every frame, step() updates the instance's properties.

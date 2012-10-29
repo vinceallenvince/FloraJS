@@ -32,9 +32,6 @@ function Repeller(opt_options) {
 }
 exports.Utils.extend(Repeller, exports.Agent);
 
-/**
- * Define a name property.
- */
-Repeller.prototype.name = 'repeller';
+Repeller.prototype.name = 'Repeller';
 
 exports.Repeller = Repeller;

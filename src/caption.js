@@ -59,10 +59,7 @@ function Caption(opt_options) {
   this.world.el.appendChild(this._el);
 }
 
-/**
- * Define a name property.
- */
-Caption.prototype.name = 'caption';
+Caption.prototype.name = 'Caption';
 
 /**
  * Removes the caption's DOM element.

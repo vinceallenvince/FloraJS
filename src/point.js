@@ -29,9 +29,6 @@ function Point(opt_options) {
 }
 exports.Utils.extend(Point, exports.Agent);
 
-/**
- * Define a name property.
- */
-Point.prototype.name = 'point';
+Point.prototype.name = 'Point';
 
 exports.Point = Point;

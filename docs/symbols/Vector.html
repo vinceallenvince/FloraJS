@@ -397,7 +397,7 @@ old vector copied to the new vector's prototype.</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/Vector.html#midpoint">midpoint</a></b>(v1, v1)
 								</div>
-								<div class="description">Calulates the midpoint between two vectors.</div>
+								<div class="description">Calculates the midpoint between this vector and a passed vector.</div>
 							</td>
 						</tr>
 					
@@ -458,7 +458,16 @@ old vector copied to the new vector's prototype.</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">Vector.<b><a href="../symbols/Vector.html#.VectorDiv">VectorDiv</a></b>(v1, v2)
+								<div class="fixedFont">Vector.<b><a href="../symbols/Vector.html#.VectorDistance">VectorDistance</a></b>(v1, v2)
+								</div>
+								<div class="description">Calculates the distance between two vectors.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">Vector.<b><a href="../symbols/Vector.html#.VectorDiv">VectorDiv</a></b>(v, n)
 								</div>
 								<div class="description">Divide two vectors.</div>
 							</td>
@@ -666,7 +675,7 @@ old vector copied to the new vector's prototype.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{Object}</span> This vector.</dd>
+								<dd><span class="light fixedFont">{Object}</span> The distance between the two vectors.</dd>
 							
 							</dl>
 						
@@ -764,7 +773,7 @@ old vector copied to the new vector's prototype.
 					<a name="limit"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{Object}</span>
 					<b>limit</b>(high)
 					
 					</div>
@@ -791,6 +800,13 @@ old vector copied to the new vector's prototype.
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Object}</span> This vector.</dd>
+							
+							</dl>
 						
 						
 						
@@ -837,7 +853,7 @@ old vector copied to the new vector's prototype.
 					
 					</div>
 					<div class="description">
-						Calulates the midpoint between two vectors.
+						Calculates the midpoint between this vector and a passed vector.
 						
 						
 					</div>
@@ -1048,7 +1064,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 					
 					</div>
 					<div class="description">
-						Add two vectors. Uses clone to avoid affecting the values of the vectors.
+						Add two vectors.
 						
 						
 					</div>
@@ -1060,16 +1076,16 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v1</b>
+									<span class="light fixedFont">{number}</span> <b>v1</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The first vector.</dd>
 							
 								<dt>
-									<b>v2</b>
+									<span class="light fixedFont">{number}</span> <b>v2</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The second vector.</dd>
 							
 							</dl>
 						
@@ -1080,7 +1096,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{Object}</span> A vector.</dd>
+								<dd><span class="light fixedFont">{Object}</span> A new Vector.</dd>
 							
 							</dl>
 						
@@ -1092,7 +1108,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 					<a name=".VectorAngleBetween"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					<span class="light">{Object}</span>
+					<span class="light">{number}</span>
 					<span class="light">Vector.</span><b>VectorAngleBetween</b>(v1, v2)
 					
 					</div>
@@ -1109,16 +1125,16 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v1</b>
+									<span class="light fixedFont">{number}</span> <b>v1</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The first vector.</dd>
 							
 								<dt>
-									<b>v2</b>
+									<span class="light fixedFont">{number}</span> <b>v2</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The second vector.</dd>
 							
 							</dl>
 						
@@ -1129,7 +1145,56 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{Object}</span> A vector.</dd>
+								<dd><span class="light fixedFont">{number}</span> An angle.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".VectorDistance"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{number}</span>
+					<span class="light">Vector.</span><b>VectorDistance</b>(v1, v2)
+					
+					</div>
+					<div class="description">
+						Calculates the distance between two vectors.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>v1</b>
+									
+								</dt>
+								<dd>The first vector.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{number}</span> <b>v2</b>
+									
+								</dt>
+								<dd>The second vector.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> The distance between the two vectors.</dd>
 							
 							</dl>
 						
@@ -1142,11 +1207,11 @@ Typically used to retrieve the direction of the vector for later manipulation.
 					<div class="fixedFont">&lt;static&gt; 
 					
 					<span class="light">{Object}</span>
-					<span class="light">Vector.</span><b>VectorDiv</b>(v1, v2)
+					<span class="light">Vector.</span><b>VectorDiv</b>(v, n)
 					
 					</div>
 					<div class="description">
-						Divide two vectors. Uses clone to avoid affecting the values of the vectors.
+						Divide two vectors.
 						
 						
 					</div>
@@ -1158,16 +1223,16 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v1</b>
+									<span class="light fixedFont">{number}</span> <b>v</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>A vector.</dd>
 							
 								<dt>
-									<b>v2</b>
+									<span class="light fixedFont">{number}</span> <b>n</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Vector will be divided by this number.</dd>
 							
 							</dl>
 						
@@ -1178,7 +1243,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{Object}</span> A vector.</dd>
+								<dd><span class="light fixedFont">{Object}</span> A new Vector.</dd>
 							
 							</dl>
 						
@@ -1195,7 +1260,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 					
 					</div>
 					<div class="description">
-						Get the midpoint between two vectors. Uses clone to avoid affecting the values of the vectors.
+						Get the midpoint between two vectors.
 						
 						
 					</div>
@@ -1207,16 +1272,16 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v1</b>
+									<span class="light fixedFont">{number}</span> <b>v1</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The first vector.</dd>
 							
 								<dt>
-									<b>v2</b>
+									<span class="light fixedFont">{number}</span> <b>v2</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The second vector.</dd>
 							
 							</dl>
 						
@@ -1227,7 +1292,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{Object}</span> A vector.</dd>
+								<dd><span class="light fixedFont">{Object}</span> A new Vector.</dd>
 							
 							</dl>
 						
@@ -1244,7 +1309,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 					
 					</div>
 					<div class="description">
-						Multiply a vector by a scalar value. Uses clone to avoid affecting the values of the vectors.
+						Multiply a vector by a scalar value.
 						
 						
 					</div>
@@ -1256,16 +1321,16 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v</b>
+									<span class="light fixedFont">{number}</span> <b>v</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>A vector.</dd>
 							
 								<dt>
-									<b>n</b>
+									<span class="light fixedFont">{number}</span> <b>n</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Vector will be multiplied by this number.</dd>
 							
 							</dl>
 						
@@ -1276,7 +1341,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{Object}</span> A vector.</dd>
+								<dd><span class="light fixedFont">{Object}</span> A new Vector.</dd>
 							
 							</dl>
 						
@@ -1293,7 +1358,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 					
 					</div>
 					<div class="description">
-						Subtract two vectors. Uses clone to avoid affecting the values of the vectors.
+						Subtract two vectors.
 						
 						
 					</div>
@@ -1305,16 +1370,16 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v1</b>
+									<span class="light fixedFont">{number}</span> <b>v1</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The first vector.</dd>
 							
 								<dt>
-									<b>v2</b>
+									<span class="light fixedFont">{number}</span> <b>v2</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The second vector.</dd>
 							
 							</dl>
 						
@@ -1325,7 +1390,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{Object}</span> A vector.</dd>
+								<dd><span class="light fixedFont">{Object}</span> A new Vector.</dd>
 							
 							</dl>
 						
@@ -1346,7 +1411,7 @@ Typically used to retrieve the direction of the vector for later manipulation.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Oct 27 2012 17:07:28 GMT-0400 (EDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Oct 29 2012 15:05:02 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>

@@ -18,10 +18,7 @@ function ElementList(opt_options) {
   this._records = [];
 }
 
-/**
- * Define a name property.
- */
-ElementList.prototype.name = 'elementlist';
+ElementList.prototype.name = 'ElementList';
 
 /**
  * Returns the entire 'records' array.
@@ -169,7 +166,7 @@ ElementList.prototype.destroyAll = function () {
  * Removes all elements from their world and resets
  * the 'records' array.
  *
- * @param {string|number} id The element's id.
+ * @param {World} world The world.
  */
 ElementList.prototype.destroyByWorld = function (world) {
 

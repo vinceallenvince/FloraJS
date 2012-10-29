@@ -164,10 +164,7 @@ function Universe(opt_options) {
   }
 }
 
-/**
- * Define a name property.
- */
-Universe.prototype.name = 'universe';
+Universe.prototype.name = 'Universe';
 
 /**
  * Adds a new World to the 'records' array.
@@ -413,7 +410,7 @@ Universe.prototype.resetSystem = function() {
   // loop thru each world and destroy all elements
   records = this.all();
   for (i = 0, max = records.length; i < max; i += 1) {
-    exports.elementList.destroyByWorld(records[i].id);
+    exports.elementList.destroyByWorld(records[i]);
   }
   // call initial setup
   exports.System.setup();

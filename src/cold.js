@@ -30,9 +30,6 @@ function Cold(opt_options) {
 }
 exports.Utils.extend(Cold, exports.Agent);
 
-/**
- * Define a name property.
- */
-Cold.prototype.name = 'cold';
+Cold.prototype.name = 'Cold';
 
 exports.Cold = Cold;

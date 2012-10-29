@@ -315,38 +315,6 @@ ul.inheritsList
 
 <!-- ============================== properties summary ===================== -->
 			
-				
-				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Agent.">
-					<caption>Field Summary</caption>
-					<thead>
-						<tr>
-							<th scope="col">Field Attributes</th>
-							<th scope="col">Field Name and Description</th>
-						</tr>
-					</thead>
-					<tbody>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/Agent.html#name">name</a></b>
-								</div>
-								<div class="description">Define a name property.</div>
-							</td>
-						</tr>
-					
-					</tbody>
-				</table>
-				
-				
-				
-				<dl class="inheritsList">
-				
-				</dl>
-				
-			
 
 <!-- ============================== methods summary ======================== -->
 			
@@ -557,24 +525,6 @@ Sensors which react to Stimuli and return information about the World.
 								<dd>Agent options.</dd>
 						
 							<dt>
-								<span class="light fixedFont">{string}</span>  <b>opt_options.id</b>
-								<i>Optional, Default:  "m-" + Agent._idCount</i>
-							</dt>
-								<dd>An id. If an id is not provided, one is created.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{Object|function}</span>  <b>opt_options.view</b>
-								<i>Optional</i>
-							</dt>
-								<dd>HTML representing the Agent instance.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{string}</span>  <b>opt_options.className</b>
-								<i>Optional, Default:  'agent'</i>
-							</dt>
-								<dd>The corresponding DOM element's class name.</dd>
-						
-							<dt>
 								<span class="light fixedFont">{number}</span>  <b>opt_options.mass</b>
 								<i>Optional, Default:  10</i>
 							</dt>
@@ -599,40 +549,10 @@ Sensors which react to Stimuli and return information about the World.
 								<dd>Motor speed</dd>
 						
 							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.scale</b>
-								<i>Optional, Default:  1</i>
-							</dt>
-								<dd>Scale</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.angle</b>
-								<i>Optional, Default:  0</i>
-							</dt>
-								<dd>Angle</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.opacity</b>
-								<i>Optional, Default:  0.85</i>
-							</dt>
-								<dd>Opacity</dd>
-						
-							<dt>
 								<span class="light fixedFont">{number}</span>  <b>opt_options.lifespan</b>
 								<i>Optional, Default:  -1</i>
 							</dt>
 								<dd>Life span. Set to -1 to live forever.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.width</b>
-								<i>Optional, Default:  20</i>
-							</dt>
-								<dd>Width</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.height</b>
-								<i>Optional, Default:  20</i>
-							</dt>
-								<dd>Height</dd>
 						
 							<dt>
 								<span class="light fixedFont">{number}</span>  <b>opt_options.offsetDistance</b>
@@ -645,24 +565,6 @@ Sensors which react to Stimuli and return information about the World.
 								<i>Optional, Default:  30</i>
 							</dt>
 								<dd>The angle of rotation around the parent carrying the agent.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{string}</span>  <b>opt_options.colorMode</b>
-								<i>Optional, Default:  'rgb'</i>
-							</dt>
-								<dd>Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{Array}</span>  <b>opt_options.color</b>
-								<i>Optional, Default:  null</i>
-							</dt>
-								<dd>The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]</dd>
-						
-							<dt>
-								<span class="light fixedFont">{number}</span>  <b>opt_options.zIndex</b>
-								<i>Optional, Default:  1</i>
-							</dt>
-								<dd>z-index</dd>
 						
 							<dt>
 								<span class="light fixedFont">{boolean}</span>  <b>opt_options.pointToDirection</b>
@@ -770,12 +672,6 @@ world's bounds and wrapEdges = false.</dd>
 								<dd>The strength of the force to apply to cohesion when flocking = true.</dd>
 						
 							<dt>
-								<span class="light fixedFont">{array}</span>  <b>opt_options.sensors</b>
-								<i>Optional, Default:  []</i>
-							</dt>
-								<dd>A list of sensors attached to this object.</dd>
-						
-							<dt>
 								<span class="light fixedFont">{Object}</span>  <b>opt_options.flowField</b>
 								<i>Optional, Default:  null</i>
 							</dt>
@@ -793,24 +689,6 @@ world's bounds and wrapEdges = false.</dd>
 							</dt>
 								<dd>A function to run after the step() function.</dd>
 						
-							<dt>
-								<span class="light fixedFont">{Object}</span>  <b>opt_options.acceleration</b>
-								<i>Optional, Default:  {x: 0, y: 0}</i>
-							</dt>
-								<dd>The object's initial acceleration.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{Object}</span>  <b>opt_options.velocity</b>
-								<i>Optional, Default:  {x: 0, y: 0}</i>
-							</dt>
-								<dd>The object's initial velocity.</dd>
-						
-							<dt>
-								<span class="light fixedFont">{Object}</span>  <b>opt_options.location</b>
-								<i>Optional, Default:  The center of the world</i>
-							</dt>
-								<dd>The object's initial location.</dd>
-						
 						</dl>
 					
 					
@@ -824,33 +702,6 @@ world's bounds and wrapEdges = false.</dd>
 			
 
 <!-- ============================== field details ========================== -->		
-			
-				<div class="sectionTitle">
-					Field Detail
-				</div>
-				
-					<a name="name"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>name</b>
-					
-					</div>
-					<div class="description">
-						Define a name property.
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					
-				
 			
 
 <!-- ============================== method details ========================= -->		
@@ -1539,7 +1390,7 @@ to avoid all elements.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Oct 27 2012 17:07:24 GMT-0400 (EDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Oct 29 2012 15:04:58 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>

@@ -54,13 +54,10 @@ function Oscillator(opt_options) {
 }
 exports.Utils.extend(Oscillator, exports.Agent);
 
-/**
- * Define a name property. Used to assign a class name and prefix an id.
- */
-Oscillator.prototype.name = 'oscillator';
+Oscillator.prototype.name = 'Oscillator';
 
 /**
- * Called every frame, step() updates the instance's properties.
+ * Updates the oscillator's properties.
  */
 Oscillator.prototype.step = function () {
 

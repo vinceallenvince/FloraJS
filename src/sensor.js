@@ -40,10 +40,7 @@ function Sensor(opt_options) {
 }
 exports.Utils.extend(Sensor, exports.Agent);
 
-/**
- * Define a name property.
- */
-Sensor.prototype.name = 'sensor';
+Sensor.prototype.name = 'Sensor';
 
 /**
  * Called every frame, step() updates the instance's properties.

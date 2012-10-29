@@ -28,10 +28,7 @@ function ColorPalette(opt_options) {
   this._colors = [];
 }
 
-/**
- * Define a name property.
- */
-ColorPalette.prototype.name = 'colorpalette';
+ColorPalette.prototype.name = 'ColorPalette';
 
 /**
  * Creates a color range of 255 colors from the passed start and end colors.

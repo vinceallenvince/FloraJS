@@ -30,9 +30,6 @@ function Light(opt_options) {
 }
 exports.Utils.extend(Light, exports.Agent);
 
-/**
- * Define a name property.
- */
-Light.prototype.name = 'light';
+Light.prototype.name = 'Light';
 
 exports.Light = Light;

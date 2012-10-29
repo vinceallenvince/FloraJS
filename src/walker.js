@@ -55,10 +55,7 @@ function Walker(opt_options) {
 }
 exports.Utils.extend(Walker, exports.Agent);
 
-/**
- * Define a name property.
- */
-Walker.prototype.name = 'walker';
+Walker.prototype.name = 'Walker';
 
 /**
  * Called every frame, step() updates the instance's properties.

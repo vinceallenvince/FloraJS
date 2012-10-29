@@ -8,9 +8,6 @@ function FeatureDetector(options) {
   'use strict';
 }
 
-/**
- * Define a name property.
- */
 FeatureDetector.prototype.name = 'FeatureDetector';
 
 /**

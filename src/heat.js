@@ -30,9 +30,6 @@ function Heat(opt_options) {
 }
 exports.Utils.extend(Heat, exports.Agent);
 
-/**
- * Define a name property.
- */
-Heat.prototype.name = 'heat';
+Heat.prototype.name = 'Heat';
 
 exports.Heat = Heat;

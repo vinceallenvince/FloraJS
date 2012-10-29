@@ -77,9 +77,6 @@
 }
 exports.Utils.extend(ParticleSystem, exports.Agent);
 
-/**
- * Define a name property.
- */
-ParticleSystem.prototype.name = 'particlesystem';
+ParticleSystem.prototype.name = 'ParticleSystem';
 
 exports.ParticleSystem = ParticleSystem;

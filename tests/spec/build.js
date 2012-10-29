@@ -22,7 +22,7 @@ describe("A new Attractor", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('attractor');
+    expect(obj.name).toEqual('Attractor');
   });
 });
 
@@ -43,7 +43,7 @@ describe("A new BorderPalette", function() {
 
   it("should have its required properties.", function() {
     expect(interfaceCheck.getDataType(obj._borders)).toEqual('array');
-    expect(obj.name).toEqual('borderpalette');
+    expect(obj.name).toEqual('BorderPalette');
   });
 
   it("should have an addBorder() method that pushed border styles (strings) on to a borders property.", function() {
@@ -91,7 +91,7 @@ describe("A new Camera", function() {
 
   it("should have its required properties.", function() {
     expect(typeof obj.location).toEqual('object');
-    expect(obj.name).toEqual('camera');
+    expect(obj.name).toEqual('Camera');
   });
 });
 
@@ -114,7 +114,7 @@ describe("A new Caption", function() {
     expect(typeof obj.text).toEqual('string');
     expect(typeof obj.opacity).toEqual('number');
     expect(typeof obj._el).toEqual('object');
-    expect(obj.name).toEqual('caption');
+    expect(obj.name).toEqual('Caption');
   });
 });
 
@@ -138,7 +138,7 @@ describe("A new Cold", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('cold');
+    expect(obj.name).toEqual('Cold');
   });
 });
 
@@ -159,7 +159,7 @@ describe("A new ColorPalette", function() {
   it("should have its required properties.", function() {
     expect(interfaceCheck.getDataType(obj._gradients)).toEqual('array');
     expect(interfaceCheck.getDataType(obj._colors)).toEqual('array');
-    expect(obj.name).toEqual('colorpalette');
+    expect(obj.name).toEqual('ColorPalette');
   });
 
   it("should have a createGradient() method that pushes an array of color arrays on to a gradients property.", function() {
@@ -231,7 +231,7 @@ describe("A new ColorTable", function() {
   });
 
   it("should have its required properties.", function() {
-    expect(obj.name).toEqual('colortable');
+    expect(obj.name).toEqual('ColorTable');
   });
 
   it("should have a method that adds an object representing a color range to a 'colors' property.", function() {
@@ -303,7 +303,7 @@ describe("A new Connector", function() {
     expect(obj.opacity).toEqual(0.9);
     expect(typeof obj.parentA).toEqual('object');
     expect(typeof obj.parentB).toEqual('object');
-    expect(obj.name).toEqual('connector');
+    expect(obj.name).toEqual('Connector');
   });
 });
 
@@ -342,12 +342,12 @@ describe("A new ElementList", function() {
         point = new exports.Point(),
         arr;
 
-    arr = exports.elementList.getAllByName('point');
+    arr = exports.elementList.getAllByName('Point');
 
     expect(interfaceCheck.getDataType(arr)).toEqual('array');
 
     for (i = 0, max = arr.length; i < max; i++) {
-      if (arr[i].name === 'point') {
+      if (arr[i].name === 'Point') {
         check = true;
       } else {
         check = false;
@@ -451,7 +451,7 @@ describe("A new FlowField", function() {
     expect(typeof obj.perlinSpeed).toEqual('number');
     expect(typeof obj.perlinTime).toEqual('number');
     expect(typeof obj.createMarkers).toEqual('boolean');
-    expect(obj.name).toEqual('flowfield');
+    expect(obj.name).toEqual('FlowField');
   });
 });
 
@@ -506,7 +506,7 @@ describe("A new Food", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('food');
+    expect(obj.name).toEqual('Food');
   });
 });
 
@@ -530,7 +530,7 @@ describe("A new Heat", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('heat');
+    expect(obj.name).toEqual('Heat');
   });
 });
 
@@ -553,7 +553,7 @@ describe("A new InputMenu", function() {
     expect(typeof obj.text).toEqual('string');
     expect(typeof obj.opacity).toEqual('number');
     expect(typeof obj._el).toEqual('object');
-    expect(obj.name).toEqual('inputmenu');
+    expect(obj.name).toEqual('InputMenu');
   });
 });
 
@@ -622,7 +622,7 @@ describe("A new Light", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('light');
+    expect(obj.name).toEqual('Light');
   });
 });
 
@@ -648,7 +648,7 @@ describe("A new Liquid", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('liquid');
+    expect(obj.name).toEqual('Liquid');
   });
 });
 
@@ -699,7 +699,7 @@ describe("A new Agent", function() {
     expect(typeof obj.velocity).toEqual('object');
     expect(typeof obj.location).toEqual('object');
     expect(typeof obj.controlCamera).toEqual('boolean');
-    expect(obj.name).toEqual('agent');
+    expect(obj.name).toEqual('Agent');
   });
 });
 
@@ -722,7 +722,7 @@ describe("A new Element", function() {
 
   it("should accept all properties passed to the constructor.", function() {
     expect(obj.hello).toEqual('hello');
-    expect(obj.name).toEqual('obj');
+    expect(obj.name).toEqual('Element');
   });
   it("Element should should have a static method to check if mouse is inside World.", function() {
     exports.mouse.loc.x = 1;
@@ -763,7 +763,7 @@ describe("A new Oscillator", function() {
     expect(typeof obj.perlinAccelHigh).toEqual('number');
     expect(typeof obj.perlinOffsetX).toEqual('number');
     expect(typeof obj.perlinOffsetY).toEqual('number');
-    expect(obj.name).toEqual('oscillator');
+    expect(obj.name).toEqual('Oscillator');
   });
 });
 
@@ -787,7 +787,7 @@ describe("A new Oxygen", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('oxygen');
+    expect(obj.name).toEqual('Oxygen');
   });
 });
 
@@ -809,7 +809,7 @@ describe("A new Particle", function() {
     expect(typeof obj.lifespan).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.borderRadius).toEqual('string');
-    expect(obj.name).toEqual('particle');
+    expect(obj.name).toEqual('Particle');
   });
 });
 
@@ -833,7 +833,7 @@ describe("A new ParticleSystem", function() {
     expect(typeof obj.lifespan).toEqual('number');
     expect(typeof obj.burst).toEqual('number');
     expect(typeof obj.particle).toEqual('function');
-    expect(obj.name).toEqual('particlesystem');
+    expect(obj.name).toEqual('ParticleSystem');
   });
 });
 
@@ -859,7 +859,7 @@ describe("A new Point", function() {
     expect(typeof obj.zIndex).toEqual('number');
     expect(typeof obj.offsetAngle).toEqual('number');
     expect(typeof obj.length).toEqual('number');
-    expect(obj.name).toEqual('point');
+    expect(obj.name).toEqual('Point');
   });
 });
 
@@ -883,7 +883,7 @@ describe("A new Predator", function() {
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('predator');
+    expect(obj.name).toEqual('Predator');
   });
 });
 
@@ -909,7 +909,7 @@ describe("A new Repeller", function() {
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');
     expect(typeof obj.opacity).toEqual('number');
-    expect(obj.name).toEqual('repeller');
+    expect(obj.name).toEqual('Repeller');
   });
 });
 
@@ -938,7 +938,7 @@ describe("A new Sensor", function() {
     expect(typeof obj.opacity).toEqual('number');
     expect(typeof obj.target).toEqual('object');
     expect(typeof obj.activated).toEqual('boolean');
-    expect(obj.name).toEqual('sensor');
+    expect(obj.name).toEqual('Sensor');
   });
 });
 
@@ -986,7 +986,7 @@ describe("A new StatsDisplay", function() {
     expect(typeof obj._timeLastSecond).toEqual('number');
     expect(typeof obj._frameCount).toEqual('number');
     expect(typeof obj._el).toEqual('object');
-    expect(obj.name).toEqual('statsdisplay');
+    expect(obj.name).toEqual('StatsDisplay');
   });
   it("update() should calculate the difference in ms between time now and last call to update().", function() {
 
@@ -1016,12 +1016,12 @@ describe("A new Universe", function() {
     expect(interfaceCheck.getDataType(obj.zSorted)).toEqual('boolean');
     expect(interfaceCheck.getDataType(obj.showStats)).toEqual('boolean');
     expect(interfaceCheck.getDataType(obj._records)).toEqual('array');
-    expect(obj.name).toEqual('universe');
+    expect(obj.name).toEqual('Universe');
   });
   it("addWorld() should add a new World to the 'records' array.", function() {
     obj.addWorld();
     expect(obj.all().length).toEqual(1);
-    expect(obj.all()[obj.all().length - 1].name).toEqual('world');
+    expect(obj.all()[obj.all().length - 1].name).toEqual('World');
   });
   it("first() should return the first record in the 'records' array.", function() {
     obj.addWorld();
@@ -1176,7 +1176,7 @@ describe("Utils", function() {
 
 describe("Vector", function() {
 
-  var system, obj;
+  var system, obj, objA, objB;
 
   beforeEach(function() {
     Flora.System.start(function() {
@@ -1192,20 +1192,38 @@ describe("Vector", function() {
     expect(obj.x).toEqual(22);
     expect(obj.y).toEqual(10);
   });
+  it('VectorAdd() should add two vectors.', function() {
+    objA = new exports.Vector(1, 1);
+    expect(exports.Vector.VectorAdd(obj, objA).x).toEqual(23);
+    expect(exports.Vector.VectorAdd(obj, objA).y).toEqual(11);
+  });
   it('add() should add a vector.', function() {
     obj.add(new exports.Vector(1, 1));
     expect(obj.x).toEqual(23);
     expect(obj.y).toEqual(11);
+  });
+  it('VectorSub() should subtract two vectors.', function() {
+    objA = new exports.Vector(1, 1);
+    expect(exports.Vector.VectorSub(obj, objA).x).toEqual(21);
+    expect(exports.Vector.VectorSub(obj, objA).y).toEqual(9);
   });
   it('sub() should subtract a vector.', function() {
     obj.sub(new exports.Vector(1, 1));
     expect(obj.x).toEqual(21);
     expect(obj.y).toEqual(9);
   });
+  it('VectorMult() should multiply a vector by a scalar value.', function() {
+    expect(exports.Vector.VectorMult(obj, 2).x).toEqual(44);
+    expect(exports.Vector.VectorMult(obj, 2).y).toEqual(20);
+  });
   it('mult() should multiply a vector.', function() {
     obj.mult(2);
     expect(obj.x).toEqual(44);
     expect(obj.y).toEqual(20);
+  });
+  it('VectorDiv() should divide a vector by a scalar value.', function() {
+    expect(exports.Vector.VectorDiv(obj, 2).x).toEqual(11);
+    expect(exports.Vector.VectorDiv(obj, 2).y).toEqual(5);
   });
   it('div() should divide a vector.', function() {
     obj.div(2);
@@ -1225,6 +1243,11 @@ describe("Vector", function() {
     expect(obj.normalize().x).toEqual(0.6);
     expect(obj.normalize().y).toEqual(0.8);
   });
+  it('VectorDistance(v1, v2) should return the distance between two vectors.', function() {
+    objA = new exports.Vector(50, 100);
+    objB = new exports.Vector(100, 100);
+    expect(exports.Vector.VectorDistance(objA, objB)).toEqual(50);
+  });
   it('distance() should calculate the distance between this vector and a passed vector.', function() {
     obj = new exports.Vector(5, 0);
     expect(obj.distance(new exports.Vector(1, 0))).toEqual(4);
@@ -1232,6 +1255,23 @@ describe("Vector", function() {
   it('rotate() should rotate a vector using a passed angle in radians.', function() {
     obj = new exports.Vector(10, 0);
     expect(obj.rotate(Math.PI).x).toEqual(-10);
+  });
+  it('VectorMidPoint(v1, v2) should return the midpoint between two vectors.', function() {
+    objA = new exports.Vector(50, 100);
+    objB = new exports.Vector(100, 200);
+    expect(exports.Vector.VectorMidPoint(objA, objB).x).toEqual(75);
+    expect(exports.Vector.VectorMidPoint(objA, objB).y).toEqual(150);
+  });
+  it('midpoint() should return the midpoint between this vector and a passed vector.', function() {
+    objA = new exports.Vector(50, 100);
+    objB = new exports.Vector(100, 200);
+    expect(objA.midpoint(objB).x).toEqual(75);
+    expect(objA.midpoint(objB).y).toEqual(150);
+  });
+  it('Vector.VectorAngleBetween should return the angle between two Vectors.', function() {
+    objA = new exports.Vector(50, 0);
+    objB = new exports.Vector(50, 180);
+    expect(Math.round(exports.Vector.VectorAngleBetween(objA, objB))).toEqual(1);
   });
 });
 
@@ -1269,7 +1309,7 @@ describe("A new Walker", function() {
     expect(typeof obj.maxSpeed).toEqual('number');
     expect(typeof obj.wrapEdges).toEqual('boolean');
     expect(typeof obj.isStatic).toEqual('boolean');
-    expect(obj.name).toEqual('walker');
+    expect(obj.name).toEqual('Walker');
   });
 });
 
@@ -1295,7 +1335,7 @@ describe("A new World", function() {
     expect(typeof obj.location).toEqual('object');
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
-    expect(obj.name).toEqual('world');
+    expect(obj.name).toEqual('World');
   });
 
   it("should have a DOM element", function() {

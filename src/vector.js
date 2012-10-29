@@ -15,9 +15,11 @@ function Vector(opt_x, opt_y) {
 }
 
 /**
- * Subtract two vectors. Uses clone to avoid affecting the values of the vectors.
+ * Subtract two vectors.
  *
- * @returns {Object} A vector.
+ * @param {number} v1 The first vector.
+ * @param {number} v2 The second vector.
+ * @returns {Object} A new Vector.
  */
 Vector.VectorSub = function(v1, v2) {
   'use strict';
@@ -25,9 +27,11 @@ Vector.VectorSub = function(v1, v2) {
 };
 
 /**
- * Add two vectors. Uses clone to avoid affecting the values of the vectors.
+ * Add two vectors.
  *
- * @returns {Object} A vector.
+ * @param {number} v1 The first vector.
+ * @param {number} v2 The second vector.
+ * @returns {Object} A new Vector.
  */
 Vector.VectorAdd = function(v1, v2) {
   'use strict';
@@ -35,9 +39,11 @@ Vector.VectorAdd = function(v1, v2) {
 };
 
 /**
- * Multiply a vector by a scalar value. Uses clone to avoid affecting the values of the vectors.
+ * Multiply a vector by a scalar value.
  *
- * @returns {Object} A vector.
+ * @param {number} v A vector.
+ * @param {number} n Vector will be multiplied by this number.
+ * @returns {Object} A new Vector.
  */
 Vector.VectorMult = function(v, n) {
   'use strict';
@@ -45,29 +51,47 @@ Vector.VectorMult = function(v, n) {
 };
 
 /**
- * Divide two vectors. Uses clone to avoid affecting the values of the vectors.
+ * Divide two vectors.
  *
- * @returns {Object} A vector.
+ * @param {number} v A vector.
+ * @param {number} n Vector will be divided by this number.
+ * @returns {Object} A new Vector.
  */
-Vector.VectorDiv = function(v1, v2) {
+Vector.VectorDiv = function(v, n) {
   'use strict';
-  return new Vector(v1.x / v2.x, v1.y / v2.y);
+  return new Vector(v.x / n, v.y / n);
 };
 
 /**
- * Get the midpoint between two vectors. Uses clone to avoid affecting the values of the vectors.
+ * Calculates the distance between two vectors.
  *
- * @returns {Object} A vector.
+ * @param {number} v1 The first vector.
+ * @param {number} v2 The second vector.
+ * @returns {number} The distance between the two vectors.
+ */
+Vector.VectorDistance = function(v1, v2) {
+  'use strict';
+  return Math.sqrt(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2));
+};
+
+/**
+ * Get the midpoint between two vectors.
+ *
+ * @param {number} v1 The first vector.
+ * @param {number} v2 The second vector.
+ * @returns {Object} A new Vector.
  */
 Vector.VectorMidPoint = function(v1, v2) {
   'use strict';
-  return this.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
+  return Vector.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
 };
 
 /**
  * Get the angle between two vectors.
  *
- * @returns {Object} A vector.
+ * @param {number} v1 The first vector.
+ * @param {number} v2 The second vector.
+ * @returns {number} An angle.
  */
 Vector.VectorAngleBetween = function(v1, v2) {
   'use strict';
@@ -75,6 +99,8 @@ Vector.VectorAngleBetween = function(v1, v2) {
   theta = Math.acos(dot / (v1.mag() * v2.mag()));
   return theta;
 };
+
+Vector.prototype.name = 'Vector';
 
 /**
 * Returns an new vector with all properties and methods of the
@@ -155,6 +181,7 @@ Vector.prototype.mag = function() {
  * Limits the vector's magnitude.
  *
  * @param {number} high The upper bound of the vector's magnitude.
+ * @returns {Object} This vector.
  */
 Vector.prototype.limit = function(high) {
   'use strict';
@@ -192,7 +219,7 @@ Vector.prototype.normalize = function() {
  * Calculates the distance between this vector and a passed vector.
  *
  * @param {Object} vector The target vector.
- * @returns {Object} This vector.
+ * @returns {Object} The distance between the two vectors.
  */
 Vector.prototype.distance = function(vector) {
   'use strict';
@@ -218,15 +245,15 @@ Vector.prototype.rotate = function(radians) {
 };
 
 /**
- * Calulates the midpoint between two vectors.
+ * Calculates the midpoint between this vector and a passed vector.
  *
  * @param {Object} v1 The first vector.
  * @param {Object} v1 The second vector.
  * @returns {Object} A vector representing the midpoint between the passed vectors.
  */
-Vector.prototype.midpoint = function(v1, v2) {
+Vector.prototype.midpoint = function(vector) {
   'use strict';
-  return this.VectorAdd(v1, v2).div(2);
+  return Vector.VectorAdd(this, vector).div(2);
 };
 
 /**

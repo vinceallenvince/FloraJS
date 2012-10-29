@@ -9,10 +9,7 @@ function System() {
   'use strict';
 }
 
-/**
- * Define a name property.
- */
-System.name = 'system';
+System.name = 'System';
 
 /**
  * A list of instructions to execute before the system starts.

@@ -17,10 +17,7 @@ function BorderPalette() {
   this._borders = [];
 }
 
-/**
- * Define a name property.
- */
-BorderPalette.prototype.name = 'borderpalette';
+BorderPalette.prototype.name = 'BorderPalette';
 
 /**
  * Adds a random number of the passed border style to the 'borders' array.

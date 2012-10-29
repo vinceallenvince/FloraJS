@@ -32,9 +32,6 @@ function Liquid(opt_options) {
 }
 exports.Utils.extend(Liquid, exports.Agent);
 
-/**
- * Define a name property.
- */
-Liquid.prototype.name = 'liquid';
+Liquid.prototype.name = 'Liquid';
 
 exports.Liquid = Liquid;
