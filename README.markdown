@@ -6,7 +6,7 @@ The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'T
 
 ## Simple System
 
-To setup a simple Flora system, reference the Flora .js file and the latest version of Modernizr from two script tags in the &lt;head&gt; of your document. Also, reference the flora.css file.
+To setup a simple Flora system, reference the Flora .js file from two script tags in the &lt;head&gt; of your document. Also, reference the flora.css file.
 
 In the body, add a &lt;script&gt; tag and create a new Flora system. Pass the system a function that describes the elements in your world.
 
@@ -19,7 +19,6 @@ The following is taken from examples/simple.html.
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Flora</title>
     <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
-    <script src="js/modernizr.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>

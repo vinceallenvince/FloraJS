@@ -36,12 +36,12 @@
 
   <target name="validate">
     <jshint dir="${src.dir}" includes="**/*.js"
-      optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true, console: true" />
+      optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, console: true" />
   </target>
 
   <target name="validateDemos">
     <jshint dir="${demos.dir}/src" includes="**/*.js"
-      optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, Modernizr: true, console: true" />
+      optionsFile="${lib.dir}/jshint/options.properties" globals="exports: true, console: true" />
   </target>
 
   <target name="CSSLintDemos">
@@ -56,6 +56,7 @@
         ${license}
         */
         /* Version: %VERSION% */
+        /* Simplex noise by Sean McCullough banksean@gmail.com */
         /* Build time: ${build.time} */
         /** @namespace */
         var Flora = {}, exports = Flora;
@@ -118,6 +119,7 @@
         ${license}
         */
         /* Version: %VERSION% */
+        /* Simplex noise by Sean McCullough banksean@gmail.com */
         /* Build time: ${build.time} */
       </header>
       <filelist dir="${build.dir}" files="flora.raw.min.js"/>
@@ -136,14 +138,10 @@
     <copy file="${build.dir}/flora.js" tofile="${build.dir}/flora.${version}.js" overwrite="true"/>
     <!-- copy fat build file to demos/js -->
     <copy file="${build.dir}/flora.js" todir="${demos.dir}/js" overwrite="true"/>
-    <!-- copy modernizr to demos/js -->
-    <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
     <!-- copy css file to demos/css -->
     <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
     <!-- copy fat build file to tests/lib -->
     <copy file="${build.dir}/flora.js" todir="${tests.dir}/lib" overwrite="true"/>
-    <!-- copy modernizr to tests/lib -->
-    <copy file="${lib.dir}/modernizr.js" todir="${tests.dir}/lib" overwrite="true"/>
   </target>
 
   <!-- Copy: copy build and css files to examples/demos -->
@@ -154,18 +152,12 @@
     <copy file="${build.dir}/flora.min.js" tofile="${build.dir}/flora.${version}.min.js" overwrite="true"/>
     <!-- copy minified file to examples/js -->
     <copy file="${build.dir}/flora.min.js" todir="${examples.dir}/js" overwrite="true"/>
-    <!-- copy modernizr to examples/js -->
-    <copy file="${lib.dir}/modernizr.js" todir="${examples.dir}/js" overwrite="true"/>
     <!-- copy css file to examples/css -->
     <copy file="${css.dir}/flora.css" todir="${examples.dir}/css" overwrite="true"/>
     <!-- copy fat build file to demos/js -->
     <copy file="${build.dir}/flora.js" todir="${demos.dir}/js" overwrite="true"/>
-    <!-- copy modernizr to demos/js -->
-    <copy file="${lib.dir}/modernizr.js" todir="${demos.dir}/js" overwrite="true"/>
     <!-- copy fat build file to tests/lib -->
     <copy file="${build.dir}/flora.js" todir="${tests.dir}/lib" overwrite="true"/>
-    <!-- copy modernizr to tests/lib -->
-    <copy file="${lib.dir}/modernizr.js" todir="${tests.dir}/lib" overwrite="true"/>
     <!-- copy css file to demos/css -->
     <copy file="${css.dir}/flora.css" todir="${demos.dir}/css" overwrite="true"/>
     <!-- copy examples folder to FloraJS.com /examples -->

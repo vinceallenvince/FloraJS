@@ -124,43 +124,13 @@
 <span class='line'>117</span> 
 <span class='line'>118</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>119</span> 
-<span class='line'>120</span> </span><span class="WHIT">  </span><span class="COMM">//</span><span class="WHIT">
-<span class='line'>121</span> </span><span class="COMM">// The Modernizr.touch test only indicates if the browser supports</span><span class="WHIT">
-<span class='line'>122</span> </span><span class="COMM">//    touch events, which does not necessarily reflect a touchscreen</span><span class="WHIT">
-<span class='line'>123</span> </span><span class="COMM">//    device, as evidenced by tablets running Windows 7 or, alas,</span><span class="WHIT">
-<span class='line'>124</span> </span><span class="COMM">//    the Palm Pre / WebOS (touch) phones.</span><span class="WHIT">
-<span class='line'>125</span> </span><span class="COMM">//</span><span class="WHIT">
-<span class='line'>126</span> </span><span class="COMM">// Additionally, Chrome (desktop) used to lie about its support on this,</span><span class="WHIT">
-<span class='line'>127</span> </span><span class="COMM">//    but that has since been rectified: crbug.com/36415</span><span class="WHIT">
-<span class='line'>128</span> </span><span class="COMM">//</span><span class="WHIT">
-<span class='line'>129</span> </span><span class="COMM">// We also test for Firefox 4 Multitouch Support.</span><span class="WHIT">
-<span class='line'>130</span> </span><span class="COMM">//</span><span class="WHIT">
-<span class='line'>131</span> </span><span class="COMM">// For more info, see: modernizr.github.com/Modernizr/touch.html</span><span class="WHIT">
-<span class='line'>132</span> </span><span class="COMM">//</span><span class="WHIT">
-<span class='line'>133</span> </span><span class="COMM">/*
-<span class='line'>134</span> Modernizr.addTest('touch', function() {
-<span class='line'>135</span>     var bool;
-<span class='line'>136</span> 
-<span class='line'>137</span>     if(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
-<span class='line'>138</span>         bool = true;
-<span class='line'>139</span>     } else {
-<span class='line'>140</span>         var query = ['@media (',Modernizr._prefixes.join('touch-enabled),('),'heartz',')','{#modernizr{top:9px;position:absolute}}'].join('');
-<span class='line'>141</span>         Modernizr.testStyles(query, function( node ) {
-<span class='line'>142</span>             bool = node.offsetTop === 9;
-<span class='line'>143</span>         });
-<span class='line'>144</span>     }
-<span class='line'>145</span> 
-<span class='line'>146</span>     return bool;
-<span class='line'>147</span> });*/</span><span class="WHIT">
-<span class='line'>148</span> 
-<span class='line'>149</span> 
-<span class='line'>150</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">el</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">document.createElement</span><span class="PUNC">(</span><span class="STRN">'div'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>151</span> </span><span class="WHIT">  </span><span class="NAME">el.setAttribute</span><span class="PUNC">(</span><span class="STRN">'ongesturestart'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'return;'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>152</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">el.ongesturestart</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>153</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>154</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>155</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>156</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>157</span> 
-<span class='line'>158</span> </span><span class="NAME">exports.FeatureDetector</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">FeatureDetector</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>159</span> </span></pre></body></html>
+<span class='line'>120</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">el</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">document.createElement</span><span class="PUNC">(</span><span class="STRN">'div'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">  </span><span class="NAME">el.setAttribute</span><span class="PUNC">(</span><span class="STRN">'ongesturestart'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'return;'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">el.ongesturestart</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"function"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>127</span> 
+<span class='line'>128</span> </span><span class="NAME">exports.FeatureDetector</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">FeatureDetector</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>129</span> </span></pre></body></html>
