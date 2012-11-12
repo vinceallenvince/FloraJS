@@ -6,7 +6,7 @@ The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'T
 
 ## Simple System
 
-To setup a simple Flora system, reference the Flora .js file from two script tags in the &lt;head&gt; of your document. Also, reference the flora.css file.
+To setup a simple Flora system, reference the Flora .js file from a script tag in the &lt;head&gt; of your document. Also, reference the flora.css file.
 
 In the body, add a &lt;script&gt; tag and create a new Flora system. Pass the system a function that describes the elements in your world.
 
