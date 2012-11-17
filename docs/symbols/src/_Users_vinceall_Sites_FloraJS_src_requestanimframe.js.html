@@ -5,21 +5,22 @@
 	.STRN {color: #393;}
 	.REGX {color: #339;}
 	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
-	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
-<span class='line'>  2</span>  * RequestAnimationFrame shim layer with setTimeout fallback
-<span class='line'>  3</span>  * @param {function} callback The function to call.
-<span class='line'>  4</span>  * @returns {function|Object} An animation frame or a timeout object.
-<span class='line'>  5</span>  */</span><span class="WHIT">
-<span class='line'>  6</span> </span><span class="NAME">window.requestAnimFrame</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">callback</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>  7</span> 
-<span class='line'>  8</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>  9</span> 
-<span class='line'> 10</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT">  </span><span class="NAME">window.requestAnimationFrame</span><span class="WHIT">       </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'> 11</span> </span><span class="WHIT">          </span><span class="NAME">window.webkitRequestAnimationFrame</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'> 12</span> </span><span class="WHIT">          </span><span class="NAME">window.mozRequestAnimationFrame</span><span class="WHIT">    </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'> 13</span> </span><span class="WHIT">          </span><span class="NAME">window.oRequestAnimationFrame</span><span class="WHIT">      </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'> 14</span> </span><span class="WHIT">          </span><span class="NAME">window.msRequestAnimationFrame</span><span class="WHIT">     </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'> 15</span> </span><span class="WHIT">          </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">callback</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 16</span> </span><span class="WHIT">            </span><span class="NAME">window.setTimeout</span><span class="PUNC">(</span><span class="NAME">callback</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1000</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">60</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 17</span> </span><span class="WHIT">          </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 18</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*global window */</span><span class="WHIT">
+<span class='line'>  2</span> </span><span class="COMM">/**
+<span class='line'>  3</span>  * RequestAnimationFrame shim layer with setTimeout fallback
+<span class='line'>  4</span>  * @param {function} callback The function to call.
+<span class='line'>  5</span>  * @returns {function|Object} An animation frame or a timeout object.
+<span class='line'>  6</span>  */</span><span class="WHIT">
+<span class='line'>  7</span> </span><span class="NAME">window.requestAnimFrame</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">callback</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  8</span> 
+<span class='line'>  9</span> </span><span class="WHIT">  </span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 10</span> 
+<span class='line'> 11</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT">  </span><span class="NAME">window.requestAnimationFrame</span><span class="WHIT">       </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'> 12</span> </span><span class="WHIT">          </span><span class="NAME">window.webkitRequestAnimationFrame</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="WHIT">          </span><span class="NAME">window.mozRequestAnimationFrame</span><span class="WHIT">    </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="WHIT">          </span><span class="NAME">window.oRequestAnimationFrame</span><span class="WHIT">      </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">          </span><span class="NAME">window.msRequestAnimationFrame</span><span class="WHIT">     </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">          </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">callback</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 17</span> </span><span class="WHIT">            </span><span class="NAME">window.setTimeout</span><span class="PUNC">(</span><span class="NAME">callback</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1000</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">60</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">          </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>

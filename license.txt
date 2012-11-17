@@ -1,6 +1,7 @@
-FloraJS
-Copyright (C) 2012 Vince Allen
+Copyright (c) 2012 Vince Allen
 Brooklyn, NY 11215, USA
+email: vince@vinceallen.com
+web: http://www.vinceallen.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

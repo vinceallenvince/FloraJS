@@ -3,13 +3,10 @@
  * Creates a new ElementList.
  *
  * @constructor
- * @param {Object} [opt_options] Options.
  */
-function ElementList(opt_options) {
+function ElementList() {
 
   'use strict';
-
-  var options = opt_options || {};
 
   /**
    * Holds a list of elements.

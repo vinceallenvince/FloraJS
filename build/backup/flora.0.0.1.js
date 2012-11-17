@@ -21,9 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 0.0.2 */
-/* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: November 4, 2012 05:24:34 */
+/* Version: 0.0.1 */
+/* Build time: October 20, 2012 05:10:26 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -121,7 +120,10 @@ function ElementList(opt_options) {
   this._records = [];
 }
 
-ElementList.prototype.name = 'ElementList';
+/**
+ * Define a name property.
+ */
+ElementList.prototype.name = 'elementlist';
 
 /**
  * Returns the entire 'records' array.
@@ -269,7 +271,7 @@ ElementList.prototype.destroyAll = function () {
  * Removes all elements from their world and resets
  * the 'records' array.
  *
- * @param {World} world The world.
+ * @param {string|number} id The element's id.
  */
 ElementList.prototype.destroyByWorld = function (world) {
 
@@ -278,7 +280,7 @@ ElementList.prototype.destroyByWorld = function (world) {
   var i, records = this._records;
 
   for (i = records.length - 1; i >= 0; i -= 1) {
-    if (records[i].world && records[i].world === world) {
+    if (records[i].world && records[i].world.id === world) {
       records[i].world.el.removeChild(records[i].el);
       records.splice(i, 1);
     }
@@ -296,7 +298,10 @@ function System() {
   'use strict';
 }
 
-System.name = 'System';
+/**
+ * Define a name property.
+ */
+System.name = 'system';
 
 /**
  * A list of instructions to execute before the system starts.
@@ -318,13 +323,6 @@ System.start = function (func, opt_universe, opt_worlds) {
 
   this.universeOptions = opt_universe || null;
   this.worlds = opt_worlds || null;
-
-  this._featureDetector = new exports.FeatureDetector();
-
-  this.supportedFeatures = {};
-  this.supportedFeatures.csstransforms = this._featureDetector.detect('csstransforms');
-  this.supportedFeatures.csstransforms3d = this._featureDetector.detect('csstransforms3d');
-  this.supportedFeatures.touch = this._featureDetector.detect('touch');
 
   exports.liquids = [];
   exports.repellers = [];
@@ -409,7 +407,7 @@ System.destroy = function () {
 };
 
 exports.System = System;
-/*global console, exports */
+/*global console, Modernizr */
 /*jshint supernew:true */
 
 /**
@@ -643,14 +641,14 @@ Utils.getCSSText = function(props) {
     props.borderColorStr = props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')';
   }
 
-  if (exports.System.supportedFeatures.csstransforms3d) {
+  if (Modernizr.csstransforms3d) {
     positionStr = [
       '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) translateZ(0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
     ].join(';');
-  } else if (exports.System.supportedFeatures.csstransforms) {
+  } else if (Modernizr.csstransforms) {
     positionStr = [
       '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
       '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
@@ -698,11 +696,9 @@ function Vector(opt_x, opt_y) {
 }
 
 /**
- * Subtract two vectors.
+ * Subtract two vectors. Uses clone to avoid affecting the values of the vectors.
  *
- * @param {number} v1 The first vector.
- * @param {number} v2 The second vector.
- * @returns {Object} A new Vector.
+ * @returns {Object} A vector.
  */
 Vector.VectorSub = function(v1, v2) {
   'use strict';
@@ -710,11 +706,9 @@ Vector.VectorSub = function(v1, v2) {
 };
 
 /**
- * Add two vectors.
+ * Add two vectors. Uses clone to avoid affecting the values of the vectors.
  *
- * @param {number} v1 The first vector.
- * @param {number} v2 The second vector.
- * @returns {Object} A new Vector.
+ * @returns {Object} A vector.
  */
 Vector.VectorAdd = function(v1, v2) {
   'use strict';
@@ -722,11 +716,9 @@ Vector.VectorAdd = function(v1, v2) {
 };
 
 /**
- * Multiply a vector by a scalar value.
+ * Multiply a vector by a scalar value. Uses clone to avoid affecting the values of the vectors.
  *
- * @param {number} v A vector.
- * @param {number} n Vector will be multiplied by this number.
- * @returns {Object} A new Vector.
+ * @returns {Object} A vector.
  */
 Vector.VectorMult = function(v, n) {
   'use strict';
@@ -734,47 +726,29 @@ Vector.VectorMult = function(v, n) {
 };
 
 /**
- * Divide two vectors.
+ * Divide two vectors. Uses clone to avoid affecting the values of the vectors.
  *
- * @param {number} v A vector.
- * @param {number} n Vector will be divided by this number.
- * @returns {Object} A new Vector.
+ * @returns {Object} A vector.
  */
-Vector.VectorDiv = function(v, n) {
+Vector.VectorDiv = function(v1, v2) {
   'use strict';
-  return new Vector(v.x / n, v.y / n);
+  return new Vector(v1.x / v2.x, v1.y / v2.y);
 };
 
 /**
- * Calculates the distance between two vectors.
+ * Get the midpoint between two vectors. Uses clone to avoid affecting the values of the vectors.
  *
- * @param {number} v1 The first vector.
- * @param {number} v2 The second vector.
- * @returns {number} The distance between the two vectors.
- */
-Vector.VectorDistance = function(v1, v2) {
-  'use strict';
-  return Math.sqrt(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2));
-};
-
-/**
- * Get the midpoint between two vectors.
- *
- * @param {number} v1 The first vector.
- * @param {number} v2 The second vector.
- * @returns {Object} A new Vector.
+ * @returns {Object} A vector.
  */
 Vector.VectorMidPoint = function(v1, v2) {
   'use strict';
-  return Vector.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
+  return this.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
 };
 
 /**
  * Get the angle between two vectors.
  *
- * @param {number} v1 The first vector.
- * @param {number} v2 The second vector.
- * @returns {number} An angle.
+ * @returns {Object} A vector.
  */
 Vector.VectorAngleBetween = function(v1, v2) {
   'use strict';
@@ -782,8 +756,6 @@ Vector.VectorAngleBetween = function(v1, v2) {
   theta = Math.acos(dot / (v1.mag() * v2.mag()));
   return theta;
 };
-
-Vector.prototype.name = 'Vector';
 
 /**
 * Returns an new vector with all properties and methods of the
@@ -864,7 +836,6 @@ Vector.prototype.mag = function() {
  * Limits the vector's magnitude.
  *
  * @param {number} high The upper bound of the vector's magnitude.
- * @returns {Object} This vector.
  */
 Vector.prototype.limit = function(high) {
   'use strict';
@@ -902,7 +873,7 @@ Vector.prototype.normalize = function() {
  * Calculates the distance between this vector and a passed vector.
  *
  * @param {Object} vector The target vector.
- * @returns {Object} The distance between the two vectors.
+ * @returns {Object} This vector.
  */
 Vector.prototype.distance = function(vector) {
   'use strict';
@@ -928,15 +899,15 @@ Vector.prototype.rotate = function(radians) {
 };
 
 /**
- * Calculates the midpoint between this vector and a passed vector.
+ * Calulates the midpoint between two vectors.
  *
  * @param {Object} v1 The first vector.
  * @param {Object} v1 The second vector.
  * @returns {Object} A vector representing the midpoint between the passed vectors.
  */
-Vector.prototype.midpoint = function(vector) {
+Vector.prototype.midpoint = function(v1, v2) {
   'use strict';
-  return Vector.VectorAdd(this, vector).div(2);
+  return this.VectorAdd(v1, v2).div(2);
 };
 
 /**
@@ -983,7 +954,10 @@ function ColorPalette(opt_options) {
   this._colors = [];
 }
 
-ColorPalette.prototype.name = 'ColorPalette';
+/**
+ * Define a name property.
+ */
+ColorPalette.prototype.name = 'colorpalette';
 
 /**
  * Creates a color range of 255 colors from the passed start and end colors.
@@ -1175,7 +1149,10 @@ ColorTable.prototype.addColor = function(options) {
   return this;
 };
 
-ColorTable.prototype.name = 'ColorTable';
+/**
+ * Define a name property.
+ */
+ColorTable.prototype.name = 'colortable';
 
 /**
  * Returns start and end colors from a key in the color table.
@@ -1258,7 +1235,10 @@ function BorderPalette() {
   this._borders = [];
 }
 
-BorderPalette.prototype.name = 'BorderPalette';
+/**
+ * Define a name property.
+ */
+BorderPalette.prototype.name = 'borderpalette';
 
 /**
  * Adds a random number of the passed border style to the 'borders' array.
@@ -1629,7 +1609,7 @@ Interface.getDataType = function(element) {
 };
 
 exports.Interface = Interface;
-/*global exports */
+/*global Modernizr, exports */
 /**
  * Creates a new Universe.
  *
@@ -1785,7 +1765,7 @@ function Universe(opt_options) {
   });
 
   // device motion
-  if (exports.System.supportedFeatures.touch && this.isDeviceMotion) {
+  if (Modernizr.touch && this.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 
@@ -1795,12 +1775,14 @@ function Universe(opt_options) {
   }
 }
 
-Universe.prototype.name = 'Universe';
+/**
+ * Define a name property.
+ */
+Universe.prototype.name = 'universe';
 
 /**
  * Adds a new World to the 'records' array.
  *
- * @param {Object} opt_options See options for World.
  * @returns {Array} An array of elements.
  */
 Universe.prototype.addWorld = function(opt_options) {
@@ -1888,7 +1870,7 @@ Universe.prototype.update = function(opt_props, opt_worldId) {
     world.height = parseInt(world.el.style.height.replace('px', ''), 10);
   }
 
-  if (exports.System.supportedFeatures.touch && props.isDeviceMotion) {
+  if (Modernizr.touch && props.isDeviceMotion) {
     this.addDeviceMotionEventListener();
   }
 };
@@ -1936,7 +1918,7 @@ Universe.prototype.getWorldById = function (id) {
 /**
  * Removes a world and its elements.
  *
- * @param {string} id The world's id.
+ * @param {string} id The element's id.
  */
 Universe.prototype.destroyWorld = function (id) {
 
@@ -1960,25 +1942,6 @@ Universe.prototype.destroyWorld = function (id) {
       }
       records.splice(i, 1);
       break;
-    }
-  }
-};
-
-/**
- * Removes all elements from a World.
- *
- * @param {string} id The world's id.
- */
-Universe.prototype.clearWorld = function (id) {
-
-  'use strict';
-
-  var i, max, records = this._records;
-
-  for (i = 0, max = records.length; i < max; i += 1) {
-    if (records[i].id === id) {
-      exports.elementList.destroyByWorld(records[i]);
-      return true;
     }
   }
 };
@@ -2041,7 +2004,7 @@ Universe.prototype.resetSystem = function() {
   // loop thru each world and destroy all elements
   records = this.all();
   for (i = 0, max = records.length; i < max; i += 1) {
-    exports.elementList.destroyByWorld(records[i]);
+    exports.elementList.destroyByWorld(records[i].id);
   }
   // call initial setup
   exports.System.setup();
@@ -2223,7 +2186,10 @@ function World(opt_options) {
   });
 }
 
-World.prototype.name = 'World';
+/**
+ * Define a name property.
+ */
+World.prototype.name = 'world';
 
 /**
  * Increments as each World is created.
@@ -2406,42 +2372,18 @@ function Camera(opt_options) {
   this.controlObj = options.controlObj || null;
 }
 
-Camera.prototype.name = 'Camera';
+/**
+ * Define a name property.
+ */
+Camera.prototype.name = 'camera';
 
 exports.Camera = Camera;
 /*global exports */
 /**
- * Creates a new Element. All Flora elements extend Element. Element holds the minimum properties
- * need to render the element via draw().
- *
+ * Creates a new Element. All Flora elements extend Element.
  * @constructor
- *
- * @param {Object} [opt_options] Element options.
- * @param {string} [opt_options.id = "m-" + Element._idCount] An id. If an id is not provided, one is created.
- * @param {Object|function} [opt_options.view] HTML representing the Element instance.
- * @param {string} [opt_options.className = 'agent'] The corresponding DOM element's class name.
- * @param {array} [opt_options.sensors = []] A list of sensors attached to this object.
- * @param {boolean} [opt_options.controlCamera = false] If true, camera will follow this object.
- * @param {number} [opt_options.width = 20] Width
- * @param {number} [opt_options.height = 20] Height
- * @param {number} [opt_options.scale = 1] Scale
- * @param {number} [opt_options.angle = 0] Angle
- * @param {number} [opt_options.opacity = 0.85] Opacity
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
- * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
- * @param {number} [opt_options.zIndex = 1] z-index
- * @param {number} [opt_options.borderWidth = false] borderWidth The object's border width in pixels.
- * @param {string} [opt_options.borderStyle = false] borderStyle The object's border style. Valid options are 'none',
- *    'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset', 'inherit'.
- * @param {string} [opt_options.borderColor = false] borderColor The object's border color expressed as an
- *    rbg or hsl value. ex: [255, 100, 0]
- * @param {string} [opt_options.borderRadius = false] borderRadius The object's border radius as a percentage.
- * @param {string} [opt_options.boxShadow =  false] boxShadow The object's box shadow.
- * @param {Object} [opt_options.location = The center of the world] The object's initial location.
- * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's initial acceleration.
- * @param {Object} [opt_options.velocity = {x: 0, y: 0}] The object's initial velocity.
  */
-function Element(opt_options) {
+function Element() {
 
   'use strict';
 
@@ -2455,109 +2397,7 @@ function Element(opt_options) {
       }
     }
   }
-
-  var options = opt_options || {},
-      elements = exports.elementList.all() || [],
-      liquids = exports.liquids || [],
-      repellers = exports.repellers || [],
-      attractors = exports.attractors || [],
-      heats = exports.heats || [],
-      colds = exports.colds || [],
-      predators = exports.predators || [],
-      lights = exports.lights || [],
-      oxygen = exports.oxygen || [],
-      food = exports.food || [],
-      world, constructorName = this.name || 'anon';
-
-  this.id = options.id || constructorName.toLowerCase() + "-" + Element._idCount; // if no id, create one
-
-  if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-    this.el = options.view.apply(this, options.viewArgs);
-  } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
-    this.el = options.view;
-  } else {
-    this.el = document.createElement("div");
-  }
-
-  // if a world is not passed, use the first world in the universe
-  this.world = options.world || exports.universe.first();
-  world = this.world;
-
-  // set render properties
-  this.location = options.location || new exports.Vector(world.width/2, world.height/2);
-  this.acceleration = options.acceleration || new exports.Vector();
-  this.velocity = options.velocity || new exports.Vector();
-  this.width = options.width === 0 ? 0 : options.width || 20;
-  this.height = options.height === 0 ? 0 : options.height || 20;
-  this.scale = options.scale === 0 ? 0 : options.scale || 1;
-  this.angle = options.angle || 0;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.85;
-  this.colorMode = options.colorMode || 'rgb';
-  this.color = options.color || null;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
-  this.borderWidth = options.borderWidth || null;
-  this.borderStyle = options.borderStyle || null;
-  this.borderColor = options.borderColor || null;
-  this.borderRadius = options.borderRadius || null;
-  this.boxShadow = options.boxShadow || null;
-
-    // set sensors
-  this.sensors = options.sensors || [];
-
-  this.className = options.className || constructorName.toLowerCase();
-  this.className += ' floraElement';
-
-  elements.push(this); // push new instance of Element
-
-  this.el.id = this.id;
-  this.el.className = this.sensors.length > 0 ? (this.className + ' hasSensor') : this.className;
-  this.el.style.display = 'none';
-
-  if (world.el) {
-    world.el.appendChild(this.el); // append the view to the World
-  }
-
-  Element._idCount += 1; // increment id
-
-  if (this.className.search('liquid') !== -1) {
-    liquids.push(this); // push new instance of liquids to liquid list
-  } else if (this.className.search('repeller') !== -1) {
-    repellers.push(this); // push new instance of repeller to repeller list
-  } else if (this.className.search('attractor') !== -1) {
-    attractors.push(this); // push new instance of attractor to attractor list
-  } else if (this.className.search('heat') !== -1) {
-    heats.push(this);
-  } else if (this.className.search('cold') !== -1) {
-    colds.push(this);
-  } else if (this.className.search('predator') !== -1) {
-    predators.push(this);
-  } else if (this.className.search('light') !== -1) {
-    lights.push(this);
-  } else if (this.className.search('oxygen') !== -1) {
-    oxygen.push(this);
-  } else if (this.className.search('food') !== -1) {
-    food.push(this);
-  }
-
-  // setup camera control
-  this.controlCamera = !!options.controlCamera;
-
-  if (this.controlCamera) { // if this object controls the camera
-
-    exports.camera.controlObj = this;
-
-    // need to position world so controlObj is centered on screen
-    world.location.x = -world.width/2 + (exports.Utils.getWindowSize().width)/2 + (world.width/2 - this.location.x);
-    world.location.y = -world.height/2 + (exports.Utils.getWindowSize().height)/2 + (world.height/2 - this.location.y);
-  }
 }
-
-/**
- * Increments as each Element is created.
- * @type number
- * @default 0
- */
-Element._idCount = 0;
 
 Element.events =[
   "mouseenter",
@@ -2567,7 +2407,10 @@ Element.events =[
   "mouseleave"
 ];
 
-Element.prototype.name = 'Element';
+/**
+ * Define a name property.
+ */
+Element.prototype.name = 'obj';
 
 /**
  * Called by a mouseover event listener.
@@ -2692,12 +2535,6 @@ Element.mouseIsInsideWorld = function(world) {
 };
 
 /**
- * Updates properties of this element. Flora elements extending
- * Element should implement their own step() function.
- */
-Element.prototype.step = function () {};
-
-/**
  * Renders the element to the DOM. Called every frame.
  */
 Element.prototype.draw = function() {
@@ -2737,13 +2574,24 @@ exports.Element = Element;
  * @extends Element
  *
  * @param {Object} [opt_options] Agent options.
+ * @param {string} [opt_options.id = "m-" + Agent._idCount] An id. If an id is not provided, one is created.
+ * @param {Object|function} [opt_options.view] HTML representing the Agent instance.
+ * @param {string} [opt_options.className = 'agent'] The corresponding DOM element's class name.
  * @param {number} [opt_options.mass = 10] Mass
  * @param {number} [opt_options.maxSpeed = 10] Maximum speed
  * @param {number} [opt_options.minSpeed = 0] Minimum speed
  * @param {number} [opt_options.motorSpeed = 2] Motor speed
+ * @param {number} [opt_options.scale = 1] Scale
+ * @param {number} [opt_options.angle = 0] Angle
+ * @param {number} [opt_options.opacity = 0.85] Opacity
  * @param {number} [opt_options.lifespan = -1] Life span. Set to -1 to live forever.
+ * @param {number} [opt_options.width = 20] Width
+ * @param {number} [opt_options.height = 20] Height
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the agent's parent.
  * @param {number} [opt_options.offsetAngle = 30] The angle of rotation around the parent carrying the agent.
+ * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid options are 'rgb'. 'hex' and 'hsl' coming soon.
+ * @param {Array} [opt_options.color = null] The object's color expressed as an rbg or hsl value. ex: [255, 100, 0]
+ * @param {number} [opt_options.zIndex = 1] z-index
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {boolean} [opt_options.seekTarget = null] An object to seek.
@@ -2764,9 +2612,13 @@ exports.Element = Element;
  * @param {number} [opt_options.separateStrength = 1] The strength of the force to apply to separating when flocking = true.
  * @param {number} [opt_options.alignStrength = 1] The strength of the force to apply to aligning when flocking = true.
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
+ * @param {array} [opt_options.sensors = []] A list of sensors attached to this object.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
  * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
  * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
+ * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's initial acceleration.
+ * @param {Object} [opt_options.velocity = {x: 0, y: 0}] The object's initial velocity.
+ * @param {Object} [opt_options.location = The center of the world] The object's initial location.
  */
 
 
@@ -2774,17 +2626,53 @@ function Agent(opt_options) {
 
   'use strict';
 
-  var options = opt_options || {};
+  var options = opt_options || {},
+      elements = exports.elementList.all() || [],
+      liquids = exports.liquids || [],
+      repellers = exports.repellers || [],
+      attractors = exports.attractors || [],
+      heats = exports.heats || [],
+      colds = exports.colds || [],
+      predators = exports.predators || [],
+      lights = exports.lights || [],
+      oxygen = exports.oxygen || [],
+      food = exports.food || [],
+      i, max, evt, world,
+      constructorName = this.name || 'anon'; // this a problem when code is minified
 
   exports.Element.call(this, options);
 
+  this.id = options.id || constructorName.toLowerCase() + "-" + Agent._idCount; // if no id, create one
+
+  if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
+    this.el = options.view.apply(this, options.viewArgs);
+  } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
+    this.el = options.view;
+  } else {
+    this.el = document.createElement("div");
+  }
+
+  // if a world is not passed, use the first world in the universe
+  this.world = options.world || exports.universe.first();
+  world = this.world;
+
+  this.className = options.className || constructorName.toLowerCase(); // constructorName.toLowerCase()
+  this.className += ' floraElement';
   this.mass = options.mass || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
   this.minSpeed = options.minSpeed || 0;
   this.motorSpeed = options.motorSpeed || 0;
+  this.scale = options.scale === 0 ? 0 : options.scale || 1;
+  this.angle = options.angle === 0 ? 0 : options.angle || 0;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.85;
   this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
+  this.width = options.width === 0 ? 0 : options.width || 20;
+  this.height = options.height === 0 ? 0 : options.height || 20;
   this.offsetDistance = options.offsetDistance === 0 ? 0 : options.offsetDistance|| 30;
   this.offsetAngle = options.offsetAngle || 0;
+  this.colorMode = options.colorMode || 'rgb';
+  this.color = options.color || null;
+  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
   this.pointToDirection = options.pointToDirection === false ? false : options.pointToDirection || true;
   this.followMouse = !!options.followMouse;
   this.seekTarget = options.seekTarget || null;
@@ -2804,9 +2692,54 @@ function Agent(opt_options) {
   this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;
   this.alignStrength = options.alignStrength === 0 ? 0 : options.alignStrength || 0.2;
   this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;
+  this.sensors = options.sensors || [];
   this.flowField = options.flowField || null;
+  this.acceleration = options.acceleration || new exports.Vector();
+  this.velocity = options.velocity || new exports.Vector();
+  this.location = options.location || new exports.Vector(world.width/2, world.height/2);
+  this.controlCamera = !!options.controlCamera;
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
+
+  elements.push(this); // push new instance of Agent
+
+  this.el.id = this.id;
+  this.el.className = this.sensors.length > 0 ? (this.className + ' hasSensor') : this.className;
+
+  if (world.el) {
+    world.el.appendChild(this.el); // append the view to the World
+  }
+
+  Agent._idCount += 1; // increment id
+
+  if (this.className.search('liquid') !== -1) {
+    liquids.push(this); // push new instance of liquids to liquid list
+  } else if (this.className.search('repeller') !== -1) {
+    repellers.push(this); // push new instance of repeller to repeller list
+  } else if (this.className.search('attractor') !== -1) {
+    attractors.push(this); // push new instance of attractor to attractor list
+  } else if (this.className.search('heat') !== -1) {
+    heats.push(this);
+  } else if (this.className.search('cold') !== -1) {
+    colds.push(this);
+  } else if (this.className.search('predator') !== -1) {
+    predators.push(this);
+  } else if (this.className.search('light') !== -1) {
+    lights.push(this);
+  } else if (this.className.search('oxygen') !== -1) {
+    oxygen.push(this);
+  } else if (this.className.search('food') !== -1) {
+    food.push(this);
+  }
+
+  if (this.controlCamera) { // if this object controls the camera
+
+    exports.camera.controlObj = this;
+
+    // need to position world so controlObj is centered on screen
+    world.location.x = -world.width/2 + (exports.Utils.getWindowSize().width)/2 + (world.width/2 - this.location.x);
+    world.location.y = -world.height/2 + (exports.Utils.getWindowSize().height)/2 + (world.height/2 - this.location.y);
+  }
 
   if (this.draggable) {
     exports.Utils.addEvent(this.el, 'mouseover', exports.Element.mouseover.bind(this));
@@ -2818,7 +2751,18 @@ function Agent(opt_options) {
 }
 exports.Utils.extend(Agent, exports.Element);
 
-Agent.prototype.name = 'Agent';
+/**
+ * Define a name property.
+ */
+Agent.prototype.name = 'agent';
+
+/**
+ * Increments as each Agent is created.
+ * @type number
+ * @default 0
+ */
+Agent._idCount = 0;
+
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -3517,7 +3461,10 @@ function Walker(opt_options) {
 }
 exports.Utils.extend(Walker, exports.Agent);
 
-Walker.prototype.name = 'Walker';
+/**
+ * Define a name property.
+ */
+Walker.prototype.name = 'walker';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -3672,10 +3619,13 @@ function Oscillator(opt_options) {
 }
 exports.Utils.extend(Oscillator, exports.Agent);
 
-Oscillator.prototype.name = 'Oscillator';
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Oscillator.prototype.name = 'oscillator';
 
 /**
- * Updates the oscillator's properties.
+ * Called every frame, step() updates the instance's properties.
  */
 Oscillator.prototype.step = function () {
 
@@ -3754,70 +3704,70 @@ this.borderRadius = options.borderRadius || '100%';
 }
 exports.Utils.extend(Particle, exports.Agent);
 
-Particle.prototype.name = 'Particle';
-
 /**
- * Updates particle properties.
+ * Define a name property. Used to assign a class name and prefix an id.
  */
+Particle.prototype.name = 'particle';
+
 Particle.prototype.step = function () {
 
   'use strict';
 
-	var world = this.world,
-			friction;
+  var world = this.world,
+      friction;
 
-	//
+  //
 
-	if (this.beforeStep) {
-		this.beforeStep.apply(this);
-	}
+  if (this.beforeStep) {
+    this.beforeStep.apply(this);
+  }
 
-	//
+  //
 
-	if (!this.isStatic && !this.isPressed) {
+  if (!this.isStatic && !this.isPressed) {
 
-		// start -- APPLY FORCES
+    // start -- APPLY FORCES
 
-		if (world.c) { // friction
-			friction = exports.Utils.clone(this.velocity);
-			friction.mult(-1);
-			friction.normalize();
-			friction.mult(world.c);
-			this.applyForce(friction);
-		}
+    if (world.c) { // friction
+      friction = exports.Utils.clone(this.velocity);
+      friction.mult(-1);
+      friction.normalize();
+      friction.mult(world.c);
+      this.applyForce(friction);
+    }
 
-		this.applyForce(world.wind); // wind
-		this.applyForce(world.gravity); // gravity
+    this.applyForce(world.wind); // wind
+    this.applyForce(world.gravity); // gravity
 
 
-		if (this.checkEdges || this.wrapEdges) {
-			this.checkWorldEdges(world);
-		}
+    if (this.checkEdges || this.wrapEdges) {
+      this.checkWorldEdges(world);
+    }
 
-		// end -- APPLY FORCES
+    // end -- APPLY FORCES
 
-		this.velocity.add(this.acceleration); // add acceleration
+    this.velocity.add(this.acceleration); // add acceleration
 
-		if (this.maxSpeed) {
-			this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
-		}
+    if (this.maxSpeed) {
+      this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
+    }
 
-		this.location.add(this.velocity); // add velocity
+    this.location.add(this.velocity); // add velocity
 
-		// opacity
-		this.opacity = exports.Utils.map(this.lifespan, 0, this.maxSpeed, 0, 1);
+    // opacity
+    this.opacity = exports.Utils.map(this.lifespan, 0, this.maxSpeed, 0, 1);
 
-		if (this.afterStep) {
-			this.afterStep.apply(this);
-		}
+    if (this.afterStep) {
+      this.afterStep.apply(this);
+    }
 
-		if (this.lifespan > 0) {
-			this.lifespan -= 1;
-		} else if (this.lifespan === 0) {
-			exports.elementList.destroyElement(this.id);
-		}
-		this.acceleration.mult(0); // reset acceleration
-	}
+    if (this.lifespan > 0) {
+      this.lifespan -= 1;
+    } else if (this.lifespan === 0) {
+      exports.elementList.destroyElement(this.id);
+    }
+    this.acceleration.mult(0); // reset acceleration
+  }
 };
 exports.Particle = Particle;
 /*global exports */
@@ -3899,7 +3849,10 @@ exports.Particle = Particle;
 }
 exports.Utils.extend(ParticleSystem, exports.Agent);
 
-ParticleSystem.prototype.name = 'ParticleSystem';
+/**
+ * Define a name property.
+ */
+ParticleSystem.prototype.name = 'particlesystem';
 
 exports.ParticleSystem = ParticleSystem;
 /*global exports */
@@ -3936,7 +3889,10 @@ function Liquid(opt_options) {
 }
 exports.Utils.extend(Liquid, exports.Agent);
 
-Liquid.prototype.name = 'Liquid';
+/**
+ * Define a name property.
+ */
+Liquid.prototype.name = 'liquid';
 
 exports.Liquid = Liquid;
 /*global exports */
@@ -3973,7 +3929,10 @@ function Attractor(opt_options) {
 }
 exports.Utils.extend(Attractor, exports.Agent);
 
-Attractor.prototype.name = 'Attractor';
+/**
+ * Define a name property.
+ */
+Attractor.prototype.name = 'attractor';
 
 exports.Attractor = Attractor;
 /*global exports */
@@ -4010,7 +3969,10 @@ function Repeller(opt_options) {
 }
 exports.Utils.extend(Repeller, exports.Agent);
 
-Repeller.prototype.name = 'Repeller';
+/**
+ * Define a name property.
+ */
+Repeller.prototype.name = 'repeller';
 
 exports.Repeller = Repeller;
 /*global exports */
@@ -4045,7 +4007,10 @@ function Heat(opt_options) {
 }
 exports.Utils.extend(Heat, exports.Agent);
 
-Heat.prototype.name = 'Heat';
+/**
+ * Define a name property.
+ */
+Heat.prototype.name = 'heat';
 
 exports.Heat = Heat;
 /*global exports */
@@ -4080,7 +4045,10 @@ function Cold(opt_options) {
 }
 exports.Utils.extend(Cold, exports.Agent);
 
-Cold.prototype.name = 'Cold';
+/**
+ * Define a name property.
+ */
+Cold.prototype.name = 'cold';
 
 exports.Cold = Cold;
 /*global exports */
@@ -4115,7 +4083,10 @@ function Light(opt_options) {
 }
 exports.Utils.extend(Light, exports.Agent);
 
-Light.prototype.name = 'Light';
+/**
+ * Define a name property.
+ */
+Light.prototype.name = 'light';
 
 exports.Light = Light;
 /*global exports */
@@ -4150,7 +4121,10 @@ function Oxygen(opt_options) {
 }
 exports.Utils.extend(Oxygen, exports.Agent);
 
-Oxygen.prototype.name = 'Oxygen';
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Oxygen.prototype.name = 'oxygen';
 
 exports.Oxygen = Oxygen;
 /*global exports */
@@ -4185,7 +4159,10 @@ function Food(opt_options) {
 }
 exports.Utils.extend(Food, exports.Agent);
 
-Food.prototype.name = 'Food';
+/**
+ * Define a name property.
+ */
+Food.prototype.name = 'food';
 
 exports.Food = Food;
 /*global exports */
@@ -4220,7 +4197,10 @@ function Predator(opt_options) {
 }
 exports.Utils.extend(Predator, exports.Agent);
 
-Predator.prototype.name = 'Predator';
+/**
+ * Define a name property.
+ */
+Predator.prototype.name = 'predator';
 
 exports.Predator = Predator;
 /*global exports */
@@ -4265,7 +4245,10 @@ function Sensor(opt_options) {
 }
 exports.Utils.extend(Sensor, exports.Agent);
 
-Sensor.prototype.name = 'Sensor';
+/**
+ * Define a name property.
+ */
+Sensor.prototype.name = 'sensor';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -4512,7 +4495,10 @@ function FlowFieldMarker(options) {
   }
 }
 
-FlowFieldMarker.prototype.name = 'FlowFieldMarker';
+/**
+ * Define a name property.
+ */
+FlowFieldMarker.prototype.name = 'flowfieldmarker';
 
 exports.FlowFieldMarker = FlowFieldMarker;
 /*global exports */
@@ -4542,7 +4528,10 @@ function FlowField(opt_options) {
   this.world = options.world || exports.universe.first();
 }
 
-FlowField.prototype.name = 'FlowField';
+/**
+ * Define a name property.
+ */
+FlowField.prototype.name = 'flowfield';
 
 /**
  * Builds a FlowField.
@@ -4632,7 +4621,10 @@ function Connector(parentA, parentB, opt_options) {
 }
 exports.Utils.extend(Connector, exports.Agent);
 
-Connector.prototype.name = 'Connector';
+/**
+ * Define a name property. Used to assign a class name and prefix an id.
+ */
+Connector.prototype.name = 'connector';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -4681,7 +4673,10 @@ function Point(opt_options) {
 }
 exports.Utils.extend(Point, exports.Agent);
 
-Point.prototype.name = 'Point';
+/**
+ * Define a name property.
+ */
+Point.prototype.name = 'point';
 
 exports.Point = Point;
 /*global exports */
@@ -4745,7 +4740,10 @@ function Caption(opt_options) {
   this.world.el.appendChild(this._el);
 }
 
-Caption.prototype.name = 'Caption';
+/**
+ * Define a name property.
+ */
+Caption.prototype.name = 'caption';
 
 /**
  * Removes the caption's DOM element.
@@ -4758,7 +4756,7 @@ Caption.prototype.destroy = function() {
 };
 
 exports.Caption = Caption;
-/*global exports */
+/*global exports, Modernizr */
 /**
  * Creates a new InputMenu object.
  * An Input Menu lists key strokes and other input available
@@ -4792,7 +4790,7 @@ function InputMenu(opt_options) {
   this.borderColor = options.borderColor || [204, 204, 204];
   this.colorMode = options.colorMode || 'rgb';
 
-  if (exports.System.supportedFeatures.touch) {
+  if (Modernizr.touch) {
     this.text =  exports.config.touchMap.stats + '-finger tap = stats | ' +
         exports.config.touchMap.pause + '-finger tap = pause | ' +
         exports.config.touchMap.reset + '-finger tap = reset';
@@ -4825,7 +4823,7 @@ function InputMenu(opt_options) {
     document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
   }
 
-  if (exports.System.supportedFeatures.touch) {
+  if (Modernizr.touch) {
     exports.Utils.addEvent(this._el, 'touchstart', function(e) {
       me.destroy();
     });
@@ -4838,7 +4836,10 @@ function InputMenu(opt_options) {
   this.world.el.appendChild(this._el);
 }
 
-InputMenu.prototype.name = 'InputMenu';
+/**
+ * Define a name property.
+ */
+InputMenu.prototype.name = 'inputmenu';
 
 /**
  * Removes the menu's DOM element.
@@ -5005,135 +5006,10 @@ StatsDisplay.prototype._update = function() {
   window.requestAnimFrame(this._update.bind(this));
 };
 
-StatsDisplay.prototype.name = 'StatsDisplay';
+/**
+ * Define a name property.
+ */
+StatsDisplay.prototype.name = 'statsdisplay';
 
 exports.StatsDisplay = StatsDisplay;
-/*global exports */
-/**
- * Creates a new FeatureDetector.
- *
- * @constructor
- */
-function FeatureDetector(options) {
-  'use strict';
-}
-
-FeatureDetector.prototype.name = 'FeatureDetector';
-
-/**
- * Checks if the class has a method to detect the passed feature.
- * If so, it calls the method.
- *
- * @param {string} feature The feature to check.
- * @returns True if the feature is supported, false if not.
- */
-FeatureDetector.prototype.detect = function(feature) {
-
-  'use strict';
-
-  if (!this[feature]) {
-    return false;
-  }
-
-  return this[feature].call(this);
-};
-
-/**
- * Checks if CSS Transforms are supported.
- *
- * @returns True if the feature is supported, false if not.
- */
-FeatureDetector.prototype.csstransforms = function() {
-
-  'use strict';
-
-  var transforms = [
-    '-webkit-transform: translateX(1px) translateY(1px)',
-    '-moz-transform: translateX(1px) translateY(1px)',
-    '-o-transform: translateX(1px) translateY(1px)',
-    '-ms-transform: translateX(1px) translateY(1px)'
-  ].join(';');
-
-  var docFrag = document.createDocumentFragment();
-  var div = document.createElement('div');
-  docFrag.appendChild(div);
-  div.style.cssText = transforms;
-
-  var styles = [
-    div.style.transform,
-    div.style.webkitTransform,
-    div.style.MozTransform,
-    div.style.OTransform,
-    div.style.msTransform
-  ];
-  var check = false;
-
-  for (var i = 0; i < styles.length; i += 1) {
-    if (styles[i]) {
-      check = true;
-      break;
-    }
-  }
-
-  return check;
-};
-
-/**
- * Checks if CSS 3D transforms are supported.
- *
- * @returns True if the feature is supported, false if not.
- */
-FeatureDetector.prototype.csstransforms3d = function() {
-
-  'use strict';
-
-  var transforms = [
-    '-webkit-transform: translateX(1px) translateY(1px) translateZ(0)',
-    '-moz-transform: translateX(1px) translateY(1px) translateZ(0)',
-    '-o-transform: translateX(1px) translateY(1px) translateZ(0)',
-    '-ms-transform: translateX(1px) translateY(1px) translateZ(0)'
-  ].join(';');
-
-  var docFrag = document.createDocumentFragment();
-  var div = document.createElement('div');
-  docFrag.appendChild(div);
-  div.style.cssText = transforms;
-
-  var styles = [
-    div.style.transform,
-    div.style.webkitTransform,
-    div.style.MozTransform,
-    div.style.OTransform,
-    div.style.msTransform
-  ];
-  var check = false;
-
-  for (var i = 0; i < styles.length; i += 1) {
-    if (styles[i]) {
-      check = true;
-      break;
-    }
-  }
-
-  return check;
-};
-
-/**
- * Checks if touch events are supported.
- *
- * @returns True if the feature is supported, false if not.
- */
-FeatureDetector.prototype.touch = function() {
-
-  'use strict';
-
-  var el = document.createElement('div');
-  el.setAttribute('ongesturestart', 'return;');
-  if (typeof el.ongesturestart === "function") {
-    return true;
-  }
-  return false;
-};
-
-exports.FeatureDetector = FeatureDetector;
 }(exports));

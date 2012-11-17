@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, document */
 /**
  * Creates a new InputMenu object.
  * An Input Menu lists key strokes and other input available
@@ -66,11 +66,11 @@ function InputMenu(opt_options) {
   }
 
   if (exports.System.supportedFeatures.touch) {
-    exports.Utils.addEvent(this._el, 'touchstart', function(e) {
+    exports.Utils.addEvent(this._el, 'touchstart', function() {
       me.destroy();
     });
   } else {
-    exports.Utils.addEvent(this._el, 'mouseup', function(e) {
+    exports.Utils.addEvent(this._el, 'mouseup', function() {
       me.destroy();
     });
   }

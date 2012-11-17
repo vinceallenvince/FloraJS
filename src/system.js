@@ -82,9 +82,7 @@ System.start = function (func, opt_universe, opt_worlds) {
 
   exports.animLoop = function () {
 
-    var i, max,
-        universe = exports.universe,
-        world = universe.first(),
+    var i, universe = exports.universe,
         elements = exports.elementList.all();
 
     if (universe.isPlaying) {

@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, document, window */
 /**
  * Creates a new World.
  *
@@ -82,7 +82,7 @@ function World(opt_options) {
 
   // events
 
-  exports.Utils.addEvent(window, 'resize', function(e) { // listens for window resize
+  exports.Utils.addEvent(window, 'resize', function() { // listens for window resize
     me.resize.call(me);
   });
 }

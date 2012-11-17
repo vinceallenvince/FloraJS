@@ -1,10 +1,13 @@
-/*global exports */
+/*global exports, document */
 /**
  * Creates a new FeatureDetector.
  *
+ * The FeatureDetector tests for specific browser features and stores
+ * results in Flora.System.supportedFeatures.
+ * @example console.log(Flora.System.supportedFeatures.csstransforms3d);
  * @constructor
  */
-function FeatureDetector(options) {
+function FeatureDetector() {
   'use strict';
 }
 
@@ -78,10 +81,10 @@ FeatureDetector.prototype.csstransforms3d = function() {
   'use strict';
 
   var transforms = [
-    '-webkit-transform: translateX(1px) translateY(1px) translateZ(0)',
-    '-moz-transform: translateX(1px) translateY(1px) translateZ(0)',
-    '-o-transform: translateX(1px) translateY(1px) translateZ(0)',
-    '-ms-transform: translateX(1px) translateY(1px) translateZ(0)'
+    '-webkit-transform: translate3d(1px, 1px, 0)',
+    '-moz-transform: translate3d(1px, 1px, 0)',
+    '-o-transform: translate3d(1px, 1px, 0)',
+    '-ms-transform: translate3d(1px, 1px, 0)'
   ].join(';');
 
   var docFrag = document.createDocumentFragment();

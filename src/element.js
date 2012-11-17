@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, document, clearInterval, setInterval */
 /**
  * Creates a new Element. All Flora elements extend Element. Element holds the minimum properties
  * need to render the element via draw().
@@ -162,54 +162,57 @@ Element.prototype.name = 'Element';
  * Called by a mouseover event listener.
  *
  * @param {Object} e The event object passed by the listener.
+ * @param {Object} obj The object associated with the event target.
  */
-Element.mouseover = function(e) {
+Element.mouseover = function(e, obj) {
 
   'use strict';
 
-  this.isMouseOut = false;
-  clearInterval(this.mouseOutInterval);
+  obj.isMouseOut = false;
+  clearInterval(obj.mouseOutInterval);
 };
 
 /**
  * Called by a mousedown event listener.
  *
  * @param {Object} e The event object passed by the listener.
+ * @param {Object} obj The object associated with the event target.
  */
-Element.mousedown = function(e) {
+Element.mousedown = function(e, obj) {
 
   'use strict';
 
   var target = e.target;
 
-  this.isPressed = true;
-  this.isMouseOut = false;
-  this.offsetX = e.pageX - target.offsetLeft;
-  this.offsetY = e.pageY - target.offsetTop;
+  obj.isPressed = true;
+  obj.isMouseOut = false;
+  obj.offsetX = e.pageX - target.offsetLeft;
+  obj.offsetY = e.pageY - target.offsetTop;
 };
 
 /**
  * Called by a mousemove event listener.
  *
  * @param {Object} e The event object passed by the listener.
+ * @param {Object} obj The object associated with the event target.
  */
-Element.mousemove = function(e) {
+Element.mousemove = function(e, obj) {
 
   'use strict';
 
   var x, y;
 
-  if (this.isPressed) {
+  if (obj.isPressed) {
 
-    this.isMouseOut = false;
+    obj.isMouseOut = false;
 
-    x = e.pageX - this.world.el.offsetLeft;
-    y = e.pageY - this.world.el.offsetTop;
+    x = e.pageX - obj.world.el.offsetLeft;
+    y = e.pageY - obj.world.el.offsetTop;
 
-    if (Element.mouseIsInsideWorld(this.world)) {
-      this.location = new exports.Vector(x, y);
+    if (Element.mouseIsInsideWorld(obj.world)) {
+      obj.location = new exports.Vector(x, y);
     } else {
-      this.isPressed = false;
+      obj.isPressed = false;
     }
   }
 };
@@ -218,31 +221,33 @@ Element.mousemove = function(e) {
  * Called by a mouseup event listener.
  *
  * @param {Object} e The event object passed by the listener.
+ * @param {Object} obj The object associated with the event target.
  */
-Element.mouseup = function(e) {
+Element.mouseup = function(e, obj) {
 
   'use strict';
 
-  this.isPressed = false;
+  obj.isPressed = false;
 };
 
 /**
  * Called by a mouseout event listener.
  *
  * @param {Object} e The event object passed by the listener.
+ * @param {Object} obj The object associated with the event target.
  */
-Element.mouseout = function(e) {
+Element.mouseout = function(e, obj) {
 
   'use strict';
 
-  var me = this,
+  var me = obj,
     x, y;
 
-  if (this.isPressed) {
+  if (obj.isPressed) {
 
-    this.isMouseOut = true;
+    obj.isMouseOut = true;
 
-    this.mouseOutInterval = setInterval(function () { // if mouse is too fast for block update, update via an interval until it catches up
+    obj.mouseOutInterval = setInterval(function () { // if mouse is too fast for block update, update via an interval until it catches up
 
       if (me.isPressed && me.isMouseOut) {
 

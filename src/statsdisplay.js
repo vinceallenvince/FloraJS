@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, document, window */
 /**
  * Creates a new StatsDisplay object.
  *
@@ -75,6 +75,17 @@ function StatsDisplay() {
    */
   this._fpsValue = null;
 
+  // create 3dTransforms label
+  labelContainer = document.createElement('span');
+  labelContainer.className = 'statsDisplayLabel';
+  label = document.createTextNode('trans3d: ');
+  labelContainer.appendChild(label);
+  this._el.appendChild(labelContainer);
+
+  // create textNode for totalElements
+  this._3dTransformsValue = document.createTextNode(exports.System.supportedFeatures.csstransforms3d);
+  this._el.appendChild(this._3dTransformsValue);
+
   // create totol elements label
   labelContainer = document.createElement('span');
   labelContainer.className = 'statsDisplayLabel';
@@ -102,7 +113,7 @@ function StatsDisplay() {
   /**
    * Initiates the requestAnimFrame() loop.
    */
-  this._update();
+  this._update(this);
 }
 
 /**
@@ -126,30 +137,38 @@ StatsDisplay.prototype.getFPS = function() {
  *
  * @private
  */
-StatsDisplay.prototype._update = function() {
+StatsDisplay.prototype._update = function(me) {
 
   'use strict';
 
   var elementCount = exports.elementList.count();
 
   if (Date.now) {
-    this._time = Date.now();
+    me._time = Date.now();
   } else {
-    this._time = 0;
+    me._time = 0;
   }
-  this._frameCount++;
+  me._frameCount++;
 
   // at least a second has passed
-  if (this._time > this._timeLastSecond + 1000) {
+  if (me._time > me._timeLastSecond + 1000) {
 
-    this._fps = this._frameCount;
-    this._timeLastSecond = this._time;
-    this._frameCount = 0;
+    me._fps = me._frameCount;
+    me._timeLastSecond = me._time;
+    me._frameCount = 0;
 
-    this._fpsValue.nodeValue = this._fps;
-    this._totalElementsValue.nodeValue = elementCount;
+    me._fpsValue.nodeValue = me._fps;
+    me._totalElementsValue.nodeValue = elementCount;
+    me._3dTransformsValue.nodeValue = exports.System.supportedFeatures.csstransforms3d;
   }
-  window.requestAnimFrame(this._update.bind(this));
+
+  var reqAnimFrame = (function (me) {
+    return (function() {
+      me._update(me);
+    });
+  })(this);
+
+  window.requestAnimFrame(reqAnimFrame);
 };
 
 StatsDisplay.prototype.name = 'StatsDisplay';

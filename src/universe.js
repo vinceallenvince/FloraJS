@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, document, window */
 /**
  * Creates a new Universe.
  *
@@ -14,7 +14,7 @@ function Universe(opt_options) {
 
   'use strict';
 
-  var i, max, records, me = this,
+  var me = this,
       options = opt_options || {};
 
   this.isPlaying = options.isPlaying || true;

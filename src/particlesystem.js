@@ -39,7 +39,7 @@
 
   this.beforeStep = function () {
 
-    var i, max, p;
+    var i, p;
 
     if (this.world.clock % this.burstRate === 0) {
       for (i = 0; i < this.burst; i += 1) {

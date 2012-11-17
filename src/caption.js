@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, document */
 /**
  * Creates a new Caption object.
  * Use captions to communicate short messages to users like a title

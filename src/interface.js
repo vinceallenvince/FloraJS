@@ -1,4 +1,4 @@
-/*global console */
+/*global exports, console */
 /** @namespace */
 var Interface = {};
 

@@ -340,7 +340,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mousedown">mousedown</a></b>(e)
+								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mousedown">mousedown</a></b>(e, obj)
 								</div>
 								<div class="description">Called by a mousedown event listener.</div>
 							</td>
@@ -358,7 +358,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mousemove">mousemove</a></b>(e)
+								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mousemove">mousemove</a></b>(e, obj)
 								</div>
 								<div class="description">Called by a mousemove event listener.</div>
 							</td>
@@ -367,7 +367,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mouseout">mouseout</a></b>(e)
+								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mouseout">mouseout</a></b>(e, obj)
 								</div>
 								<div class="description">Called by a mouseout event listener.</div>
 							</td>
@@ -376,7 +376,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mouseover">mouseover</a></b>(e)
+								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mouseover">mouseover</a></b>(e, obj)
 								</div>
 								<div class="description">Called by a mouseover event listener.</div>
 							</td>
@@ -385,7 +385,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mouseup">mouseup</a></b>(e)
+								<div class="fixedFont">Element.<b><a href="../symbols/Element.html#.mouseup">mouseup</a></b>(e, obj)
 								</div>
 								<div class="description">Called by a mouseup event listener.</div>
 							</td>
@@ -617,7 +617,7 @@ need to render the element via draw().
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">Element.</span><b>mousedown</b>(e)
+					<span class="light">Element.</span><b>mousedown</b>(e, obj)
 					
 					</div>
 					<div class="description">
@@ -637,6 +637,12 @@ need to render the element via draw().
 									
 								</dt>
 								<dd>The event object passed by the listener.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>obj</b>
+									
+								</dt>
+								<dd>The object associated with the event target.</dd>
 							
 							</dl>
 						
@@ -697,7 +703,7 @@ need to render the element via draw().
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">Element.</span><b>mousemove</b>(e)
+					<span class="light">Element.</span><b>mousemove</b>(e, obj)
 					
 					</div>
 					<div class="description">
@@ -718,6 +724,12 @@ need to render the element via draw().
 								</dt>
 								<dd>The event object passed by the listener.</dd>
 							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>obj</b>
+									
+								</dt>
+								<dd>The object associated with the event target.</dd>
+							
 							</dl>
 						
 						
@@ -733,7 +745,7 @@ need to render the element via draw().
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">Element.</span><b>mouseout</b>(e)
+					<span class="light">Element.</span><b>mouseout</b>(e, obj)
 					
 					</div>
 					<div class="description">
@@ -754,6 +766,12 @@ need to render the element via draw().
 								</dt>
 								<dd>The event object passed by the listener.</dd>
 							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>obj</b>
+									
+								</dt>
+								<dd>The object associated with the event target.</dd>
+							
 							</dl>
 						
 						
@@ -769,7 +787,7 @@ need to render the element via draw().
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">Element.</span><b>mouseover</b>(e)
+					<span class="light">Element.</span><b>mouseover</b>(e, obj)
 					
 					</div>
 					<div class="description">
@@ -790,6 +808,12 @@ need to render the element via draw().
 								</dt>
 								<dd>The event object passed by the listener.</dd>
 							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>obj</b>
+									
+								</dt>
+								<dd>The object associated with the event target.</dd>
+							
 							</dl>
 						
 						
@@ -805,7 +829,7 @@ need to render the element via draw().
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">Element.</span><b>mouseup</b>(e)
+					<span class="light">Element.</span><b>mouseup</b>(e, obj)
 					
 					</div>
 					<div class="description">
@@ -825,6 +849,12 @@ need to render the element via draw().
 									
 								</dt>
 								<dd>The event object passed by the listener.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>obj</b>
+									
+								</dt>
+								<dd>The object associated with the event target.</dd>
 							
 							</dl>
 						
@@ -875,7 +905,7 @@ Element should implement their own step() function.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Nov 04 2012 17:25:04 GMT-0500 (EST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Nov 17 2012 15:49:06 GMT-0500 (EST)
 		</div>
 	</body>
 </html>

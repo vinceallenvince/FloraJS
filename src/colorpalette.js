@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, document */
 /**
  * Creates a new ColorPalette object.
  *
@@ -9,7 +9,7 @@
  *
  * @constructor
  */
-function ColorPalette(opt_options) {
+function ColorPalette() {
 
   'use strict';
 

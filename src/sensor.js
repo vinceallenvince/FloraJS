@@ -49,7 +49,7 @@ Sensor.prototype.step = function() {
 
   'use strict';
 
-  var check = false, maxSpeed = 10, i, max;
+  var check = false, i, max;
 
   if (this.type === "heat" && exports.heats.length > 0) {
     for (i = 0, max = exports.heats.length; i < max; i += 1) { // heat

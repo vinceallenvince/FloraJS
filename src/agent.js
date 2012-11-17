@@ -82,15 +82,47 @@ function Agent(opt_options) {
   this.beforeStep = options.beforeStep || undefined;
   this.afterStep = options.afterStep || undefined;
 
+  var mouseover = (function (me) {
+    return (function(e) {
+      exports.Element.mouseover(e, me);
+    });
+  })(this);
+
+  var mousedown = (function (me) {
+    return (function(e) {
+      exports.Element.mousedown(e, me);
+    });
+  })(this);
+
+  var mousemove = (function (me) {
+    return (function(e) {
+      exports.Element.mousemove(e, me);
+    });
+  })(this);
+
+  var mouseup = (function (me) {
+    return (function(e) {
+      exports.Element.mouseup(e, me);
+    });
+  })(this);
+
+  var mouseout = (function (me) {
+    return (function(e) {
+      exports.Element.mouseout(e, me);
+    });
+  })(this);
+
   if (this.draggable) {
-    exports.Utils.addEvent(this.el, 'mouseover', exports.Element.mouseover.bind(this));
-    exports.Utils.addEvent(this.el, 'mousedown', exports.Element.mousedown.bind(this));
-    exports.Utils.addEvent(this.el, 'mousemove', exports.Element.mousemove.bind(this));
-    exports.Utils.addEvent(this.el, 'mouseup', exports.Element.mouseup.bind(this));
-    exports.Utils.addEvent(this.el, 'mouseout', exports.Element.mouseout.bind(this));
+    exports.Utils.addEvent(this.el, 'mouseover', mouseover);
+    exports.Utils.addEvent(this.el, 'mousedown', mousedown);
+    exports.Utils.addEvent(this.el, 'mousemove', mousemove);
+    exports.Utils.addEvent(this.el, 'mouseup', mouseup);
+    exports.Utils.addEvent(this.el, 'mouseout', mouseout);
   }
 }
 exports.Utils.extend(Agent, exports.Element);
+
+
 
 Agent.prototype.name = 'Agent';
 
@@ -101,7 +133,7 @@ Agent.prototype.step = function() {
 
   'use strict';
 
-  var i, max, dir, friction, force, nose, r, theta, x, y, sensor, className, sensorActivated,
+  var i, max, dir, friction, force, r, theta, x, y, sensor, className, sensorActivated,
     world = this.world, elements = exports.elementList.all();
 
   //
@@ -315,10 +347,9 @@ Agent.prototype.applyForce = function(force) {
  * Calculates a steering force to apply to an object seeking another object.
  *
  * @param {Object} target The object to seek.
- * @param {boolean} arrive Set to true to for this object to arrive and stop at the target.
  * @returns {Object} The force to apply.
  */
-Agent.prototype.seek = function(target, arrive) {
+Agent.prototype.seek = function(target) {
 
   'use strict';
 
@@ -423,7 +454,7 @@ Agent.prototype.align = function(elements) {
 
   'use strict';
 
-  var i, max, element, diff, d,
+  var i, max, element, d,
     sum = new exports.Vector(),
     neighbordist = this.width * 2,
     count = 0, steer;
@@ -462,7 +493,7 @@ Agent.prototype.cohesion = function(elements) {
 
   'use strict';
 
-  var i, max, element, diff, d,
+  var i, max, element, d,
     sum = new exports.Vector(),
     neighbordist = 10,
     count = 0, desiredVelocity, steer;
@@ -590,7 +621,6 @@ Agent.prototype.checkWorldEdges = function(world) {
     steer,
     maxSpeed,
     check = false,
-    adjusted_loc,
     diff;
 
   // transform origin is at the center of the object
@@ -613,8 +643,8 @@ Agent.prototype.checkWorldEdges = function(world) {
         maxSpeed = -this.maxSpeed;
       }
       if (maxSpeed) {
-        desiredVelocity = new exports.Vector(maxSpeed, this.velocity.y),
-        steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
+        desiredVelocity = new exports.Vector(maxSpeed, velocity.y),
+        steer = exports.Vector.VectorSub(desiredVelocity, velocity);
         steer.limit(this.maxSteeringForce);
         this.applyForce(steer);
       }
@@ -622,12 +652,12 @@ Agent.prototype.checkWorldEdges = function(world) {
     if (this.location.x + this.width/2 > world.width) {
       this.location = new exports.Vector(world.width - this.width/2, this.location.y);
       diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
-      this.velocity.x *= -1 * this.bounciness;
+      velocity.x *= -1 * this.bounciness;
       check = true;
      } else if (this.location.x < this.width/2) {
       this.location = new exports.Vector(this.width/2, this.location.y);
       diff = new exports.Vector(x - this.location.x, 0);
-      this.velocity.x *= -1 * this.bounciness;
+      velocity.x *= -1 * this.bounciness;
       check = true;
     }
   }

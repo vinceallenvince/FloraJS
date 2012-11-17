@@ -5,7 +5,7 @@
 	.STRN {color: #393;}
 	.REGX {color: #339;}
 	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
-	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*global exports */</span><span class="WHIT">
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*global exports, document, window */</span><span class="WHIT">
 <span class='line'>  2</span> </span><span class="COMM">/**
 <span class='line'>  3</span>  * Creates a new World.
 <span class='line'>  4</span>  *
@@ -89,7 +89,7 @@
 <span class='line'> 82</span> 
 <span class='line'> 83</span> </span><span class="WHIT">  </span><span class="COMM">// events</span><span class="WHIT">
 <span class='line'> 84</span> 
-<span class='line'> 85</span> </span><span class="WHIT">  </span><span class="NAME">exports.Utils.addEvent</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'resize'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// listens for window resize</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">  </span><span class="NAME">exports.Utils.addEvent</span><span class="PUNC">(</span><span class="NAME">window</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'resize'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// listens for window resize</span><span class="WHIT">
 <span class='line'> 86</span> </span><span class="WHIT">    </span><span class="NAME">me.resize.call</span><span class="PUNC">(</span><span class="NAME">me</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 87</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 88</span> </span><span class="PUNC">}</span><span class="WHIT">

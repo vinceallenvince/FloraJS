@@ -34,7 +34,7 @@ FlowField.prototype.build = function() {
 
   'use strict';
 
-  var i, max, col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
+  var col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
       vectorList = {},
       world = this.world,
       cols = Math.ceil(world.width/parseFloat(this.resolution)),

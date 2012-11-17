@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, document */
 /**
  * Creates a new FlowFieldMarker.
  *

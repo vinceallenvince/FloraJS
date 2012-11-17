@@ -6,7 +6,7 @@ The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'T
 
 ## Simple System
 
-To setup a simple Flora system, reference the Flora .js file from two script tags in the &lt;head&gt; of your document. Also, reference the flora.css file.
+To setup a simple Flora system, reference the Flora .js file from a script tag in the &lt;head&gt; of your document. Also, reference the flora.css file.
 
 In the body, add a &lt;script&gt; tag and create a new Flora system. Pass the system a function that describes the elements in your world.
 
@@ -391,6 +391,77 @@ In the above example, we have a fixed, third-person perspective of our World. Bu
 
 http://www.florajs.com/examples/camera.html
 
+#### DOM Renderer
+
+You can think of FloraJS as having two major components, a set of classes for elements in a natural system, and a renderer to draw those elements to the DOM. If you want to drop the Flora classes and use your own, you can still use the FloraJS DOM renderer to render your system.
+
+For example, in the 'build' folder, you'll find 'floraDOM.js'. Reference this file instead of the latest FloraJS build in the &lt;head&gt; of your document.
+
+```html
+<!DOCTYPE html>
+  <html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
+    <style type='text/css'>
+      .ball {
+        background: rgb(197, 150, 200);
+        border-color: rgb(255, 255, 255);
+        border-width: 0.25em;
+        border-style: solid;
+        border-radius: 100%;
+      }
+    </style>
+    <script src="js/floraDOM.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      function Ball(world, opt_options) {
+
+        var options = opt_options || {},
+            world = Flora.universe.first();
+
+        // You must call Flora.Element
+        Flora.Element.call(this, options);
+
+        this.acceleration = new Flora.Vector(0, 0.1);
+        this.velocity = new Flora.Vector();
+        this.location = new Flora.Vector(world.width/2, 0);
+      }
+      // You must extend Flora.Element
+      exports.Utils.extend(Ball, Flora.Element);
+
+      Ball.prototype.name = 'Ball';
+
+      // You must include a step function
+      Ball.prototype.step = function() {
+
+        var world = Flora.universe.first();
+
+        this.velocity.add(this.acceleration);
+        this.location.add(this.velocity);
+
+        if (this.location.y + this.height/2 > world.height) {
+          this.velocity.mult(-0.75);
+          this.location.y = world.height - this.height/2;
+        }
+
+      };
+
+      Flora.System.start(function() {
+        new Ball();
+      });
+    </script>
+  </body>
+</html>
+```
+
+In the example above, we've created a simple Ball class that falls from the top of the browser and bounces off the bottom. For your own classes to work correctly, you must extend Flora's 'Element' class and call Element inside your constructor. To update your instance's properties, you must include a 'step' function.
+
+http://www.florajs.com/examples/dom.html
+
 #### More to come
 
 I'll post more examples soon. You can see the examples above in action at http://www.florajs.com/examples. You can also find full documentation at http://www.florajs.com/docs.
@@ -406,3 +477,8 @@ I'll post more examples soon. You can see the examples above in action at http:/
 * added static methods in Vector class and updated docs
 * camel casing class 'name' property
 * updated tests
+
+0.0.3
+* separate build for the DOM rendering components of the framework (floraDOM.js)
+* added indicator in stats if browser supports 3d transforms
+

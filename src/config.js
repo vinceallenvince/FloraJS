@@ -1,3 +1,4 @@
+/*global exports */
 var config = {
   borderStyles: [
     'none',

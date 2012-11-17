@@ -1,3 +1,4 @@
+/*global exports */
 /*jshint supernew:true */
 /**
  * Creates a new Vector.
