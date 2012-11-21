@@ -23,9 +23,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 0.0.3 */
+/* Version: 0.0.4 */
 /* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: November 17, 2012 03:48:10 */
+/* Build time: November 25, 2012 05:38:11 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -172,6 +172,31 @@ ElementList.prototype.getAllByName = function(name) {
 
   for (i = 0, max = this._records.length; i < max; i++) {
     if (this._records[i].name === name) {
+      arr[arr.length] = this._records[i];
+    }
+  }
+  return arr;
+};
+
+/**
+ * Returns an array of elements with an attribute that matches the
+ * passed 'attr'. If 'opt_val' is passed, 'attr' must equal 'val'.
+ *
+ * @param {string} attr The property to match.
+ * @param {*} [opt_val=] The 'attr' property must equal 'val'.
+ * @returns {Array} An array of elements.
+ */
+ElementList.prototype.getAllByAttribute = function(attr, opt_val) {
+
+  'use strict';
+
+  var i, max, arr = [], val = opt_val || null;
+
+  for (i = 0, max = this._records.length; i < max; i++) {
+    if (this._records[i][attr]) {
+      if (val && this._records[i][attr] !== val) {
+        continue;
+      }
       arr[arr.length] = this._records[i];
     }
   }
@@ -382,6 +407,9 @@ System.start = function (func, opt_universe, opt_worlds) {
 
       for (i = elements.length - 1; i >= 0; i -= 1) {
         elements[i].step();
+      }
+
+      for (i = elements.length - 1; i >= 0; i -= 1) {
         if (elements[i]) {
           elements[i].draw();
         }
@@ -626,7 +654,9 @@ Utils.getCSSText = function(props) {
 
   'use strict';
 
-  var positionStr = '';
+  var positionStr = '',
+      width = typeof props.w === 'number' ? props.w + 'px' : props.w,
+      height = typeof props.h === 'number' ? props.h + 'px' : props.h;
 
   if (!props.color) {
     props.color = [];
@@ -667,8 +697,8 @@ Utils.getCSSText = function(props) {
   return [
     positionStr,
     'opacity: ' + props.o,
-    'width: ' + props.w + 'px',
-    'height: ' + props.h + 'px',
+    'width: ' + width,
+    'height: ' + height,
     'background: ' + props.background,
     'z-index: ' + props.z,
     'border-width: ' + props.borderWidth + 'px',
@@ -2710,9 +2740,12 @@ Element.prototype.draw = function() {
 
   'use strict';
 
+  var width = typeof this.width === 'number' ? this.width : this.el.offsetWidth, // !! no
+      height = typeof this.height === 'number' ? this.height : this.el.offsetHeight; // !! no
+
   this.el.style.cssText = exports.Utils.getCSSText({
-    x: this.location.x - this.width/2,
-    y: this.location.y - this.height/2,
+    x: this.location.x - width/2,
+    y: this.location.y - height/2,
     s: this.scale,
     a: this.angle,
     o: this.opacity,

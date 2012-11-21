@@ -355,6 +355,40 @@ describe("A new ElementList", function() {
     }
     expect(check).toEqual(true);
   });
+  it("getAllByAttribute() should return an array of records with a property matching 'attr'. If 'val' is provided, 'attr' should equal 'val'.", function() {
+
+    var i, max, check = null,
+        point1 = new exports.Point({
+          hello: 'hello'
+        }),
+        agent = new exports.Agent({
+          hello: 'goodbye'
+        }),
+        point2 = new exports.Point({
+          color: 'blue'
+        }),
+        arr, attr = "hello";
+
+    arr = exports.elementList.getAllByAttribute(attr);
+
+    expect(interfaceCheck.getDataType(arr)).toEqual('array');
+    expect(arr.length).toEqual(2);
+
+    for (i = 0, max = arr.length; i < max; i++) {
+      if (arr[i][attr]) {
+        check = true;
+      } else {
+        check = false;
+        break;
+      }
+    }
+    expect(check).toEqual(true);
+
+    arr = exports.elementList.getAllByAttribute(attr, 'hello');
+    expect(interfaceCheck.getDataType(arr)).toEqual('array');
+    expect(arr.length).toEqual(1);
+
+  });
   it("destroyElement() should receive an id and remove the corresponding element " +
       "from elementList.records and the element's world.", function() {
 

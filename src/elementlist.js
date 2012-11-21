@@ -72,6 +72,31 @@ ElementList.prototype.getAllByName = function(name) {
 };
 
 /**
+ * Returns an array of elements with an attribute that matches the
+ * passed 'attr'. If 'opt_val' is passed, 'attr' must equal 'val'.
+ *
+ * @param {string} attr The property to match.
+ * @param {*} [opt_val=] The 'attr' property must equal 'val'.
+ * @returns {Array} An array of elements.
+ */
+ElementList.prototype.getAllByAttribute = function(attr, opt_val) {
+
+  'use strict';
+
+  var i, max, arr = [], val = opt_val || null;
+
+  for (i = 0, max = this._records.length; i < max; i++) {
+    if (this._records[i][attr]) {
+      if (val && this._records[i][attr] !== val) {
+        continue;
+      }
+      arr[arr.length] = this._records[i];
+    }
+  }
+  return arr;
+};
+
+/**
  * Updates the properties of elements created from the same constructor.
  *
  * @param {string} name The constructor name.
