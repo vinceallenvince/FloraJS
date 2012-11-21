@@ -298,9 +298,12 @@ Element.prototype.draw = function() {
 
   'use strict';
 
+  var width = typeof this.width === 'number' ? this.width : this.el.offsetWidth, // !! no
+      height = typeof this.height === 'number' ? this.height : this.el.offsetHeight; // !! no
+
   this.el.style.cssText = exports.Utils.getCSSText({
-    x: this.location.x - this.width/2,
-    y: this.location.y - this.height/2,
+    x: this.location.x - width/2,
+    y: this.location.y - height/2,
     s: this.scale,
     a: this.angle,
     o: this.opacity,

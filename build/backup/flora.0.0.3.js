@@ -25,7 +25,7 @@ THE SOFTWARE.
 */
 /* Version: 0.0.3 */
 /* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: November 17, 2012 03:48:10 */
+/* Build time: November 17, 2012 05:17:38 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -172,6 +172,31 @@ ElementList.prototype.getAllByName = function(name) {
 
   for (i = 0, max = this._records.length; i < max; i++) {
     if (this._records[i].name === name) {
+      arr[arr.length] = this._records[i];
+    }
+  }
+  return arr;
+};
+
+/**
+ * Returns an array of elements with an attribute that matches the
+ * passed 'attr'. If 'opt_val' is passed, 'attr' must equal 'val'.
+ *
+ * @param {string} attr The 'attr' property.
+ * @param {*} [opt_val=] The 'attr' property must equal 'val'.
+ * @returns {Array} An array of elements.
+ */
+ElementList.prototype.getAllByAttribute = function(attr, opt_val) {
+
+  'use strict';
+
+  var i, max, arr = [], val = opt_val || null;
+
+  for (i = 0, max = this._records.length; i < max; i++) {
+    if (this._records[i][attr]) {
+      if (val && this._records[i][attr] !== val) {
+        continue;
+      }
       arr[arr.length] = this._records[i];
     }
   }

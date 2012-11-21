@@ -16,6 +16,7 @@
       concatenate,
       concatenateDOMRenderer,
       concatenateCSS,
+      validateDemos,
       bakeDev,
       deployDev">
   </target>
@@ -84,7 +85,7 @@
 
   <target name="validateDemos">
     <apply executable="java" failonerror="true" parallel="true">
-      <fileset dir="${dev.dir}/js" includes="**/*.js" />
+      <fileset dir="${dev.dir}/js" includes="**/*.js" excludes="flora.js" />
       <arg line="-jar" />
       <arg path="${rhino}" />
       <arg path="${jshint}" />
@@ -369,6 +370,9 @@
     <copy file="${build.dir}/${buildName}.js" tofile="${build.dir}/backup/${buildName}.${version}.js" overwrite="true"/>
     <!-- copy fat build file to dev/js -->
     <copy file="${build.dir}/${buildName}.js" todir="${dev.dir}/js" overwrite="true"/>
+    <!-- copy fat build file to tests/lib -->
+    <copy file="${build.dir}/${buildName}.js" todir="${tests.dir}/lib" overwrite="true"/>
+
     <!-- copy fat css file to backup folder with version number -->
     <copy file="${cssBuild.dir}/${buildName}.css" tofile="${cssBuild.dir}/backup/${buildName}.${version}.css" overwrite="true"/>
     <!-- copy css file to dev/css -->
@@ -450,6 +454,9 @@
 
     <copy file="${dev.dir}/js/braitenberg_vehicle3c_VALUES.js" tofile="${public.dir}/js/braitenberg_vehicle3c_VALUES.js" overwrite="true"/>
     <copy file="${dev.dir}/braitenberg_vehicle3c_VALUES.html" tofile="${public.dir}/braitenberg_vehicle3c_VALUES.html" overwrite="true"/>
+
+    <copy file="${dev.dir}/js/flap.js" tofile="${public.dir}/js/flap.js" overwrite="true"/>
+    <copy file="${dev.dir}/flap.html" tofile="${public.dir}/flap.html" overwrite="true"/>
 
     <copy file="${dev.dir}/js/particles1_CURIOUS.js" tofile="${public.dir}/js/particles1_CURIOUS.js" overwrite="true"/>
     <copy file="${dev.dir}/particles1_CURIOUS.html" tofile="${public.dir}/particles1_CURIOUS.html" overwrite="true"/>

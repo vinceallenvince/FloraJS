@@ -216,7 +216,9 @@ Utils.getCSSText = function(props) {
 
   'use strict';
 
-  var positionStr = '';
+  var positionStr = '',
+      width = typeof props.w === 'number' ? props.w + 'px' : props.w,
+      height = typeof props.h === 'number' ? props.h + 'px' : props.h;
 
   if (!props.color) {
     props.color = [];
@@ -257,8 +259,8 @@ Utils.getCSSText = function(props) {
   return [
     positionStr,
     'opacity: ' + props.o,
-    'width: ' + props.w + 'px',
-    'height: ' + props.h + 'px',
+    'width: ' + width,
+    'height: ' + height,
     'background: ' + props.background,
     'z-index: ' + props.z,
     'border-width: ' + props.borderWidth + 'px',

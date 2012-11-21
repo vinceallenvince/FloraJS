@@ -469,16 +469,20 @@ I'll post more examples soon. You can see the examples above in action at http:/
 #### History
 
 0.0.2
-* added feature detection
-* added Universe.clearWorld(id) to remove all elements from a World
-* separated Agent and Element properties
-* changed Agent.target to Agent.seekTarget
-* bug fixes in Vector class w midpoint()
-* added static methods in Vector class and updated docs
-* camel casing class 'name' property
+* adds feature detection
+* adds Universe.clearWorld(id) to remove all elements from a World
+* separates Agent and Element properties
+* changes Agent.target to Agent.seekTarget
+* fixes bugs in Vector class w midpoint()
+* adds static methods in Vector class and updated docs
+* camel cases class 'name' property
 * updated tests
 
 0.0.3
-* separate build for the DOM rendering components of the framework (floraDOM.js)
-* added indicator in stats if browser supports 3d transforms
+* creates a build for the DOM rendering components of the framework (floraDOM.js)
+* adds indicator in stats if browser supports 3d transforms
+
+0.0.4
+* adds ElementList.getAllByAttribute()
+* updated tests
 
