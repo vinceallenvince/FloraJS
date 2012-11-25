@@ -457,6 +457,8 @@
 
     <copy file="${dev.dir}/js/flap.js" tofile="${public.dir}/js/flap.js" overwrite="true"/>
     <copy file="${dev.dir}/flap.html" tofile="${public.dir}/flap.html" overwrite="true"/>
+    <copy file="${dev.dir}/js/spin.js" tofile="${public.dir}/js/spin.js" overwrite="true"/>
+    <copy file="${dev.dir}/spin.html" tofile="${public.dir}/spin.html" overwrite="true"/>
 
     <copy file="${dev.dir}/js/particles1_CURIOUS.js" tofile="${public.dir}/js/particles1_CURIOUS.js" overwrite="true"/>
     <copy file="${dev.dir}/particles1_CURIOUS.html" tofile="${public.dir}/particles1_CURIOUS.html" overwrite="true"/>

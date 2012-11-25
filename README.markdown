@@ -484,5 +484,7 @@ I'll post more examples soon. You can see the examples above in action at http:/
 
 0.0.4
 * adds ElementList.getAllByAttribute()
+* separated step() and draw() into their own loops; updating the DOM in a separate loop provides smoother frame rates
 * updated tests
-
+* tracking /lib
+* add spin demo

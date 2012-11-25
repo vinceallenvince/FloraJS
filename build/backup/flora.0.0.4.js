@@ -25,7 +25,7 @@ THE SOFTWARE.
 */
 /* Version: 0.0.4 */
 /* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: November 20, 2012 08:19:33 */
+/* Build time: November 25, 2012 05:38:11 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -407,6 +407,9 @@ System.start = function (func, opt_universe, opt_worlds) {
 
       for (i = elements.length - 1; i >= 0; i -= 1) {
         elements[i].step();
+      }
+
+      for (i = elements.length - 1; i >= 0; i -= 1) {
         if (elements[i]) {
           elements[i].draw();
         }
