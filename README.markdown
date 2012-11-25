@@ -466,6 +466,30 @@ http://www.florajs.com/examples/dom.html
 
 I'll post more examples soon. You can see the examples above in action at http://www.florajs.com/examples. You can also find full documentation at http://www.florajs.com/docs.
 
+#### Advanced exmaples
+
+The following examples implement advanced functions of FloraJS.
+
+* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle3c_VALUES.html'>Values</a>
+
+* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle3b_EXPLORER.html'>Explorer</a>
+
+* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle3a_LOVES.html'>Loves</a>
+
+* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle2b_AGGRESSIVE.html'>Aggressive</a>
+
+* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle2a_COWARD.html'>Coward</a>
+
+* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle1_ALIVE.html'>Alive</a>
+
+* Flocking - <a href='http://www.florajs.com/demos/flap.html'>Flap</a>
+
+* Particles - <a href='http://www.florajs.com/demos/particles1_CURIOUS.html'>Curious</a>
+
+* Particles - <a href='http://www.florajs.com/demos/particles2_SMOTHER.html'>Smother</a>
+
+* Particles - <a href='http://www.florajs.com/demos/particles3_FLIRT.html'>Flirt</a>
+
 #### History
 
 0.0.2
