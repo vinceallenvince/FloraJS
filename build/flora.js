@@ -25,7 +25,7 @@ THE SOFTWARE.
 */
 /* Version: 0.0.4 */
 /* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: November 25, 2012 05:38:11 */
+/* Build time: November 25, 2012 06:32:43 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -405,10 +405,18 @@ System.start = function (func, opt_universe, opt_worlds) {
         elements = elements.sort(function(a,b){return (b.zIndex - a.zIndex);});
       }
 
+      /*
+       * Using two loops here because it's faster and frame rate
+       * is more consistent if all properties are updated in one loop,
+       * and all DOM updates are done in a separate loop.
+       */
+
+      // update elements' properties
       for (i = elements.length - 1; i >= 0; i -= 1) {
         elements[i].step();
       }
 
+      // updated elements' DOM element
       for (i = elements.length - 1; i >= 0; i -= 1) {
         if (elements[i]) {
           elements[i].draw();
