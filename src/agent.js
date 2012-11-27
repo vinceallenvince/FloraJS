@@ -366,9 +366,13 @@ Agent.prototype.seek = function(target) {
     desiredVelocity.mult(this.maxSpeed);
   }
 
-  var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-  steer.limit(this.maxSteeringForce);
-  return steer;
+  //var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
+  //steer.limit(this.maxSteeringForce);
+
+  desiredVelocity.sub(this.velocity);
+  desiredVelocity.limit(this.maxSteeringForce);
+
+  return desiredVelocity;
 };
 
 /**
