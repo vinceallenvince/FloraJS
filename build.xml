@@ -312,7 +312,7 @@
 
   <!-- Bake for release: the final step -->
   <target name="bakeRelease">
-    <!-- Adds the license to the raw minified file. -->
+    <!-- Adds the license to the raw minified js file. -->
     <concat destfile="${build.dir}/${buildName}.min.js" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         %PROJECTNAME%
@@ -325,7 +325,7 @@
       <filelist dir="${build.dir}" files="${buildName}.raw.min.js"/>
       <footer trimleading="yes"></footer>
     </concat>
-    <!-- Adds the license to the raw minified floraDOM file. -->
+    <!-- Adds the license to the raw minified floraDOM js file. -->
     <concat destfile="${build.dir}/floraDOM.min.js" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         %PROJECTNAME% | DOM Renderer
@@ -337,7 +337,7 @@
       <filelist dir="${build.dir}" files="floraDOM.raw.min.js"/>
       <footer trimleading="yes"></footer>
     </concat>
-    <!-- CSS - Adds the license to the raw minified file. -->
+    <!-- CSS - Adds the license to the raw minified css file. -->
     <concat destfile="${cssBuild.dir}/${buildName}.min.css" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         %PROJECTNAME%
@@ -354,10 +354,12 @@
     <!-- the version number found in build.properties. -->
     <replaceregexp match="%VERSION%" replace="${version}" flags="g" byline="true">
       <fileset dir="${build.dir}" includes="**/*"/>
+      <fileset dir="${cssBuild.dir}" includes="**/*"/>
     </replaceregexp>
     <!-- Searches for %PROJECTNAME% in the build directory and replaces with the project name -->
     <replaceregexp match="%PROJECTNAME%" replace="${projectName}" flags="g" byline="true">
       <fileset dir="${build.dir}" includes="**/*"/>
+      <fileset dir="${cssBuild.dir}" includes="**/*"/>
     </replaceregexp>
     <delete file="${build.dir}/${buildName}.raw.min.js"/>
     <delete file="${build.dir}/${buildName}DOM.raw.min.js"/>
@@ -469,6 +471,7 @@
     <copy file="${dev.dir}/js/particles3_FLIRT.js" tofile="${public.dir}/js/particles3_FLIRT.js" overwrite="true"/>
     <copy file="${dev.dir}/particles3_FLIRT.html" tofile="${public.dir}/particles3_FLIRT.html" overwrite="true"/>
 
+    <!-- change refs in public.dir to point to the minified file -->
     <fileset id="public.fileset" dir="${public.dir}" includes="**/*.html" />
 
     <replaceregexp match="flora.js" replace="flora.min.js" flags="g" byline="true">

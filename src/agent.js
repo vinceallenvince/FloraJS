@@ -247,7 +247,7 @@ Agent.prototype.step = function() {
 
       if (this.flowField.field[col]) {
         loc = this.flowField.field[col][row];
-        if (loc) { // !! sometimes loc is not available for edge cases; need to fix
+        if (loc) { // sometimes loc is not available for edge cases
           target = {
             location: new exports.Vector(loc.x, loc.y)
           };
@@ -328,7 +328,7 @@ Agent.prototype.step = function() {
 };
 
 /**
- * Applies a force to this object's acceleration.
+ * Applies a force to this object's acceleration via F = M * A.
  *
  * @param {Object} force The force to be applied (expressed as a vector).
  */
@@ -336,11 +336,11 @@ Agent.prototype.applyForce = function(force) {
 
   'use strict';
 
-  // F = M * A
-  var f = force.clone(); // make a copy of the force so the original force vector is not altered by dividing by mass; could also use static method
+  this.applyForceVector.x = force.x;
+  this.applyForceVector.y = force.y;
 
-  f.div(this.mass);
-  this.acceleration.add(f);
+  this.applyForceVector.div(this.mass);
+  this.acceleration.add(this.applyForceVector);
 };
 
 /**
@@ -366,9 +366,6 @@ Agent.prototype.seek = function(target) {
     desiredVelocity.mult(this.maxSpeed);
   }
 
-  //var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-  //steer.limit(this.maxSteeringForce);
-
   desiredVelocity.sub(this.velocity);
   desiredVelocity.limit(this.maxSteeringForce);
 
@@ -377,6 +374,7 @@ Agent.prototype.seek = function(target) {
 
 /**
  * Calculates a steering force to apply to an object following another object.
+ * Agents with flow fields will use this method to calculate a steering force.
  *
  * @param {Object} target The object to follow.
  * @returns {Object} The force to apply.
@@ -385,13 +383,14 @@ Agent.prototype.follow = function(target) {
 
   'use strict';
 
-  var desiredVelocity = target.location.clone();
+  this.followDesiredVelocity.x = target.location.x;
+  this.followDesiredVelocity.y = target.location.y;
 
-  desiredVelocity.mult(this.maxSpeed);
+  this.followDesiredVelocity.mult(this.maxSpeed);
+  this.followDesiredVelocity.sub(this.velocity);
+  this.followDesiredVelocity.limit(this.maxSteeringForce);
 
-  var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-  steer.limit(this.maxSteeringForce);
-  return steer;
+  return this.followDesiredVelocity;
 };
 
 /**
@@ -418,8 +417,11 @@ Agent.prototype.separate = function(elements) {
   'use strict';
 
   var i, max, element, diff, d,
-  sum = new exports.Vector(),
-  count = 0, steer;
+  sum, count = 0, steer;
+
+  this.separateSumForceVector.x = 0;
+  this.separateSumForceVector.y = 0;
+  sum = this.separateSumForceVector;
 
   for (i = 0, max = elements.length; i < max; i += 1) {
     element = elements[i];
@@ -440,11 +442,11 @@ Agent.prototype.separate = function(elements) {
     sum.div(count);
     sum.normalize();
     sum.mult(this.maxSpeed);
-    steer = exports.Vector.VectorSub(sum, this.velocity);
-    steer.limit(this.maxSteeringForce);
-    return steer;
+    sum.sub(this.velocity);
+    sum.limit(this.maxSteeringForce);
+    return sum;
   }
-  return new exports.Vector();
+  return this.zeroForceVector;
 };
 
 /**
@@ -459,9 +461,12 @@ Agent.prototype.align = function(elements) {
   'use strict';
 
   var i, max, element, d,
-    sum = new exports.Vector(),
     neighbordist = this.width * 2,
-    count = 0, steer;
+    sum, count = 0, steer;
+
+  this.alignSumForceVector.x = 0;
+  this.alignSumForceVector.y = 0;
+  sum = this.alignSumForceVector;
 
   for (i = 0, max = elements.length; i < max; i += 1) {
     element = elements[i];
@@ -479,11 +484,11 @@ Agent.prototype.align = function(elements) {
     sum.div(count);
     sum.normalize();
     sum.mult(this.maxSpeed);
-    steer = exports.Vector.VectorSub(sum, this.velocity);
-    steer.limit(this.maxSteeringForce);
-    return steer;
+    sum.sub(this.velocity);
+    sum.limit(this.maxSteeringForce);
+    return sum;
   }
-  return new exports.Vector();
+  return this.zeroForceVector;
 };
 
 /**
@@ -498,9 +503,12 @@ Agent.prototype.cohesion = function(elements) {
   'use strict';
 
   var i, max, element, d,
-    sum = new exports.Vector(),
     neighbordist = 10,
-    count = 0, desiredVelocity, steer;
+    sum, count = 0, desiredVelocity, steer;
+
+  this.cohesionSumForceVector.y = 0;
+  this.cohesionSumForceVector.y = 0;
+  sum = this.cohesionSumForceVector;
 
   for (i = 0, max = elements.length; i < max; i += 1) {
     element = elements[i];
@@ -516,14 +524,14 @@ Agent.prototype.cohesion = function(elements) {
 
   if (count > 0) {
     sum.div(count);
-    desiredVelocity = exports.Vector.VectorSub(sum, this.location);
-    desiredVelocity.normalize();
-    desiredVelocity.mult(this.maxSpeed);
-    steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-    steer.limit(this.maxSteeringForce);
-    return steer;
+    sum.sub(this.location);
+    sum.normalize();
+    sum.mult(this.maxSpeed);
+    sum.sub(this.velocity);
+    sum.limit(this.maxSteeringForce);
+    return sum;
   }
-  return new exports.Vector();
+  return this.zeroForceVector;
 };
 
 /**

@@ -88,7 +88,7 @@ Flora.System.start(function () {
     }
   };
 
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 30; i++) {
 
     var wingSize = getRandomNumber(8, 64),
         mass = getRandomNumber(100, 300),

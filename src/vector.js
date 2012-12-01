@@ -9,10 +9,8 @@
  */
 function Vector(opt_x, opt_y) {
   'use strict';
-  var x = opt_x || 0,
-      y = opt_y || 0;
-  this.x = x;
-  this.y = y;
+  this.x = opt_x || 0;
+  this.y = opt_y || 0;
 }
 
 /**
@@ -163,8 +161,8 @@ Vector.prototype.mult = function(n) {
  */
 Vector.prototype.div = function(n) {
   'use strict';
-  this.x = this.x / n;
-  this.y = this.y / n;
+  this.x /= n;
+  this.y /= n;
   return this;
 };
 

@@ -2,8 +2,9 @@
 ###########
 bak/
 demos/
-lib/
 experimental/
+docs/
+public/
 
 # FILES #
 #########

@@ -66,7 +66,7 @@ Flora.System.start(function () {
     }
   };
 
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 30; i++) {
 
     var wingSize = getRandomNumber(4, 32),
         color = pl.getColor(),

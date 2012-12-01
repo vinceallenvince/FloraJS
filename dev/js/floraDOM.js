@@ -23,8 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 0.0.4 */
-/* Build time: November 25, 2012 06:32:43 */
+/* Version: 0.0.5 */
+/* Build time: December 1, 2012 02:49:40 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -728,10 +728,8 @@ exports.Utils = Utils;
  */
 function Vector(opt_x, opt_y) {
   'use strict';
-  var x = opt_x || 0,
-      y = opt_y || 0;
-  this.x = x;
-  this.y = y;
+  this.x = opt_x || 0;
+  this.y = opt_y || 0;
 }
 
 /**
@@ -882,8 +880,8 @@ Vector.prototype.mult = function(n) {
  */
 Vector.prototype.div = function(n) {
   'use strict';
-  this.x = this.x / n;
-  this.y = this.y / n;
+  this.x /= n;
+  this.y /= n;
   return this;
 };
 
@@ -2538,6 +2536,14 @@ function Element(opt_options) {
   this.borderColor = options.borderColor || null;
   this.borderRadius = options.borderRadius || null;
   this.boxShadow = options.boxShadow || null;
+
+  // Vector caches
+  this.zeroForceVector = new exports.Vector();
+  this.applyForceVector = new exports.Vector();
+  this.followDesiredVelocity = new exports.Vector();
+  this.separateSumForceVector = new exports.Vector();
+  this.alignSumForceVector = new exports.Vector();
+  this.cohesionSumForceVector = new exports.Vector();
 
     // set sensors
   this.sensors = options.sensors || [];

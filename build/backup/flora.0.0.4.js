@@ -25,7 +25,7 @@ THE SOFTWARE.
 */
 /* Version: 0.0.4 */
 /* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: November 25, 2012 06:32:43 */
+/* Build time: November 29, 2012 09:58:09 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -2540,6 +2540,8 @@ function Element(opt_options) {
   this.borderRadius = options.borderRadius || null;
   this.boxShadow = options.boxShadow || null;
 
+  this.applyForceVector = new exports.Vector();
+
     // set sensors
   this.sensors = options.sensors || [];
 
@@ -3110,10 +3112,15 @@ Agent.prototype.applyForce = function(force) {
   'use strict';
 
   // F = M * A
-  var f = force.clone(); // make a copy of the force so the original force vector is not altered by dividing by mass; could also use static method
+  //var f = force.clone(); // make a copy of the force so the original force vector is not altered by dividing by mass; could also use static method
+  //f.div(this.mass);
+  //this.acceleration.add(f);
 
-  f.div(this.mass);
-  this.acceleration.add(f);
+  this.applyForceVector.x = force.x;
+  this.applyForceVector.y = force.y;
+
+  this.applyForceVector.div(this.mass);
+  this.acceleration.add(this.applyForceVector);
 };
 
 /**
@@ -3139,13 +3146,15 @@ Agent.prototype.seek = function(target) {
     desiredVelocity.mult(this.maxSpeed);
   }
 
-  var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-  steer.limit(this.maxSteeringForce);
-  return steer;
+  desiredVelocity.sub(this.velocity);
+  desiredVelocity.limit(this.maxSteeringForce);
+
+  return desiredVelocity;
 };
 
 /**
  * Calculates a steering force to apply to an object following another object.
+ * Agents with flow fields will use this method to calculate a steering force.
  *
  * @param {Object} target The object to follow.
  * @returns {Object} The force to apply.
@@ -3157,10 +3166,10 @@ Agent.prototype.follow = function(target) {
   var desiredVelocity = target.location.clone();
 
   desiredVelocity.mult(this.maxSpeed);
+  desiredVelocity.sub(this.velocity);
+  desiredVelocity.limit(this.maxSteeringForce);
 
-  var steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-  steer.limit(this.maxSteeringForce);
-  return steer;
+  return desiredVelocity;
 };
 
 /**
@@ -3209,9 +3218,9 @@ Agent.prototype.separate = function(elements) {
     sum.div(count);
     sum.normalize();
     sum.mult(this.maxSpeed);
-    steer = exports.Vector.VectorSub(sum, this.velocity);
-    steer.limit(this.maxSteeringForce);
-    return steer;
+    sum.sub(this.velocity);
+    sum.limit(this.maxSteeringForce);
+    return sum;
   }
   return new exports.Vector();
 };
@@ -3248,9 +3257,9 @@ Agent.prototype.align = function(elements) {
     sum.div(count);
     sum.normalize();
     sum.mult(this.maxSpeed);
-    steer = exports.Vector.VectorSub(sum, this.velocity);
-    steer.limit(this.maxSteeringForce);
-    return steer;
+    sum.sub(this.velocity);
+    sum.limit(this.maxSteeringForce);
+    return sum;
   }
   return new exports.Vector();
 };
@@ -3288,9 +3297,9 @@ Agent.prototype.cohesion = function(elements) {
     desiredVelocity = exports.Vector.VectorSub(sum, this.location);
     desiredVelocity.normalize();
     desiredVelocity.mult(this.maxSpeed);
-    steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-    steer.limit(this.maxSteeringForce);
-    return steer;
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    return desiredVelocity;
   }
   return new exports.Vector();
 };

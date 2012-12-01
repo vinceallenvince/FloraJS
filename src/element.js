@@ -90,6 +90,14 @@ function Element(opt_options) {
   this.borderRadius = options.borderRadius || null;
   this.boxShadow = options.boxShadow || null;
 
+  // Vector caches
+  this.zeroForceVector = new exports.Vector();
+  this.applyForceVector = new exports.Vector();
+  this.followDesiredVelocity = new exports.Vector();
+  this.separateSumForceVector = new exports.Vector();
+  this.alignSumForceVector = new exports.Vector();
+  this.cohesionSumForceVector = new exports.Vector();
+
     // set sensors
   this.sensors = options.sensors || [];
 

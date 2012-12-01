@@ -512,3 +512,13 @@ The following examples implement advanced functions of FloraJS.
 * updated tests
 * tracking /lib
 * add spin demo
+
+0.0.5
+* stopped tracking /docs - run build.release to generate docs
+* stopped tracking /public
+* added applyForceVector to cache Agent.applyForce() vector
+* added followDesiredVelocity to cache Agent.follow() desired velocity vector
+* added separateSumForceVector to cache Agent.separate() sum force vector
+* added alignSumForceVector to cache Agent.align() sum force vector
+* remove unnecessary style rules
+* increased total agents in flocking demos
