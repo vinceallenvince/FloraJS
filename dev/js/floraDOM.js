@@ -23,8 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 0.0.5 */
-/* Build time: December 1, 2012 02:49:40 */
+/* Version: 0.0.6 */
+/* Build time: December 1, 2012 05:58:39 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -2503,12 +2503,13 @@ function Element(opt_options) {
       lights = exports.lights || [],
       oxygen = exports.oxygen || [],
       food = exports.food || [],
-      world, constructorName = this.name || 'anon';
+      world, constructorName = this.name || 'anon',
+      viewArgs = options.viewArgs || [];
 
   this.id = options.id || constructorName.toLowerCase() + "-" + Element._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-    this.el = options.view.apply(this, options.viewArgs);
+    this.el = options.view.apply(this, viewArgs);
   } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
     this.el = options.view;
   } else {
@@ -2538,12 +2539,17 @@ function Element(opt_options) {
   this.boxShadow = options.boxShadow || null;
 
   // Vector caches
-  this.zeroForceVector = new exports.Vector();
-  this.applyForceVector = new exports.Vector();
-  this.followDesiredVelocity = new exports.Vector();
-  this.separateSumForceVector = new exports.Vector();
-  this.alignSumForceVector = new exports.Vector();
-  this.cohesionSumForceVector = new exports.Vector();
+  this.zeroForceVector = new exports.Vector(); // use when returning {x: 0, y: 0}
+  this.applyForceVector = new exports.Vector(); // used in Agent.applyForce()
+  this.followDesiredVelocity = new exports.Vector(); // used in Agent.follow()
+  this.followTargetVector = new exports.Vector(); // used in Agent.step()
+  this.separateSumForceVector = new exports.Vector(); // used in Agent.separate()
+  this.alignSumForceVector = new exports.Vector(); // used in Agent.align()
+  this.cohesionSumForceVector = new exports.Vector(); // used in Agent.cohesion()
+  this.checkCameraEdgesVector = new exports.Vector(); // used in Agent.checkCameraEdges()
+  this.getLocationVector = new exports.Vector(); // used in Agent.getLocation()
+  this.getVelocityVector = new exports.Vector(); // used in Agent.getVelocity()
+  this.cameraDiffVector = new exports.Vector(); // used in Agent.checkWorldEdges()
 
     // set sensors
   this.sensors = options.sensors || [];

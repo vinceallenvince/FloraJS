@@ -1334,9 +1334,6 @@ describe("A new Walker", function() {
     expect(typeof obj.offsetY).toEqual('number');
     expect(typeof obj.isRandom).toEqual('boolean');
     expect(typeof obj.randomRadius).toEqual('number');
-    expect(typeof obj.isHarmonic).toEqual('boolean');
-    expect(typeof obj.harmonicAmplitude).toEqual('object');
-    expect(typeof obj.harmonicPeriod).toEqual('object');
     expect(typeof obj.width).toEqual('number');
     expect(typeof obj.height).toEqual('number');
     expect(typeof obj.color).toEqual('object');

@@ -23,9 +23,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 0.0.5 */
+/* Version: 0.0.6 */
 /* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: December 1, 2012 02:49:40 */
+/* Build time: December 1, 2012 05:58:39 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -2504,12 +2504,13 @@ function Element(opt_options) {
       lights = exports.lights || [],
       oxygen = exports.oxygen || [],
       food = exports.food || [],
-      world, constructorName = this.name || 'anon';
+      world, constructorName = this.name || 'anon',
+      viewArgs = options.viewArgs || [];
 
   this.id = options.id || constructorName.toLowerCase() + "-" + Element._idCount; // if no id, create one
 
   if (options.view && exports.Interface.getDataType(options.view) === "function") { // if view is supplied and is a function
-    this.el = options.view.apply(this, options.viewArgs);
+    this.el = options.view.apply(this, viewArgs);
   } else if (exports.Interface.getDataType(options.view) === "object") { // if view is supplied and is an object
     this.el = options.view;
   } else {
@@ -2539,12 +2540,17 @@ function Element(opt_options) {
   this.boxShadow = options.boxShadow || null;
 
   // Vector caches
-  this.zeroForceVector = new exports.Vector();
-  this.applyForceVector = new exports.Vector();
-  this.followDesiredVelocity = new exports.Vector();
-  this.separateSumForceVector = new exports.Vector();
-  this.alignSumForceVector = new exports.Vector();
-  this.cohesionSumForceVector = new exports.Vector();
+  this.zeroForceVector = new exports.Vector(); // use when returning {x: 0, y: 0}
+  this.applyForceVector = new exports.Vector(); // used in Agent.applyForce()
+  this.followDesiredVelocity = new exports.Vector(); // used in Agent.follow()
+  this.followTargetVector = new exports.Vector(); // used in Agent.step()
+  this.separateSumForceVector = new exports.Vector(); // used in Agent.separate()
+  this.alignSumForceVector = new exports.Vector(); // used in Agent.align()
+  this.cohesionSumForceVector = new exports.Vector(); // used in Agent.cohesion()
+  this.checkCameraEdgesVector = new exports.Vector(); // used in Agent.checkCameraEdges()
+  this.getLocationVector = new exports.Vector(); // used in Agent.getLocation()
+  this.getVelocityVector = new exports.Vector(); // used in Agent.getVelocity()
+  this.cameraDiffVector = new exports.Vector(); // used in Agent.checkWorldEdges()
 
     // set sensors
   this.sensors = options.sensors || [];
@@ -3027,14 +3033,15 @@ Agent.prototype.step = function() {
       if (this.flowField.field[col]) {
         loc = this.flowField.field[col][row];
         if (loc) { // sometimes loc is not available for edge cases
-          target = {
-            location: new exports.Vector(loc.x, loc.y)
-          };
+          this.followTargetVector.x = loc.x;
+          this.followTargetVector.y = loc.y;
         } else {
-          target = {
-            location: new exports.Vector(this.location.x, this.location.y)
-          };
+          this.followTargetVector.x = this.location.x;
+          this.followTargetVector.y = this.location.y;
         }
+        target = {
+          location: this.followTargetVector
+        };
         this.applyForce(this.follow(target));
       }
 
@@ -3042,6 +3049,10 @@ Agent.prototype.step = function() {
 
     if (this.flocking) {
       this.flock(elements);
+    }
+
+    if (this.avoidEdges) {
+      this.checkAvoidEdges();
     }
 
     // end -- APPLY FORCES
@@ -3084,7 +3095,7 @@ Agent.prototype.step = function() {
 
           this.location.x = this.parent.location.x;
           this.location.y = this.parent.location.y;
-          this.location.add(new exports.Vector(x, y)); // position the sensor
+          this.location.add(new exports.Vector(x, y)); // position the child
 
         } else {
           this.location = this.parent.location;
@@ -3396,6 +3407,39 @@ Agent.prototype.isInside = function(container) {
 };
 
 /**
+ * Checks if object is within range of a world edge. If so, steers the object
+ * in the opposite direction.
+ */
+Agent.prototype.checkAvoidEdges = function() {
+
+  var maxSpeed, desiredVelocity;
+
+  if (this.location.x < this.avoidEdgesStrength) {
+    maxSpeed = this.maxSpeed;
+  } else if (this.location.x > this.world.width - this.avoidEdgesStrength) {
+    maxSpeed = -this.maxSpeed;
+  }
+  if (maxSpeed) {
+    desiredVelocity = new exports.Vector(maxSpeed, this.velocity.y);
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    this.applyForce(desiredVelocity);
+  }
+
+  if (this.location.y < this.avoidEdgesStrength) {
+    maxSpeed = this.maxSpeed;
+  } else if (this.location.y > this.world.height - this.avoidEdgesStrength) {
+    maxSpeed = -this.maxSpeed;
+  }
+  if (maxSpeed) {
+    desiredVelocity = new exports.Vector(this.velocity.x, maxSpeed);
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    this.applyForce(desiredVelocity);
+  }
+};
+
+/**
  * Determines if this object is outside the world bounds.
  *
  * @param {Object} world The world object.
@@ -3411,107 +3455,101 @@ Agent.prototype.checkWorldEdges = function(world) {
     desiredVelocity,
     steer,
     maxSpeed,
-    check = false,
-    diff;
+    check = false;
 
   // transform origin is at the center of the object
 
   if (this.wrapEdges) {
     if (this.location.x > world.width) {
-      this.location = new exports.Vector(0, this.location.y);
-      diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
+      this.location.x = 0;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = x - this.location.x;
+        this.cameraDiffVector.y = 0;
+      }
     } else if (this.location.x < 0) {
-      this.location = new exports.Vector(world.width, this.location.y);
-      diff = new exports.Vector(x - this.location.x, 0);
+      this.location.x = world.width;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = x - this.location.x;
+        this.cameraDiffVector.y = 0;
+      }
     }
   } else {
-    if (this.avoidEdges) {
-      if (this.location.x < this.avoidEdgesStrength) {
-        maxSpeed = this.maxSpeed;
-      } else if (this.location.x > exports.world.width - this.avoidEdgesStrength) {
-        maxSpeed = -this.maxSpeed;
-      }
-      if (maxSpeed) {
-        desiredVelocity = new exports.Vector(maxSpeed, velocity.y),
-        steer = exports.Vector.VectorSub(desiredVelocity, velocity);
-        steer.limit(this.maxSteeringForce);
-        this.applyForce(steer);
-      }
-    }
     if (this.location.x + this.width/2 > world.width) {
-      this.location = new exports.Vector(world.width - this.width/2, this.location.y);
-      diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
+      this.location.x = world.width - this.width/2;
       velocity.x *= -1 * this.bounciness;
       check = true;
-     } else if (this.location.x < this.width/2) {
-      this.location = new exports.Vector(this.width/2, this.location.y);
-      diff = new exports.Vector(x - this.location.x, 0);
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = x - this.location.x;
+        this.cameraDiffVector.y = 0;
+      }
+    } else if (this.location.x < this.width/2) {
+      this.location.x = this.width/2;
       velocity.x *= -1 * this.bounciness;
       check = true;
+      if (this.controlCamera) {
+       this.cameraDiffVector.x = x - this.location.x;
+        this.cameraDiffVector.y = 0;
+      }
     }
   }
 
   ////
 
-  maxSpeed = null;
   if (this.wrapEdges) {
     if (this.location.y > world.height) {
-      this.location = new exports.Vector(this.location.x, 0);
-      diff = new exports.Vector(0, y - this.location.y);
+      this.location.y = 0;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = 0;
+        this.cameraDiffVector.y = y - this.location.y;
+      }
     } else if (this.location.y < 0) {
-      this.location = new exports.Vector(this.location.x, world.height);
-      diff = new exports.Vector(0, y - this.location.y);
+      this.location.y = world.height;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = 0;
+        this.cameraDiffVector.y = y - this.location.y;
+      }
     }
   } else {
-    if (this.avoidEdges) {
-      if (this.location.y < this.avoidEdgesStrength) {
-        maxSpeed = this.maxSpeed;
-      } else if (this.location.y > exports.world.height - this.avoidEdgesStrength) {
-        maxSpeed = -this.maxSpeed;
-      }
-      if (maxSpeed) {
-        desiredVelocity = new exports.Vector(this.velocity.x, maxSpeed),
-        steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-        steer.limit(this.maxSteeringForce);
-        this.applyForce(steer);
-      }
-    }
     if (this.location.y + this.height/2 > world.height) {
-      this.location = new exports.Vector(this.location.x, world.height - this.height/2);
-      diff = new exports.Vector(0, y - this.location.y);
+      this.location.y = world.height - this.height/2;
       this.velocity.y *= -1 * this.bounciness;
       check = true;
-      } else if (this.location.y < this.height/2) {
-      this.location = new exports.Vector(this.location.x, this.height/2);
-      diff = new exports.Vector(0, y - this.location.y);
+      if (this.controlCamera) {
+       this.cameraDiffVector.x = 0;
+        this.cameraDiffVector.y = y - this.location.y;
+      }
+    } else if (this.location.y < this.height/2) {
+      this.location.y = this.height/2;
       this.velocity.y *= -1 * this.bounciness;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = 0;
+        this.cameraDiffVector.y = y - this.location.y;
+      }
     }
   }
 
   if (check && this.controlCamera) {
-    world.location.add(diff); // !! do we need this? // add the distance difference to World.location
+    world.location.add(this.cameraDiffVector); // add the distance difference to World.location
   }
   return check;
 };
 
 /**
  * Moves the world in the opposite direction of the Camera's controlObj.
- *
- * @param {Object} world The world object.
- * @returns {boolean} Returns true if the object is outside the world.
  */
 Agent.prototype.checkCameraEdges = function() {
 
   'use strict';
 
-  var vel = this.velocity.clone();
+  this.checkCameraEdgesVector.x = this.velocity.x;
+  this.checkCameraEdgesVector.y = this.velocity.y;
 
-  this.world.location.add(vel.mult(-1));
+  this.world.location.add(this.checkCameraEdgesVector.mult(-1));
 };
 
 /**
@@ -3526,7 +3564,9 @@ Agent.prototype.getLocation = function (type) {
   'use strict';
 
   if (!type) {
-    return new exports.Vector(this.location.x, this.location.y);
+    this.getLocationVector.x = this.location.x;
+    this.getLocationVector.y = this.location.y;
+    return this.getLocationVector;
   } else if (type === 'x') {
     return this.location.x;
   } else if (type === 'y') {
@@ -3546,10 +3586,12 @@ Agent.prototype.getVelocity = function (type) {
   'use strict';
 
   if (!type) {
-    return new exports.Vector(this.velocity.x, this.velocity.y);
-  } else if (type === "x") {
+    this.getVelocityVector.x = this.location.x;
+    this.getVelocityVector.y = this.location.y;
+    return this.getVelocityVector;
+  } else if (type === 'x') {
     return this.velocity.x;
-  } else if (type === "y") {
+  } else if (type === 'y') {
     return this.velocity.y;
   }
 };
@@ -3574,9 +3616,6 @@ exports.Agent = Agent;
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.isRandom = false] Set to true for walker to move in a random direction.
  * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
- * @param {boolean} [opt_options.isHarmonic = false] If set to true, walker will move using harmonic motion.
- * @param {Object} [opt_options.isHarmonic = {x: 6, y: 6}] If isHarmonic = true, sets the motion's amplitude.
- * @param {Object} [opt_options.harmonicPeriod = {x: 150, y: 150}] If isHarmonic = true, sets the motion's period.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
  * @param {number} [opt_options.maxSpeed = 30] Maximum speed
@@ -3601,9 +3640,6 @@ function Walker(opt_options) {
   this.offsetY = options.offsetY || Math.random() * 10000;
   this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
-  this.isHarmonic = !!options.isHarmonic;
-  this.harmonicAmplitude = options.harmonicAmplitude || new exports.Vector(4, 0);
-  this.harmonicPeriod = options.harmonicPeriod || new exports.Vector(300, 1);
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 30;
@@ -3660,19 +3696,18 @@ Walker.prototype.step = function () {
       this.applyForce(world.gravity); // gravity
     }
 
-    if (this.isHarmonic) {
-      this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.x);
-      this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.y);
-    }
-
     if (this.isRandom) {
-      this.target = { // find a random point and steer toward it
+      this.seekTarget = { // find a random point and steer toward it
         location: exports.Vector.VectorAdd(this.location, new exports.Vector(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
       };
     }
 
     if (this.seekTarget) { // follow seek target
       this.applyForce(this.seek(this.seekTarget));
+    }
+
+    if (this.avoidEdges) {
+      this.checkAvoidEdges();
     }
 
     // end -- APPLY FORCES

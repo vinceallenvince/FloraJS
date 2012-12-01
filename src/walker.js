@@ -17,9 +17,6 @@
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.isRandom = false] Set to true for walker to move in a random direction.
  * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
- * @param {boolean} [opt_options.isHarmonic = false] If set to true, walker will move using harmonic motion.
- * @param {Object} [opt_options.isHarmonic = {x: 6, y: 6}] If isHarmonic = true, sets the motion's amplitude.
- * @param {Object} [opt_options.harmonicPeriod = {x: 150, y: 150}] If isHarmonic = true, sets the motion's period.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
  * @param {number} [opt_options.maxSpeed = 30] Maximum speed
@@ -44,9 +41,6 @@ function Walker(opt_options) {
   this.offsetY = options.offsetY || Math.random() * 10000;
   this.isRandom = !!options.isRandom;
   this.randomRadius = options.randomRadius || 100;
-  this.isHarmonic = !!options.isHarmonic;
-  this.harmonicAmplitude = options.harmonicAmplitude || new exports.Vector(4, 0);
-  this.harmonicPeriod = options.harmonicPeriod || new exports.Vector(300, 1);
   this.width = options.width === 0 ? 0 : options.width || 10;
   this.height = options.height === 0 ? 0 : options.height || 10;
   this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 30;
@@ -103,19 +97,18 @@ Walker.prototype.step = function () {
       this.applyForce(world.gravity); // gravity
     }
 
-    if (this.isHarmonic) {
-      this.velocity.x = this.harmonicAmplitude.x * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.x);
-      this.velocity.y = this.harmonicAmplitude.y * Math.cos((Math.PI * 2) * exports.world.clock / this.harmonicPeriod.y);
-    }
-
     if (this.isRandom) {
-      this.target = { // find a random point and steer toward it
+      this.seekTarget = { // find a random point and steer toward it
         location: exports.Vector.VectorAdd(this.location, new exports.Vector(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
       };
     }
 
     if (this.seekTarget) { // follow seek target
       this.applyForce(this.seek(this.seekTarget));
+    }
+
+    if (this.avoidEdges) {
+      this.checkAvoidEdges();
     }
 
     // end -- APPLY FORCES

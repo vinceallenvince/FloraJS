@@ -16,7 +16,6 @@
       concatenate,
       concatenateDOMRenderer,
       concatenateCSS,
-      validateDemos,
       bakeDev,
       deployDev">
   </target>

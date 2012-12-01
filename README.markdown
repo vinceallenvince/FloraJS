@@ -516,9 +516,19 @@ The following examples implement advanced functions of FloraJS.
 0.0.5
 * stopped tracking /docs - run build.release to generate docs
 * stopped tracking /public
-* added applyForceVector to cache Agent.applyForce() vector
-* added followDesiredVelocity to cache Agent.follow() desired velocity vector
-* added separateSumForceVector to cache Agent.separate() sum force vector
-* added alignSumForceVector to cache Agent.align() sum force vector
+* added Element.applyForceVector to cache Agent.applyForce() vector
+* added Element.followDesiredVelocity to cache Agent.follow() desired velocity vector
+* added Element.separateSumForceVector to cache Agent.separate() sum force vector
+* added Element.alignSumForceVector to cache Agent.align() sum force vector
 * remove unnecessary style rules
 * increased total agents in flocking demos
+
+0.0.6
+* added Element.followTargetVector to cache follow target in Agent.step()
+* added Element.checkCameraEdgesVector to cache velocity in Agent.checkCameraEdges()
+* added Element.getLocationVector to cache location in Agent.getLocation()
+* added Element.getVelocityVector to cache location in Agent.getVelocity()
+* removed unnecessary calls to new Vector() in Agent.checkWorldEdges()
+* fixed avoidEdges()
+* added default value for Element.viewArgs
+

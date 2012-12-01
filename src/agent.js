@@ -248,14 +248,15 @@ Agent.prototype.step = function() {
       if (this.flowField.field[col]) {
         loc = this.flowField.field[col][row];
         if (loc) { // sometimes loc is not available for edge cases
-          target = {
-            location: new exports.Vector(loc.x, loc.y)
-          };
+          this.followTargetVector.x = loc.x;
+          this.followTargetVector.y = loc.y;
         } else {
-          target = {
-            location: new exports.Vector(this.location.x, this.location.y)
-          };
+          this.followTargetVector.x = this.location.x;
+          this.followTargetVector.y = this.location.y;
         }
+        target = {
+          location: this.followTargetVector
+        };
         this.applyForce(this.follow(target));
       }
 
@@ -263,6 +264,10 @@ Agent.prototype.step = function() {
 
     if (this.flocking) {
       this.flock(elements);
+    }
+
+    if (this.avoidEdges) {
+      this.checkAvoidEdges();
     }
 
     // end -- APPLY FORCES
@@ -305,7 +310,7 @@ Agent.prototype.step = function() {
 
           this.location.x = this.parent.location.x;
           this.location.y = this.parent.location.y;
-          this.location.add(new exports.Vector(x, y)); // position the sensor
+          this.location.add(new exports.Vector(x, y)); // position the child
 
         } else {
           this.location = this.parent.location;
@@ -617,6 +622,39 @@ Agent.prototype.isInside = function(container) {
 };
 
 /**
+ * Checks if object is within range of a world edge. If so, steers the object
+ * in the opposite direction.
+ */
+Agent.prototype.checkAvoidEdges = function() {
+
+  var maxSpeed, desiredVelocity;
+
+  if (this.location.x < this.avoidEdgesStrength) {
+    maxSpeed = this.maxSpeed;
+  } else if (this.location.x > this.world.width - this.avoidEdgesStrength) {
+    maxSpeed = -this.maxSpeed;
+  }
+  if (maxSpeed) {
+    desiredVelocity = new exports.Vector(maxSpeed, this.velocity.y);
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    this.applyForce(desiredVelocity);
+  }
+
+  if (this.location.y < this.avoidEdgesStrength) {
+    maxSpeed = this.maxSpeed;
+  } else if (this.location.y > this.world.height - this.avoidEdgesStrength) {
+    maxSpeed = -this.maxSpeed;
+  }
+  if (maxSpeed) {
+    desiredVelocity = new exports.Vector(this.velocity.x, maxSpeed);
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    this.applyForce(desiredVelocity);
+  }
+};
+
+/**
  * Determines if this object is outside the world bounds.
  *
  * @param {Object} world The world object.
@@ -632,107 +670,101 @@ Agent.prototype.checkWorldEdges = function(world) {
     desiredVelocity,
     steer,
     maxSpeed,
-    check = false,
-    diff;
+    check = false;
 
   // transform origin is at the center of the object
 
   if (this.wrapEdges) {
     if (this.location.x > world.width) {
-      this.location = new exports.Vector(0, this.location.y);
-      diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
+      this.location.x = 0;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = x - this.location.x;
+        this.cameraDiffVector.y = 0;
+      }
     } else if (this.location.x < 0) {
-      this.location = new exports.Vector(world.width, this.location.y);
-      diff = new exports.Vector(x - this.location.x, 0);
+      this.location.x = world.width;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = x - this.location.x;
+        this.cameraDiffVector.y = 0;
+      }
     }
   } else {
-    if (this.avoidEdges) {
-      if (this.location.x < this.avoidEdgesStrength) {
-        maxSpeed = this.maxSpeed;
-      } else if (this.location.x > exports.world.width - this.avoidEdgesStrength) {
-        maxSpeed = -this.maxSpeed;
-      }
-      if (maxSpeed) {
-        desiredVelocity = new exports.Vector(maxSpeed, velocity.y),
-        steer = exports.Vector.VectorSub(desiredVelocity, velocity);
-        steer.limit(this.maxSteeringForce);
-        this.applyForce(steer);
-      }
-    }
     if (this.location.x + this.width/2 > world.width) {
-      this.location = new exports.Vector(world.width - this.width/2, this.location.y);
-      diff = new exports.Vector(x - this.location.x, 0); // get the difference bw the initial location and the adjusted location
+      this.location.x = world.width - this.width/2;
       velocity.x *= -1 * this.bounciness;
       check = true;
-     } else if (this.location.x < this.width/2) {
-      this.location = new exports.Vector(this.width/2, this.location.y);
-      diff = new exports.Vector(x - this.location.x, 0);
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = x - this.location.x;
+        this.cameraDiffVector.y = 0;
+      }
+    } else if (this.location.x < this.width/2) {
+      this.location.x = this.width/2;
       velocity.x *= -1 * this.bounciness;
       check = true;
+      if (this.controlCamera) {
+       this.cameraDiffVector.x = x - this.location.x;
+        this.cameraDiffVector.y = 0;
+      }
     }
   }
 
   ////
 
-  maxSpeed = null;
   if (this.wrapEdges) {
     if (this.location.y > world.height) {
-      this.location = new exports.Vector(this.location.x, 0);
-      diff = new exports.Vector(0, y - this.location.y);
+      this.location.y = 0;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = 0;
+        this.cameraDiffVector.y = y - this.location.y;
+      }
     } else if (this.location.y < 0) {
-      this.location = new exports.Vector(this.location.x, world.height);
-      diff = new exports.Vector(0, y - this.location.y);
+      this.location.y = world.height;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = 0;
+        this.cameraDiffVector.y = y - this.location.y;
+      }
     }
   } else {
-    if (this.avoidEdges) {
-      if (this.location.y < this.avoidEdgesStrength) {
-        maxSpeed = this.maxSpeed;
-      } else if (this.location.y > exports.world.height - this.avoidEdgesStrength) {
-        maxSpeed = -this.maxSpeed;
-      }
-      if (maxSpeed) {
-        desiredVelocity = new exports.Vector(this.velocity.x, maxSpeed),
-        steer = exports.Vector.VectorSub(desiredVelocity, this.velocity);
-        steer.limit(this.maxSteeringForce);
-        this.applyForce(steer);
-      }
-    }
     if (this.location.y + this.height/2 > world.height) {
-      this.location = new exports.Vector(this.location.x, world.height - this.height/2);
-      diff = new exports.Vector(0, y - this.location.y);
+      this.location.y = world.height - this.height/2;
       this.velocity.y *= -1 * this.bounciness;
       check = true;
-      } else if (this.location.y < this.height/2) {
-      this.location = new exports.Vector(this.location.x, this.height/2);
-      diff = new exports.Vector(0, y - this.location.y);
+      if (this.controlCamera) {
+       this.cameraDiffVector.x = 0;
+        this.cameraDiffVector.y = y - this.location.y;
+      }
+    } else if (this.location.y < this.height/2) {
+      this.location.y = this.height/2;
       this.velocity.y *= -1 * this.bounciness;
       check = true;
+      if (this.controlCamera) {
+        this.cameraDiffVector.x = 0;
+        this.cameraDiffVector.y = y - this.location.y;
+      }
     }
   }
 
   if (check && this.controlCamera) {
-    world.location.add(diff); // !! do we need this? // add the distance difference to World.location
+    world.location.add(this.cameraDiffVector); // add the distance difference to World.location
   }
   return check;
 };
 
 /**
  * Moves the world in the opposite direction of the Camera's controlObj.
- *
- * @param {Object} world The world object.
- * @returns {boolean} Returns true if the object is outside the world.
  */
 Agent.prototype.checkCameraEdges = function() {
 
   'use strict';
 
-  var vel = this.velocity.clone();
+  this.checkCameraEdgesVector.x = this.velocity.x;
+  this.checkCameraEdgesVector.y = this.velocity.y;
 
-  this.world.location.add(vel.mult(-1));
+  this.world.location.add(this.checkCameraEdgesVector.mult(-1));
 };
 
 /**
@@ -747,7 +779,9 @@ Agent.prototype.getLocation = function (type) {
   'use strict';
 
   if (!type) {
-    return new exports.Vector(this.location.x, this.location.y);
+    this.getLocationVector.x = this.location.x;
+    this.getLocationVector.y = this.location.y;
+    return this.getLocationVector;
   } else if (type === 'x') {
     return this.location.x;
   } else if (type === 'y') {
@@ -767,10 +801,12 @@ Agent.prototype.getVelocity = function (type) {
   'use strict';
 
   if (!type) {
-    return new exports.Vector(this.velocity.x, this.velocity.y);
-  } else if (type === "x") {
+    this.getVelocityVector.x = this.location.x;
+    this.getVelocityVector.y = this.location.y;
+    return this.getVelocityVector;
+  } else if (type === 'x') {
     return this.velocity.x;
-  } else if (type === "y") {
+  } else if (type === 'y') {
     return this.velocity.y;
   }
 };
