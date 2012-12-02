@@ -98,4 +98,33 @@ Flora.System.start(function () {
       }));
     }
   }
+
+  // objects will flock toward mouse on click and hold
+  var mousedown = false;
+
+  Flora.Utils.addEvent(document, 'mousedown', function() {
+    mousedown = true;
+    Flora.elementList.updatePropsByName('Agent', {
+      seekTarget: {
+        location: new Flora.Vector(Flora.mouse.loc.x, Flora.mouse.loc.y)
+      }
+    });
+  });
+
+  Flora.Utils.addEvent(document, 'mousemove', function() {
+    if (mousedown) {
+      Flora.elementList.updatePropsByName('Agent', {
+        seekTarget: {
+          location: new Flora.Vector(Flora.mouse.loc.x, Flora.mouse.loc.y)
+        }
+      });
+    }
+  });
+
+  Flora.Utils.addEvent(document, 'mouseup', function() {
+    mousedown = false;
+    Flora.elementList.updatePropsByName('Agent', {
+      seekTarget: target
+    });
+  });
 });

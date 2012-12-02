@@ -159,6 +159,7 @@ function Element(opt_options) {
  * Increments as each Element is created.
  * @type number
  * @default 0
+ * @private
  */
 Element._idCount = 0;
 

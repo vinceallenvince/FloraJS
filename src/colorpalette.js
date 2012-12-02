@@ -7,9 +7,10 @@
  * can also generate gradients that smoothly interpolate from
  * start and end colors.
  *
+ * @param {string|number} opt_id An optional id. If an id is not passed, a default id is created.
  * @constructor
  */
-function ColorPalette() {
+function ColorPalette(opt_id) {
 
   'use strict';
 
@@ -26,7 +27,18 @@ function ColorPalette() {
    * @private
    */
   this._colors = [];
+
+  this.id = opt_id || ColorPalette._idCount;
+  ColorPalette._idCount += 1; // increment id
 }
+
+/**
+ * Increments as each ColorPalette is created.
+ * @type number
+ * @default 0
+ * @private
+ */
+ColorPalette._idCount = 0;
 
 ColorPalette.prototype.name = 'ColorPalette';
 

@@ -83,11 +83,11 @@ ElementList.prototype.getAllByAttribute = function(attr, opt_val) {
 
   'use strict';
 
-  var i, max, arr = [], val = opt_val || null;
+  var i, max, arr = [], val = opt_val !== undefined ? opt_val : null;
 
   for (i = 0, max = this._records.length; i < max; i++) {
-    if (this._records[i][attr]) {
-      if (val && this._records[i][attr] !== val) {
+    if (this._records[i][attr] !== undefined) {
+      if (val !== null && this._records[i][attr] !== val) {
         continue;
       }
       arr[arr.length] = this._records[i];

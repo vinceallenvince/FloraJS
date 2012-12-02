@@ -17,38 +17,62 @@ Flora.System.start(function () {
   });
   flowField.build();
 
-  var pl;
-  switch (getRandomNumber(1, 3)) {
-    case 1:
-      pl = new Flora.ColorPalette();
-      pl.addColor({
-        min: 1,
-        max: 24,
-        startColor: [135, 227, 26],
-        endColor: [89, 165, 0]
-      });
-      break;
+  function getColorPalette() {
+    var temp_pl;
+    switch (getRandomNumber(1, 5)) {
+      case 1:
+        temp_pl = new Flora.ColorPalette('darkPurple');
+        temp_pl.addColor({
+          min: 1,
+          max: 24,
+          startColor: [73, 10, 61],
+          endColor: [111, 33, 96]
+        });
+        break;
 
-    case 2:
-      pl = new Flora.ColorPalette();
-      pl.addColor({
-        min: 1,
-        max: 24,
-        startColor: [237, 20, 91],
-        endColor: [255, 122, 165]
-      });
-      break;
+      case 2:
+        temp_pl = new Flora.ColorPalette('pink');
+        temp_pl.addColor({
+          min: 1,
+          max: 24,
+          startColor: [189, 21, 80],
+          endColor: [236, 67, 126]
+        });
+        break;
 
-    case 3:
-      pl = new Flora.ColorPalette();
-      pl.addColor({
-        min: 1,
-        max: 24,
-        startColor: [109, 207, 246],
-        endColor: [0, 118, 163]
-      });
-      break;
+      case 3:
+        temp_pl = new Flora.ColorPalette('orange');
+        temp_pl.addColor({
+          min: 1,
+          max: 24,
+          startColor: [233, 127, 2],
+          endColor: [255, 179, 89]
+        });
+        break;
+
+      case 4:
+        temp_pl = new Flora.ColorPalette('yellow');
+        temp_pl.addColor({
+          min: 1,
+          max: 24,
+          startColor: [248, 202, 0],
+          endColor: [255, 226, 99]
+        });
+        break;
+
+      case 5:
+        temp_pl = new Flora.ColorPalette('green');
+        temp_pl.addColor({
+          min: 1,
+          max: 24,
+          startColor: [138, 155, 15],
+          endColor: [188, 205, 63]
+        });
+        break;
+    }
+    return temp_pl;
   }
+  var pl = getColorPalette();
 
   var target = new Flora.Agent({
     flowField: flowField,
@@ -66,7 +90,7 @@ Flora.System.start(function () {
 
   var wings = [];
 
-  var beforeStepA = function() {
+  var beforeStick = function() {
 
     this.angle = 90 + Flora.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
 
@@ -75,7 +99,7 @@ Flora.System.start(function () {
     }
   };
 
-  var beforeStepB = function() {
+  var beforeStepPropeller = function() {
 
     this.flapAngle += Flora.Utils.map(this.velocity.mag(),
         this.minSpeed, this.maxSpeed, 1, 50);
@@ -88,40 +112,41 @@ Flora.System.start(function () {
     }
   };
 
-  for (var i = 0; i < 30; i++) {
+  for (var i = 0; i < 15; i++) {
 
     var wingSize = getRandomNumber(8, 64),
         mass = getRandomNumber(100, 300),
         location = new Flora.Vector(universe.width/2 + getRandomNumber(-50, 50),
           universe.height/2 + getRandomNumber(-50, 50));
 
-    for (var j = 0; j < 2; j++) {
+    for (var j = 0; j < 3; j++) {
       wings.push(new Flora.Agent({
-        parent: j ? wings[wings.length - 1] : null,
-        location: location,
+        parent: j ? wings[wings.length - j] : null,
+        location: j ? new Flora.Vector() : new Flora.Vector(universe.width/2 + getRandomNumber(-50, 50),
+          universe.height/2 + getRandomNumber(-50, 50)),
         seekTarget: target,
-        offsetDistance: 0,
-        className: 'wing',
+        offsetAngle: 0,
+        offsetDistance: j ? (j === 1 ? wingSize / 20: -wingSize / 20) : null,
+        className: 'roll',
         pointToDirection: false,
         maxSteeringForce: 1000,
         wrapEdges: true,
-        flocking: j ? true : false,
+        flocking: j ? false : true,
         separateStrength: 0.4,
         alignStrength: 0.1,
         cohesionStrength: 0.3,
-        width: j ? wingSize : wingSize / 2,
+        width: j ? wingSize : wingSize,
         height: wingSize < 32 ? 1 : 2,
         color: j ? pl.getColor() : [255, 255, 255],
-        opacity: 0,
+        opacity: 1,
         flapAngle: 0,
         mass: mass,
         index: j,
-        beforeStep: j ? beforeStepA : beforeStepB
+        beforeStep: j ? beforeStick : beforeStepPropeller
       }));
     }
   }
 
-  // objects will flock toward mouse on click and hold
   var mousedown = false;
 
   Flora.Utils.addEvent(document, 'mousedown', function() {
@@ -144,9 +169,34 @@ Flora.System.start(function () {
   });
 
   Flora.Utils.addEvent(document, 'mouseup', function() {
-    mousedown = false;
+
+    var i, max, list = Flora.elementList.getAllByAttribute('index', 0);
+
+    // return a new palette that is not the same as the old
+    var new_pl = {
+      id: pl.id
+    };
+
+    while (new_pl.id === pl.id) {
+      new_pl = getColorPalette();
+    }
+
+    // change all items' color
+    Flora.elementList.updatePropsByName('Agent', {
+      seekTarget: target,
+      color: new_pl.getColor()
+    });
+
+    pl = new_pl;
+
+    // reset main elements to white
+    for (i = 0, max = list.length; i < max; i++) {
+      list[i].color = [255, 255, 255];
+    }
+
     Flora.elementList.updatePropsByName('Agent', {
       seekTarget: target
     });
+    mousedown = false;
   });
 });

@@ -23,8 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 0.0.6 */
-/* Build time: December 1, 2012 05:58:39 */
+/* Version: 0.0.7 */
+/* Build time: December 2, 2012 05:44:02 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -189,11 +189,11 @@ ElementList.prototype.getAllByAttribute = function(attr, opt_val) {
 
   'use strict';
 
-  var i, max, arr = [], val = opt_val || null;
+  var i, max, arr = [], val = opt_val !== undefined ? opt_val : null;
 
   for (i = 0, max = this._records.length; i < max; i++) {
-    if (this._records[i][attr]) {
-      if (val && this._records[i][attr] !== val) {
+    if (this._records[i][attr] !== undefined) {
+      if (val !== null && this._records[i][attr] !== val) {
         continue;
       }
       arr[arr.length] = this._records[i];
@@ -997,9 +997,10 @@ exports.Vector = Vector;
  * can also generate gradients that smoothly interpolate from
  * start and end colors.
  *
+ * @param {string|number} opt_id An optional id. If an id is not passed, a default id is created.
  * @constructor
  */
-function ColorPalette() {
+function ColorPalette(opt_id) {
 
   'use strict';
 
@@ -1016,7 +1017,18 @@ function ColorPalette() {
    * @private
    */
   this._colors = [];
+
+  this.id = opt_id || ColorPalette._idCount;
+  ColorPalette._idCount += 1; // increment id
 }
+
+/**
+ * Increments as each ColorPalette is created.
+ * @type number
+ * @default 0
+ * @private
+ */
+ColorPalette._idCount = 0;
 
 ColorPalette.prototype.name = 'ColorPalette';
 
@@ -1282,7 +1294,7 @@ exports.ColorTable = ColorTable;
  *
  * @constructor
  */
-function BorderPalette() {
+function BorderPalette(opt_id) {
 
   'use strict';
 
@@ -1291,7 +1303,18 @@ function BorderPalette() {
    * @private
    */
   this._borders = [];
+
+  this.id = opt_id || BorderPalette._idCount;
+  BorderPalette._idCount += 1; // increment id
 }
+
+/**
+ * Increments as each BorderPalette is created.
+ * @type number
+ * @default 0
+ * @private
+ */
+BorderPalette._idCount = 0;
 
 BorderPalette.prototype.name = 'BorderPalette';
 
@@ -2606,6 +2629,7 @@ function Element(opt_options) {
  * Increments as each Element is created.
  * @type number
  * @default 0
+ * @private
  */
 Element._idCount = 0;
 

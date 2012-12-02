@@ -532,3 +532,9 @@ The following examples implement advanced functions of FloraJS.
 * fixed avoidEdges()
 * added default value for Element.viewArgs
 
+0.0.7
+* updated ElementList.getAllByAttribute() to accept 0 as a value
+* added id property to ColorPalette();
+* added id property to BorderPalette();
+* updated flocking demos
+

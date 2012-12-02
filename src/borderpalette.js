@@ -6,7 +6,7 @@
  *
  * @constructor
  */
-function BorderPalette() {
+function BorderPalette(opt_id) {
 
   'use strict';
 
@@ -15,7 +15,18 @@ function BorderPalette() {
    * @private
    */
   this._borders = [];
+
+  this.id = opt_id || BorderPalette._idCount;
+  BorderPalette._idCount += 1; // increment id
 }
+
+/**
+ * Increments as each BorderPalette is created.
+ * @type number
+ * @default 0
+ * @private
+ */
+BorderPalette._idCount = 0;
 
 BorderPalette.prototype.name = 'BorderPalette';
 

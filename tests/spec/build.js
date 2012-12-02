@@ -43,6 +43,7 @@ describe("A new BorderPalette", function() {
 
   it("should have its required properties.", function() {
     expect(interfaceCheck.getDataType(obj._borders)).toEqual('array');
+    expect(obj.id).toEqual(0);
     expect(obj.name).toEqual('BorderPalette');
   });
 
@@ -159,6 +160,7 @@ describe("A new ColorPalette", function() {
   it("should have its required properties.", function() {
     expect(interfaceCheck.getDataType(obj._gradients)).toEqual('array');
     expect(interfaceCheck.getDataType(obj._colors)).toEqual('array');
+    expect(obj.id).toEqual(0);
     expect(obj.name).toEqual('ColorPalette');
   });
 
