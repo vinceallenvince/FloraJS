@@ -538,3 +538,6 @@ The following examples implement advanced functions of FloraJS.
 * added id property to BorderPalette();
 * updated flocking demos
 
+0.0.8
+* removed getLocationVector
+* removed getVelocityVector

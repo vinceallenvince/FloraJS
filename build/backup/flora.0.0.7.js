@@ -25,7 +25,7 @@ THE SOFTWARE.
 */
 /* Version: 0.0.7 */
 /* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: December 2, 2012 05:44:02 */
+/* Build time: December 2, 2012 06:59:45 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -2571,8 +2571,6 @@ function Element(opt_options) {
   this.alignSumForceVector = new exports.Vector(); // used in Agent.align()
   this.cohesionSumForceVector = new exports.Vector(); // used in Agent.cohesion()
   this.checkCameraEdgesVector = new exports.Vector(); // used in Agent.checkCameraEdges()
-  this.getLocationVector = new exports.Vector(); // used in Agent.getLocation()
-  this.getVelocityVector = new exports.Vector(); // used in Agent.getVelocity()
   this.cameraDiffVector = new exports.Vector(); // used in Agent.checkWorldEdges()
 
     // set sensors
@@ -2581,7 +2579,7 @@ function Element(opt_options) {
   this.className = options.className || constructorName.toLowerCase();
   this.className += ' floraElement';
 
-  elements.push(this); // push new instance of Element
+  elements[elements.length] = this; // push new instance of Element
 
   this.el.id = this.id;
   this.el.className = this.sensors.length > 0 ? (this.className + ' hasSensor') : this.className;
@@ -3588,9 +3586,7 @@ Agent.prototype.getLocation = function (type) {
   'use strict';
 
   if (!type) {
-    this.getLocationVector.x = this.location.x;
-    this.getLocationVector.y = this.location.y;
-    return this.getLocationVector;
+    return new exports.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
     return this.location.x;
   } else if (type === 'y') {
@@ -3610,9 +3606,7 @@ Agent.prototype.getVelocity = function (type) {
   'use strict';
 
   if (!type) {
-    this.getVelocityVector.x = this.location.x;
-    this.getVelocityVector.y = this.location.y;
-    return this.getVelocityVector;
+    return new exports.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
     return this.velocity.x;
   } else if (type === 'y') {

@@ -100,8 +100,6 @@ function Element(opt_options) {
   this.alignSumForceVector = new exports.Vector(); // used in Agent.align()
   this.cohesionSumForceVector = new exports.Vector(); // used in Agent.cohesion()
   this.checkCameraEdgesVector = new exports.Vector(); // used in Agent.checkCameraEdges()
-  this.getLocationVector = new exports.Vector(); // used in Agent.getLocation()
-  this.getVelocityVector = new exports.Vector(); // used in Agent.getVelocity()
   this.cameraDiffVector = new exports.Vector(); // used in Agent.checkWorldEdges()
 
     // set sensors
@@ -110,7 +108,7 @@ function Element(opt_options) {
   this.className = options.className || constructorName.toLowerCase();
   this.className += ' floraElement';
 
-  elements.push(this); // push new instance of Element
+  elements[elements.length] = this; // push new instance of Element
 
   this.el.id = this.id;
   this.el.className = this.sensors.length > 0 ? (this.className + ' hasSensor') : this.className;

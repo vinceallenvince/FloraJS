@@ -779,9 +779,7 @@ Agent.prototype.getLocation = function (type) {
   'use strict';
 
   if (!type) {
-    this.getLocationVector.x = this.location.x;
-    this.getLocationVector.y = this.location.y;
-    return this.getLocationVector;
+    return new exports.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
     return this.location.x;
   } else if (type === 'y') {
@@ -801,9 +799,7 @@ Agent.prototype.getVelocity = function (type) {
   'use strict';
 
   if (!type) {
-    this.getVelocityVector.x = this.location.x;
-    this.getVelocityVector.y = this.location.y;
-    return this.getVelocityVector;
+    return new exports.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
     return this.velocity.x;
   } else if (type === 'y') {
