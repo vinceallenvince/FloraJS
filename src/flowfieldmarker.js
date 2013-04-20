@@ -32,26 +32,21 @@ function FlowFieldMarker(options) {
 
     el = document.createElement("div");
     nose = document.createElement("div");
-    el.className = "flowFieldMarker floraElement";
+    el.className = "flowFieldMarker element";
     nose.className = "nose";
     el.appendChild(nose);
 
-    el.style.cssText = exports.Utils.getCSSText({
-      x: options.location.x - options.width/2,
-      y: options.location.y - options.height/2,
-      s: options.scale,
+    el.style.cssText = exports.Mover._getCSSText({
+      x: options.location.x - options.width / 2,
+      y: options.location.y - options.height / 2,
+      width: options.width,
+      height: options.height,
+      opacity: options.opacity,
       a: options.angle,
-      o: options.opacity,
-      w: options.width,
-      h: options.height,
-      cm: options.colorMode,
+      s: options.scale,
       color: options.color,
       z: options.zIndex,
-      borderWidth: options.borderWidth,
-      borderStyle: options.borderStyle,
-      borderColor: options.borderColor,
-      borderRadius: options.borderRadius,
-      boxShadow: options.boxShadow
+      borderRadius: options.borderRadius
     });
 
     return el;
