@@ -28,8 +28,6 @@
 
     Flora.Mantle.System.create(function() {
 
-      var i, world;
-
       Flora.Mantle.World.update({
         gravity: new Flora.Vector(),
         c: 0,
@@ -37,10 +35,6 @@
         borderStyle: 'solid',
         borderColor: [100, 100, 100]
       });
-
-      world = Flora.Mantle.System.allWorlds()[0];
-      world.bounds[1] = world.bounds[1] * 1.5;
-      world.bounds[2] = world.bounds[2] * 1.5;
 
       this.add('Heat', {
         location: function () {
@@ -84,7 +78,7 @@
         }
       });
 
-      for (i = 0; i < 5; i += 1) {
+      for (var i = 0; i < 5; i += 1) {
 
         this.add('Agent', {
           sensors: [
