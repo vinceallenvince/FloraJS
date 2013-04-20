@@ -9,8 +9,10 @@
  */
 function Vector(opt_x, opt_y) {
   'use strict';
-  this.x = opt_x || 0;
-  this.y = opt_y || 0;
+  var x = opt_x || 0,
+      y = opt_y || 0;
+  this.x = x;
+  this.y = y;
 }
 
 /**
@@ -161,8 +163,8 @@ Vector.prototype.mult = function(n) {
  */
 Vector.prototype.div = function(n) {
   'use strict';
-  this.x /= n;
-  this.y /= n;
+  this.x = this.x / n;
+  this.y = this.y / n;
   return this;
 };
 
@@ -179,21 +181,19 @@ Vector.prototype.mag = function() {
 /**
  * Limits the vector's magnitude.
  *
- * @param {number} high The upper bound of the vector's magnitude.
+ * @param {number} opt_high The upper bound of the vector's magnitude
+ * @param {number} opt_low The lower bound of the vector's magnitude.
  * @returns {Object} This vector.
  */
-Vector.prototype.limit = function(high) {
+Vector.prototype.limit = function(opt_high, opt_low) {
   'use strict';
-  if (this.mag() > high) {
+  var high = opt_high || null,
+      low = opt_low || null;
+  if (high && this.mag() > high) {
     this.normalize();
     this.mult(high);
   }
-  return this;
-};
-
-Vector.prototype.limitLow = function(low) {
-  'use strict';
-  if (this.mag() < low) {
+  if (low && this.mag() < low) {
     this.normalize();
     this.mult(low);
   }
@@ -268,4 +268,5 @@ Vector.prototype.dot = function(vector) {
   }
   return this.x * vector.x + this.y * vector.y;
 };
+
 exports.Vector = Vector;
