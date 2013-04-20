@@ -11,9 +11,7 @@
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
  *    angle if pointToDirection = true.
- * @param {number} [opt_options.width = 10] Width
- * @param {number} [opt_options.height = 10] Height
- * @param {Object} [opt_options.amplitude = {x: 4, y: 0}] Sets amplitude, the distance from the object's
+ * @param {Object} [opt_options.amplitude = {x: world width, y: world height}] Sets amplitude, the distance from the object's
  *    initial location (center of the motion) to either extreme.
  * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's acceleration. Oscillators have a
  *    constant acceleration.
@@ -35,11 +33,10 @@ function Oscillator(opt_options) {
   exports.Agent.call(this, options);
 
   this.initialLocation = options.initialLocation ||
-      new exports.Vector(this.world.width/2, this.world.height/2);
+      new exports.Vector(this.world.bounds[1] / 2, this.world.bounds[2] / 2);
   this.lastLocation = new exports.Vector(0, 0);
-  this.width = options.width === 0 ? 0 : options.width || 10;
-  this.height = options.height === 0 ? 0 : options.height || 10;
-  this.amplitude = options.amplitude || new exports.Vector(this.world.width/2 - this.width, this.world.height/2 - this.height);
+  this.amplitude = options.amplitude || new exports.Vector(this.world.bounds[1] / 2 - this.width,
+      this.world.bounds[2] / 2 - this.height);
   this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
   this.aVelocity = new exports.Vector(0, 0);
   this.isStatic = !!options.isStatic;
@@ -88,11 +85,11 @@ Oscillator.prototype.step = function () {
     }
 
     if (this.controlCamera) {
-      this.checkCameraEdges();
+      this._checkCameraEdges();
     }
 
     if (this.checkEdges || this.wrapEdges) {
-      this.checkWorldEdges(world);
+      this._checkWorldEdges(world);
     }
 
     if (this.lifespan > 0) {
