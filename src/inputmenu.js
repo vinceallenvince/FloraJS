@@ -18,9 +18,7 @@
  */
 function InputMenu(opt_options) {
 
-  'use strict';
-
-  var me = this, options = opt_options || {};
+  var me = this, options = opt_options || {}, i, max, classNames;
 
   // if a world is not passed, use the first world in the universe
   this.world = options.world || exports.universe.first();
@@ -32,13 +30,13 @@ function InputMenu(opt_options) {
   this.borderColor = options.borderColor || [204, 204, 204];
   this.colorMode = options.colorMode || 'rgb';
 
-  if (exports.System.supportedFeatures.touch) {
+  if (exports.Mantle.System.supportedFeatures.touch) {
     this.text =  exports.config.touchMap.stats + '-finger tap = stats | ' +
         exports.config.touchMap.pause + '-finger tap = pause | ' +
         exports.config.touchMap.reset + '-finger tap = reset';
   } else {
     this.text = '\'' + String.fromCharCode(exports.config.keyMap.pause).toLowerCase() + '\' = pause | ' +
-      '\'' + String.fromCharCode(exports.config.keyMap.reset).toLowerCase() + '\' = reset | ' +
+      '\'' + String.fromCharCode(exports.config.keyMap.resetSystem).toLowerCase() + '\' = reset | ' +
       '\'' + String.fromCharCode(exports.config.keyMap.stats).toLowerCase() + '\' = stats';
   }
 
@@ -48,7 +46,11 @@ function InputMenu(opt_options) {
    */
   this._el = document.createElement('div');
   this._el.id = 'inputMenu';
-  this._el.className = 'inputMenu ' + this.position;
+  this._el.className = 'inputMenu ';
+  classNames = this.position.split(' ');
+  for (i = 0, max = classNames.length; i < max; i++) {
+    this._el.className = this._el.className + 'inputMenu' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+  }
   this._el.style.opacity = this.opacity;
   this._el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
         ', ' + this.color[2] + ')';
@@ -65,7 +67,7 @@ function InputMenu(opt_options) {
     document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
   }
 
-  if (exports.System.supportedFeatures.touch) {
+  if (exports.Mantle.System.supportedFeatures.touch) {
     exports.Utils.addEvent(this._el, 'touchstart', function() {
       me.destroy();
     });
@@ -85,9 +87,13 @@ InputMenu.prototype.name = 'InputMenu';
  */
 InputMenu.prototype.destroy = function() {
 
-  'use strict';
+  var id = this._el.id;
 
   this._el.parentNode.removeChild(this._el);
+  if (!document.getElementById(id)) {
+    return true;
+  }
+  return;
 };
 
 exports.InputMenu = InputMenu;
