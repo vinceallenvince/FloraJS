@@ -19,12 +19,10 @@
  */
 function Caption(opt_options) {
 
-  'use strict';
+  var options = opt_options || {}, i, max, classNames;
 
-  var options = opt_options || {};
-
-  // if a world is not passed, use the first world in the universe
-  this.world = options.world || exports.universe.first();
+  // if a world is not passed, use the first world in the system
+  this.world = options.world || exports.System.allWorlds()[0];
   this.position = options.position || 'top left';
   this.text = options.text || '';
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
@@ -40,7 +38,11 @@ function Caption(opt_options) {
    */
   this._el = document.createElement('div');
   this._el.id = 'caption';
-  this._el.className = 'caption ' + this.position;
+  this._el.className = 'caption ';
+  classNames = this.position.split(' ');
+  for (i = 0, max = classNames.length; i < max; i++) {
+    this._el.className = this._el.className + 'caption' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+  }
   this._el.style.opacity = this.opacity;
   this._el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
         ', ' + this.color[2] + ')';
@@ -63,12 +65,18 @@ Caption.prototype.name = 'Caption';
 
 /**
  * Removes the caption's DOM element.
+ *
+ * @returns {boolean} True if object does not exist in the DOM.
  */
 Caption.prototype.destroy = function() {
 
-  'use strict';
+  var id = this._el.id;
 
   this._el.parentNode.removeChild(this._el);
+  if (!document.getElementById(id)) {
+    return true;
+  }
+  return;
 };
 
 exports.Caption = Caption;
