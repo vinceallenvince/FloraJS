@@ -1,21 +1,23 @@
 /*global exports */
 /**
- * Creates a new Heat object.
+ * Creates a new Heat.
  *
  * @constructor
  * @extends Agent
  *
  * @param {Object} [opt_options] Options.
- * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
+ * @param {number} [opt_options.mass = 50] Mass.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
- * @param {number} [opt_options.width = 50] Width.
- * @param {number} [opt_options.height = 50] Height.
- * @param {number} [opt_options.opacity = 0.75] Opacity.
+ * @param {number} [opt_options.width = 100] Width.
+ * @param {number} [opt_options.height = 100] Height.
+ * @param {number} [opt_options.opacity = 0.75] The opacity.
  * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
+ * @param {string} [opt_options.borderStyle = 'double'] Border style.
+ * @param {Array} [opt_options.borderColor = [224, 178, 154]] Border color.
+ * @param {string} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Heat(opt_options) {
-
-  'use strict';
 
   var options = opt_options || {};
 
@@ -27,6 +29,12 @@ function Heat(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.borderWidth = options.borderWidth || '1em';
+  this.borderStyle = options.borderStyle || 'double';
+  this.borderColor = options.borderColor || [224, 178, 154];
+  this.borderRadius = options.borderRadius || '100%';
+
+  exports.Mantle.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Heat, exports.Agent);
 
