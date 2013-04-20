@@ -24,9 +24,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: April 20, 2013 04:14:26 */
+/* Build time: April 20, 2013 04:21:55 */
 /** @namespace */
-var flora = {}, exports = flora;
+var Flora = {}, exports = Flora;
 
 (function(exports) {
 'use strict';
