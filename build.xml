@@ -13,8 +13,7 @@
   <target name="build.dev" depends="
       clean,
       init,
-      concatenate,
-      concatenateDOMRenderer,
+      concatenateJS,
       concatenateCSS,
       bakeDev,
       deployDev">
@@ -25,9 +24,8 @@
       init,
       validate,
       validateDemos,
-      concatenate,
+      concatenateJS,
       test,
-      concatenateDOMRenderer,
       concatenateCSS,
       minifyCSS,
       minifyJS,
@@ -110,7 +108,7 @@
     </apply>
   </target>
 
-  <!-- Concatenate -->
+  <!-- ConcatenateJS -->
   <target name="concatenateJS">
     <concat destfile="${build.dir}/${buildNameLower}.js" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
