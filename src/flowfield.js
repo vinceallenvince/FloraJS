@@ -21,8 +21,8 @@ function FlowField(opt_options) {
   this.perlinTime = options.perlinTime || 100;
   this.field = options.field || null;
   this.createMarkers = options.createMarkers || false;
-  // if a world is not passed, use the first world in the universe
-  this.world = options.world || exports.universe.first();
+  // if a world is not passed, use the first world in the system
+  this.world = options.world || exports.Mantle.System.allWorlds()[0];
 }
 
 FlowField.prototype.name = 'FlowField';
@@ -32,13 +32,11 @@ FlowField.prototype.name = 'FlowField';
  */
 FlowField.prototype.build = function() {
 
-  'use strict';
-
   var col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
       vectorList = {},
       world = this.world,
-      cols = Math.ceil(world.width/parseFloat(this.resolution)),
-      rows = Math.ceil(world.height/parseFloat(this.resolution)),
+      cols = Math.ceil(world.bounds[1] / parseFloat(this.resolution)),
+      rows = Math.ceil(world.bounds[2] / parseFloat(this.resolution)),
       xoff = this.perlinTime, // create markers and vectors
       yoff;
 
