@@ -40,7 +40,8 @@ var config = {
   ],
   keyMap: {
     pause: 80,
-    reset: 82,
+    resetSystem: 82,
+    destroySystem: 68,
     stats: 83,
     thrustLeft: 37,
     thrustUp: 38,
