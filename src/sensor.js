@@ -20,8 +20,6 @@
  */
 function Sensor(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);
@@ -37,6 +35,10 @@ function Sensor(opt_options) {
   this.target = options.target || null;
   this.activated = !!options.activated;
   this.activatedColor = options.activatedColor || [200, 200, 200];
+  this.borderWidth = 2;
+  this.borderStyle = 'solid';
+  this.borderColor = 'white';
+  this.borderRadius ='100%';
 }
 exports.Utils.extend(Sensor, exports.Agent);
 
@@ -47,57 +49,72 @@ Sensor.prototype.name = 'Sensor';
  */
 Sensor.prototype.step = function() {
 
-  'use strict';
-
   var check = false, i, max;
 
-  if (this.type === "heat" && exports.heats.length > 0) {
-    for (i = 0, max = exports.heats.length; i < max; i += 1) { // heat
-      if (this.isInside(this, exports.heats[i], this.sensitivity)) {
-        this.target = exports.heats[i]; // target this stimulator
-        this.activated = true; // set activation
-        check = true;
+  var heat = exports.Mantle.System._Caches.Heat || {list: []},
+      cold = exports.Mantle.System._Caches.Cold || {list: []},
+      predators = exports.Mantle.System._Caches.Predators || {list: []},
+      lights = exports.Mantle.System._Caches.Light || {list: []},
+      oxygen = exports.Mantle.System._Caches.Oxygen || {list: []},
+      food = exports.Mantle.System._Caches.Food || {list: []};
 
-      }
-    }
-  } else if (this.type === "cold" && exports.colds.length > 0) {
-    for (i = 0, max = exports.colds.length; i < max; i += 1) { // cold
-      if (this.isInside(this, exports.colds[i], this.sensitivity)) {
-        this.target = exports.colds[i]; // target this stimulator
+  // what if cache does not exist?
+
+  if (this.type === 'heat' && heat.list && heat.list.length > 0) {
+    for (i = 0, max = heat.list.length; i < max; i++) { // heat
+      if (this.isInside(this, heat.list[i], this.sensitivity)) {
+        this.target = heat.list[i]; // target this stimulator
         this.activated = true; // set activation
         check = true;
       }
     }
-  } else if (this.type === "predator" && exports.predators.length > 0) {
-    for (i = 0, max = exports.predators.length; i < max; i += 1) { // predator
-      if (this.isInside(this, exports.predators[i], this.sensitivity)) {
-        this.target = exports.predators[i]; // target this stimulator
+  } else if (this.type === 'cold' && cold.list && cold.list.length > 0) {
+    for (i = 0, max = cold.list.length; i < max; i++) { // cold
+      if (this.isInside(this, cold.list[i], this.sensitivity)) {
+        this.target = cold.list[i]; // target this stimulator
         this.activated = true; // set activation
         check = true;
       }
     }
-  } else if (this.type === "light" && exports.lights.length > 0) {
-    for (i = 0, max = exports.lights.length; i < max; i += 1) { // light
-      if (this.isInside(this, exports.lights[i], this.sensitivity)) {
-        this.target = exports.lights[i]; // target this stimulator
+  } else if (this.type === 'predator' && predators.list && predators.list.length > 0) {
+    for (i = 0, max = predators.list.length; i < max; i += 1) { // predator
+      if (this.isInside(this, predators.list[i], this.sensitivity)) {
+        this.target = predators.list[i]; // target this stimulator
         this.activated = true; // set activation
         check = true;
       }
     }
-  } else if (this.type === "oxygen" && exports.oxygen.length > 0) {
-    for (i = 0, max = exports.oxygen.length; i < max; i += 1) { // oxygen
-      if (this.isInside(this, exports.oxygen[i], this.sensitivity)) {
-        this.target = exports.oxygen[i]; // target this stimulator
-        this.activated = true; // set activation
-        check = true;
+  } else if (this.type === 'light' && lights.list && lights.list.length > 0) {
+    for (i = 0, max = lights.list.length; i < max; i++) { // light
+      // check the obj has not been marked as deleted
+      if (lights.lookup[lights.list[i].id]) {
+        if (this.isInside(this, lights.list[i], this.sensitivity)) {
+          this.target = lights.list[i]; // target this stimulator
+          this.activated = true; // set activation
+          check = true;
+        }
       }
     }
-  } else if (this.type === "food" && exports.food.length > 0) {
-    for (i = 0, max = exports.food.length; i < max; i += 1) { // food
-      if (this.isInside(this, exports.food[i], this.sensitivity)) {
-        this.target = exports.food[i]; // target this stimulator
-        this.activated = true; // set activation
-        check = true;
+  } else if (this.type === 'oxygen' && oxygen.list && oxygen.list.length > 0) {
+    for (i = 0, max = oxygen.list.length; i < max; i += 1) { // oxygen
+      // check the obj has not been marked as deleted
+      if (oxygen.lookup[oxygen.list[i].id]) {
+        if (this.isInside(this, oxygen.list[i], this.sensitivity)) {
+          this.target = oxygen.list[i]; // target this stimulator
+          this.activated = true; // set activation
+          check = true;
+        }
+      }
+    }
+  } else if (this.type === 'food' && food.list && food.list.length > 0) {
+    for (i = 0, max = food.list.length; i < max; i += 1) { // food
+      // check the obj has not been marked as deleted
+      if (food.lookup[food.list[i].id]) {
+        if (this.isInside(this, food.list[i], this.sensitivity)) {
+          this.target = food.list[i]; // target this stimulator
+          this.activated = true; // set activation
+          check = true;
+        }
       }
     }
   }
@@ -115,16 +132,12 @@ Sensor.prototype.step = function() {
 };
 
 /**
- * Returns the force to apply the vehicle when its sensor is activated.
+ * Returns a force to apply to an agentwhen its sensor is activated.
  *
- * @param {Object} params A list of properties.
- * @param {Object} params.agent The vehicle carrying the sensor.
  */
-Sensor.prototype.getActivationForce = function(params) {
+Sensor.prototype.getActivationForce = function(agent) {
 
-  'use strict';
-
-  var distanceToTarget, m, steer;
+  var distanceToTarget, m, v, f, steer;
 
   switch (this.behavior) {
 
@@ -132,13 +145,15 @@ Sensor.prototype.getActivationForce = function(params) {
      * Steers toward target
      */
     case "AGGRESSIVE":
-      return this.seek(this.target);
+      return this._seek(this.target);
+
     /**
      * Steers away from the target
      */
     case "COWARD":
-      var forceCoward = this.seek(this.target);
-      return forceCoward.mult(-1);
+      f = this._seek(this.target);
+      return f.mult(-1);
+
     /**
      * Speeds toward target and keeps moving
      */
@@ -147,12 +162,13 @@ Sensor.prototype.getActivationForce = function(params) {
       distanceToTarget = dvLikes.mag();
       dvLikes.normalize();
 
-      m = distanceToTarget/params.agent.maxSpeed;
+      m = distanceToTarget/agent.maxSpeed;
       dvLikes.mult(m);
 
-      steer = exports.Vector.VectorSub(dvLikes, params.agent.velocity);
-      steer.limit(params.agent.maxSteeringForce * 0.01);
+      steer = exports.Vector.VectorSub(dvLikes, agent.velocity);
+      steer.limit(agent.maxSteeringForce);
       return steer;
+
     /**
      * Arrives at target and remains
      */
@@ -162,15 +178,16 @@ Sensor.prototype.getActivationForce = function(params) {
       dvLoves.normalize();
 
       if (distanceToTarget > this.width) {
-        m = distanceToTarget/params.agent.maxSpeed;
+        m = distanceToTarget/agent.maxSpeed;
         dvLoves.mult(m);
-        steer = exports.Vector.VectorSub(dvLoves, params.agent.velocity);
-        steer.limit(params.agent.maxSteeringForce);
+        steer = exports.Vector.VectorSub(dvLoves, agent.velocity);
+        steer.limit(agent.maxSteeringForce);
         return steer;
       }
-      params.agent.velocity = new exports.Vector();
-      params.agent.acceleration = new exports.Vector();
+      agent.velocity = new exports.Vector();
+      agent.acceleration = new exports.Vector();
       return new exports.Vector();
+
     /**
      * Arrives at target but does not stop
      */
@@ -180,12 +197,13 @@ Sensor.prototype.getActivationForce = function(params) {
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
 
-      m = distanceToTarget/params.agent.maxSpeed;
+      m = distanceToTarget/agent.maxSpeed;
       dvExplorer.mult(-m);
 
-      steer = exports.Vector.VectorSub(dvExplorer, params.agent.velocity);
-      steer.limit(params.agent.maxSteeringForce * 0.01);
+      steer = exports.Vector.VectorSub(dvExplorer, agent.velocity);
+      steer.limit(agent.maxSteeringForce * 0.01);
       return steer;
+
     /**
      * Moves in the opposite direction as fast as possible
      */
@@ -193,14 +211,14 @@ Sensor.prototype.getActivationForce = function(params) {
       return this.flee(this.target);
 
     case "ACCELERATE":
-      var forceAccel = params.agent.velocity.clone();
-      forceAccel.normalize(); // get direction
-      return forceAccel.mult(params.agent.minSpeed);
+      v = agent.velocity.clone();
+      v.normalize();
+      return v.mult(agent.minSpeed);
 
     case "DECELERATE":
-      var forceDecel = params.agent.velocity.clone();
-      forceDecel.normalize(); // get direction
-      return forceDecel.mult(-params.agent.minSpeed);
+      v = agent.velocity.clone();
+      v.normalize();
+      return v.mult(-agent.minSpeed);
 
     default:
       return new exports.Vector();
@@ -215,8 +233,6 @@ Sensor.prototype.getActivationForce = function(params) {
  * @param {number} sensitivity The sensor's sensitivity.
  */
 Sensor.prototype.isInside = function(item, container, sensitivity) {
-
-  'use strict';
 
   if (item.location.x + item.width/2 > container.location.x - container.width/2 - (sensitivity * container.width) &&
     item.location.x - item.width/2 < container.location.x + container.width/2 + (sensitivity * container.width) &&
