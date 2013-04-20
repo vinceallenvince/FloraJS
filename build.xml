@@ -68,6 +68,11 @@
     <mkdir dir="${public.dir}"/>
     <mkdir dir="${public.dir}/js"/>
     <mkdir dir="${public.dir}/css"/>
+    <script language="javascript">
+      var buildName = project.getProperty("buildName")
+      project.setProperty("buildNameLower", buildName.toLowerCase());
+    </script>
+    <echo message="${buildNameLower}"/>
   </target>
 
   <!-- Validate via jshint -->
@@ -79,6 +84,18 @@
       <arg path="${jshint}" />
       <srcfile/>
       <arg line="${jshint.options}" />
+    </apply>
+  </target>
+
+  <!-- Validate via csslint -->
+  <target name="validateCSS">
+    <apply executable="java" failonerror="true" parallel="true">
+      <fileset dir="${cssSrc.dir}" includes="**/*.css" />
+      <arg line="-jar" />
+      <arg path="${rhino}" />
+      <arg path="${csslint}" />
+      <arg line="--${csslint.ignore}" />
+      <srcfile/>
     </apply>
   </target>
 
@@ -94,59 +111,57 @@
   </target>
 
   <!-- Concatenate -->
-  <target name="concatenate">
-    <concat destfile="${build.dir}/${buildName}.js" fixlastline="yes" eol="lf">
+  <target name="concatenateJS">
+    <concat destfile="${build.dir}/${buildNameLower}.js" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         %PROJECTNAME%
         ${license}
         */
         /* Version: %VERSION% */
-        /* Simplex noise by Sean McCullough banksean@gmail.com */
         /* Build time: ${build.time} */
         /** @namespace */
-        var Flora = {}, exports = Flora;
+        var ${buildName} = {}, exports = ${buildName};
 
         (function(exports) {
+        'use strict';
+
+        // create Mantle namespace
+        exports.Mantle = {};
+
+        // pass in the namespace and parent object
+        new Mantle(exports.Mantle, exports);
       </header>
       <filelist dir="${src.dir}">
-        <file name="requestanimframe.js" />
         <file name="config.js" />
-        <file name="elementlist.js" />
-        <file name="system.js" />
+        <file name="interface.js" />
         <file name="utils.js" />
+        <file name="simplexnoise.js" />
         <file name="vector.js" />
+        <file name="borderpalette.js" />
         <file name="colorpalette.js" />
         <file name="colortable.js" />
-        <file name="borderpalette.js" />
-        <file name="simplexnoise.js" />
-        <file name="interface.js" />
-        <file name="universe.js" />
-        <file name="world.js" />
-        <file name="camera.js" />
-        <file name="element.js" />
-        <file name="agent.js" />
-        <file name="walker.js" />
-        <file name="oscillator.js" />
-        <file name="particle.js" />
-        <file name="particlesystem.js" />
-        <file name="liquid.js" />
-        <file name="attractor.js" />
-        <file name="repeller.js" />
-        <file name="heat.js" />
-        <file name="cold.js" />
-        <file name="light.js" />
-        <file name="oxygen.js" />
-        <file name="food.js" />
-        <file name="predator.js" />
-        <file name="sensor.js" />
-        <file name="flowfieldmarker.js" />
-        <file name="flowfield.js" />
-        <file name="connector.js" />
-        <file name="point.js" />
         <file name="caption.js" />
         <file name="inputmenu.js" />
-        <file name="statsdisplay.js" />
-        <file name="featuredetector.js" />
+        <file name="mover.js" />
+        <file name="agent.js" />
+        <file name="walker.js" />
+        <file name="sensor.js" />
+        <file name="liquid.js" />
+        <file name="heat.js" />
+        <file name="cold.js" />
+        <file name="oxygen.js" />
+        <file name="light.js" />
+        <file name="connector.js" />
+        <file name="point.js" />
+        <file name="food.js" />
+        <file name="particle.js" />
+        <file name="particlesystem.js" />
+        <file name="oscillator.js" />
+        <file name="attractor.js" />
+        <file name="repeller.js" />
+        <file name="flowfield.js" />
+        <file name="flowfieldmarker.js" />
+        <file name="init.js" />
       </filelist>
       <footer trimleading="yes">}(exports));</footer>
     </concat>
@@ -155,51 +170,14 @@
   <!-- Test via PhantomJS-->
   <target name="test">
     <!-- copy fat build file to tests/lib -->
-    <copy file="${build.dir}/${buildName}.js" todir="${tests.dir}/lib" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
     <exec executable="${phantomjs}" failonerror="true">
       <arg path="${phantomjs.driver}" />
       <arg path="${phantomjs.tests}" />
     </exec>
   </target>
 
-  <target name="concatenateDOMRenderer">
-    <concat destfile="${build.dir}/floraDOM.js" fixlastline="yes" eol="lf">
-      <header trimleading="yes">/*
-        %PROJECTNAME% | DOM Renderer
-        ${license}
-        */
-        /* Version: %VERSION% */
-        /* Build time: ${build.time} */
-        /** @namespace */
-        var Flora = {}, exports = Flora;
-
-        (function(exports) {
-      </header>
-      <filelist dir="${src.dir}">
-        <file name="requestanimframe.js" />
-        <file name="config.js" />
-        <file name="elementlist.js" />
-        <file name="system.js" />
-        <file name="utils.js" />
-        <file name="vector.js" />
-        <file name="colorpalette.js" />
-        <file name="colortable.js" />
-        <file name="borderpalette.js" />
-        <file name="simplexnoise.js" />
-        <file name="interface.js" />
-        <file name="universe.js" />
-        <file name="world.js" />
-        <file name="camera.js" />
-        <file name="element.js" />
-        <file name="caption.js" />
-        <file name="inputmenu.js" />
-        <file name="statsdisplay.js" />
-        <file name="featuredetector.js" />
-      </filelist>
-      <footer trimleading="yes">}(exports));</footer>
-    </concat>
-  </target>
-
+ <!-- jsDoc -->
   <target name="document">
     <delete dir="${jsdoc.output}"/>
     <mkdir dir="${jsdoc.output}"/>
@@ -237,7 +215,7 @@
 
   <!-- ConcatenateCSS -->
   <target name="concatenateCSS">
-    <concat destfile="${cssBuild.dir}/${buildName}.css" fixlastline="yes" eol="lf">
+    <concat destfile="${cssBuild.dir}/${buildNameLower}.css" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         %PROJECTNAME%
         ${license}
@@ -247,15 +225,16 @@
       </header>
       <!-- using filelist here; order will probably matter -->
       <filelist dir="${cssSrc.dir}">
-        <file name="flora.css" />
+        <file name="mantle.css" />
+        <file name="main.css" />
       </filelist>
     </concat>
   </target>
 
   <!-- MinifyCSS -->
   <target name="minifyCSS">
-    <copy file="${cssBuild.dir}/${buildName}.css" tofile="${cssBuild.dir}/${buildName}.raw.min.css" overwrite="true"/>
-    <fileset id="css.fileset" dir="${cssBuild.dir}" includes="${buildName}.raw.min.css" />
+    <copy file="${cssBuild.dir}/${buildNameLower}.css" tofile="${cssBuild.dir}/${buildNameLower}.raw.min.css" overwrite="true"/>
+    <fileset id="css.fileset" dir="${cssBuild.dir}" includes="${buildNameLower}.raw.min.css" />
     <!-- remove comments -->
     <replaceregexp match="/\*.*\*/" replace="" flags="g" byline="true">
       <fileset refid="css.fileset"/>
@@ -309,10 +288,10 @@
     </replaceregexp>
   </target>
 
-  <!-- Bake for release: the final step -->
+  <!-- Bake for public: the final step -->
   <target name="bakeRelease">
-    <!-- Adds the license to the raw minified js file. -->
-    <concat destfile="${build.dir}/${buildName}.min.js" fixlastline="yes" eol="lf">
+    <!-- JS - Adds the license to the raw minified file. -->
+    <concat destfile="${build.dir}/${buildNameLower}.min.js" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         %PROJECTNAME%
         ${license}
@@ -320,24 +299,13 @@
         /* Version: %VERSION% */
         /* Simplex noise by Sean McCullough banksean@gmail.com */
         /* Build time: ${build.time} */
+
       </header>
-      <filelist dir="${build.dir}" files="${buildName}.raw.min.js"/>
-      <footer trimleading="yes"></footer>
-    </concat>
-    <!-- Adds the license to the raw minified floraDOM js file. -->
-    <concat destfile="${build.dir}/floraDOM.min.js" fixlastline="yes" eol="lf">
-      <header trimleading="yes">/*
-        %PROJECTNAME% | DOM Renderer
-        ${license}
-        */
-        /* Version: %VERSION% */
-        /* Build time: ${build.time} */
-      </header>
-      <filelist dir="${build.dir}" files="floraDOM.raw.min.js"/>
+      <filelist dir="${build.dir}" files="${buildNameLower}.raw.min.js"/>
       <footer trimleading="yes"></footer>
     </concat>
     <!-- CSS - Adds the license to the raw minified css file. -->
-    <concat destfile="${cssBuild.dir}/${buildName}.min.css" fixlastline="yes" eol="lf">
+    <concat destfile="${cssBuild.dir}/${buildNameLower}.min.css" fixlastline="yes" eol="lf">
       <header trimleading="yes">/*
         %PROJECTNAME%
         ${license}
@@ -346,7 +314,7 @@
         /* Build time: ${build.time} */
 
       </header>
-      <filelist dir="${cssBuild.dir}" files="${buildName}.raw.min.css"/>
+      <filelist dir="${cssBuild.dir}" files="${buildNameLower}.raw.min.css"/>
       <footer trimleading="yes"></footer>
     </concat>
     <!-- Searches for %VERSION% in the build directory and replaces with -->
@@ -360,24 +328,39 @@
       <fileset dir="${build.dir}" includes="**/*"/>
       <fileset dir="${cssBuild.dir}" includes="**/*"/>
     </replaceregexp>
-    <delete file="${build.dir}/${buildName}.raw.min.js"/>
-    <delete file="${build.dir}/${buildName}DOM.raw.min.js"/>
-    <delete file="${cssBuild.dir}/${buildName}.raw.min.css"/>
+    <delete file="${build.dir}/${buildNameLower}.raw.min.js"/>
+    <delete file="${cssBuild.dir}/${buildNameLower}.raw.min.css"/>
   </target>
+
 
   <!-- Copy: copy build and css files to examples/dev -->
   <target name="deployDev">
-    <!-- copy fat js file to backup folder with version number -->
-    <copy file="${build.dir}/${buildName}.js" tofile="${build.dir}/backup/${buildName}.${version}.js" overwrite="true"/>
-    <!-- copy fat build file to dev/js -->
-    <copy file="${build.dir}/${buildName}.js" todir="${dev.dir}/js" overwrite="true"/>
-    <!-- copy fat build file to tests/lib -->
-    <copy file="${build.dir}/${buildName}.js" todir="${tests.dir}/lib" overwrite="true"/>
 
+    <!-- copy fat js file to backup folder with version number -->
+    <copy file="${build.dir}/${buildNameLower}.js" tofile="${build.dir}/backup/${buildNameLower}.${version}.js" overwrite="true"/>
     <!-- copy fat css file to backup folder with version number -->
-    <copy file="${cssBuild.dir}/${buildName}.css" tofile="${cssBuild.dir}/backup/${buildName}.${version}.css" overwrite="true"/>
-    <!-- copy css file to dev/css -->
-    <copy file="${cssBuild.dir}/${buildName}.css" todir="${dev.dir}/css" overwrite="true"/>
+    <copy file="${cssBuild.dir}/${buildNameLower}.css" tofile="${cssBuild.dir}/backup/${buildNameLower}.${version}.css" overwrite="true"/>
+
+    <!-- copy fat js file to /dev/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${dev.dir}/scripts" overwrite="true"/>
+    <!-- copy fat mantle file to /dev/scripts -->
+    <copy file="${lib.dir}/mantle.js" todir="${dev.dir}/scripts" overwrite="true"/>
+    <!-- copy fat css file to /dev/css -->
+    <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${dev.dir}/css" overwrite="true"/>
+
+    <!-- copy fat js file to tests/lib/ -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
+   <!-- copy fat mantle file to /tests/lib -->
+    <copy file="${lib.dir}/mantle.js" todir="${tests.dir}/lib" overwrite="true"/>
+
+    <!-- copy fat js file to examples/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${examples.dir}/scripts" overwrite="true"/>
+    <!-- copy fat mantle file to /examples/scripts -->
+    <copy file="${lib.dir}/mantle.js" todir="${examples.dir}/scripts" overwrite="true"/>
+    <!-- copy fat css file to /examples/css -->
+    <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${examples.dir}/css" overwrite="true"/>
+
+
   </target>
 
   <!-- Copy: copy build and css files to examples/dev -->
