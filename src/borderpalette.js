@@ -8,8 +8,6 @@
  */
 function BorderPalette(opt_id) {
 
-  'use strict';
-
   /**
    * Holds a list of border styles.
    * @private
@@ -41,8 +39,6 @@ BorderPalette.prototype.name = 'BorderPalette';
  */
 BorderPalette.prototype.addBorder = function(options) {
 
-  'use strict';
-
   var requiredOptions = {
     min: 'number',
     max: 'number',
@@ -65,8 +61,6 @@ BorderPalette.prototype.addBorder = function(options) {
  * @throws {Error} If the 'borders' property is empty.
  */
 BorderPalette.prototype.getBorder = function() {
-
-  'use strict';
 
   if (this._borders.length > 0) {
     return this._borders[exports.Utils.getRandomNumber(0, this._borders.length - 1)];
