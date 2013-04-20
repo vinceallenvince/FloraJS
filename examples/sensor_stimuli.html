@@ -6,93 +6,109 @@
   <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
   <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0; maximum-scale=1.0;" />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
-  <script src="js/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8" />
+  <script src="scripts/mantle.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/flora.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-9773576-12']);
-  _gaq.push(['_trackPageview']);
+    /*var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-9773576-12']);
+    _gaq.push(['_trackPageview']);
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();*/
 
-</script>
-</head>
-<body>
+  </script>
+  </head>
+  <body>
   <script type="text/javascript" charset="utf-8">
-    Flora.System.start(function () {
 
-      var universe = Flora.universe.first(),
-          uw = universe.width,
-          uh = universe.height;
+    Flora.Mantle.System.create(function() {
 
-      universe.update({
-        gravity: new Flora.Vector()
+      Flora.Mantle.World.update({
+        gravity: new Flora.Vector(),
+        c: 0
       });
 
-      var heat1 = new Flora.Heat({
-        location: new Flora.Vector(uw * 0.25, uh * 0.15)
+      this.add('Heat', {
+        draggable: true,
+        location: function () {
+          return new Flora.Vector(this.world.bounds[1] * 0.25, this.world.bounds[2] * 0.15);
+        }
       });
 
-      var heat2 = new Flora.Heat({
-        location: new Flora.Vector(uw * 0.85, uh * 0.15)
+      this.add('Heat', {
+        draggable: true,
+        location: function () {
+          return new Flora.Vector(this.world.bounds[1] * 0.85, this.world.bounds[2] * 0.15);
+        }
       });
 
-      var heat3 = new Flora.Heat({
-        location: new Flora.Vector(uw * 0.85, uh * 0.85)
+      this.add('Heat', {
+        draggable: true,
+        location: function () {
+          return new Flora.Vector(this.world.bounds[1] * 0.85, this.world.bounds[2] * 0.85);
+        }
       });
 
-      var heat4 = new Flora.Heat({
-        location: new Flora.Vector(uw * 0.15, uh * 0.75)
+      this.add('Heat', {
+        draggable: true,
+        location: function () {
+          return new Flora.Vector(this.world.bounds[1] * 0.15, this.world.bounds[2] * 0.75);
+        }
       });
 
-      var cold = new Flora.Cold({
-        location: new Flora.Vector(uw * 0.5, uh * 0.5)
+      this.add('Cold', {
+        draggable: true,
+        location: function () {
+          return new Flora.Vector(this.world.bounds[1] * 0.5, this.world.bounds[2] * 0.5);
+        }
       });
 
-      var liquid1 = new Flora.Liquid({
-        location: new Flora.Vector(uw * 0.45, uh * 0.8)
+      this.add('Liquid', {
+        draggable: true,
+        location: function () {
+          return new Flora.Vector(this.world.bounds[1] * 0.45, this.world.bounds[2] * 0.8);
+        }
       });
 
-      var liquid2 = new Flora.Liquid({
-        location: new Flora.Vector(uw * 0.65, uh * 0.2)
+      this.add('Liquid', {
+        draggable: true,
+        location: function () {
+          return new Flora.Vector(this.world.bounds[1] * 0.65, this.world.bounds[2] * 0.2);
+        }
       });
 
-      var i, agent, sensorHeat, sensorCold;
+      this.add('Agent', {
+        sensors: [
+          this.add('Sensor', {
+            type: 'heat',
+            behavior: 'COWARD'
+          }),
+         this.add('Sensor', {
+            type: 'cold',
+            behavior: 'ACCELERATE'
+          })
+        ],
+        velocity: new Flora.Vector(1, 0.5),
+        minSpeed: 1,
+        mass: 10,
+        motorSpeed: 4
+      });
 
-      for (i = 0; i < 5; i += 1) {
+      //
 
-        sensorHeat = new exports.Sensor({
-          type: 'heat',
-          behavior: 'COWARD'
-        });
-
-        sensorCold = new exports.Sensor({
-          type: 'cold',
-          behavior: 'ACCELERATE'
-        });
-
-        agent = new Flora.Agent({
-          sensors: [sensorHeat, sensorCold],
-          velocity: new Flora.Vector(Flora.Utils.getRandomNumber(-1, 1, true),
-              Flora.Utils.getRandomNumber(-1, 1, true)),
-          motorSpeed: 4,
-          minSpeed: 1
-        });
-      }
-
-      var caption = new Flora.Caption({
-        text: 'Sensor, Stimuli and Proximity Objects',
+      this.add('Caption', {
+        text: 'Sensor, Stimuli and Proximity Objects: Drag objects into the Agent\'s path',
         opacity: 0.4,
         borderColor: 'transparent',
         position: 'top center'
       });
 
-      var inputMenu = new Flora.InputMenu({
+      this.add('InputMenu', {
         opacity: 0.4,
         borderColor: 'transparent',
         position: 'bottom center'

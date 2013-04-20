@@ -6,59 +6,55 @@
   <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
   <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0; maximum-scale=1.0;" />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
-  <script src="js/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8" />
+  <script src="scripts/mantle.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/flora.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-9773576-12']);
-  _gaq.push(['_trackPageview']);
+    /*var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-9773576-12']);
+    _gaq.push(['_trackPageview']);
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();*/
 
-</script>
-</head>
-<body>
-  <script type="text/javascript" charset="utf-8">
+  </script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-    // start the system; pass initial instuctions
-    Flora.System.start(function () {
+      Flora.Mantle.System.create(function() {
 
-      var universe = Flora.universe.first();
-
-      if (Flora.System.supportedFeatures.touch) {
-        Flora.universe.update({
-          isDeviceMotion: true
+        Flora.Mantle.World.update({
+          gravity: new Flora.Vector(),
+          c: 0
         });
-        new Flora.Agent();
-      } else {
-        new Flora.Agent({
+
+        this.add('Agent', {
           followMouse: true
         });
-      }
 
-      new Flora.Liquid({
-        draggable: true,
-        location: new Flora.Vector(universe.width * 0.6, universe.height * 0.6)
-      });
+        this.add('Liquid', {
+          draggable: true
+        });
 
-      var caption = new Flora.Caption({
-        text: 'Proximity - Liquid',
-        opacity: 0.4,
-        borderColor: 'transparent',
-        position: 'top center'
-      });
+        this.add('Caption', {
+          text: 'Liquid',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
 
-      var inputMenu = new Flora.InputMenu({
-        opacity: 0.4,
-        borderColor: 'transparent',
-        position: 'bottom center'
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+
       });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

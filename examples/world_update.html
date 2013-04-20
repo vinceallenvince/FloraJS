@@ -29,16 +29,14 @@
       Flora.Mantle.System.create(function() {
 
         Flora.Mantle.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
+          gravity: new Flora.Vector(0, -1),
+          c: 0.75
         });
 
-        this.add('Agent', {
-          seekTarget: this.add('Walker')
-        });
+        this.add('Agent');
 
         this.add('Caption', {
-          text: 'Agent seeks Walker',
+          text: 'World update',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

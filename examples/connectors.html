@@ -6,40 +6,54 @@
   <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
   <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0; maximum-scale=1.0;" />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
-  <script src="js/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8" />
+  <script src="scripts/mantle.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/flora.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-9773576-12']);
-  _gaq.push(['_trackPageview']);
+    /*var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-9773576-12']);
+    _gaq.push(['_trackPageview']);
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();*/
 
-</script>
-</head>
+  </script>
+  </head>
 <body>
   <script type="text/javascript" charset="utf-8">
 
-    // start the system; pass initial instuctions
-    Flora.System.start(function() {
-      var point = new Flora.Point(),
-          walkerA = new Flora.Walker(),
-          walkerB = new Flora.Walker(),
-          agent = new Flora.Agent({followMouse: true}),
-          connector1 = new Flora.Connector(point, walkerA),
-          connector2 = new Flora.Connector(walkerA, walkerB),
-          connector3 = new Flora.Connector(walkerB, agent),
-          connector4 = new Flora.Connector(agent, point);
+      Flora.Mantle.System.create(function() {
 
-      Flora.universe.update({
-        gravity: new Flora.Vector(0, 0)
+        Flora.Mantle.World.update({
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+
+        var walkerA = this.add('Walker', {width: 50, height: 50}),
+            walkerB = this.add('Walker', {width: 50, height: 50}),
+            walkerC = this.add('Walker', {width: 50, height: 50});
+
+        this.add('Connector', {
+          parentA: walkerA,
+          parentB: walkerB
+        });
+
+        this.add('Connector', {
+          parentA: walkerB,
+          parentB: walkerC
+        });
+
+        this.add('Connector', {
+          parentA: walkerC,
+          parentB: walkerA
+        });
+
       });
-    });
+
   </script>
 </body>
 </html>

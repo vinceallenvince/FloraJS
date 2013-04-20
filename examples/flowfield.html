@@ -28,17 +28,19 @@
 
       Flora.Mantle.System.create(function() {
 
-        Flora.Mantle.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
+        var ffield = this.add('FlowField', {
+          createMarkers: true
         });
+        ffield.build();
 
         this.add('Agent', {
-          seekTarget: this.add('Walker')
+          flowField: ffield,
+          checkEdges: true,
+          wrapEdges: true
         });
 
         this.add('Caption', {
-          text: 'Agent seeks Walker',
+          text: 'Flow Field',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
