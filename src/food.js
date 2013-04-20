@@ -10,12 +10,10 @@
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
- * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
+ * @param {number} [opt_options.opacity = 0.75] The opacity.
  * @param {number} [opt_options.zIndex = 10] The object's zIndex.
  */
 function Food(opt_options) {
-
-  'use strict';
 
   var options = opt_options || {};
 
@@ -27,6 +25,8 @@ function Food(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+
+  exports.Mantle.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Food, exports.Agent);
 
