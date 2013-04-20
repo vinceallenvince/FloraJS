@@ -206,69 +206,78 @@ Utils.getWindowSize = function() {
 };
 
 /**
- * Concatenates several properties into a single list
- * representing the style properties of an object.
+ * Returns the data type of the passed argument.
  *
- * @param [Object] props A map of properties.
- * @returns {string} A list of style properties.
+ * @param {*} element The variable to test.
+*/
+Utils.getDataType = function(element) {
+
+  if (Object.prototype.toString.call(element) === '[object Array]') {
+    return 'array';
+  }
+
+  if (Object.prototype.toString.call(element) === '[object NodeList]') {
+    return 'nodeList';
+  }
+
+  return typeof element;
+};
+
+/**
+ * Capitalizes the first character in a string.
+ *
+ * @param {string} string The string to capitalize.
+ * @returns {string} The string with the first character capitalized.
  */
-Utils.getCSSText = function(props) {
+Utils.capitalizeFirstLetter = function(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+/**
+ * Determines if this object is inside another.
+ *
+ * @param {Object} container The containing object.
+ * @returns {boolean} Returns true if the object is inside the container.
+ */
+Utils.isInside = function(obj, container) {
+
+  if (container) {
+    if (obj.location.x + obj.width/2 > container.location.x - container.width/2 &&
+      obj.location.x - obj.width/2 < container.location.x + container.width/2 &&
+      obj.location.y + obj.height/2 > container.location.y - container.height/2 &&
+      obj.location.y - obj.height/2 < container.location.y + container.height/2) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * Checks if mouse location is inside the world.
+ *
+ * @param {Object} world A Flora world.
+ * @returns {boolean} True if mouse is inside world; False if
+ *    mouse is outside world.
+ */
+Utils.mouseIsInsideWorld = function(world) {
 
   'use strict';
 
-  var positionStr = '',
-      width = typeof props.w === 'number' ? props.w + 'px' : props.w,
-      height = typeof props.h === 'number' ? props.h + 'px' : props.h;
+  var mouse = exports.Mantle.System.mouse,
+      x = mouse.location.x,
+      y = mouse.location.y,
+      left = world.el.offsetLeft,
+      top = world.el.offsetTop;
 
-  if (!props.color) {
-    props.color = [];
-    props.background = null;
-  } else {
-    props.background = props.cm + '(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
+  if (world) {
+    if (x > left &&
+      x < left + world.bounds[1] &&
+      y > top &&
+      y < top + world.bounds[2]) {
+      return true;
+    }
   }
-
-  if (!props.borderColor) {
-    props.borderColor = [];
-    props.borderColorStr = '';
-  } else {
-    props.borderColorStr = props.cm + '(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')';
-  }
-
-  if (exports.System.supportedFeatures.csstransforms3d) {
-    positionStr = [
-      '-webkit-transform: translate3d(' + props.x + 'px, ' + props.y + 'px, 0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translate3d(' + props.x + 'px, ' + props.y + 'px, 0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translate3d(' + props.x + 'px, ' + props.y + 'px, 0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-ms-transform: translate3d(' + props.x + 'px, ' + props.y + 'px, 0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
-    ].join(';');
-  } else if (exports.System.supportedFeatures.csstransforms) {
-    positionStr = [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
-    ].join(';');
-  } else {
-    positionStr = [
-      'position: absolute',
-      'left: ' + props.x + 'px',
-      'top: ' + props.y + 'px'
-    ].join(';');
-  }
-
-  return [
-    positionStr,
-    'opacity: ' + props.o,
-    'width: ' + width,
-    'height: ' + height,
-    'background: ' + props.background,
-    'z-index: ' + props.z,
-    'border-width: ' + props.borderWidth + 'px',
-    'border-style: ' + props.borderStyle,
-    'border-color: ' + props.borderColorStr,
-    'border-radius: ' + props.borderRadius,
-    'box-shadow: ' + props.boxShadow
-  ].join(';');
+  return false;
 };
 
 exports.Utils = Utils;
