@@ -19,8 +19,8 @@ function Point(opt_options) {
 
   exports.Agent.call(this, options);
 
-  this.width = options.width === 0 ? 0 : options.width || 10;
-  this.height = options.height === 0 ? 0 : options.height || 10;
+  this.width = options.width === 0 ? 0 : options.width || 15;
+  this.height = options.height === 0 ? 0 : options.height || 15;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 0;
