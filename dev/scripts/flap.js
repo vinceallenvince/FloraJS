@@ -1,15 +1,15 @@
 /*global Flora, document */
-Flora.System.start(function () {
+Flora.Mantle.System.create(function() {
 
   var getRandomNumber = Flora.Utils.getRandomNumber,
-      universe = Flora.universe.first();
+      world = Flora.Mantle.System.allWorlds()[0];
 
-  Flora.universe.update({
-    c: 0,
-    gravity: new Flora.Vector()
+  Flora.Mantle.World.update({
+    gravity: new Flora.Vector(),
+    c: 0
   });
 
-  var flowField = new Flora.FlowField({
+  var flowField = this.add('FlowField', {
     createMarkers: false,
     resolution: 20,
     perlinSpeed: 0.015,
@@ -17,9 +17,23 @@ Flora.System.start(function () {
   });
   flowField.build();
 
-  var pl;
+  var target = this.add('Agent', {
+    flowField: flowField,
+    wrapEdges: true,
+    mass: getRandomNumber(100, 300),
+    opacity: 0,
+    beforeStep: function() {
+      return function() {
+        if (getRandomNumber(0, 1000) === 1000) {
+          this.location = new Flora.Vector(getRandomNumber(0, world.bounds[1]),
+              getRandomNumber(0, world.bounds[2]));
+        }
+      };
+    }
+  });
+
+  var pl = new Flora.ColorPalette();
   if (getRandomNumber(1, 2) === 1) {
-    pl = new Flora.ColorPalette();
     pl.addColor({
       min: 1,
       max: 24,
@@ -27,7 +41,6 @@ Flora.System.start(function () {
       endColor: [255, 150, 255]
     });
   } else {
-    pl = new Flora.ColorPalette();
     pl.addColor({
       min: 1,
       max: 24,
@@ -36,46 +49,34 @@ Flora.System.start(function () {
     });
   }
 
-  var target = new Flora.Agent({
-    flowField: flowField,
-    wrapEdges: true,
-    mass: getRandomNumber(100, 300),
-    opacity: 0,
-    beforeStep: function() {
-      if (getRandomNumber(0, 1000) === 1000) {
-        var universe = Flora.universe.first();
-        this.location = new Flora.Vector(getRandomNumber(0, universe.width),
-            getRandomNumber(0, universe.height));
-        }
-    }
-  });
-
   var wings = [];
 
   var beforeStep = function() {
-    var parent = this.parent;
+    return function() {
+      var parent = this.parent;
 
-    this.flapAngle += Flora.Utils.map(this.velocity.mag(),
-        this.minSpeed, this.maxSpeed, 1, 50);
+      this.flapAngle += Flora.Utils.map(this.velocity.mag(),
+          this.minSpeed, this.maxSpeed, 1, 50);
 
-    this.angle = Flora.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x)) +
-         (this.index ? this.flapAngle : -this.flapAngle);
+      this.angle = Flora.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x)) +
+           (this.index ? this.flapAngle : -this.flapAngle);
 
-    if (this.opacity < 1) {
-      this.opacity += 0.01;
-    }
+      if (this.opacity < 1) {
+        this.opacity += 0.01;
+      }
+    };
   };
 
-  for (var i = 0; i < 30; i++) {
+  for (var i = 0; i < 40; i++) {
 
     var wingSize = getRandomNumber(4, 32),
         color = pl.getColor(),
         mass = getRandomNumber(100, 300),
-        location = new Flora.Vector(universe.width/2 + getRandomNumber(-50, 50),
-          universe.height/2 + getRandomNumber(-50, 50));
+        location = new Flora.Vector(world.bounds[1] / 2 + getRandomNumber(-50, 50),
+          world.bounds[2] / 2 + getRandomNumber(-50, 50));
 
     for (var j = 0; j < 2; j++) {
-      wings.push(new Flora.Agent({
+      wings.push(this.add('Agent', {
         parent: j ? wings[wings.length - 1] : null,
         location: location,
         seekTarget: target,
@@ -89,6 +90,7 @@ Flora.System.start(function () {
         cohesionStrength: 0.3,
         width: wingSize,
         height: wingSize < 12 ? 1 : 2,
+        border: 'none',
         color: color,
         opacity: 0,
         flapAngle: 0,
@@ -104,18 +106,18 @@ Flora.System.start(function () {
 
   Flora.Utils.addEvent(document, 'mousedown', function() {
     mousedown = true;
-    Flora.elementList.updatePropsByName('Agent', {
+    Flora.Mantle.System.updateElementPropsByName('Agent', {
       seekTarget: {
-        location: new Flora.Vector(Flora.mouse.loc.x, Flora.mouse.loc.y)
+        location: new Flora.Vector(Flora.Mantle.System.mouse.location.x, Flora.Mantle.System.mouse.location.y)
       }
     });
   });
 
   Flora.Utils.addEvent(document, 'mousemove', function() {
     if (mousedown) {
-      Flora.elementList.updatePropsByName('Agent', {
+      Flora.Mantle.System.updateElementPropsByName('Agent', {
         seekTarget: {
-          location: new Flora.Vector(Flora.mouse.loc.x, Flora.mouse.loc.y)
+          location: new Flora.Vector(Flora.Mantle.System.mouse.location.x, Flora.Mantle.System.mouse.location.y)
         }
       });
     }
@@ -123,7 +125,7 @@ Flora.System.start(function () {
 
   Flora.Utils.addEvent(document, 'mouseup', function() {
     mousedown = false;
-    Flora.elementList.updatePropsByName('Agent', {
+    Flora.Mantle.System.updateElementPropsByName('Agent', {
       seekTarget: target
     });
   });
