@@ -142,7 +142,7 @@ Sensor.prototype.step = function() {
  */
 Sensor.prototype.getActivationForce = function(agent) {
 
-  var distanceToTarget, m, v, f, steer;
+  var distanceToTarget, m, v, steer;
 
   switch (this.behavior) {
 
@@ -156,7 +156,7 @@ Sensor.prototype.getActivationForce = function(agent) {
      * Steers away from the target
      */
     case "COWARD":
-      f = this._seek(this.target);
+      var f = this._seek(this.target);
       return f.mult(-1);
 
     /**

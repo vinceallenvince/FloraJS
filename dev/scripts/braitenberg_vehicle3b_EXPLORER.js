@@ -28,7 +28,7 @@ Flora.Mantle.System.create(function() {
       viewArgs: [i],
       sensors: [
         new Brait.Sensor({
-          type: 'heat',
+          type: 'cold',
           behavior: 'EXPLORER'
         })
       ]
@@ -38,11 +38,11 @@ Flora.Mantle.System.create(function() {
   // create stimulants
   for (i = 0, max = (0.02 * world.bounds[1]); i < max; i += 1) {
     Brait.Stimulus.create(null, new Flora.Vector(getRandomNumber(0, world.bounds[1]),
-        getRandomNumber(0, world.bounds[2])), [Brait.Heat]);
+        getRandomNumber(0, world.bounds[2])), [Brait.Cold]);
   }
 
   // add event listener to create random stimulant on mouseup
-  Flora.Utils.addEvent(document, 'mouseup', Brait.Stimulus.createHeat);
+  Flora.Utils.addEvent(document, 'mouseup', Brait.Stimulus.createCold);
 
 }, null, null, true);
 

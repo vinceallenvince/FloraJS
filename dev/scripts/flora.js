@@ -1,9 +1,8 @@
 /*
 FloraJS
-Copyright (c) 2012 Vince Allen
-Brooklyn, NY 11215, USA
-email: vince@vinceallen.com
-web: http://www.vinceallen.com
+Copyright (c) 2013 Vince Allen
+vince@vinceallen.com
+http://www.vinceallen.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: April 21, 2013 02:16:27 */
+/* Build time: April 21, 2013 03:47:15 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -2886,7 +2885,7 @@ Sensor.prototype.step = function() {
  */
 Sensor.prototype.getActivationForce = function(agent) {
 
-  var distanceToTarget, m, v, f, steer;
+  var distanceToTarget, m, v, steer;
 
   switch (this.behavior) {
 
@@ -2900,7 +2899,7 @@ Sensor.prototype.getActivationForce = function(agent) {
      * Steers away from the target
      */
     case "COWARD":
-      f = this._seek(this.target);
+      var f = this._seek(this.target);
       return f.mult(-1);
 
     /**

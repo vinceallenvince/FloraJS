@@ -1,3 +1,5 @@
+/*
+Mantle
 Copyright (c) 2013 Vince Allen
 vince@vinceallen.com
 http://www.vinceallen.com
@@ -19,3 +21,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+/* Version: 1.1.0 */
+/* Build time: April 21, 2013 03:34:37 */
+
+
+.element {position: absolute;top: 0; left: 0;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box;}
+.world {background: rgb(255, 255, 255);position: absolute;margin: 0 auto;z-index: 0;height: 100%;width: 100%;overflow: hidden;}
+.statsDisplay {position: fixed;display: inline-block;background-color: rgb(0, 0, 0);background-color: rgba(0, 0, 0, 0.75);border-bottom: 1px solid rgb(50, 50, 50);border-right: 1px solid rgb(50, 50, 50);color: rgb(255, 255, 255);padding: 0.75em;font-family: Helvetica;font-size: 0.85em;}
+.statsDisplayLabel {display: inline-block;color: rgb(150, 150, 150);margin-left: 0.75em;}
+.statsDisplayLabel:first-child {margin-left: 0;}
+
