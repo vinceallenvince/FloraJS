@@ -341,23 +341,26 @@
 
     <!-- copy fat js file to /dev/scripts -->
     <copy file="${build.dir}/${buildNameLower}.js" todir="${dev.dir}/scripts" overwrite="true"/>
-    <!-- copy fat mantle file to /dev/scripts -->
-    <copy file="${lib.dir}/mantle.js" todir="${dev.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to /dev/css -->
     <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${dev.dir}/css" overwrite="true"/>
-
-    <!-- copy fat js file to tests/lib/ -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
-   <!-- copy fat mantle file to /tests/lib -->
-    <copy file="${lib.dir}/mantle.js" todir="${tests.dir}/lib" overwrite="true"/>
+    <!-- copy mantle js file to /dev/scripts -->
+    <copy file="${lib.dir}/mantle.js" todir="${dev.dir}/scripts" overwrite="true"/>
+    <!-- copy mantle css file to /dev/css -->
+    <copy file="${lib.dir}/mantle.css" todir="${dev.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to examples/scripts -->
     <copy file="${build.dir}/${buildNameLower}.js" todir="${examples.dir}/scripts" overwrite="true"/>
-    <!-- copy fat mantle file to /examples/scripts -->
-    <copy file="${lib.dir}/mantle.js" todir="${examples.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to /examples/css -->
     <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${examples.dir}/css" overwrite="true"/>
+    <!-- copy mantle js file to /examples/scripts -->
+    <copy file="${lib.dir}/mantle.js" todir="${examples.dir}/scripts" overwrite="true"/>
+    <!-- copy mantle css file to /examples/scripts -->
+    <copy file="${lib.dir}/mantle.css" todir="${examples.dir}/css" overwrite="true"/>
 
+    <!-- copy fat js file to tests/lib/ -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
+   <!-- copy fat mantle js file to /tests/lib -->
+    <copy file="${lib.dir}/mantle.js" todir="${tests.dir}/lib" overwrite="true"/>
 
   </target>
 
