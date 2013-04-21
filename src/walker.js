@@ -14,9 +14,10 @@
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.random = false] Set to true for walker to move in a random direction.
  * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
+ * @param {string|Array} [opt_options.color = [255, 150, 50]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [167, 219, 216]] Border color.
+ * @param {string|Array} [opt_options.borderColor = [167, 219, 216]] Border color.
  * @param {string} [opt_options.borderRadius = '100%'] Border radius.
  *
  * @constructor
@@ -44,6 +45,7 @@ function Walker(opt_options) {
   this.offsetY = options.offsetY || Math.random() * 10000;
   this.random = !!options.random;
   this.randomRadius = options.randomRadius || 100;
+  this.color = options.color || [255, 150, 50];
   this.borderWidth = options.borderWidth || 2;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || 'white';

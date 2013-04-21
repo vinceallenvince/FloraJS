@@ -17,6 +17,11 @@
  * @param {Object} [opt_options.target = null] A stimulator.
  * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
  * @param {boolean} [opt_options.activatedColor = [200, 200, 200]] The color the sensor will display when activated.
+ * @param {number} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {number} [opt_options.borderWidth = 2] Border width.
+ * @param {number} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {number} [opt_options.borderColor = 'white'] Border color.
+
  */
 function Sensor(opt_options) {
 
@@ -35,10 +40,10 @@ function Sensor(opt_options) {
   this.target = options.target || null;
   this.activated = !!options.activated;
   this.activatedColor = options.activatedColor || [200, 200, 200];
+  this.borderRadius ='100%';
   this.borderWidth = 2;
   this.borderStyle = 'solid';
   this.borderColor = 'white';
-  this.borderRadius ='100%';
 }
 exports.Utils.extend(Sensor, exports.Agent);
 

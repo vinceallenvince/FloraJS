@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: April 21, 2013 12:45:27 */
+/* Build time: April 21, 2013 02:16:27 */
 /** @namespace */
 var Flora = {}, exports = Flora;
 
@@ -2279,9 +2279,10 @@ exports.Mover = Mover;
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
  * @param {array} [opt_options.sensors = []] A list of sensors attached to this object.
+ * @param {string|Array} [opt_options.color = [197, 177, 115]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [167, 219, 216]] Border color.
+ * @param {string|Array} [opt_options.borderColor = [167, 219, 216]] Border color.
  * @param {string|number} [opt_options.borderRadius = null] Border radius.
  * @param {string} [opt_options.borderTopLeftRadius = '0'] Border top left radius.
  * @param {string} [opt_options.borderTopRightRadius = '100%'] Border top right radius.
@@ -2311,6 +2312,7 @@ function Agent(opt_options) {
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
 
+  this.color = options.color || [197, 177, 115];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
@@ -2666,9 +2668,10 @@ exports.Agent = Agent;
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.random = false] Set to true for walker to move in a random direction.
  * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
+ * @param {string|Array} [opt_options.color = [255, 150, 50]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [167, 219, 216]] Border color.
+ * @param {string|Array} [opt_options.borderColor = [167, 219, 216]] Border color.
  * @param {string} [opt_options.borderRadius = '100%'] Border radius.
  *
  * @constructor
@@ -2696,6 +2699,7 @@ function Walker(opt_options) {
   this.offsetY = options.offsetY || Math.random() * 10000;
   this.random = !!options.random;
   this.randomRadius = options.randomRadius || 100;
+  this.color = options.color || [255, 150, 50];
   this.borderWidth = options.borderWidth || 2;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || 'white';
@@ -2757,6 +2761,11 @@ exports.Walker = Walker;
  * @param {Object} [opt_options.target = null] A stimulator.
  * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
  * @param {boolean} [opt_options.activatedColor = [200, 200, 200]] The color the sensor will display when activated.
+ * @param {number} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {number} [opt_options.borderWidth = 2] Border width.
+ * @param {number} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {number} [opt_options.borderColor = 'white'] Border color.
+
  */
 function Sensor(opt_options) {
 
@@ -2775,10 +2784,10 @@ function Sensor(opt_options) {
   this.target = options.target || null;
   this.activated = !!options.activated;
   this.activatedColor = options.activatedColor || [200, 200, 200];
+  this.borderRadius ='100%';
   this.borderWidth = 2;
   this.borderStyle = 'solid';
   this.borderColor = 'white';
-  this.borderRadius ='100%';
 }
 exports.Utils.extend(Sensor, exports.Agent);
 
@@ -2998,9 +3007,10 @@ exports.Sensor = Sensor;
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
  * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {string|Array} [opt_options.color = [105, 210, 231]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [167, 219, 216]] Border color.
+ * @param {string|Array} [opt_options.borderColor = [167, 219, 216]] Border color.
  * @param {string} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Liquid(opt_options) {
@@ -3018,6 +3028,7 @@ function Liquid(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [105, 210, 231];
   this.borderWidth = options.borderWidth || '1em';
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [167, 219, 216];
@@ -3042,12 +3053,13 @@ exports.Liquid = Liquid;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
- * @param {number} [opt_options.opacity = 0.75] The opacity.
- * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {number} [opt_options.opacity = 0.75] Opacity.
+ * @param {number} [opt_options.zIndex = 10] zIndex.
+ * @param {string|Array} [opt_options.color = [255, 69, 0]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [224, 178, 154]] Border color.
- * @param {string} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {string|Array} [opt_options.borderColor = [224, 178, 154]] Border color.
+ * @param {string|number} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Heat(opt_options) {
 
@@ -3061,6 +3073,7 @@ function Heat(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [255, 69, 0];
   this.borderWidth = options.borderWidth || '1em';
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 178, 154];
@@ -3087,10 +3100,11 @@ exports.Heat = Heat;
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] The opacity.
  * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {string|Array} [opt_options.color = [132, 192, 201]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [0, 89, 102]] Border color.
- * @param {string} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {string|Array} [opt_options.borderColor = [0, 89, 102]] Border color.
+ * @param {string|number} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Cold(opt_options) {
 
@@ -3104,6 +3118,7 @@ function Cold(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [132, 192, 201];
   this.borderWidth = options.borderWidth || '1em';
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [0, 89, 102];
@@ -3129,7 +3144,12 @@ exports.Cold = Cold;
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] Opacity.
- * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {number} [opt_options.zIndex = 10] zIndex.
+ * @param {string|Array} [opt_options.color = [0, 174, 239]] Color.
+ * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
+ * @param {string} [opt_options.borderStyle = 'double'] Border style.
+ * @param {string|Array} [opt_options.borderColor = [64, 255, 255]] Border color.
+ * @param {string|number} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Oxygen(opt_options) {
 
@@ -3143,6 +3163,11 @@ function Oxygen(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [0, 174, 239];
+  this.borderWidth = options.borderWidth || '1em';
+  this.borderStyle = options.borderStyle || 'double';
+  this.borderColor = options.borderColor || [64, 255, 255];
+  this.borderRadius = options.borderRadius || '100%';
 
   exports.Mantle.PubSub.publish('UpdateCache', this);
 }
@@ -3164,7 +3189,12 @@ exports.Oxygen = Oxygen;
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] Opacity.
- * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {number} [opt_options.zIndex = 10] zIndex.
+ * @param {string|Array} [opt_options.color = [255, 200, 0]] Color.
+ * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
+ * @param {string} [opt_options.borderStyle = 'double'] Border style.
+ * @param {string|Array} [opt_options.borderColor = [210, 210, 0]] Border color.
+ * @param {string|number} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Light(opt_options) {
 
@@ -3178,6 +3208,11 @@ function Light(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [255, 200, 0];
+  this.borderWidth = options.borderWidth || '1em';
+  this.borderStyle = options.borderStyle || 'double';
+  this.borderColor = options.borderColor || [210, 210, 0];
+  this.borderRadius = options.borderRadius || '100%';
 
   exports.Mantle.PubSub.publish('UpdateCache', this);
 }
@@ -3228,7 +3263,6 @@ function Connector(opt_options) {
   this.width = 0;
   this.height = 0;
   this.color = 'transparent';
-
 }
 exports.Utils.extend(Connector, exports.Agent);
 
@@ -3266,6 +3300,11 @@ exports.Connector = Connector;
  * @param {number} [opt_options.height = 5] Height.
  * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
+ * @param {number} [opt_options.color = [200, 200, 200]] Color.
+ * @param {number} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {number} [opt_options.borderWidth = 2] Border width.
+ * @param {number} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {number} [opt_options.borderColor = [60, 60, 60]] Border color.
  */
 function Point(opt_options) {
 
@@ -3275,13 +3314,16 @@ function Point(opt_options) {
 
   exports.Agent.call(this, options);
 
-  this.width = options.width === 0 ? 0 : options.width || 15;
-  this.height = options.height === 0 ? 0 : options.height || 15;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.5;
+  this.width = options.width === 0 ? 0 : options.width || 10;
+  this.height = options.height === 0 ? 0 : options.height || 10;
+  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 0;
-  this.offsetAngle = options.offsetAngle || 0;
-  this.length = options.length === 0 ? 0 : options.length|| 30;
+  this.color = options.color || [200, 200, 200];
+  this.borderRadius = options.borderRadius || '100%';
+  this.borderWidth = options.borderWidth || 2;
+  this.borderStyle = options.borderStyle || 'solid';
+  this.borderColor = options.borderColor || [60, 60, 60];
 }
 exports.Utils.extend(Point, exports.Agent);
 
@@ -3300,8 +3342,13 @@ exports.Point = Point;
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
- * @param {number} [opt_options.opacity = 0.75] The opacity.
- * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {number} [opt_options.opacity = 0.75] Opacity.
+ * @param {number} [opt_options.zIndex = 10] zIndex.
+ * @param {string|Array} [opt_options.color = [57, 28, 0]] Color.
+ * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
+ * @param {string} [opt_options.borderStyle = 'double'] Border style.
+ * @param {string|Array} [opt_options.borderColor = [115, 255, 0]] Border color.
+ * @param {string|number} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Food(opt_options) {
 
@@ -3315,6 +3362,11 @@ function Food(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [57, 128, 0];
+  this.borderWidth = options.borderWidth || '1em';
+  this.borderStyle = options.borderStyle || 'double';
+  this.borderColor = options.borderColor || [115, 255, 0];
+  this.borderRadius = options.borderRadius || '100%';
 
   exports.Mantle.PubSub.publish('UpdateCache', this);
 }
@@ -3588,6 +3640,11 @@ exports.ParticleSystem = ParticleSystem;
  * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when isPerlin = true.
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
+ * @param {number} [opt_options.color = [200, 100, 0]] Color.
+ * @param {number} [opt_options.borderTopRightRadius = '100%'] Border-top-right radius.
+ * @param {number} [opt_options.borderBottomRightRadius = '100%'] Border-bottom-right radius.
+ * @param {number} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {number} [opt_options.borderColor = [255, 150, 0]] Border color.
  */
 function Oscillator(opt_options) {
 
@@ -3613,6 +3670,12 @@ function Oscillator(opt_options) {
   this.perlinAccelHigh = options.perlinAccelHigh || 2;
   this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
   this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
+
+  this.color = [200, 100, 0];
+  this.borderTopRightRadius = '100%';
+  this.borderBottomRightRadius = '100%';
+  this.borderStyle = 'solid';
+  this.borderColor = [255, 150, 50];
 }
 exports.Utils.extend(Oscillator, exports.Agent);
 
@@ -3687,10 +3750,11 @@ exports.Oscillator = Oscillator;
  * @param {number} [opt_options.height = 10] Height.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {string|Array} [opt_options.color = [32, 102, 63]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [224, 228, 204]] Border color.
- * @param {string} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {string|Array} [opt_options.borderColor = [224, 228, 204]] Border color.
+ * @param {string|number} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Attractor(opt_options) {
 
@@ -3707,6 +3771,7 @@ function Attractor(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [92, 187, 0];
   this.borderWidth = options.borderWidth || '1em';
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
@@ -3734,10 +3799,11 @@ exports.Attractor = Attractor;
  * @param {number} [opt_options.height = 10] Height.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {string|Array} [opt_options.color = [250, 105, 0]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [224, 228, 204]] Border color.
- * @param {string} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {string|Array} [opt_options.borderColor = [224, 228, 204]] Border color.
+ * @param {string|number} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Repeller(opt_options) {
 
@@ -3754,6 +3820,7 @@ function Repeller(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 100;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [250, 105, 0];
   this.borderWidth = options.borderWidth || '1em';
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];

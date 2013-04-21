@@ -40,7 +40,6 @@ function Connector(opt_options) {
   this.width = 0;
   this.height = 0;
   this.color = 'transparent';
-
 }
 exports.Utils.extend(Connector, exports.Agent);
 

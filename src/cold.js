@@ -12,10 +12,11 @@
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] The opacity.
  * @param {number} [opt_options.zIndex = 10] The object's zIndex.
+ * @param {string|Array} [opt_options.color = [132, 192, 201]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [0, 89, 102]] Border color.
- * @param {string} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {string|Array} [opt_options.borderColor = [0, 89, 102]] Border color.
+ * @param {string|number} [opt_options.borderRadius = '100%'] Border radius.
  */
 function Cold(opt_options) {
 
@@ -29,6 +30,7 @@ function Cold(opt_options) {
   this.height = options.height === 0 ? 0 : options.height || 50;
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.color = options.color || [132, 192, 201];
   this.borderWidth = options.borderWidth || '1em';
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [0, 89, 102];

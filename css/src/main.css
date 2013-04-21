@@ -6,93 +6,19 @@ body {
   background-color: rgb(0, 0, 0);
 }
 
-.agent {
-  background: rgb(197, 177, 115);
-  /*border-color: rgb(255, 255, 255);
-  border-width: 0.25em;
-  border-style: solid;
-  border-bottom-right-radius: 50%;
-  border-top-right-radius: 50%;*/
-  z-index: 1;
-}
-
 .hasSensor {
   border-radius: 100%;
 }
 
-.walker {
-  background: rgb(255, 150, 50);
-  border-color: rgb(255, 255, 255);
-  border-width: 0.15em;
-  border-style: solid;
-  border-radius: 100%;
-  z-index: 1;
-}
-
 .liquid {
-  background: rgb(105, 210, 231);
-  border-width: 1em;
-  border-color: rgb(167, 219, 216);
-  border-style: double;
-  border-radius: 100%;
   box-shadow: 0 0 0 1em rgb(224, 228, 204);
-  z-index: 10;
-}
-
-.connector {
-  background: transparent;
-  border-top: 2px dotted #ff0000;
-  border-right: none;
-  border-bottom: none;
-  border-left: none;
-}
-
-.point {
-  background: rgb(255, 255, 255);
-  border-radius: 100%;
-  border: 3px solid rgb(100, 100, 100);
-  border: 3px solid rgba(100, 100, 100, 1);
-}
-
-.sensor {
-  border-radius: 100%;
-  border: 1px solid rgb(255, 255, 255);
-}
-
-.particle {
-  background: rgb(200, 20, 20);
-  opacity: 0;
-}
-
-.particle-system {
-  background: transparent;
-  opacity: 0;
-}
-
-.oscillator {
-  background: rgb(200, 100, 0); opacity: 0;
-  border-bottom-right-radius: 100%;
-  border-top-right-radius: 100%;
-  border-style: solid;
-  border-color: rgb(255, 150, 50);
-  /*box-shadow: 0 0 0 .5em rgba(255, 255, 255, 1);*/
 }
 
 .attractor {
-  background: rgb(32, 102, 63);
-  border-width: 1em;
-  border-color: rgb(204, 238, 141);
-  border-style: double;
-  border-radius: 100%;
-  box-shadow: 0 0 0 1em rgb(37, 153, 89);
+  box-shadow: 0 0 0 1em rgb(64, 129, 0);
 }
 
 .repeller {
-  background: rgb(250, 105, 0);
-  border-width: 1em;
-  border-color: rgb(224, 228, 204);
-  border-style: double;
-  border-radius: 100%;
   box-shadow: 0 0 0 1em rgb(243, 134, 48);
 }
 
@@ -106,63 +32,24 @@ body {
 
 /* STIMULI - start */
 .cold {
-  background: rgb(132, 192, 201);
-  border-width: 1em;
-  border-color: rgb(0, 89, 102);
-  border-style: double;
-  border-radius: 100%;
   box-shadow: 0 0 0 1em rgb(0, 150, 172);
-  z-index: 10;
 }
 
 .food {
-  background: rgb(57, 128, 0);
-  border-width: 1em;
-  border-color: rgb(115, 255, 0);
-  border-style: double;
-  border-radius: 100%;
   box-shadow: 0 0 0 1em rgb(104, 173, 48);
-  z-index: 10;
+
 }
 
 .heat {
-  background: rgb(255, 69, 0);
-  border-width: 1em;
-  border-color: rgb(224, 178, 154);
-  border-style: double;
-  border-radius: 100%;
   box-shadow: 0 0 0 1em rgb(243, 134, 48);
-  z-index: 10;
 }
 
 .light {
-  background: rgb(255, 255, 255);
-  border-width: 1em;
-  border-color: rgb(210, 210, 0);
-  border-style: double;
-  border-radius: 100%;
   box-shadow: 0 0 0 1em rgb(255, 255, 100);
-  z-index: 10;
 }
 
 .oxygen {
-  background: rgb(0, 174, 239);
-  border-width: 1em;
-  border-color: rgb(64, 255, 255);
-  border-style: double;
-  border-radius: 100%;
   box-shadow: 0 0 0 1em rgb(183, 219, 219);
-  z-index: 10;
-}
-
-.predator {
-  background: rgb(255, 0, 0);
-  border-width: 1em;
-  border-color: rgb(190, 0, 0);
-  border-style: double;
-  border-radius: 100%;
-  box-shadow: 0 0 0 1em rgb(150, 0, 0);
-  z-index: 10;
 }
 /* STIMULI - end */
 

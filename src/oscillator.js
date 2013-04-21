@@ -23,6 +23,11 @@
  * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when isPerlin = true.
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
+ * @param {number} [opt_options.color = [200, 100, 0]] Color.
+ * @param {number} [opt_options.borderTopRightRadius = '100%'] Border-top-right radius.
+ * @param {number} [opt_options.borderBottomRightRadius = '100%'] Border-bottom-right radius.
+ * @param {number} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {number} [opt_options.borderColor = [255, 150, 0]] Border color.
  */
 function Oscillator(opt_options) {
 
@@ -48,6 +53,12 @@ function Oscillator(opt_options) {
   this.perlinAccelHigh = options.perlinAccelHigh || 2;
   this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
   this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
+
+  this.color = [200, 100, 0];
+  this.borderTopRightRadius = '100%';
+  this.borderBottomRightRadius = '100%';
+  this.borderStyle = 'solid';
+  this.borderColor = [255, 150, 50];
 }
 exports.Utils.extend(Oscillator, exports.Agent);
 

@@ -23,11 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.1.0 */
-/* Build time: April 21, 2013 12:38:14 */
+/* Build time: April 21, 2013 01:34:39 */
 .element {
   position: absolute;
   top: 0; left: 0;
-  border-radius: 10%;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   -o-box-sizing: border-box;

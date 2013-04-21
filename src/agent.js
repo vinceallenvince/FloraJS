@@ -16,9 +16,10 @@
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
  * @param {array} [opt_options.sensors = []] A list of sensors attached to this object.
+ * @param {string|Array} [opt_options.color = [197, 177, 115]] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [167, 219, 216]] Border color.
+ * @param {string|Array} [opt_options.borderColor = [167, 219, 216]] Border color.
  * @param {string|number} [opt_options.borderRadius = null] Border radius.
  * @param {string} [opt_options.borderTopLeftRadius = '0'] Border top left radius.
  * @param {string} [opt_options.borderTopRightRadius = '100%'] Border top right radius.
@@ -48,6 +49,7 @@ function Agent(opt_options) {
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
 
+  this.color = options.color || [197, 177, 115];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';

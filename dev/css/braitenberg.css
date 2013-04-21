@@ -143,7 +143,7 @@ body {
 }
 
 /* stimulants */
-.cold {
+.container-system .cold {
 	background: rgb(132, 192, 201);
 	border-width: 0;
 	border-color: transparent;
@@ -152,7 +152,7 @@ body {
 	box-shadow: none;
 }
 
-.food {
+.container-system .food {
 	background: rgb(155, 231, 93);
 	border-width: 0;
 	border-color: transparent;
@@ -161,7 +161,7 @@ body {
 	box-shadow: none;
 }
 
-.heat {
+.container-system .heat {
 	background: rgb(255, 69, 0);
 	border-width: 0;
 	border-color: transparent;
@@ -170,7 +170,7 @@ body {
 	box-shadow: none;
 }
 
-.light {
+.container-system .light {
 	background: rgb(255, 200, 0);
 	border-width: 0;
 	border-color: transparent;
@@ -179,17 +179,8 @@ body {
 	box-shadow: none;
 }
 
-.oxygen {
+.container-system .oxygen {
 	background: rgb(0, 174, 239);
-	border-width: 0;
-	border-color: transparent;
-	border-style: none;
-	border-radius: 0;
-	box-shadow: none;
-}
-
-.predator {
-	background: rgb(200, 0, 0);
 	border-width: 0;
 	border-color: transparent;
 	border-style: none;
