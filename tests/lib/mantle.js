@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.1.0 */
-/* Build time: April 21, 2013 03:27:33 */
+/* Build time: April 27, 2013 10:28:51 */
 /** @namespace */
 function Mantle(exports, opt_parent) {
 
@@ -1013,7 +1013,7 @@ System.create = function(opt_setup, opt_worlds, opt_supportedFeatures, opt_noSta
   }
 
   // save the current and last mouse position
-  exports.Utils.addEvent(window, 'mousemove', function(e) {
+  exports.Utils.addEvent(document, 'mousemove', function(e) {
     System._recordMouseLoc.call(System, e);
   });
 
@@ -1415,8 +1415,8 @@ System.destroyElement = function (obj) {
   for (i = 0, max = records.length; i < max; i += 1) {
     if (records[i].id === obj.id) {
       records[i]._el.style.visibility = 'hidden'; // hide element
-      records[i]._el.style.top = -5000;
-      records[i]._el.style.left = -5000;
+      records[i]._el.style.top = '-5000px';
+      records[i]._el.style.left = '-5000px';
       records[i].world._pool[records[i].world._pool.length] = records.splice(i, 1)[0]; // move record to pool array
       System._updateCacheLookup(obj, false);
       break;

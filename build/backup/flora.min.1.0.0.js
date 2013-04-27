@@ -24,7 +24,7 @@ THE SOFTWARE.
 */
 /* Version: 1.0.0 */
 /* Simplex noise by Sean McCullough banksean@gmail.com */
-/* Build time: April 21, 2013 03:47:15 */
+/* Build time: April 27, 2013 10:46:34 */
 
 var Flora={},exports=Flora;
 (function(b){function i(a,c){this.x=a||0;this.y=c||0}function r(a){this._borders=[];this.id=a||r._idCount;r._idCount+=1}function l(a){this._gradients=[];this._colors=[];this.id=a||l._idCount;l._idCount+=1}function z(){}function E(a){var a=a||{},c,f;this.world=a.world||b.System.allWorlds()[0];this.position=a.position||"top left";this.text=a.text||"";this.opacity=0===a.opacity?0:a.opacity||0.75;this.color=a.color||[255,255,255];this.borderWidth=a.borderWidth||"1px";this.borderStyle=a.borderStyle||"solid";

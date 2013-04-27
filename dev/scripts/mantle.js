@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.1.0 */
-/* Build time: April 21, 2013 03:34:37 */
+/* Build time: April 27, 2013 10:28:51 */
 /** @namespace */
 function Mantle(exports, opt_parent) {
 
@@ -1013,7 +1013,7 @@ System.create = function(opt_setup, opt_worlds, opt_supportedFeatures, opt_noSta
   }
 
   // save the current and last mouse position
-  exports.Utils.addEvent(window, 'mousemove', function(e) {
+  exports.Utils.addEvent(document, 'mousemove', function(e) {
     System._recordMouseLoc.call(System, e);
   });
 
