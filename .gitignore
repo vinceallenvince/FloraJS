@@ -1,10 +1,9 @@
 # FOLDERS #
 ###########
 bak/
-demos/
-experimental/
+build/backup/
 docs/
-public/
+lib/
 
 # FILES #
 #########
