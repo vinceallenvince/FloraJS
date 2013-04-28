@@ -17,8 +17,6 @@
  */
 var SimplexNoise = (function (r) {
 
-  'use strict';
-
   if (r === undefined) {
     r = Math;
   }
@@ -201,7 +199,7 @@ return {
 }({
 random: function () {
 
-  'use strict';
+
 
   return 0.1;
 }

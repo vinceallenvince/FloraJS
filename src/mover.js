@@ -3,7 +3,7 @@
  * Creates a new Mover. All Flora elements extend Mover.
  *
  * @constructor
- * @extends Mantle.Element
+ * @extends Burner.Element
  *
  * @param {Object} [opt_options] options.
  * @param {number} [opt_options.width = 10] Width
@@ -37,10 +37,10 @@
  */
 function Mover(opt_options) {
 
-  var myDiv, options, utils = exports.Mantle.Utils;
+  var myDiv, options, utils = exports.Burner.Utils;
 
   opt_options.name = this.name;
-  exports.Mantle.Element.call(this, opt_options);
+  exports.Burner.Element.call(this, opt_options);
 
   options = opt_options || {};
 
@@ -182,7 +182,7 @@ function Mover(opt_options) {
     exports.Utils.addEvent(this._el, 'mouseout', mouseout);
   }
 }
-exports.Mantle.Utils.extend(Mover, exports.Mantle.Element);
+exports.Burner.Utils.extend(Mover, exports.Burner.Element);
 
 Mover.prototype.name = 'Mover';
 
@@ -267,9 +267,9 @@ Mover.prototype.mouseup = function(e) {
  */
 Mover.prototype.mouseout = function(e, obj) {
 
-  'use strict';
 
-  var me = obj, mouse = exports.Mantle.System.mouse,
+
+  var me = obj, mouse = exports.Burner.System.mouse,
       x, y;
 
   if (obj.isPressed) {
@@ -570,7 +570,7 @@ Mover.prototype._checkAvoidEdges = function() {
  */
 Mover.prototype.drag = function(target) {
 
-  'use strict';
+
 
   var speed = this.velocity.mag(),
     dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
@@ -677,7 +677,7 @@ Mover.prototype.draw = function() {
 Mover._getCSSText = function(props) {
 
   var color, position, borderRadius, borderWidth, borderStyle, borderColor,
-      system = exports.Mantle.System, utils = exports.Mantle.Utils;
+      system = exports.Burner.System, utils = exports.Burner.Utils;
 
   if (system.supportedFeatures.csstransforms3d) {
     position = [

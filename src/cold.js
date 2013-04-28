@@ -36,7 +36,7 @@ function Cold(opt_options) {
   this.borderColor = options.borderColor || [0, 89, 102];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Cold, exports.Agent);
 

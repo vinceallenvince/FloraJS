@@ -2,15 +2,15 @@
 exports.Utils.addEvent(document, 'keyup', function(e) {
 
   if (e.keyCode === config.keyMap.pause) {
-    exports.Mantle.PubSub.publish('pause');
+    exports.Burner.PubSub.publish('pause');
   }
   if (e.keyCode === config.keyMap.resetSystem) {
-    exports.Mantle.PubSub.publish('resetSystem');
+    exports.Burner.PubSub.publish('resetSystem');
   }
   if (e.keyCode === config.keyMap.destroySystem) {
-    exports.Mantle.PubSub.publish('destroySystem');
+    exports.Burner.PubSub.publish('destroySystem');
   }
   if (e.keyCode === config.keyMap.stats) {
-    exports.Mantle.PubSub.publish('stats');
+    exports.Burner.PubSub.publish('stats');
   }
 });

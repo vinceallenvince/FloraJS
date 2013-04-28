@@ -36,7 +36,7 @@ function Heat(opt_options) {
   this.borderColor = options.borderColor || [224, 178, 154];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Heat, exports.Agent);
 

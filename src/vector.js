@@ -8,7 +8,6 @@
  * @constructor
  */
 function Vector(opt_x, opt_y) {
-  'use strict';
   var x = opt_x || 0,
       y = opt_y || 0;
   this.x = x;
@@ -23,7 +22,6 @@ function Vector(opt_x, opt_y) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorSub = function(v1, v2) {
-  'use strict';
   return new Vector(v1.x - v2.x, v1.y - v2.y);
 };
 
@@ -35,7 +33,6 @@ Vector.VectorSub = function(v1, v2) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorAdd = function(v1, v2) {
-  'use strict';
   return new Vector(v1.x + v2.x, v1.y + v2.y);
 };
 
@@ -47,7 +44,6 @@ Vector.VectorAdd = function(v1, v2) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorMult = function(v, n) {
-  'use strict';
   return new Vector(v.x * n, v.y * n);
 };
 
@@ -59,7 +55,6 @@ Vector.VectorMult = function(v, n) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorDiv = function(v, n) {
-  'use strict';
   return new Vector(v.x / n, v.y / n);
 };
 
@@ -71,7 +66,6 @@ Vector.VectorDiv = function(v, n) {
  * @returns {number} The distance between the two vectors.
  */
 Vector.VectorDistance = function(v1, v2) {
-  'use strict';
   return Math.sqrt(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2));
 };
 
@@ -83,7 +77,6 @@ Vector.VectorDistance = function(v1, v2) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorMidPoint = function(v1, v2) {
-  'use strict';
   return Vector.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
 };
 
@@ -95,7 +88,6 @@ Vector.VectorMidPoint = function(v1, v2) {
  * @returns {number} An angle.
  */
 Vector.VectorAngleBetween = function(v1, v2) {
-  'use strict';
   var dot = v1.dot(v2),
   theta = Math.acos(dot / (v1.mag() * v2.mag()));
   return theta;
@@ -110,7 +102,6 @@ Vector.prototype.name = 'Vector';
 * @returns {Object} A vector.
 */
 Vector.prototype.clone = function() {
-  'use strict';
   function F() {}
   F.prototype = this;
   return new F;
@@ -123,7 +114,6 @@ Vector.prototype.clone = function() {
  * @returns {Object} This vector.
  */
 Vector.prototype.add = function(vector) {
-  'use strict';
   this.x += vector.x;
   this.y += vector.y;
   return this;
@@ -136,7 +126,6 @@ Vector.prototype.add = function(vector) {
  * @returns {Object} This vector.
  */
 Vector.prototype.sub = function(vector) {
-  'use strict';
   this.x -= vector.x;
   this.y -= vector.y;
   return this;
@@ -149,7 +138,6 @@ Vector.prototype.sub = function(vector) {
  * @returns {Object} This vector.
  */
 Vector.prototype.mult = function(n) {
-  'use strict';
   this.x *= n;
   this.y *= n;
   return this;
@@ -162,7 +150,6 @@ Vector.prototype.mult = function(n) {
  * @returns {Object} This vector.
  */
 Vector.prototype.div = function(n) {
-  'use strict';
   this.x = this.x / n;
   this.y = this.y / n;
   return this;
@@ -174,7 +161,6 @@ Vector.prototype.div = function(n) {
  * @returns {number} The vector's magnitude.
  */
 Vector.prototype.mag = function() {
-  'use strict';
   return Math.sqrt((this.x * this.x) + (this.y * this.y));
 };
 
@@ -186,7 +172,6 @@ Vector.prototype.mag = function() {
  * @returns {Object} This vector.
  */
 Vector.prototype.limit = function(opt_high, opt_low) {
-  'use strict';
   var high = opt_high || null,
       low = opt_low || null;
   if (high && this.mag() > high) {
@@ -207,7 +192,6 @@ Vector.prototype.limit = function(opt_high, opt_low) {
  * @returns {Object} This vector.
  */
 Vector.prototype.normalize = function() {
-  'use strict';
   var m = this.mag();
   if (m !== 0) {
     return this.div(m);
@@ -221,7 +205,6 @@ Vector.prototype.normalize = function() {
  * @returns {Object} The distance between the two vectors.
  */
 Vector.prototype.distance = function(vector) {
-  'use strict';
   return Math.sqrt(Math.pow(vector.x - this.x, 2) + Math.pow(vector.y - this.y, 2));
 };
 
@@ -232,7 +215,6 @@ Vector.prototype.distance = function(vector) {
  * @returns {Object} This vector.
  */
 Vector.prototype.rotate = function(radians) {
-  'use strict';
   var cos = Math.cos(radians),
     sin = Math.sin(radians),
     x = this.x,
@@ -251,7 +233,6 @@ Vector.prototype.rotate = function(radians) {
  * @returns {Object} A vector representing the midpoint between the passed vectors.
  */
 Vector.prototype.midpoint = function(vector) {
-  'use strict';
   return Vector.VectorAdd(this, vector).div(2);
 };
 
@@ -262,7 +243,6 @@ Vector.prototype.midpoint = function(vector) {
  * @returns {Object} A vector.
  */
 Vector.prototype.dot = function(vector) {
-  'use strict';
   if (this.z && vector.z) {
     return this.x * vector.x + this.y * vector.y + this.z * vector.z;
   }

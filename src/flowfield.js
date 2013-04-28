@@ -12,8 +12,6 @@
  */
 function FlowField(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   this.resolution = options.resolution || 50;
@@ -22,7 +20,7 @@ function FlowField(opt_options) {
   this.field = options.field || null;
   this.createMarkers = options.createMarkers || false;
   // if a world is not passed, use the first world in the system
-  this.world = options.world || exports.Mantle.System.allWorlds()[0];
+  this.world = options.world || exports.Burner.System.allWorlds()[0];
 }
 
 FlowField.prototype.name = 'FlowField';

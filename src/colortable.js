@@ -15,7 +15,6 @@
  * @constructor
  */
 function ColorTable() {
-  'use strict';
 }
 
 /**
@@ -30,8 +29,6 @@ function ColorTable() {
  * @returns {Object} The color table.
  */
 ColorTable.prototype.addColor = function(options) {
-
-  'use strict';
 
   var requiredOptions = {
     name: 'string',
@@ -76,8 +73,6 @@ ColorTable.prototype.name = 'ColorTable';
  * console.log(heat); // -> [175, 47, 0]
  */
 ColorTable.prototype.getColor = function(name, startColor, endColor) {
-
-  'use strict';
 
   var color, startCol, endCol;
 

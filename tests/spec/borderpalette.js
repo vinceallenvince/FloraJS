@@ -10,14 +10,14 @@ describe("A new BorderPalette", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Mantle.System;
+    system = Flora.Burner.System;
     system.create(null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
     obj = new exports.BorderPalette();
   });
 
   afterEach(function() {
-    Flora.Mantle.PubSub.publish('destroySystem');
+    Flora.Burner.PubSub.publish('destroySystem');
     obj = null;
   });
 

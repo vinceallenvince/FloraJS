@@ -18,8 +18,6 @@
  */
 function Point(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);

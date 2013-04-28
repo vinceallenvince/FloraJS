@@ -7,7 +7,7 @@ describe("Connector", function() {
   });
 
   afterEach(function() {
-    Flora.Mantle.PubSub.publish('destroySystem');
+    Flora.Burner.PubSub.publish('destroySystem');
     obj = null;
   });
 
@@ -19,7 +19,7 @@ describe("Connector", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Mantle.System;
+    system = Flora.Burner.System;
     system.create(function() {
 
       var pointA = this.add('Point', {

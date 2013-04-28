@@ -36,7 +36,7 @@ function Oxygen(opt_options) {
   this.borderColor = options.borderColor || [64, 255, 255];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Oxygen, exports.Agent);
 

@@ -10,17 +10,17 @@ describe("Agent", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Mantle.System;
+    system = Flora.Burner.System;
     system.create(null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
   });
 
   afterEach(function() {
-    Flora.Mantle.PubSub.publish('destroySystem');
+    Flora.Burner.PubSub.publish('destroySystem');
     obj = null;
   });
 
-  it("should create a mover with its required properties.", function() {
+  it("should create an Agent with its required properties.", function() {
     obj = system.add('Agent');
     expect(getDataType(obj.followMouse)).toEqual('boolean');
     expect(getDataType(obj.maxSteeringForce)).toEqual('number');

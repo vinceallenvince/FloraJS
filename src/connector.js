@@ -50,7 +50,7 @@ Connector.prototype.name = 'Connector';
  */
 Connector.prototype.step = function() {
 
-  'use strict';
+
 
   var a = this.parentA.location,
       b = this.parentB.location;

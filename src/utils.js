@@ -11,9 +11,6 @@ var Utils = {};
  * onto a subClass.
  */
 Utils.extend = function(subClass, superClass) {
-
-  'use strict';
-
   function F() {}
   F.prototype = superClass.prototype;
   subClass.prototype = new F;
@@ -31,9 +28,6 @@ Utils.extend = function(subClass, superClass) {
  * @returns {number} A number.
  */
 Utils.map = function(value, min1, max1, min2, max2) { // returns a new value relative to a new range
-
-  'use strict';
-
   var unitratio = (value - min1) / (max1 - min1);
   return (unitratio * (max2 - min2)) + min2;
 };
@@ -47,9 +41,6 @@ Utils.map = function(value, min1, max1, min2, max2) { // returns a new value rel
  * @returns {number} A number.
  */
 Utils.getRandomNumber = function(low, high, flt) {
-
-  'use strict';
-
   if (flt) {
     return Math.random()*(high-(low-1)) + low;
   }
@@ -63,9 +54,6 @@ Utils.getRandomNumber = function(low, high, flt) {
  * @returns {number} A number in radians.
  */
 Utils.degreesToRadians = function(degrees) {
-
-  'use strict';
-
   if (typeof degrees !== 'undefined') {
     return 2 * Math.PI * (degrees/360);
   } else {
@@ -83,9 +71,6 @@ Utils.degreesToRadians = function(degrees) {
  * @returns {number} A number in degrees.
  */
 Utils.radiansToDegrees = function(radians) {
-
-  'use strict';
-
   if (typeof radians !== 'undefined') {
     return radians * (180/Math.PI);
   } else {
@@ -105,9 +90,6 @@ Utils.radiansToDegrees = function(radians) {
  * @returns {number} A number.
  */
 Utils.constrain = function(val, low, high) {
-
-  'use strict';
-
   if (val > high) {
     return high;
   } else if (val < low) {
@@ -124,12 +106,9 @@ Utils.constrain = function(val, low, high) {
  * @returns {Object} An object.
  */
 Utils.clone = function(object) {
-
-   'use strict';
-
-    function F() {}
-    F.prototype = object;
-    return new F;
+  function F() {}
+  F.prototype = object;
+  return new F;
 };
 
 /**
@@ -140,9 +119,6 @@ Utils.clone = function(object) {
  * @param {function} The function to run when the event is triggered.
  */
 Utils.addEvent = function(target, eventType, handler) {
-
-  'use strict';
-
   if (target.addEventListener) { // W3C
     this.addEventHandler = function(target, eventType, handler) {
       target.addEventListener(eventType, handler, false);
@@ -161,9 +137,6 @@ Utils.addEvent = function(target, eventType, handler) {
  * @param {string} msg The message to log.
  */
 Utils.log = function(msg) {
-
-  'use strict';
-
   if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
     this.log = function(msg) {
       console.log(msg); // output error to console
@@ -179,9 +152,6 @@ Utils.log = function(msg) {
  * @example getWindowDim() returns {width: 1024, height: 768}
  */
 Utils.getWindowSize = function() {
-
-  'use strict';
-
   var d = {
     'width' : false,
     'height' : false
@@ -211,7 +181,6 @@ Utils.getWindowSize = function() {
  * @param {*} element The variable to test.
 */
 Utils.getDataType = function(element) {
-
   if (Object.prototype.toString.call(element) === '[object Array]') {
     return 'array';
   }
@@ -240,7 +209,6 @@ Utils.capitalizeFirstLetter = function(string) {
  * @returns {boolean} Returns true if the object is inside the container.
  */
 Utils.isInside = function(obj, container) {
-
   if (container) {
     if (obj.location.x + obj.width/2 > container.location.x - container.width/2 &&
       obj.location.x - obj.width/2 < container.location.x + container.width/2 &&
@@ -260,10 +228,7 @@ Utils.isInside = function(obj, container) {
  *    mouse is outside world.
  */
 Utils.mouseIsInsideWorld = function(world) {
-
-  'use strict';
-
-  var mouse = exports.Mantle.System.mouse,
+  var mouse = exports.Burner.System.mouse,
       x = mouse.location.x,
       y = mouse.location.y,
       left = world.el.offsetLeft,

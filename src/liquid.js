@@ -21,8 +21,6 @@
  */
 function Liquid(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);
@@ -40,7 +38,7 @@ function Liquid(opt_options) {
   this.borderColor = options.borderColor || [167, 219, 216];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Liquid, exports.Agent);
 

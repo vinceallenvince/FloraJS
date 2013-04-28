@@ -56,12 +56,12 @@ Sensor.prototype.step = function() {
 
   var check = false, i, max;
 
-  var heat = exports.Mantle.System._Caches.Heat || {list: []},
-      cold = exports.Mantle.System._Caches.Cold || {list: []},
-      predators = exports.Mantle.System._Caches.Predators || {list: []},
-      lights = exports.Mantle.System._Caches.Light || {list: []},
-      oxygen = exports.Mantle.System._Caches.Oxygen || {list: []},
-      food = exports.Mantle.System._Caches.Food || {list: []};
+  var heat = exports.Burner.System._Caches.Heat || {list: []},
+      cold = exports.Burner.System._Caches.Cold || {list: []},
+      predators = exports.Burner.System._Caches.Predators || {list: []},
+      lights = exports.Burner.System._Caches.Light || {list: []},
+      oxygen = exports.Burner.System._Caches.Oxygen || {list: []},
+      food = exports.Burner.System._Caches.Food || {list: []};
 
   // what if cache does not exist?
 
@@ -212,8 +212,8 @@ Sensor.prototype.getActivationForce = function(agent) {
     /**
      * Moves in the opposite direction as fast as possible
      */
-    case "RUN":
-      return this.flee(this.target);
+    /*case "RUN":
+      return this.flee(this.target);*/
 
     case "ACCELERATE":
       v = agent.velocity.clone();

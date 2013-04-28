@@ -72,7 +72,7 @@ function ParticleSystem(opt_options) {
     if (this.life < this.lifespan) {
       this.life += 1;
     } else if (this.lifespan !== -1) {
-      exports.Mantle.System.destroyElement(this);
+      exports.Burner.System.destroyElement(this);
       return;
     }
 
@@ -96,7 +96,7 @@ function ParticleSystem(opt_options) {
         this.particleOptions.velocity = new exports.Vector();
         this.particleOptions.location = ParticleSystem.getParticleLocation(location);
 
-        exports.Mantle.System.add('Particle', this.particleOptions);
+        exports.Burner.System.add('Particle', this.particleOptions);
       }
     }
   };

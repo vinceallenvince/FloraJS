@@ -29,8 +29,6 @@ var Interface = {};
  */
 Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_from) {
 
-  'use strict';
-
   var i, msg, check = true;
 
   for (i in optionsRequired) { // loop thru required options
@@ -81,7 +79,7 @@ Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_fro
  */
 Interface.checkDataType = function(option, typesToMatch) {
 
-  'use strict';
+
 
   var i, max;
 
@@ -100,7 +98,7 @@ Interface.checkDataType = function(option, typesToMatch) {
  */
 Interface.getDataType = function(element) {
 
-  'use strict';
+
 
   if (Object.prototype.toString.call(element) === '[object Array]') {
     return 'array';

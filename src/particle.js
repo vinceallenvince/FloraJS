@@ -21,8 +21,6 @@
  */
 function Particle(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);
@@ -110,7 +108,7 @@ Particle.prototype.step = function() {
   if (this.life < this.lifespan) {
     this.life += 1;
   } else if (this.lifespan !== -1) {
-    exports.Mantle.System.destroyElement(this);
+    exports.Burner.System.destroyElement(this);
   }
 
 };

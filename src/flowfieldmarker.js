@@ -15,8 +15,6 @@
  */
 function FlowFieldMarker(options) {
 
-  'use strict';
-
   var requiredOptions = {
         location: 'object',
         scale: 'number',

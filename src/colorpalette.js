@@ -12,8 +12,6 @@
  */
 function ColorPalette(opt_id) {
 
-  'use strict';
-
   /**
    * Holds a list of arrays representing 3-digit color values
    * smoothly interpolated between start and end colors.
@@ -56,8 +54,6 @@ ColorPalette.prototype.name = 'ColorPalette';
  */
 ColorPalette.prototype.addColor = function(options) {
 
-  'use strict';
-
   var requiredOptions = {
     min: 'number',
     max: 'number',
@@ -89,8 +85,6 @@ ColorPalette.prototype.addColor = function(options) {
  */
 ColorPalette.prototype.createGradient = function(options) {
 
-  'use strict';
-
   var requiredOptions = {
     startColor: 'array',
     endColor: 'array'
@@ -116,8 +110,6 @@ ColorPalette.prototype.createGradient = function(options) {
  */
 ColorPalette.prototype.getColor = function() {
 
-  'use strict';
-
   if (this._colors.length > 0) {
     return this._colors[exports.Utils.getRandomNumber(0, this._colors.length - 1)];
   } else {
@@ -132,8 +124,6 @@ ColorPalette.prototype.getColor = function() {
  * @param {Object} parent A DOM object to contain the color strip.
  */
 ColorPalette.prototype.createSampleStrip = function(parent) {
-
-  'use strict';
 
   var i, max, div;
 
@@ -155,8 +145,6 @@ ColorPalette.prototype.createSampleStrip = function(parent) {
  * @returns {Array} An array of color values.
  */
 ColorPalette._createColorRange = function(startColor, endColor, totalColors) {
-
-  'use strict';
 
   var i, colors = [],
       startRed = startColor[0],

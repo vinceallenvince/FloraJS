@@ -23,18 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: April 27, 2013 03:45:54 */
-/** @namespace */
+/* Build time: April 28, 2013 03:16:51 *//** @namespace */
 var Flora = {}, exports = Flora;
 
 (function(exports) {
 'use strict';
 
-// create Mantle namespace
-exports.Mantle = {};
+// create Burner namespace
+exports.Burner = {};
 
 // pass in the namespace and parent object
-new Mantle(exports.Mantle, exports);
+new Burner(exports.Burner, exports);
 /*global exports */
 var config = {
   borderStyles: [
@@ -123,8 +122,6 @@ var Interface = {};
  */
 Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_from) {
 
-  'use strict';
-
   var i, msg, check = true;
 
   for (i in optionsRequired) { // loop thru required options
@@ -175,7 +172,7 @@ Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_fro
  */
 Interface.checkDataType = function(option, typesToMatch) {
 
-  'use strict';
+
 
   var i, max;
 
@@ -194,7 +191,7 @@ Interface.checkDataType = function(option, typesToMatch) {
  */
 Interface.getDataType = function(element) {
 
-  'use strict';
+
 
   if (Object.prototype.toString.call(element) === '[object Array]') {
     return 'array';
@@ -221,9 +218,6 @@ var Utils = {};
  * onto a subClass.
  */
 Utils.extend = function(subClass, superClass) {
-
-  'use strict';
-
   function F() {}
   F.prototype = superClass.prototype;
   subClass.prototype = new F;
@@ -241,9 +235,6 @@ Utils.extend = function(subClass, superClass) {
  * @returns {number} A number.
  */
 Utils.map = function(value, min1, max1, min2, max2) { // returns a new value relative to a new range
-
-  'use strict';
-
   var unitratio = (value - min1) / (max1 - min1);
   return (unitratio * (max2 - min2)) + min2;
 };
@@ -257,9 +248,6 @@ Utils.map = function(value, min1, max1, min2, max2) { // returns a new value rel
  * @returns {number} A number.
  */
 Utils.getRandomNumber = function(low, high, flt) {
-
-  'use strict';
-
   if (flt) {
     return Math.random()*(high-(low-1)) + low;
   }
@@ -273,9 +261,6 @@ Utils.getRandomNumber = function(low, high, flt) {
  * @returns {number} A number in radians.
  */
 Utils.degreesToRadians = function(degrees) {
-
-  'use strict';
-
   if (typeof degrees !== 'undefined') {
     return 2 * Math.PI * (degrees/360);
   } else {
@@ -293,9 +278,6 @@ Utils.degreesToRadians = function(degrees) {
  * @returns {number} A number in degrees.
  */
 Utils.radiansToDegrees = function(radians) {
-
-  'use strict';
-
   if (typeof radians !== 'undefined') {
     return radians * (180/Math.PI);
   } else {
@@ -315,9 +297,6 @@ Utils.radiansToDegrees = function(radians) {
  * @returns {number} A number.
  */
 Utils.constrain = function(val, low, high) {
-
-  'use strict';
-
   if (val > high) {
     return high;
   } else if (val < low) {
@@ -334,12 +313,9 @@ Utils.constrain = function(val, low, high) {
  * @returns {Object} An object.
  */
 Utils.clone = function(object) {
-
-   'use strict';
-
-    function F() {}
-    F.prototype = object;
-    return new F;
+  function F() {}
+  F.prototype = object;
+  return new F;
 };
 
 /**
@@ -350,9 +326,6 @@ Utils.clone = function(object) {
  * @param {function} The function to run when the event is triggered.
  */
 Utils.addEvent = function(target, eventType, handler) {
-
-  'use strict';
-
   if (target.addEventListener) { // W3C
     this.addEventHandler = function(target, eventType, handler) {
       target.addEventListener(eventType, handler, false);
@@ -371,9 +344,6 @@ Utils.addEvent = function(target, eventType, handler) {
  * @param {string} msg The message to log.
  */
 Utils.log = function(msg) {
-
-  'use strict';
-
   if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
     this.log = function(msg) {
       console.log(msg); // output error to console
@@ -389,9 +359,6 @@ Utils.log = function(msg) {
  * @example getWindowDim() returns {width: 1024, height: 768}
  */
 Utils.getWindowSize = function() {
-
-  'use strict';
-
   var d = {
     'width' : false,
     'height' : false
@@ -421,7 +388,6 @@ Utils.getWindowSize = function() {
  * @param {*} element The variable to test.
 */
 Utils.getDataType = function(element) {
-
   if (Object.prototype.toString.call(element) === '[object Array]') {
     return 'array';
   }
@@ -450,7 +416,6 @@ Utils.capitalizeFirstLetter = function(string) {
  * @returns {boolean} Returns true if the object is inside the container.
  */
 Utils.isInside = function(obj, container) {
-
   if (container) {
     if (obj.location.x + obj.width/2 > container.location.x - container.width/2 &&
       obj.location.x - obj.width/2 < container.location.x + container.width/2 &&
@@ -470,10 +435,7 @@ Utils.isInside = function(obj, container) {
  *    mouse is outside world.
  */
 Utils.mouseIsInsideWorld = function(world) {
-
-  'use strict';
-
-  var mouse = exports.Mantle.System.mouse,
+  var mouse = exports.Burner.System.mouse,
       x = mouse.location.x,
       y = mouse.location.y,
       left = world.el.offsetLeft,
@@ -509,8 +471,6 @@ exports.Utils = Utils;
  * @namespace
  */
 var SimplexNoise = (function (r) {
-
-  'use strict';
 
   if (r === undefined) {
     r = Math;
@@ -694,7 +654,7 @@ return {
 }({
 random: function () {
 
-  'use strict';
+
 
   return 0.1;
 }
@@ -710,7 +670,6 @@ exports.SimplexNoise = SimplexNoise;
  * @constructor
  */
 function Vector(opt_x, opt_y) {
-  'use strict';
   var x = opt_x || 0,
       y = opt_y || 0;
   this.x = x;
@@ -725,7 +684,6 @@ function Vector(opt_x, opt_y) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorSub = function(v1, v2) {
-  'use strict';
   return new Vector(v1.x - v2.x, v1.y - v2.y);
 };
 
@@ -737,7 +695,6 @@ Vector.VectorSub = function(v1, v2) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorAdd = function(v1, v2) {
-  'use strict';
   return new Vector(v1.x + v2.x, v1.y + v2.y);
 };
 
@@ -749,7 +706,6 @@ Vector.VectorAdd = function(v1, v2) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorMult = function(v, n) {
-  'use strict';
   return new Vector(v.x * n, v.y * n);
 };
 
@@ -761,7 +717,6 @@ Vector.VectorMult = function(v, n) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorDiv = function(v, n) {
-  'use strict';
   return new Vector(v.x / n, v.y / n);
 };
 
@@ -773,7 +728,6 @@ Vector.VectorDiv = function(v, n) {
  * @returns {number} The distance between the two vectors.
  */
 Vector.VectorDistance = function(v1, v2) {
-  'use strict';
   return Math.sqrt(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2));
 };
 
@@ -785,7 +739,6 @@ Vector.VectorDistance = function(v1, v2) {
  * @returns {Object} A new Vector.
  */
 Vector.VectorMidPoint = function(v1, v2) {
-  'use strict';
   return Vector.VectorAdd(v1, v2).div(2); // midpoint = (v1 + v2)/2
 };
 
@@ -797,7 +750,6 @@ Vector.VectorMidPoint = function(v1, v2) {
  * @returns {number} An angle.
  */
 Vector.VectorAngleBetween = function(v1, v2) {
-  'use strict';
   var dot = v1.dot(v2),
   theta = Math.acos(dot / (v1.mag() * v2.mag()));
   return theta;
@@ -812,7 +764,6 @@ Vector.prototype.name = 'Vector';
 * @returns {Object} A vector.
 */
 Vector.prototype.clone = function() {
-  'use strict';
   function F() {}
   F.prototype = this;
   return new F;
@@ -825,7 +776,6 @@ Vector.prototype.clone = function() {
  * @returns {Object} This vector.
  */
 Vector.prototype.add = function(vector) {
-  'use strict';
   this.x += vector.x;
   this.y += vector.y;
   return this;
@@ -838,7 +788,6 @@ Vector.prototype.add = function(vector) {
  * @returns {Object} This vector.
  */
 Vector.prototype.sub = function(vector) {
-  'use strict';
   this.x -= vector.x;
   this.y -= vector.y;
   return this;
@@ -851,7 +800,6 @@ Vector.prototype.sub = function(vector) {
  * @returns {Object} This vector.
  */
 Vector.prototype.mult = function(n) {
-  'use strict';
   this.x *= n;
   this.y *= n;
   return this;
@@ -864,7 +812,6 @@ Vector.prototype.mult = function(n) {
  * @returns {Object} This vector.
  */
 Vector.prototype.div = function(n) {
-  'use strict';
   this.x = this.x / n;
   this.y = this.y / n;
   return this;
@@ -876,7 +823,6 @@ Vector.prototype.div = function(n) {
  * @returns {number} The vector's magnitude.
  */
 Vector.prototype.mag = function() {
-  'use strict';
   return Math.sqrt((this.x * this.x) + (this.y * this.y));
 };
 
@@ -888,7 +834,6 @@ Vector.prototype.mag = function() {
  * @returns {Object} This vector.
  */
 Vector.prototype.limit = function(opt_high, opt_low) {
-  'use strict';
   var high = opt_high || null,
       low = opt_low || null;
   if (high && this.mag() > high) {
@@ -909,7 +854,6 @@ Vector.prototype.limit = function(opt_high, opt_low) {
  * @returns {Object} This vector.
  */
 Vector.prototype.normalize = function() {
-  'use strict';
   var m = this.mag();
   if (m !== 0) {
     return this.div(m);
@@ -923,7 +867,6 @@ Vector.prototype.normalize = function() {
  * @returns {Object} The distance between the two vectors.
  */
 Vector.prototype.distance = function(vector) {
-  'use strict';
   return Math.sqrt(Math.pow(vector.x - this.x, 2) + Math.pow(vector.y - this.y, 2));
 };
 
@@ -934,7 +877,6 @@ Vector.prototype.distance = function(vector) {
  * @returns {Object} This vector.
  */
 Vector.prototype.rotate = function(radians) {
-  'use strict';
   var cos = Math.cos(radians),
     sin = Math.sin(radians),
     x = this.x,
@@ -953,7 +895,6 @@ Vector.prototype.rotate = function(radians) {
  * @returns {Object} A vector representing the midpoint between the passed vectors.
  */
 Vector.prototype.midpoint = function(vector) {
-  'use strict';
   return Vector.VectorAdd(this, vector).div(2);
 };
 
@@ -964,7 +905,6 @@ Vector.prototype.midpoint = function(vector) {
  * @returns {Object} A vector.
  */
 Vector.prototype.dot = function(vector) {
-  'use strict';
   if (this.z && vector.z) {
     return this.x * vector.x + this.y * vector.y + this.z * vector.z;
   }
@@ -1057,8 +997,6 @@ exports.BorderPalette = BorderPalette;
  */
 function ColorPalette(opt_id) {
 
-  'use strict';
-
   /**
    * Holds a list of arrays representing 3-digit color values
    * smoothly interpolated between start and end colors.
@@ -1101,8 +1039,6 @@ ColorPalette.prototype.name = 'ColorPalette';
  */
 ColorPalette.prototype.addColor = function(options) {
 
-  'use strict';
-
   var requiredOptions = {
     min: 'number',
     max: 'number',
@@ -1134,8 +1070,6 @@ ColorPalette.prototype.addColor = function(options) {
  */
 ColorPalette.prototype.createGradient = function(options) {
 
-  'use strict';
-
   var requiredOptions = {
     startColor: 'array',
     endColor: 'array'
@@ -1161,8 +1095,6 @@ ColorPalette.prototype.createGradient = function(options) {
  */
 ColorPalette.prototype.getColor = function() {
 
-  'use strict';
-
   if (this._colors.length > 0) {
     return this._colors[exports.Utils.getRandomNumber(0, this._colors.length - 1)];
   } else {
@@ -1177,8 +1109,6 @@ ColorPalette.prototype.getColor = function() {
  * @param {Object} parent A DOM object to contain the color strip.
  */
 ColorPalette.prototype.createSampleStrip = function(parent) {
-
-  'use strict';
 
   var i, max, div;
 
@@ -1200,8 +1130,6 @@ ColorPalette.prototype.createSampleStrip = function(parent) {
  * @returns {Array} An array of color values.
  */
 ColorPalette._createColorRange = function(startColor, endColor, totalColors) {
-
-  'use strict';
 
   var i, colors = [],
       startRed = startColor[0],
@@ -1244,7 +1172,6 @@ exports.ColorPalette = ColorPalette;
  * @constructor
  */
 function ColorTable() {
-  'use strict';
 }
 
 /**
@@ -1259,8 +1186,6 @@ function ColorTable() {
  * @returns {Object} The color table.
  */
 ColorTable.prototype.addColor = function(options) {
-
-  'use strict';
 
   var requiredOptions = {
     name: 'string',
@@ -1305,8 +1230,6 @@ ColorTable.prototype.name = 'ColorTable';
  * console.log(heat); // -> [175, 47, 0]
  */
 ColorTable.prototype.getColor = function(name, startColor, endColor) {
-
-  'use strict';
 
   var color, startCol, endCol;
 
@@ -1455,7 +1378,7 @@ function InputMenu(opt_options) {
   this.borderColor = options.borderColor || [204, 204, 204];
   this.colorMode = options.colorMode || 'rgb';
 
-  if (exports.Mantle.System.supportedFeatures.touch) {
+  if (exports.Burner.System.supportedFeatures.touch) {
     this.text =  exports.config.touchMap.stats + '-finger tap = stats | ' +
         exports.config.touchMap.pause + '-finger tap = pause | ' +
         exports.config.touchMap.reset + '-finger tap = reset';
@@ -1492,7 +1415,7 @@ function InputMenu(opt_options) {
     document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
   }
 
-  if (exports.Mantle.System.supportedFeatures.touch) {
+  if (exports.Burner.System.supportedFeatures.touch) {
     exports.Utils.addEvent(this._el, 'touchstart', function() {
       me.destroy();
     });
@@ -1527,7 +1450,7 @@ exports.InputMenu = InputMenu;
  * Creates a new Mover. All Flora elements extend Mover.
  *
  * @constructor
- * @extends Mantle.Element
+ * @extends Burner.Element
  *
  * @param {Object} [opt_options] options.
  * @param {number} [opt_options.width = 10] Width
@@ -1561,10 +1484,10 @@ exports.InputMenu = InputMenu;
  */
 function Mover(opt_options) {
 
-  var myDiv, options, utils = exports.Mantle.Utils;
+  var myDiv, options, utils = exports.Burner.Utils;
 
   opt_options.name = this.name;
-  exports.Mantle.Element.call(this, opt_options);
+  exports.Burner.Element.call(this, opt_options);
 
   options = opt_options || {};
 
@@ -1706,7 +1629,7 @@ function Mover(opt_options) {
     exports.Utils.addEvent(this._el, 'mouseout', mouseout);
   }
 }
-exports.Mantle.Utils.extend(Mover, exports.Mantle.Element);
+exports.Burner.Utils.extend(Mover, exports.Burner.Element);
 
 Mover.prototype.name = 'Mover';
 
@@ -1791,9 +1714,9 @@ Mover.prototype.mouseup = function(e) {
  */
 Mover.prototype.mouseout = function(e, obj) {
 
-  'use strict';
 
-  var me = obj, mouse = exports.Mantle.System.mouse,
+
+  var me = obj, mouse = exports.Burner.System.mouse,
       x, y;
 
   if (obj.isPressed) {
@@ -2094,7 +2017,7 @@ Mover.prototype._checkAvoidEdges = function() {
  */
 Mover.prototype.drag = function(target) {
 
-  'use strict';
+
 
   var speed = this.velocity.mag(),
     dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
@@ -2201,7 +2124,7 @@ Mover.prototype.draw = function() {
 Mover._getCSSText = function(props) {
 
   var color, position, borderRadius, borderWidth, borderStyle, borderColor,
-      system = exports.Mantle.System, utils = exports.Mantle.Utils;
+      system = exports.Burner.System, utils = exports.Burner.Utils;
 
   if (system.supportedFeatures.csstransforms3d) {
     position = [
@@ -2362,10 +2285,10 @@ Agent.prototype.name = 'Agent';
 Agent.prototype.applyForces = function() {
 
   var i, max, sensorActivated, dir, sensor, r, theta, x, y,
-      liquids = exports.Mantle.System._Caches.Liquid,
-      attractors = exports.Mantle.System._Caches.Attractor,
-      repellers = exports.Mantle.System._Caches.Repeller,
-      heat = exports.Mantle.System._Caches.Heat;
+      liquids = exports.Burner.System._Caches.Liquid,
+      attractors = exports.Burner.System._Caches.Attractor,
+      repellers = exports.Burner.System._Caches.Repeller,
+      heat = exports.Burner.System._Caches.Heat;
 
   if (liquids && liquids.list.length > 0) { // liquid
     for (i = 0, max = liquids.list.length; i < max; i += 1) {
@@ -2434,8 +2357,8 @@ Agent.prototype.applyForces = function() {
 
   if (this.followMouse) { // follow mouse
     var t = {
-      location: new exports.Vector(exports.Mantle.System.mouse.location.x,
-          exports.Mantle.System.mouse.location.y)
+      location: new exports.Vector(exports.Burner.System.mouse.location.x,
+          exports.Burner.System.mouse.location.y)
     };
     this.applyForce(this._seek(t));
   }
@@ -2468,7 +2391,7 @@ Agent.prototype.applyForces = function() {
   }
 
   if (this.flocking) {
-    this.flock(exports.Mantle.System.getAllElementsByName('Agent'));
+    this.flock(exports.Burner.System.getAllElementsByName('Agent'));
   }
 
   return this.acceleration;
@@ -2482,8 +2405,6 @@ Agent.prototype.applyForces = function() {
  * @returns {Object} The force to apply.
  */
 Agent.prototype.follow = function(target) {
-
-  'use strict';
 
   this.followDesiredVelocity.x = target.location.x;
   this.followDesiredVelocity.y = target.location.y;
@@ -2640,8 +2561,6 @@ Agent.prototype.cohesion = function(elements) {
  */
 Agent.prototype.getLocation = function (type) {
 
-  'use strict';
-
   if (!type) {
     return new exports.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
@@ -2659,8 +2578,6 @@ Agent.prototype.getLocation = function (type) {
  * @returns {boolean} Returns true if the object is outside the world.
  */
 Agent.prototype.getVelocity = function (type) {
-
-  'use strict';
 
   if (!type) {
     return new exports.Vector(this.location.x, this.location.y);
@@ -2819,12 +2736,12 @@ Sensor.prototype.step = function() {
 
   var check = false, i, max;
 
-  var heat = exports.Mantle.System._Caches.Heat || {list: []},
-      cold = exports.Mantle.System._Caches.Cold || {list: []},
-      predators = exports.Mantle.System._Caches.Predators || {list: []},
-      lights = exports.Mantle.System._Caches.Light || {list: []},
-      oxygen = exports.Mantle.System._Caches.Oxygen || {list: []},
-      food = exports.Mantle.System._Caches.Food || {list: []};
+  var heat = exports.Burner.System._Caches.Heat || {list: []},
+      cold = exports.Burner.System._Caches.Cold || {list: []},
+      predators = exports.Burner.System._Caches.Predators || {list: []},
+      lights = exports.Burner.System._Caches.Light || {list: []},
+      oxygen = exports.Burner.System._Caches.Oxygen || {list: []},
+      food = exports.Burner.System._Caches.Food || {list: []};
 
   // what if cache does not exist?
 
@@ -2975,8 +2892,8 @@ Sensor.prototype.getActivationForce = function(agent) {
     /**
      * Moves in the opposite direction as fast as possible
      */
-    case "RUN":
-      return this.flee(this.target);
+    /*case "RUN":
+      return this.flee(this.target);*/
 
     case "ACCELERATE":
       v = agent.velocity.clone();
@@ -3034,8 +2951,6 @@ exports.Sensor = Sensor;
  */
 function Liquid(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);
@@ -3053,7 +2968,7 @@ function Liquid(opt_options) {
   this.borderColor = options.borderColor || [167, 219, 216];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Liquid, exports.Agent);
 
@@ -3098,7 +3013,7 @@ function Heat(opt_options) {
   this.borderColor = options.borderColor || [224, 178, 154];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Heat, exports.Agent);
 
@@ -3143,7 +3058,7 @@ function Cold(opt_options) {
   this.borderColor = options.borderColor || [0, 89, 102];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Cold, exports.Agent);
 
@@ -3188,7 +3103,7 @@ function Oxygen(opt_options) {
   this.borderColor = options.borderColor || [64, 255, 255];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Oxygen, exports.Agent);
 
@@ -3233,7 +3148,7 @@ function Light(opt_options) {
   this.borderColor = options.borderColor || [210, 210, 0];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Light, exports.Agent);
 
@@ -3292,7 +3207,7 @@ Connector.prototype.name = 'Connector';
  */
 Connector.prototype.step = function() {
 
-  'use strict';
+
 
   var a = this.parentA.location,
       b = this.parentB.location;
@@ -3326,8 +3241,6 @@ exports.Connector = Connector;
  * @param {number} [opt_options.borderColor = [60, 60, 60]] Border color.
  */
 function Point(opt_options) {
-
-  'use strict';
 
   var options = opt_options || {};
 
@@ -3387,7 +3300,7 @@ function Food(opt_options) {
   this.borderColor = options.borderColor || [115, 255, 0];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Food, exports.Agent);
 
@@ -3416,8 +3329,6 @@ exports.Food = Food;
  * @param {Array} [opt_options.borderColor = 'transparent'] Border color.
  */
 function Particle(opt_options) {
-
-  'use strict';
 
   var options = opt_options || {};
 
@@ -3506,7 +3417,7 @@ Particle.prototype.step = function() {
   if (this.life < this.lifespan) {
     this.life += 1;
   } else if (this.lifespan !== -1) {
-    exports.Mantle.System.destroyElement(this);
+    exports.Burner.System.destroyElement(this);
   }
 
 };
@@ -3586,7 +3497,7 @@ function ParticleSystem(opt_options) {
     if (this.life < this.lifespan) {
       this.life += 1;
     } else if (this.lifespan !== -1) {
-      exports.Mantle.System.destroyElement(this);
+      exports.Burner.System.destroyElement(this);
       return;
     }
 
@@ -3610,7 +3521,7 @@ function ParticleSystem(opt_options) {
         this.particleOptions.velocity = new exports.Vector();
         this.particleOptions.location = ParticleSystem.getParticleLocation(location);
 
-        exports.Mantle.System.add('Particle', this.particleOptions);
+        exports.Burner.System.add('Particle', this.particleOptions);
       }
     }
   };
@@ -3667,8 +3578,6 @@ exports.ParticleSystem = ParticleSystem;
  */
 function Oscillator(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);
@@ -3705,7 +3614,7 @@ Oscillator.prototype.name = 'Oscillator';
  */
 Oscillator.prototype.step = function () {
 
-  'use strict';
+
 
   var world = this.world, velDiff;
 
@@ -3777,8 +3686,6 @@ exports.Oscillator = Oscillator;
  */
 function Attractor(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);
@@ -3796,7 +3703,7 @@ function Attractor(opt_options) {
   this.borderColor = options.borderColor || [224, 228, 204];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Attractor, exports.Agent);
 
@@ -3826,8 +3733,6 @@ exports.Attractor = Attractor;
  */
 function Repeller(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);
@@ -3845,7 +3750,7 @@ function Repeller(opt_options) {
   this.borderColor = options.borderColor || [224, 228, 204];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Repeller, exports.Agent);
 
@@ -3866,8 +3771,6 @@ exports.Repeller = Repeller;
  */
 function FlowField(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   this.resolution = options.resolution || 50;
@@ -3876,7 +3779,7 @@ function FlowField(opt_options) {
   this.field = options.field || null;
   this.createMarkers = options.createMarkers || false;
   // if a world is not passed, use the first world in the system
-  this.world = options.world || exports.Mantle.System.allWorlds()[0];
+  this.world = options.world || exports.Burner.System.allWorlds()[0];
 }
 
 FlowField.prototype.name = 'FlowField';
@@ -3949,8 +3852,6 @@ exports.FlowField = FlowField;
  */
 function FlowFieldMarker(options) {
 
-  'use strict';
-
   var requiredOptions = {
         location: 'object',
         scale: 'number',
@@ -3994,16 +3895,16 @@ exports.FlowFieldMarker = FlowFieldMarker;
 exports.Utils.addEvent(document, 'keyup', function(e) {
 
   if (e.keyCode === config.keyMap.pause) {
-    exports.Mantle.PubSub.publish('pause');
+    exports.Burner.PubSub.publish('pause');
   }
   if (e.keyCode === config.keyMap.resetSystem) {
-    exports.Mantle.PubSub.publish('resetSystem');
+    exports.Burner.PubSub.publish('resetSystem');
   }
   if (e.keyCode === config.keyMap.destroySystem) {
-    exports.Mantle.PubSub.publish('destroySystem');
+    exports.Burner.PubSub.publish('destroySystem');
   }
   if (e.keyCode === config.keyMap.stats) {
-    exports.Mantle.PubSub.publish('stats');
+    exports.Burner.PubSub.publish('stats');
   }
 });
-}(exports));
+}(exports)); // FloraJS end.

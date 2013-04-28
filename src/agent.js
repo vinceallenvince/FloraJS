@@ -80,10 +80,10 @@ Agent.prototype.name = 'Agent';
 Agent.prototype.applyForces = function() {
 
   var i, max, sensorActivated, dir, sensor, r, theta, x, y,
-      liquids = exports.Mantle.System._Caches.Liquid,
-      attractors = exports.Mantle.System._Caches.Attractor,
-      repellers = exports.Mantle.System._Caches.Repeller,
-      heat = exports.Mantle.System._Caches.Heat;
+      liquids = exports.Burner.System._Caches.Liquid,
+      attractors = exports.Burner.System._Caches.Attractor,
+      repellers = exports.Burner.System._Caches.Repeller,
+      heat = exports.Burner.System._Caches.Heat;
 
   if (liquids && liquids.list.length > 0) { // liquid
     for (i = 0, max = liquids.list.length; i < max; i += 1) {
@@ -152,8 +152,8 @@ Agent.prototype.applyForces = function() {
 
   if (this.followMouse) { // follow mouse
     var t = {
-      location: new exports.Vector(exports.Mantle.System.mouse.location.x,
-          exports.Mantle.System.mouse.location.y)
+      location: new exports.Vector(exports.Burner.System.mouse.location.x,
+          exports.Burner.System.mouse.location.y)
     };
     this.applyForce(this._seek(t));
   }
@@ -186,7 +186,7 @@ Agent.prototype.applyForces = function() {
   }
 
   if (this.flocking) {
-    this.flock(exports.Mantle.System.getAllElementsByName('Agent'));
+    this.flock(exports.Burner.System.getAllElementsByName('Agent'));
   }
 
   return this.acceleration;
@@ -200,8 +200,6 @@ Agent.prototype.applyForces = function() {
  * @returns {Object} The force to apply.
  */
 Agent.prototype.follow = function(target) {
-
-  'use strict';
 
   this.followDesiredVelocity.x = target.location.x;
   this.followDesiredVelocity.y = target.location.y;
@@ -358,8 +356,6 @@ Agent.prototype.cohesion = function(elements) {
  */
 Agent.prototype.getLocation = function (type) {
 
-  'use strict';
-
   if (!type) {
     return new exports.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
@@ -377,8 +373,6 @@ Agent.prototype.getLocation = function (type) {
  * @returns {boolean} Returns true if the object is outside the world.
  */
 Agent.prototype.getVelocity = function (type) {
-
-  'use strict';
 
   if (!type) {
     return new exports.Vector(this.location.x, this.location.y);

@@ -36,7 +36,7 @@ function Light(opt_options) {
   this.borderColor = options.borderColor || [210, 210, 0];
   this.borderRadius = options.borderRadius || '100%';
 
-  exports.Mantle.PubSub.publish('UpdateCache', this);
+  exports.Burner.PubSub.publish('UpdateCache', this);
 }
 exports.Utils.extend(Light, exports.Agent);
 

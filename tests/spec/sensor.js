@@ -9,7 +9,7 @@ describe("A new Sensor", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Mantle.System;
+    system = Flora.Burner.System;
     system.create(function() {
 
       this.add('Heat', {
@@ -40,7 +40,7 @@ describe("A new Sensor", function() {
   });
 
   afterEach(function() {
-    Flora.Mantle.PubSub.publish('destroySystem');
+    Flora.Burner.PubSub.publish('destroySystem');
     agent = null;
     sensor = null;
   });

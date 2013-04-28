@@ -1,5 +1,29 @@
 <project name="FloraJS" default="build.dev">
 
+  <target name="build.dev" depends="
+      clean,
+      init,
+      concatenateJS,
+      concatenateCSS,
+      minifyCSS,
+      bake,
+      deploy">
+  </target>
+
+  <target name="build.release" depends="
+      clean,
+      init,
+      validateJS,
+      concatenateJS,
+      minifyJS,
+      concatenateCSS,
+      minifyCSS,
+      bake,
+      deploy,
+      test,
+      document">
+  </target>
+
   <loadproperties srcfile="build.properties" />
 
   <loadfile property="license" srcfile="license.txt" />
@@ -10,29 +34,6 @@
             locale="en,US"/>
   </tstamp>
 
-  <target name="build.dev" depends="
-      clean,
-      init,
-      concatenateJS,
-      concatenateCSS,
-      bakeDev,
-      deployDev">
-  </target>
-
-  <target name="build.release" depends="
-      clean,
-      init,
-      validate,
-      concatenateJS,
-      test,
-      concatenateCSS,
-      minifyCSS,
-      minifyJS,
-      document,
-      bakeRelease,
-      deployRelease">
-  </target>
-
   <!-- Check if build folder exists -->
   <target name="checkBuild">
     <condition property="cleandir">
@@ -40,10 +41,10 @@
     </condition>
   </target>
 
-  <!-- Delete all files not inside /build/backup -->
+  <!-- Delete all files not inside /build -->
   <target name="cleanBuild" depends="checkBuild" if="cleandir">
     <delete>
-      <fileset dir="${build.dir}" includes="**/*.js" excludes="backup/**/*.js">
+      <fileset dir="${build.dir}" includes="**/*.js">
       </fileset>
     </delete>
   </target>
@@ -53,11 +54,9 @@
     <delete dir="${jsdoc.output}"/>
   </target>
 
-  <!-- Create folders -->
+  <!-- Create folders for build and doc files. -->
   <target name="init">
     <mkdir dir="${build.dir}"/>
-    <mkdir dir="${build.dir}/backup"/>
-    <mkdir dir="${cssBuild.dir}/backup"/>
     <mkdir dir="${jsdoc.output}"/>
     <script language="javascript">
       var buildName = project.getProperty("buildName")
@@ -67,7 +66,7 @@
   </target>
 
   <!-- Validate via jshint -->
-  <target name="validate">
+  <target name="validateJS">
     <apply executable="java" failonerror="true" parallel="true">
       <fileset dir="${src.dir}" includes="**/*.js" />
       <arg line="-jar" />
@@ -85,32 +84,14 @@
       <arg line="-jar" />
       <arg path="${rhino}" />
       <arg path="${csslint}" />
-      <arg line="--${csslint.ignore}" />
+      <arg line="${csslint.options}" />
       <srcfile/>
     </apply>
   </target>
 
-  <!-- ConcatenateJS -->
+  <!-- Concatenate -->
   <target name="concatenateJS">
     <concat destfile="${build.dir}/${buildNameLower}.js" fixlastline="yes" eol="lf">
-      <header trimleading="yes">/*
-        %PROJECTNAME%
-        ${license}
-        */
-        /* Version: %VERSION% */
-        /* Build time: ${build.time} */
-        /** @namespace */
-        var ${buildName} = {}, exports = ${buildName};
-
-        (function(exports) {
-        'use strict';
-
-        // create Mantle namespace
-        exports.Mantle = {};
-
-        // pass in the namespace and parent object
-        new Mantle(exports.Mantle, exports);
-      </header>
       <filelist dir="${src.dir}">
         <file name="config.js" />
         <file name="interface.js" />
@@ -143,8 +124,22 @@
         <file name="flowfieldmarker.js" />
         <file name="init.js" />
       </filelist>
-      <footer trimleading="yes">}(exports));</footer>
+      <footer trimleading="yes">//%END%</footer>
     </concat>
+    <loadfile property="functionheader" srcFile="lib/functionheader.txt"/>
+    <replaceregexp match="(/\*.*\*/.*)??" flags="sm"
+        replace="${functionheader}">
+        <fileset dir="${build.dir}">
+            <include name="**/*.js"/>
+        </fileset>
+    </replaceregexp>
+    <loadfile property="functionfooter" srcFile="lib/functionfooter.txt"/>
+    <replaceregexp match="//%END%" flags="sm"
+        replace="${functionfooter}">
+        <fileset dir="${build.dir}">
+            <include name="**/*.js"/>
+        </fileset>
+    </replaceregexp>
   </target>
 
   <!-- Test via PhantomJS-->
@@ -157,27 +152,11 @@
     </exec>
   </target>
 
- <!-- jsDoc -->
-  <target name="document">
-    <delete dir="${jsdoc.output}"/>
-    <mkdir dir="${jsdoc.output}"/>
-    <apply executable="java" failonerror="true" parallel="true">
-      <fileset dir="${src.dir}" includes="**/*.js"/>
-      <arg line="-jar"/>
-      <arg path="${jsdoc}"/>
-      <arg path="${jsdoc.run}"/>
-      <arg line="-t=${jsdoc.templates}"/>
-      <arg line="-d=${jsdoc.output}"/>
-      <srcfile/>
-    </apply>
-  </target>
-
+  <!-- Minify -->
   <target name="minifyJS">
-
     <apply executable="java" failonerror="true">
-
-      <fileset dir="${build.dir}" includes="*.js" excludes="*.raw.min.js"/>
-      <mapper type="glob" from="*.js" to="${build.dir}/*.raw.min.js"/>
+      <fileset dir="${build.dir}" includes="*.js" excludes="*.min.js"/>
+      <mapper type="glob" from="*.js" to="${build.dir}/*.min.js"/>
 
       <arg line="-jar"/>
       <arg path="${closure}"/>
@@ -188,21 +167,12 @@
 
       <arg line="--js_output_file"/>
       <targetfile/>
-
     </apply>
-
   </target>
 
   <!-- ConcatenateCSS -->
   <target name="concatenateCSS">
-    <concat destfile="${cssBuild.dir}/${buildNameLower}.css" fixlastline="yes" eol="lf">
-      <header trimleading="yes">/*
-        %PROJECTNAME%
-        ${license}
-        */
-        /* Version: %VERSION% */
-        /* Build time: ${build.time} */
-      </header>
+    <concat destfile="${build.dir}/${buildNameLower}.css" fixlastline="yes" eol="lf">
       <!-- using filelist here; order will probably matter -->
       <filelist dir="${cssSrc.dir}">
         <file name="main.css" />
@@ -212,8 +182,8 @@
 
   <!-- MinifyCSS -->
   <target name="minifyCSS">
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" tofile="${cssBuild.dir}/${buildNameLower}.raw.min.css" overwrite="true"/>
-    <fileset id="css.fileset" dir="${cssBuild.dir}" includes="${buildNameLower}.raw.min.css" />
+    <copy file="${build.dir}/${buildNameLower}.css" tofile="${build.dir}/${buildNameLower}.min.css" overwrite="true"/>
+    <fileset id="css.fileset" dir="${build.dir}" includes="${buildNameLower}.min.css" />
     <!-- remove comments -->
     <replaceregexp match="/\*.*\*/" replace="" flags="g" byline="true">
       <fileset refid="css.fileset"/>
@@ -252,153 +222,94 @@
     </replaceregexp>
   </target>
 
-  <!-- Bake for development: the final step -->
-  <target name="bakeDev">
+ <!-- jsDoc -->
+  <target name="document">
+    <delete dir="${jsdoc.output}"/>
+    <mkdir dir="${jsdoc.output}"/>
+    <apply executable="java" failonerror="true" parallel="true">
+      <fileset dir="${src.dir}" includes="**/*.js"/>
+      <arg line="-jar"/>
+      <arg path="${jsdoc}"/>
+      <arg path="${jsdoc.run}"/>
+      <arg line="-t=${jsdoc.templates}"/>
+      <arg line="-d=${jsdoc.output}"/>
+      <srcfile/>
+    </apply>
+  </target>
+
+  <target name="bake">
+    <loadfile property="buildheader" srcFile="lib/header.txt"/>
+    <replaceregexp match="(/\*.*\*/.*)??" flags="sm"
+        replace="${buildheader}">
+        <fileset dir="${build.dir}">
+            <include name="**/*"/>
+        </fileset>
+    </replaceregexp>
     <!-- Searches for %VERSION% in the build directory and replaces with -->
     <!-- the version number found in build.properties. -->
     <replaceregexp match="%VERSION%" replace="${version}" flags="g" byline="true">
       <fileset dir="${build.dir}" includes="**/*"/>
-      <fileset dir="${cssBuild.dir}" includes="**/*"/>
     </replaceregexp>
     <!-- Searches for %PROJECTNAME% in the build directory and replaces with the project name -->
     <replaceregexp match="%PROJECTNAME%" replace="${projectName}" flags="g" byline="true">
       <fileset dir="${build.dir}" includes="**/*"/>
-      <fileset dir="${cssBuild.dir}" includes="**/*"/>
+    </replaceregexp>
+    <!-- Searches for %LICENSE% in the build directory and replaces with the license -->
+    <replaceregexp match="%LICENSE%" replace="${license}" flags="g" byline="true">
+      <fileset dir="${build.dir}" includes="**/*"/>
+    </replaceregexp>
+    <!-- Searches for %BUILDTIME% in the build directory and replaces with the timestamp -->
+    <replaceregexp match="%BUILDTIME%" replace="${build.time}" flags="g" byline="true">
+      <fileset dir="${build.dir}" includes="**/*"/>
+    </replaceregexp>
+    <!-- Searches for %BUILDNAME% in the build directory and replaces with the buildName -->
+    <replaceregexp match="%BUILDNAME%" replace="${buildName}" flags="g" byline="true">
+      <fileset dir="${build.dir}" includes="**/*"/>
     </replaceregexp>
   </target>
 
-  <!-- Bake for public: the final step -->
-  <target name="bakeRelease">
-    <!-- JS - Adds the license to the raw minified file. -->
-    <concat destfile="${build.dir}/${buildNameLower}.min.js" fixlastline="yes" eol="lf">
-      <header trimleading="yes">/*
-        %PROJECTNAME%
-        ${license}
-        */
-        /* Version: %VERSION% */
-        /* Simplex noise by Sean McCullough banksean@gmail.com */
-        /* Build time: ${build.time} */
+  <!-- Copy: copy fat build and css files to /dev -->
+  <target name="deploy">
 
-      </header>
-      <filelist dir="${build.dir}" files="${buildNameLower}.raw.min.js"/>
-      <footer trimleading="yes"></footer>
-    </concat>
-    <!-- CSS - Adds the license to the raw minified css file. -->
-    <concat destfile="${cssBuild.dir}/${buildNameLower}.min.css" fixlastline="yes" eol="lf">
-      <header trimleading="yes">/*
-        %PROJECTNAME%
-        ${license}
-        */
-        /* Version: %VERSION% */
-        /* Build time: ${build.time} */
-
-      </header>
-      <filelist dir="${cssBuild.dir}" files="${buildNameLower}.raw.min.css"/>
-      <footer trimleading="yes"></footer>
-    </concat>
-    <!-- Searches for %VERSION% in the build directory and replaces with -->
-    <!-- the version number found in build.properties. -->
-    <replaceregexp match="%VERSION%" replace="${version}" flags="g" byline="true">
-      <fileset dir="${build.dir}" includes="**/*"/>
-      <fileset dir="${cssBuild.dir}" includes="**/*"/>
-    </replaceregexp>
-    <!-- Searches for %PROJECTNAME% in the build directory and replaces with the project name -->
-    <replaceregexp match="%PROJECTNAME%" replace="${projectName}" flags="g" byline="true">
-      <fileset dir="${build.dir}" includes="**/*"/>
-      <fileset dir="${cssBuild.dir}" includes="**/*"/>
-    </replaceregexp>
-    <delete file="${build.dir}/${buildNameLower}.raw.min.js"/>
-    <delete file="${cssBuild.dir}/${buildNameLower}.raw.min.css"/>
-  </target>
-
-
-  <!-- Copy: copy build and css files to examples, dev -->
-  <target name="deployDev">
-
-    <!-- copy fat js file to backup folder with version number -->
-    <copy file="${build.dir}/${buildNameLower}.js" tofile="${build.dir}/backup/${buildNameLower}.${version}.js" overwrite="true"/>
-    <!-- copy fat css file to backup folder with version number -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" tofile="${cssBuild.dir}/backup/${buildNameLower}.${version}.css" overwrite="true"/>
-
-
-    <!-- copy fat js file to examples/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${examples.dir}/scripts" overwrite="true"/>
-    <!-- copy fat css file to /examples/css -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${examples.dir}/css" overwrite="true"/>
-    <!-- copy mantle js file to /examples/scripts -->
-    <copy file="${lib.dir}/mantle.js" todir="${examples.dir}/scripts" overwrite="true"/>
-    <!-- copy mantle css file to /examples/scripts -->
-    <copy file="${lib.dir}/mantle.css" todir="${examples.dir}/css" overwrite="true"/>
-
-    <!-- copy fat js file to flocking/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${flocking.dir}/scripts" overwrite="true"/>
-    <!-- copy fat css file to flocking/css -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${flocking.dir}/css" overwrite="true"/>
-    <!-- copy mantle js file to flocking/scripts -->
-    <copy file="${lib.dir}/mantle.js" todir="${flocking.dir}/scripts" overwrite="true"/>
-    <!-- copy mantle css file to flocking/scripts -->
-    <copy file="${lib.dir}/mantle.css" todir="${flocking.dir}/css" overwrite="true"/>
-
-    <!-- copy fat js file to braitenberg/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
-    <!-- copy fat css file to braitenberg/css -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${braitenberg.dir}/css" overwrite="true"/>
-    <!-- copy mantle js file to braitenberg/scripts -->
-    <copy file="${lib.dir}/mantle.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
-    <!-- copy mantle css file to braitenberg/scripts -->
-    <copy file="${lib.dir}/mantle.css" todir="${braitenberg.dir}/css" overwrite="true"/>
+    <!-- copy burner files to lib/ -->
+    <copy file="${burner.dir}/burner.js" todir="${lib.dir}" overwrite="true"/>
+    <copy file="${burner.dir}/burner.min.js" todir="${lib.dir}" overwrite="true"/>
+    <copy file="${burner.dir}/burner.css" todir="${lib.dir}" overwrite="true"/>
+    <copy file="${burner.dir}/burner.min.css" todir="${lib.dir}" overwrite="true"/>
 
     <!-- copy fat js file to tests/lib/ -->
     <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
-   <!-- copy fat mantle js file to /tests/lib -->
-    <copy file="${lib.dir}/mantle.js" todir="${tests.dir}/lib" overwrite="true"/>
 
-  </target>
+    <!-- copy fat burner js file to tests/lib/ -->
+    <copy file="${lib.dir}/burner.js" todir="${tests.dir}/lib" overwrite="true"/>
 
-  <!-- Copy: copy build and css files -->
-  <target name="deployRelease">
 
-    <!-- copy fat js file to backup folder with version number -->
-    <copy file="${build.dir}/${buildNameLower}.js" tofile="${build.dir}/backup/${buildNameLower}.${version}.js" overwrite="true"/>
-    <!-- copy min js file to backup folder with version number -->
-    <copy file="${build.dir}/${buildNameLower}.min.js" tofile="${build.dir}/backup/${buildNameLower}.min.${version}.js" overwrite="true"/>
-
-    <!-- copy fat js file to examples/scripts -->
+     <!-- copy fat js file to examples/scripts -->
     <copy file="${build.dir}/${buildNameLower}.js" todir="${examples.dir}/scripts" overwrite="true"/>
-    <!-- copy fat css file to examples/css -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${examples.dir}/css" overwrite="true"/>
-    <!-- copy mantle js file to examples/scripts -->
-    <copy file="${lib.dir}/mantle.js" todir="${examples.dir}/scripts" overwrite="true"/>
-    <!-- copy mantle css file to examples/scripts -->
-    <copy file="${lib.dir}/mantle.css" todir="${examples.dir}/css" overwrite="true"/>
+    <!-- copy fat css file to /examples/css -->
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${examples.dir}/css" overwrite="true"/>
+    <!-- copy burner js file to /examples/scripts -->
+    <copy file="${lib.dir}/burner.js" todir="${examples.dir}/scripts" overwrite="true"/>
+    <!-- copy burner css file to /examples/scripts -->
+    <copy file="${lib.dir}/burner.css" todir="${examples.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to flocking/scripts -->
     <copy file="${build.dir}/${buildNameLower}.js" todir="${flocking.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to flocking/css -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${flocking.dir}/css" overwrite="true"/>
-    <!-- copy mantle js file to flocking/scripts -->
-    <copy file="${lib.dir}/mantle.js" todir="${flocking.dir}/scripts" overwrite="true"/>
-    <!-- copy mantle css file to flocking/scripts -->
-    <copy file="${lib.dir}/mantle.css" todir="${flocking.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${flocking.dir}/css" overwrite="true"/>
+    <!-- copy burner js file to flocking/scripts -->
+    <copy file="${lib.dir}/burner.js" todir="${flocking.dir}/scripts" overwrite="true"/>
+    <!-- copy burner css file to flocking/scripts -->
+    <copy file="${lib.dir}/burner.css" todir="${flocking.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to braitenberg/scripts -->
     <copy file="${build.dir}/${buildNameLower}.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to braitenberg/css -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" todir="${braitenberg.dir}/css" overwrite="true"/>
-    <!-- copy mantle js file to braitenberg/scripts -->
-    <copy file="${lib.dir}/mantle.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
-    <!-- copy mantle css file to braitenberg/scripts -->
-    <copy file="${lib.dir}/mantle.css" todir="${braitenberg.dir}/css" overwrite="true"/>
-
-    <!-- copy fat build file to tests/lib -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
-    <!-- copy fat mantle js file to /tests/lib -->
-    <copy file="${lib.dir}/mantle.js" todir="${tests.dir}/lib" overwrite="true"/>
-
-    <!-- copy fat css file to backup folder with version number -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.css" tofile="${cssBuild.dir}/backup/${buildNameLower}.${version}.css" overwrite="true"/>
-    <!-- copy min css file to backup folder with version number -->
-    <copy file="${cssBuild.dir}/${buildNameLower}.min.css" tofile="${cssBuild.dir}/backup/${buildNameLower}.min.${version}.css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${braitenberg.dir}/css" overwrite="true"/>
+    <!-- copy burner js file to braitenberg/scripts -->
+    <copy file="${lib.dir}/burner.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
+    <!-- copy burner css file to braitenberg/scripts -->
+    <copy file="${lib.dir}/burner.css" todir="${braitenberg.dir}/css" overwrite="true"/>
 
   </target>
 

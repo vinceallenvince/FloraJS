@@ -31,8 +31,6 @@
  */
 function Oscillator(opt_options) {
 
-  'use strict';
-
   var options = opt_options || {};
 
   exports.Agent.call(this, options);
@@ -69,7 +67,7 @@ Oscillator.prototype.name = 'Oscillator';
  */
 Oscillator.prototype.step = function () {
 
-  'use strict';
+
 
   var world = this.world, velDiff;
 

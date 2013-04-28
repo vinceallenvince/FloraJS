@@ -23,10 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: April 27, 2013 03:45:54 */
-
-
-body {margin: 0;padding: 0;overflow: hidden;width: 100%; height: 100%;background-color: rgb(0, 0, 0);}
+/* Build time: April 28, 2013 03:16:51 */body {margin: 0;padding: 0;overflow: hidden;width: 100%; height: 100%;background-color: rgb(0, 0, 0);}
 .hasSensor {border-radius: 100%;}
 .liquid {box-shadow: 0 0 0 1em rgb(224, 228, 204);}
 .attractor {box-shadow: 0 0 0 1em rgb(64, 129, 0);}
@@ -43,4 +40,3 @@ body {margin: 0;padding: 0;overflow: hidden;width: 100%; height: 100%;background
 .captionLeft, .inputMenuLeft {left: 0;}
 .captionRight, .inputMenuRight {right: 0;}
 .captionCenter, .inputMenuCenter {width: 100%;text-align: center;margin: 0 auto;}
-

@@ -10,7 +10,7 @@ describe("Walker", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Mantle.System;
+    system = Flora.Burner.System;
     system.create(function() {
       this.add('Walker');
     }, document.getElementById('worldA'));
@@ -19,7 +19,7 @@ describe("Walker", function() {
   });
 
   afterEach(function() {
-    Flora.Mantle.PubSub.publish('destroySystem');
+    Flora.Burner.PubSub.publish('destroySystem');
     obj = null;
   });
 

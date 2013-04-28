@@ -10,7 +10,7 @@ describe("Mover", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Mantle.System;
+    system = Flora.Burner.System;
     system.create(function() {
 
     }, document.getElementById('worldA'));
@@ -18,7 +18,7 @@ describe("Mover", function() {
   });
 
   afterEach(function() {
-    Flora.Mantle.PubSub.publish('destroySystem');
+    Flora.Burner.PubSub.publish('destroySystem');
     obj = null;
   });
 
@@ -138,7 +138,7 @@ describe("Mover", function() {
 
     expect(mover._checkWorldEdges()).toEqual(true);
 
-    var w = exports.Mantle.System.getWorld(document.getElementById('worldA'));
+    var w = exports.Burner.System.getWorld(document.getElementById('worldA'));
     w.bounds[2] = 2000;
 
     mover = system.add('Mover', {
