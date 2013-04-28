@@ -18,8 +18,8 @@ In the body, add a &lt;script&gt; tag and create a new system. Pass the system a
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Flora</title>
-    <link rel="stylesheet" href="css/burner.css" type="text/css" charset="utf-8">
-    <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="css/burner.min.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8">
     <script src="js/burner.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
@@ -89,7 +89,7 @@ For an example of the Agent's seek behavior, set 'followMouse' to 'true' when cr
       });
 
 
-http://www.florajs.com/examples/agent_follow_mouse.html
+http://www.florajs.com/examples/agent_follows_mouse.html
 
 #### Walkers
 
@@ -461,7 +461,7 @@ The following examples implement advanced functions of FloraJS.
 
 You can find code for the examples above at:
 
-* <a href='http://github.com/foldi/FloraJS-Examples/blob/master/simple.html'>Examples</a>
+* <a href='http://github.com/foldi/FloraJS-Examples'>Examples</a>
 
 * <a href='http://github.com/foldi/FloraJS-Flocking'>Flocking</a>
 
