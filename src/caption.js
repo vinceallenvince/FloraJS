@@ -36,29 +36,29 @@ function Caption(opt_options) {
    * Holds a reference to the caption's DOM elements.
    * @private
    */
-  this._el = document.createElement('div');
-  this._el.id = 'caption';
-  this._el.className = 'caption ';
+  this.el = document.createElement('div');
+  this.el.id = 'caption';
+  this.el.className = 'caption ';
   classNames = this.position.split(' ');
   for (i = 0, max = classNames.length; i < max; i++) {
-    this._el.className = this._el.className + 'caption' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+    this.el.className = this.el.className + 'caption' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
   }
-  this._el.style.opacity = this.opacity;
-  this._el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+  this.el.style.opacity = this.opacity;
+  this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
         ', ' + this.color[2] + ')';
-  this._el.style.borderWidth = this.borderWidth;
-  this._el.style.borderStyle = this.borderStyle;
+  this.el.style.borderWidth = this.borderWidth;
+  this.el.style.borderStyle = this.borderStyle;
   if (typeof this.borderColor === 'string') {
-    this._el.style.borderColor = this.borderColor;
+    this.el.style.borderColor = this.borderColor;
   } else {
-    this._el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
+    this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
         ', ' + this.borderColor[2] + ')';
   }
-  this._el.appendChild(document.createTextNode(this.text));
+  this.el.appendChild(document.createTextNode(this.text));
   if (document.getElementById('caption')) {
     document.getElementById('caption').parentNode.removeChild(document.getElementById('caption'));
   }
-  this.world.el.appendChild(this._el);
+  this.world.el.appendChild(this.el);
 }
 
 Caption.prototype.name = 'Caption';
@@ -70,9 +70,9 @@ Caption.prototype.name = 'Caption';
  */
 Caption.prototype.destroy = function() {
 
-  var id = this._el.id;
+  var id = this.el.id;
 
-  this._el.parentNode.removeChild(this._el);
+  this.el.parentNode.removeChild(this.el);
   if (!document.getElementById(id)) {
     return true;
   }

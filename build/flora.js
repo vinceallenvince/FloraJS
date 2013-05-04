@@ -22,8 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 1.0.0 */
-/* Build time: May 4, 2013 12:50:56 *//** @namespace */
+/* Version: 1.0.1 */
+/* Build time: May 4, 2013 01:09:33 *//** @namespace */
 var Flora = {}, exports = Flora;
 
 (function(exports) {
@@ -1302,29 +1302,29 @@ function Caption(opt_options) {
    * Holds a reference to the caption's DOM elements.
    * @private
    */
-  this._el = document.createElement('div');
-  this._el.id = 'caption';
-  this._el.className = 'caption ';
+  this.el = document.createElement('div');
+  this.el.id = 'caption';
+  this.el.className = 'caption ';
   classNames = this.position.split(' ');
   for (i = 0, max = classNames.length; i < max; i++) {
-    this._el.className = this._el.className + 'caption' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+    this.el.className = this.el.className + 'caption' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
   }
-  this._el.style.opacity = this.opacity;
-  this._el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+  this.el.style.opacity = this.opacity;
+  this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
         ', ' + this.color[2] + ')';
-  this._el.style.borderWidth = this.borderWidth;
-  this._el.style.borderStyle = this.borderStyle;
+  this.el.style.borderWidth = this.borderWidth;
+  this.el.style.borderStyle = this.borderStyle;
   if (typeof this.borderColor === 'string') {
-    this._el.style.borderColor = this.borderColor;
+    this.el.style.borderColor = this.borderColor;
   } else {
-    this._el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
+    this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
         ', ' + this.borderColor[2] + ')';
   }
-  this._el.appendChild(document.createTextNode(this.text));
+  this.el.appendChild(document.createTextNode(this.text));
   if (document.getElementById('caption')) {
     document.getElementById('caption').parentNode.removeChild(document.getElementById('caption'));
   }
-  this.world.el.appendChild(this._el);
+  this.world.el.appendChild(this.el);
 }
 
 Caption.prototype.name = 'Caption';
@@ -1336,9 +1336,9 @@ Caption.prototype.name = 'Caption';
  */
 Caption.prototype.destroy = function() {
 
-  var id = this._el.id;
+  var id = this.el.id;
 
-  this._el.parentNode.removeChild(this._el);
+  this.el.parentNode.removeChild(this.el);
   if (!document.getElementById(id)) {
     return true;
   }
@@ -1392,40 +1392,40 @@ function InputMenu(opt_options) {
    * Holds a reference to the caption's DOM elements.
    * @private
    */
-  this._el = document.createElement('div');
-  this._el.id = 'inputMenu';
-  this._el.className = 'inputMenu ';
+  this.el = document.createElement('div');
+  this.el.id = 'inputMenu';
+  this.el.className = 'inputMenu ';
   classNames = this.position.split(' ');
   for (i = 0, max = classNames.length; i < max; i++) {
-    this._el.className = this._el.className + 'inputMenu' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+    this.el.className = this.el.className + 'inputMenu' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
   }
-  this._el.style.opacity = this.opacity;
-  this._el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+  this.el.style.opacity = this.opacity;
+  this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
         ', ' + this.color[2] + ')';
-  this._el.style.borderWidth = this.borderWidth;
-  this._el.style.borderStyle = this.borderStyle;
+  this.el.style.borderWidth = this.borderWidth;
+  this.el.style.borderStyle = this.borderStyle;
   if (typeof this.borderColor === 'string') {
-    this._el.style.borderColor = this.borderColor;
+    this.el.style.borderColor = this.borderColor;
   } else {
-    this._el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
+    this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
         ', ' + this.borderColor[2] + ')';
   }
-  this._el.appendChild(document.createTextNode(this.text));
+  this.el.appendChild(document.createTextNode(this.text));
   if (document.getElementById('inputMenu')) {
     document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
   }
 
   if (exports.Burner.System.supportedFeatures.touch) {
-    exports.Utils.addEvent(this._el, 'touchstart', function() {
+    exports.Utils.addEvent(this.el, 'touchstart', function() {
       me.destroy();
     });
   } else {
-    exports.Utils.addEvent(this._el, 'mouseup', function() {
+    exports.Utils.addEvent(this.el, 'mouseup', function() {
       me.destroy();
     });
   }
 
-  this.world.el.appendChild(this._el);
+  this.world.el.appendChild(this.el);
 }
 
 InputMenu.prototype.name = 'InputMenu';
@@ -1435,9 +1435,9 @@ InputMenu.prototype.name = 'InputMenu';
  */
 InputMenu.prototype.destroy = function() {
 
-  var id = this._el.id;
+  var id = this.el.id;
 
-  this._el.parentNode.removeChild(this._el);
+  this.el.parentNode.removeChild(this.el);
   if (!document.getElementById(id)) {
     return true;
   }
@@ -1571,22 +1571,22 @@ function Mover(opt_options) {
   myDiv = document.createElement("div");
 
   if (options.view && exports.Interface.getDataType(options.view) === 'function') { // if view is supplied and is a function
-    this._el = options.view.apply(this, this.viewArgs);
+    this.el = options.view.apply(this, this.viewArgs);
   } else if (exports.Interface.getDataType(options.view) === 'object') { // if view is supplied and is an object
-    this._el = options.view;
+    this.el = options.view;
   } else {
-    this._el = myDiv;
+    this.el = myDiv;
   }
 
-  this._el.id = this.id;
+  this.el.id = this.id;
   if (!this.options.sensors) {
-    this._el.className = 'element ' + this.name.toLowerCase();
+    this.el.className = 'element ' + this.name.toLowerCase();
   } else {
-    this._el.className = 'element ' + this.name.toLowerCase() + ' ' + 'hasSensor';
+    this.el.className = 'element ' + this.name.toLowerCase() + ' ' + 'hasSensor';
   }
-  this._el.style.visibility = 'hidden';
+  this.el.style.visibility = 'hidden';
 
-  this.options.world.el.appendChild(this._el);
+  this.options.world.el.appendChild(this.el);
 
   //
 
@@ -1624,11 +1624,11 @@ function Mover(opt_options) {
   })(this);
 
   if (this.draggable) {
-    exports.Utils.addEvent(this._el, 'mouseover', mouseover);
-    exports.Utils.addEvent(this._el, 'mousedown', mousedown);
-    exports.Utils.addEvent(this._el, 'mousemove', mousemove);
-    exports.Utils.addEvent(this._el, 'mouseup', mouseup);
-    exports.Utils.addEvent(this._el, 'mouseout', mouseout);
+    exports.Utils.addEvent(this.el, 'mouseover', mouseover);
+    exports.Utils.addEvent(this.el, 'mousedown', mousedown);
+    exports.Utils.addEvent(this.el, 'mousemove', mousemove);
+    exports.Utils.addEvent(this.el, 'mouseup', mouseup);
+    exports.Utils.addEvent(this.el, 'mouseout', mouseout);
   }
 }
 exports.Burner.Utils.extend(Mover, exports.Burner.Element);
@@ -2079,7 +2079,7 @@ Mover.prototype.isInside = function(container) {
  */
 Mover.prototype.draw = function() {
 
-  var cssText, el = this._el;
+  var cssText, el = this.el;
 
   if (el) {
     cssText = Mover._getCSSText({

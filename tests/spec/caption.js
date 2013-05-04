@@ -39,7 +39,7 @@ describe("A new Caption", function() {
     expect(getDataType(obj.borderStyle)).toEqual('string');
     expect(getDataType(obj.borderColor)).toEqual('string');
     expect(getDataType(obj.colorMode)).toEqual('string');
-    expect(getDataType(obj._el)).toEqual('object');
+    expect(getDataType(obj.el)).toEqual('object');
     expect(obj.name).toEqual('Caption');
   });
 

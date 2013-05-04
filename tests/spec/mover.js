@@ -28,7 +28,7 @@ describe("Mover", function() {
         return new Flora.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
       }
     });
-    expect(getDataType(obj._el)).toEqual('object');
+    expect(getDataType(obj.el)).toEqual('object');
     expect(getDataType(obj._forceVector)).toEqual('object');
     expect(getDataType(obj.acceleration)).toEqual('object');
     expect(getDataType(obj.clock)).toEqual('number');

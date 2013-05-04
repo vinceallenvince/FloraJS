@@ -124,22 +124,22 @@ function Mover(opt_options) {
   myDiv = document.createElement("div");
 
   if (options.view && exports.Interface.getDataType(options.view) === 'function') { // if view is supplied and is a function
-    this._el = options.view.apply(this, this.viewArgs);
+    this.el = options.view.apply(this, this.viewArgs);
   } else if (exports.Interface.getDataType(options.view) === 'object') { // if view is supplied and is an object
-    this._el = options.view;
+    this.el = options.view;
   } else {
-    this._el = myDiv;
+    this.el = myDiv;
   }
 
-  this._el.id = this.id;
+  this.el.id = this.id;
   if (!this.options.sensors) {
-    this._el.className = 'element ' + this.name.toLowerCase();
+    this.el.className = 'element ' + this.name.toLowerCase();
   } else {
-    this._el.className = 'element ' + this.name.toLowerCase() + ' ' + 'hasSensor';
+    this.el.className = 'element ' + this.name.toLowerCase() + ' ' + 'hasSensor';
   }
-  this._el.style.visibility = 'hidden';
+  this.el.style.visibility = 'hidden';
 
-  this.options.world.el.appendChild(this._el);
+  this.options.world.el.appendChild(this.el);
 
   //
 
@@ -177,11 +177,11 @@ function Mover(opt_options) {
   })(this);
 
   if (this.draggable) {
-    exports.Utils.addEvent(this._el, 'mouseover', mouseover);
-    exports.Utils.addEvent(this._el, 'mousedown', mousedown);
-    exports.Utils.addEvent(this._el, 'mousemove', mousemove);
-    exports.Utils.addEvent(this._el, 'mouseup', mouseup);
-    exports.Utils.addEvent(this._el, 'mouseout', mouseout);
+    exports.Utils.addEvent(this.el, 'mouseover', mouseover);
+    exports.Utils.addEvent(this.el, 'mousedown', mousedown);
+    exports.Utils.addEvent(this.el, 'mousemove', mousemove);
+    exports.Utils.addEvent(this.el, 'mouseup', mouseup);
+    exports.Utils.addEvent(this.el, 'mouseout', mouseout);
   }
 }
 exports.Burner.Utils.extend(Mover, exports.Burner.Element);
@@ -632,7 +632,7 @@ Mover.prototype.isInside = function(container) {
  */
 Mover.prototype.draw = function() {
 
-  var cssText, el = this._el;
+  var cssText, el = this.el;
 
   if (el) {
     cssText = Mover._getCSSText({
