@@ -8,7 +8,7 @@ The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'T
 
 FloraJS has two major components, a set of classes for elements in a natural system, and a renderer called <a href='http://github.com/foldi/Burner'>Burner</a> to draw those elements to the DOM.
 
-To setup a simple Flora system, reference the <a href='http://github.com/foldi/Burner/tree/master/build'>Burner</a> and <a href='http://github.com/foldi/FloraJS/tree/master/build'>Flora</a> .js files from script tags in the &lt;head&gt; of your document. Also, reference the flora.css and burner.css files in link tags.
+To setup a simple Flora system, reference the <a href='http://github.com/foldi/FloraJS/tree/master/build'>Flora</a> combined .js file from script tags in the &lt;head&gt; of your document. Also, reference the combined flora .css file from a link tag.
 
 In the body, add a &lt;script&gt; tag and create a new system. Pass the system a function that describes the elements in your world.
 
@@ -18,10 +18,8 @@ In the body, add a &lt;script&gt; tag and create a new system. Pass the system a
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Flora</title>
-    <link rel="stylesheet" href="css/burner.min.css" type="text/css" charset="utf-8">
-    <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8">
-    <script src="js/burner.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/flora.min.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="css/flora.combined.min.css" type="text/css" charset="utf-8">
+    <script src="js/flora.combined.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
