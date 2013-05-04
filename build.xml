@@ -326,20 +326,26 @@
     <!-- copy fat js file to tests/lib/ -->
     <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${tests.dir}/lib" overwrite="true"/>
 
-     <!-- copy fat js file to examples/scripts -->
+    <!-- copy fat js file to examples/scripts -->
     <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${examples.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.min.js" todir="${examples.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to /examples/css -->
     <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${examples.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.min.css" todir="${examples.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to flocking/scripts -->
     <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${flocking.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.min.js" todir="${flocking.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to flocking/css -->
     <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${flocking.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.min.css" todir="${flocking.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to braitenberg/scripts -->
     <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.min.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to braitenberg/css -->
     <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${braitenberg.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.min.css" todir="${braitenberg.dir}/css" overwrite="true"/>
 
   </target>
 
