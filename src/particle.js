@@ -8,8 +8,8 @@
  * @param {Object} [opt_options] Particle options.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
- * @param {number} [opt_options.lifespan = 40] The max life of the particle. Set to -1 for infinite life.
- * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, particle is destroyed.
+ * @param {number} [opt_options.lifespan = 40] The max life of the object. Set to -1 for infinite life.
+ * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
  * @param {boolean} {opt_options.fade = true} If true, opacity decreases proportionally with life.
  * @param {boolean} {opt_options.shrink = true} If true, width and height decrease proportionally with life.
  * @param {string} [opt_options.borderRadius = '100%'] The particle's border radius.

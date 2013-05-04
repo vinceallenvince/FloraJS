@@ -29,7 +29,8 @@
  *    world's bounds.
  * @param {number} [opt_options.avoidEdgesStrength = 200] Sets the strength of the steering force when avoidEdges = true.
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
- * @param {number} [opt_options.lifespan = -1] Life span. Set to -1 to live forever.
+ * @param {number} [opt_options.lifespan = -1] The max life of the object. Set to -1 for infinite life.
+ * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
  * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the object's parent.
  * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
@@ -102,6 +103,7 @@ function Mover(opt_options) {
 
   this.pointToDirection = options.pointToDirection === false ? false : true;
   this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
+  this.life = options.life === 0 ? 0 : options.life || -1;
 
   this.parent = options.parent || null;
   this.offsetDistance = options.offsetDistance || 30;
@@ -367,8 +369,10 @@ Mover.prototype.step = function() {
 
   this.acceleration.mult(0);
 
-  if (this.lifespan > 0) {
-    this.lifespan -= 1;
+  if (this.life < this.lifespan) {
+    this.life += 1;
+  } else if (this.lifespan !== -1) {
+    exports.Burner.System.destroyElement(this);
   }
 
   if (this.afterStep) {

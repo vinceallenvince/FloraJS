@@ -42,6 +42,8 @@ describe("Mover", function() {
     expect(getDataType(obj.visibility)).toEqual('string');
     expect(getDataType(obj.width)).toEqual('number');
     expect(getDataType(obj.world)).toEqual('object');
+    expect(getDataType(obj.lifespan)).toEqual('number');
+    expect(getDataType(obj.life)).toEqual('number');
     expect(obj.name).toEqual('Mover');
   });
 

@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 1.0.0 */
-/* Build time: April 28, 2013 03:16:51 *//** @namespace */
+/* Build time: May 4, 2013 12:50:56 *//** @namespace */
 var Flora = {}, exports = Flora;
 
 (function(exports) {
@@ -1476,7 +1476,8 @@ exports.InputMenu = InputMenu;
  *    world's bounds.
  * @param {number} [opt_options.avoidEdgesStrength = 200] Sets the strength of the steering force when avoidEdges = true.
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
- * @param {number} [opt_options.lifespan = -1] Life span. Set to -1 to live forever.
+ * @param {number} [opt_options.lifespan = -1] The max life of the object. Set to -1 for infinite life.
+ * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
  * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the object's parent.
  * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
@@ -1549,6 +1550,7 @@ function Mover(opt_options) {
 
   this.pointToDirection = options.pointToDirection === false ? false : true;
   this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
+  this.life = options.life === 0 ? 0 : options.life || -1;
 
   this.parent = options.parent || null;
   this.offsetDistance = options.offsetDistance || 30;
@@ -1814,8 +1816,10 @@ Mover.prototype.step = function() {
 
   this.acceleration.mult(0);
 
-  if (this.lifespan > 0) {
-    this.lifespan -= 1;
+  if (this.life < this.lifespan) {
+    this.life += 1;
+  } else if (this.lifespan !== -1) {
+    exports.Burner.System.destroyElement(this);
   }
 
   if (this.afterStep) {
@@ -3317,8 +3321,8 @@ exports.Food = Food;
  * @param {Object} [opt_options] Particle options.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
- * @param {number} [opt_options.lifespan = 40] The max life of the particle. Set to -1 for infinite life.
- * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, particle is destroyed.
+ * @param {number} [opt_options.lifespan = 40] The max life of the object. Set to -1 for infinite life.
+ * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
  * @param {boolean} {opt_options.fade = true} If true, opacity decreases proportionally with life.
  * @param {boolean} {opt_options.shrink = true} If true, width and height decrease proportionally with life.
  * @param {string} [opt_options.borderRadius = '100%'] The particle's border radius.
