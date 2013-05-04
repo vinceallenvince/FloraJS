@@ -6,7 +6,7 @@
       concatenateJS,
       concatenateCSS,
       minifyCSS,
-      bake,
+      bakeDev,
       deploy">
   </target>
 
@@ -18,7 +18,8 @@
       minifyJS,
       concatenateCSS,
       minifyCSS,
-      bake,
+      bakeDev,
+      bakeRelease,
       deploy,
       test,
       document">
@@ -27,6 +28,9 @@
   <loadproperties srcfile="build.properties" />
 
   <loadfile property="license" srcfile="license.txt" />
+  <loadfile property="license.min" srcfile="license.min.txt" />
+
+  <property name="empty" value="" />
 
   <tstamp>
     <format property="build.time"
@@ -58,6 +62,11 @@
   <target name="init">
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${jsdoc.output}"/>
+    <!-- copy burner files to lib/ -->
+    <copy file="${burner.dir}/burner.js" todir="${lib.dir}" overwrite="true"/>
+    <copy file="${burner.dir}/burner.min.js" todir="${lib.dir}" overwrite="true"/>
+    <copy file="${burner.dir}/burner.css" todir="${lib.dir}" overwrite="true"/>
+    <copy file="${burner.dir}/burner.min.css" todir="${lib.dir}" overwrite="true"/>
     <script language="javascript">
       var buildName = project.getProperty("buildName")
       project.setProperty("buildNameLower", buildName.toLowerCase());
@@ -237,7 +246,8 @@
     </apply>
   </target>
 
-  <target name="bake">
+  <target name="bake" unless="baked">
+    <echo message="baking" />
     <loadfile property="buildheader" srcFile="lib/header.txt"/>
     <replaceregexp match="(/\*.*\*/.*)??" flags="sm"
         replace="${buildheader}">
@@ -256,7 +266,10 @@
     </replaceregexp>
     <!-- Searches for %LICENSE% in the build directory and replaces with the license -->
     <replaceregexp match="%LICENSE%" replace="${license}" flags="g" byline="true">
-      <fileset dir="${build.dir}" includes="**/*"/>
+      <fileset dir="${build.dir}" includes="**/*" excludes="*min*"/>
+    </replaceregexp>
+    <replaceregexp match="%LICENSE%" replace="${license.min}" flags="g" byline="true">
+      <fileset dir="${build.dir}" includes="*min*"/>
     </replaceregexp>
     <!-- Searches for %BUILDTIME% in the build directory and replaces with the timestamp -->
     <replaceregexp match="%BUILDTIME%" replace="${build.time}" flags="g" byline="true">
@@ -268,48 +281,65 @@
     </replaceregexp>
   </target>
 
+  <target name="bakeDev" depends="bake">
+    <property name="baked" value="true" />
+    <concat destfile="${build.dir}/${buildNameLower}.combined.js" fixlastline="yes" eol="lf">
+      <filelist dir="${lib.dir}">
+        <file name="burner.js" />
+      </filelist>
+      <filelist dir="${build.dir}">
+        <file name="${buildNameLower}.js" />
+      </filelist>
+    </concat>
+    <concat destfile="${build.dir}/${buildNameLower}.combined.css" fixlastline="yes" eol="lf">
+      <filelist dir="${lib.dir}">
+        <file name="burner.css" />
+      </filelist>
+      <filelist dir="${build.dir}">
+        <file name="${buildNameLower}.css" />
+      </filelist>
+    </concat>
+  </target>
+
+  <target name="bakeRelease" depends="bake">
+    <concat destfile="${build.dir}/${buildNameLower}.combined.min.js" fixlastline="yes" eol="lf">
+      <filelist dir="${lib.dir}">
+        <file name="burner.min.js" />
+      </filelist>
+      <filelist dir="${build.dir}">
+        <file name="${buildNameLower}.min.js" />
+      </filelist>
+    </concat>
+    <concat destfile="${build.dir}/${buildNameLower}.combined.min.css" fixlastline="yes" eol="lf">
+      <filelist dir="${lib.dir}">
+        <file name="burner.min.css" />
+      </filelist>
+      <filelist dir="${build.dir}">
+        <file name="${buildNameLower}.min.css" />
+      </filelist>
+    </concat>
+  </target>
+
   <!-- Copy: copy fat build and css files to /dev -->
   <target name="deploy">
 
-    <!-- copy burner files to lib/ -->
-    <copy file="${burner.dir}/burner.js" todir="${lib.dir}" overwrite="true"/>
-    <copy file="${burner.dir}/burner.min.js" todir="${lib.dir}" overwrite="true"/>
-    <copy file="${burner.dir}/burner.css" todir="${lib.dir}" overwrite="true"/>
-    <copy file="${burner.dir}/burner.min.css" todir="${lib.dir}" overwrite="true"/>
-
     <!-- copy fat js file to tests/lib/ -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
-
-    <!-- copy fat burner js file to tests/lib/ -->
-    <copy file="${lib.dir}/burner.js" todir="${tests.dir}/lib" overwrite="true"/>
-
+    <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${tests.dir}/lib" overwrite="true"/>
 
      <!-- copy fat js file to examples/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${examples.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${examples.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to /examples/css -->
-    <copy file="${build.dir}/${buildNameLower}.css" todir="${examples.dir}/css" overwrite="true"/>
-    <!-- copy burner js file to /examples/scripts -->
-    <copy file="${lib.dir}/burner.js" todir="${examples.dir}/scripts" overwrite="true"/>
-    <!-- copy burner css file to /examples/scripts -->
-    <copy file="${lib.dir}/burner.css" todir="${examples.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${examples.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to flocking/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${flocking.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${flocking.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to flocking/css -->
-    <copy file="${build.dir}/${buildNameLower}.css" todir="${flocking.dir}/css" overwrite="true"/>
-    <!-- copy burner js file to flocking/scripts -->
-    <copy file="${lib.dir}/burner.js" todir="${flocking.dir}/scripts" overwrite="true"/>
-    <!-- copy burner css file to flocking/scripts -->
-    <copy file="${lib.dir}/burner.css" todir="${flocking.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${flocking.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to braitenberg/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to braitenberg/css -->
-    <copy file="${build.dir}/${buildNameLower}.css" todir="${braitenberg.dir}/css" overwrite="true"/>
-    <!-- copy burner js file to braitenberg/scripts -->
-    <copy file="${lib.dir}/burner.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
-    <!-- copy burner css file to braitenberg/scripts -->
-    <copy file="${lib.dir}/burner.css" todir="${braitenberg.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${braitenberg.dir}/css" overwrite="true"/>
 
   </target>
 
