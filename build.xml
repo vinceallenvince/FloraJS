@@ -5,7 +5,7 @@
       init,
       concatenateJS,
       concatenateCSS,
-      bakeDev,
+      bake,
       deploy">
   </target>
 
@@ -17,19 +17,17 @@
       minifyJS,
       concatenateCSS,
       minifyCSS,
-      bakeDev,
-      bakeRelease,
+      bake,
       deploy,
       test,
-      document">
+      document,
+      deployRelease">
   </target>
 
   <loadproperties srcfile="build.properties" />
 
   <loadfile property="license" srcfile="license.txt" />
   <loadfile property="license.min" srcfile="license.min.txt" />
-
-  <property name="empty" value="" />
 
   <tstamp>
     <format property="build.time"
@@ -47,10 +45,10 @@
     </condition>
   </target>
 
-  <!-- Delete all files not inside /build -->
+  <!-- Delete all files not inside /build/backup -->
   <target name="cleanBuild" depends="checkBuild" if="cleandir">
     <delete>
-      <fileset dir="${build.dir}" includes="**/*.js">
+      <fileset dir="${build.dir}" includes="**/*">
       </fileset>
     </delete>
   </target>
@@ -60,20 +58,15 @@
     <delete dir="${jsdoc.output}"/>
   </target>
 
-  <!-- Create folders for build and doc files. -->
+  <!-- Create folders for build, backup, and doc files. -->
   <target name="init">
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${jsdoc.output}"/>
-    <!-- copy burner files to lib/ -->
-    <copy file="${burner.dir}/burner.js" todir="${lib.dir}" overwrite="true"/>
-    <copy file="${burner.dir}/burner.min.js" todir="${lib.dir}" overwrite="true"/>
-    <copy file="${burner.dir}/burner.css" todir="${lib.dir}" overwrite="true"/>
-    <copy file="${burner.dir}/burner.min.css" todir="${lib.dir}" overwrite="true"/>
     <script language="javascript">
       var buildName = project.getProperty("buildName")
       project.setProperty("buildNameLower", buildName.toLowerCase());
     </script>
-    <echo message="${buildNameLower}"/>
+    <echo message="build name: ${buildNameLower}"/>
   </target>
 
   <!-- Validate via jshint -->
@@ -91,11 +84,11 @@
   <!-- Validate via csslint -->
   <target name="validateCSS">
     <apply executable="java" failonerror="true" parallel="true">
-      <fileset dir="${cssSrc.dir}" includes="**/*.css" />
+      <fileset dir="${css.dir}" includes="**/*.css" />
       <arg line="-jar" />
       <arg path="${rhino}" />
       <arg path="${csslint}" />
-      <arg line="${csslint.options}" />
+      <arg line="--${csslint.ignore}" />
       <srcfile/>
     </apply>
   </target>
@@ -185,7 +178,7 @@
   <target name="concatenateCSS">
     <concat destfile="${build.dir}/${buildNameLower}.css" fixlastline="yes" eol="lf">
       <!-- using filelist here; order will probably matter -->
-      <filelist dir="${cssSrc.dir}">
+      <filelist dir="${css.dir}">
         <file name="main.css" />
       </filelist>
     </concat>
@@ -248,9 +241,8 @@
     </apply>
   </target>
 
-  <target name="bake" unless="baked">
-    <echo message="baking" />
-    <loadfile property="buildheader" srcFile="lib/header.txt"/>
+  <target name="bake">
+    <loadfile property="buildheader" srcFile="header.txt"/>
     <replaceregexp match="(/\*.*\*/.*)??" flags="sm"
         replace="${buildheader}">
         <fileset dir="${build.dir}">
@@ -287,71 +279,32 @@
     </replaceregexp>
   </target>
 
-  <target name="bakeDev" depends="bake">
-    <property name="baked" value="true" />
-    <concat destfile="${build.dir}/${buildNameLower}.combined.js" fixlastline="yes" eol="lf">
-      <filelist dir="${lib.dir}">
-        <file name="burner.js" />
-      </filelist>
-      <filelist dir="${build.dir}">
-        <file name="${buildNameLower}.js" />
-      </filelist>
-    </concat>
-    <concat destfile="${build.dir}/${buildNameLower}.combined.css" fixlastline="yes" eol="lf">
-      <filelist dir="${lib.dir}">
-        <file name="burner.css" />
-      </filelist>
-      <filelist dir="${build.dir}">
-        <file name="${buildNameLower}.css" />
-      </filelist>
-    </concat>
-  </target>
-
-  <target name="bakeRelease" depends="bake">
-    <concat destfile="${build.dir}/${buildNameLower}.combined.min.js" fixlastline="yes" eol="lf">
-      <filelist dir="${lib.dir}">
-        <file name="burner.min.js" />
-      </filelist>
-      <filelist dir="${build.dir}">
-        <file name="${buildNameLower}.min.js" />
-      </filelist>
-    </concat>
-    <concat destfile="${build.dir}/${buildNameLower}.combined.min.css" fixlastline="yes" eol="lf">
-      <filelist dir="${lib.dir}">
-        <file name="burner.min.css" />
-      </filelist>
-      <filelist dir="${build.dir}">
-        <file name="${buildNameLower}.min.css" />
-      </filelist>
-    </concat>
-  </target>
-
   <!-- Copy: copy fat build and css files to /dev -->
   <target name="deploy">
 
     <!-- copy fat js file to tests/lib/ -->
-    <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${tests.dir}/lib" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
 
     <!-- copy fat js file to examples/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${examples.dir}/scripts" overwrite="true"/>
-    <copy file="${build.dir}/${buildNameLower}.combined.min.js" todir="${examples.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${examples.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.min.js" todir="${examples.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to /examples/css -->
-    <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${examples.dir}/css" overwrite="true"/>
-    <copy file="${build.dir}/${buildNameLower}.combined.min.css" todir="${examples.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${examples.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.min.css" todir="${examples.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to flocking/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${flocking.dir}/scripts" overwrite="true"/>
-    <copy file="${build.dir}/${buildNameLower}.combined.min.js" todir="${flocking.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${flocking.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.min.js" todir="${flocking.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to flocking/css -->
-    <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${flocking.dir}/css" overwrite="true"/>
-    <copy file="${build.dir}/${buildNameLower}.combined.min.css" todir="${flocking.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${flocking.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.min.css" todir="${flocking.dir}/css" overwrite="true"/>
 
     <!-- copy fat js file to braitenberg/scripts -->
-    <copy file="${build.dir}/${buildNameLower}.combined.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
-    <copy file="${build.dir}/${buildNameLower}.combined.min.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.min.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
     <!-- copy fat css file to braitenberg/css -->
-    <copy file="${build.dir}/${buildNameLower}.combined.css" todir="${braitenberg.dir}/css" overwrite="true"/>
-    <copy file="${build.dir}/${buildNameLower}.combined.min.css" todir="${braitenberg.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${braitenberg.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.min.css" todir="${braitenberg.dir}/css" overwrite="true"/>
 
   </target>
 
