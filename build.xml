@@ -5,7 +5,6 @@
       init,
       concatenateJS,
       concatenateCSS,
-      minifyCSS,
       bakeDev,
       deploy">
   </target>
@@ -35,6 +34,9 @@
   <tstamp>
     <format property="build.time"
             pattern="MMMM d, yyyy hh:mm:ss"
+            locale="en,US"/>
+    <format property="build.year"
+            pattern="yyyy"
             locale="en,US"/>
   </tstamp>
 
@@ -277,6 +279,10 @@
     </replaceregexp>
     <!-- Searches for %BUILDNAME% in the build directory and replaces with the buildName -->
     <replaceregexp match="%BUILDNAME%" replace="${buildName}" flags="g" byline="true">
+      <fileset dir="${build.dir}" includes="**/*"/>
+    </replaceregexp>
+    <!-- Searches for %YEAR% in the build directory and replaces with the build.year -->
+    <replaceregexp match="%YEAR%" replace="${build.year}" flags="g" byline="true">
       <fileset dir="${build.dir}" includes="**/*"/>
     </replaceregexp>
   </target>
