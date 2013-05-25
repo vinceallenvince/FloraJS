@@ -1,11 +1,10 @@
 # FOLDERS #
 ###########
-bak/
-build/backup/
-css/build/backup/
+build/
 docs/
 lib/
+tests/lib/
 
 # FILES #
 #########
-build/flora.raw.min.js
+.DS_Store
