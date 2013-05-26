@@ -21,7 +21,7 @@
       deploy,
       test,
       document,
-      deployRelease">
+      deploy">
   </target>
 
   <loadproperties srcfile="build.properties" />
@@ -101,7 +101,6 @@
         <file name="interface.js" />
         <file name="utils.js" />
         <file name="simplexnoise.js" />
-        <file name="vector.js" />
         <file name="borderpalette.js" />
         <file name="colorpalette.js" />
         <file name="colortable.js" />
@@ -126,18 +125,17 @@
         <file name="repeller.js" />
         <file name="flowfield.js" />
         <file name="flowfieldmarker.js" />
-        <file name="init.js" />
       </filelist>
       <footer trimleading="yes">//%END%</footer>
     </concat>
-    <loadfile property="functionheader" srcFile="lib/functionheader.txt"/>
+    <loadfile property="functionheader" srcFile="functionheader.txt"/>
     <replaceregexp match="(/\*.*\*/.*)??" flags="sm"
         replace="${functionheader}">
         <fileset dir="${build.dir}">
             <include name="**/*.js"/>
         </fileset>
     </replaceregexp>
-    <loadfile property="functionfooter" srcFile="lib/functionfooter.txt"/>
+    <loadfile property="functionfooter" srcFile="functionfooter.txt"/>
     <replaceregexp match="//%END%" flags="sm"
         replace="${functionfooter}">
         <fileset dir="${build.dir}">
@@ -279,8 +277,34 @@
     </replaceregexp>
   </target>
 
-  <!-- Copy: copy fat build and css files to /dev -->
+  <!-- Copy: copy fat build and css files -->
   <target name="deploy">
+
+    <!-- copy fat js file to tests/lib/ -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
+
+    <!-- copy fat js file to examples/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${examples.dir}/scripts" overwrite="true"/>
+
+    <!-- copy fat css file to /examples/css -->
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${examples.dir}/css" overwrite="true"/>
+
+    <!-- copy fat js file to flocking/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${flocking.dir}/scripts" overwrite="true"/>
+
+    <!-- copy fat css file to flocking/css -->
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${flocking.dir}/css" overwrite="true"/>
+
+    <!-- copy fat js file to braitenberg/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${braitenberg.dir}/scripts" overwrite="true"/>
+
+    <!-- copy fat css file to braitenberg/css -->
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${braitenberg.dir}/css" overwrite="true"/>
+
+  </target>
+
+    <!-- Copy: copy min build and css files -->
+  <target name="deployRelease">
 
     <!-- copy fat js file to tests/lib/ -->
     <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>

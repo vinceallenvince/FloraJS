@@ -1,13 +1,27 @@
 /*global exports */
 /**
  * Creates a new Oscillator.
+ *
  * Oscillators simulate wave patterns and move according to
- * amplitude and angular velocity.
+ * amplitude and angular velocity. Oscillators are not affected
+ * by gravity or friction.
  *
  * @constructor
- * @extends Agent
+ * @extends Burner.Item
  *
- * @param {Object} [opt_options] Oscillator options.
+ * @param {Object} opt_options= A map of initial properties.
+ */
+function Oscillator(opt_options) {
+  var options = opt_options || {};
+  options.name = options.name || 'Oscillator';
+  Burner.Item.call(this, options);
+}
+exports.Utils.extend(Oscillator, Burner.Item);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} opt_options= A map of initial properties.
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
  *    angle if pointToDirection = true.
@@ -15,33 +29,36 @@
  *    initial location (center of the motion) to either extreme.
  * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's acceleration. Oscillators have a
  *    constant acceleration.
+ * @param {Object} [opt_options.aVelocity = new Vector()] Angular velocity.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
  * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
  * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
  * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
- * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when isPerlin = true.
- * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when isPerlin = true.
+ * @param {number} [opt_options.perlinAccelLow = -2] The lower bound of acceleration when isPerlin = true.
+ * @param {number} [opt_options.perlinAccelHigh = 2] The upper bound of acceleration when isPerlin = true.
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
- * @param {number} [opt_options.color = [200, 100, 0]] Color.
- * @param {number} [opt_options.borderTopRightRadius = '100%'] Border-top-right radius.
- * @param {number} [opt_options.borderBottomRightRadius = '100%'] Border-bottom-right radius.
- * @param {number} [opt_options.borderStyle = 'solid'] Border style.
- * @param {number} [opt_options.borderColor = [255, 150, 0]] Border color.
+ * @param {number} [opt_options.width = 20] Width.
+ * @param {number} [opt_options.height = 20] Height.
+ * @param {Array} [opt_options.color = [200, 100, 0]] Color.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {Array} [opt_options.borderColor = [255, 150, 0]] Border color.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
+ * @param {Array} [opt_options.boxShadowColor = [147, 199, 196]] Box-shadow color.
  */
-function Oscillator(opt_options) {
+Oscillator.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  exports.Agent.call(this, options);
-
   this.initialLocation = options.initialLocation ||
-      new exports.Vector(this.world.bounds[1] / 2, this.world.bounds[2] / 2);
-  this.lastLocation = new exports.Vector(0, 0);
-  this.amplitude = options.amplitude || new exports.Vector(this.world.bounds[1] / 2 - this.width,
+      new Burner.Vector(this.world.bounds[1] / 2, this.world.bounds[2] / 2);
+  this.lastLocation = new Burner.Vector();
+  this.amplitude = options.amplitude || new Burner.Vector(this.world.bounds[1] / 2 - this.width,
       this.world.bounds[2] / 2 - this.height);
-  this.acceleration = options.acceleration || new exports.Vector(0.01, 0);
-  this.aVelocity = new exports.Vector(0, 0);
+  this.acceleration = options.acceleration || new Burner.Vector(0.01, 0);
+  this.aVelocity = options.aVelocity || new Burner.Vector();
   this.isStatic = !!options.isStatic;
 
   this.isPerlin = !!options.isPerlin;
@@ -52,13 +69,16 @@ function Oscillator(opt_options) {
   this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
   this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
 
-  this.color = [200, 100, 0];
-  this.borderTopRightRadius = '100%';
-  this.borderBottomRightRadius = '100%';
-  this.borderStyle = 'solid';
-  this.borderColor = [255, 150, 50];
-}
-exports.Utils.extend(Oscillator, exports.Agent);
+  this.width = options.width || 20;
+  this.height = options.height || 20;
+  this.color = options.color || [200, 100, 0];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'solid';
+  this.borderColor = options.borderColor || [255, 150, 50];
+  this.borderRadius = options.borderRadius || 100;
+  this.boxShadowSpread = options.boxShadowSpread || 0;
+  this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
+};
 
 Oscillator.prototype.name = 'Oscillator';
 
@@ -66,8 +86,6 @@ Oscillator.prototype.name = 'Oscillator';
  * Updates the oscillator's properties.
  */
 Oscillator.prototype.step = function () {
-
-
 
   var world = this.world, velDiff;
 
@@ -89,7 +107,7 @@ Oscillator.prototype.step = function () {
     this.location.y = this.initialLocation.y + Math.sin(this.aVelocity.y) * this.amplitude.y;
 
     if (this.pointToDirection) { // object rotates toward direction
-        velDiff = exports.Vector.VectorSub(this.location, this.lastLocation);
+        velDiff = Burner.Vector.VectorSub(this.location, this.lastLocation);
         this.angle = exports.Utils.radiansToDegrees(Math.atan2(velDiff.y, velDiff.x));
     }
 

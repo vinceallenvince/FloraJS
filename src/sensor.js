@@ -3,9 +3,21 @@
  * Creates a new Sensor object.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
- * @param {Object} [opt_options] Options.
+ * @param {Object} opt_options= A map of initial properties.
+ */
+function Sensor(opt_options) {
+  var options = opt_options || {};
+  options.name = options.name || 'Sensor';
+  exports.Mover.call(this, options);
+}
+exports.Utils.extend(Sensor, exports.Mover);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} opt_options= A map of initial properties.
  * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
  * @param {string} [opt_options.behavior = 'LOVE'] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 2] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
@@ -16,18 +28,16 @@
  * @param {number} [opt_options.opacity = 0.75] Opacity.
  * @param {Object} [opt_options.target = null] A stimulator.
  * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
- * @param {boolean} [opt_options.activatedColor = [200, 200, 200]] The color the sensor will display when activated.
- * @param {number} [opt_options.borderRadius = '100%'] Border radius.
+ * @param {Array} [opt_options.activatedColor = [255, 255, 255]] The color the sensor will display when activated.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
- * @param {number} [opt_options.borderStyle = 'solid'] Border style.
- * @param {number} [opt_options.borderColor = 'white'] Border color.
-
+ * @param {string} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
  */
-function Sensor(opt_options) {
+Sensor.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
-
-  exports.Agent.call(this, options);
+  Sensor._superClass.prototype.init.call(this, options);
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
@@ -39,13 +49,12 @@ function Sensor(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.target = options.target || null;
   this.activated = !!options.activated;
-  this.activatedColor = options.activatedColor || [200, 200, 200];
-  this.borderRadius ='100%';
+  this.activatedColor = options.activatedColor || [255, 255, 255];
+  this.borderRadius = 100;
   this.borderWidth = 2;
   this.borderStyle = 'solid';
-  this.borderColor = 'white';
-}
-exports.Utils.extend(Sensor, exports.Agent);
+  this.borderColor = [255, 255, 255];
+};
 
 Sensor.prototype.name = 'Sensor';
 
@@ -56,12 +65,12 @@ Sensor.prototype.step = function() {
 
   var check = false, i, max;
 
-  var heat = exports.Burner.System._Caches.Heat || {list: []},
-      cold = exports.Burner.System._Caches.Cold || {list: []},
-      predators = exports.Burner.System._Caches.Predators || {list: []},
-      lights = exports.Burner.System._Caches.Light || {list: []},
-      oxygen = exports.Burner.System._Caches.Oxygen || {list: []},
-      food = exports.Burner.System._Caches.Food || {list: []};
+  var heat = Burner.System._caches.Heat || {list: []},
+      cold = Burner.System._caches.Cold || {list: []},
+      predators = Burner.System._caches.Predators || {list: []},
+      lights = Burner.System._caches.Light || {list: []},
+      oxygen = Burner.System._caches.Oxygen || {list: []},
+      food = Burner.System._caches.Food || {list: []};
 
   // what if cache does not exist?
 
@@ -163,14 +172,14 @@ Sensor.prototype.getActivationForce = function(agent) {
      * Speeds toward target and keeps moving
      */
     case "LIKES":
-      var dvLikes = exports.Vector.VectorSub(this.target.location, this.location);
+      var dvLikes = Burner.Vector.VectorSub(this.target.location, this.location);
       distanceToTarget = dvLikes.mag();
       dvLikes.normalize();
 
       m = distanceToTarget/agent.maxSpeed;
       dvLikes.mult(m);
 
-      steer = exports.Vector.VectorSub(dvLikes, agent.velocity);
+      steer = Burner.Vector.VectorSub(dvLikes, agent.velocity);
       steer.limit(agent.maxSteeringForce);
       return steer;
 
@@ -178,34 +187,34 @@ Sensor.prototype.getActivationForce = function(agent) {
      * Arrives at target and remains
      */
     case "LOVES":
-      var dvLoves = exports.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
+      var dvLoves = Burner.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
       distanceToTarget = dvLoves.mag();
       dvLoves.normalize();
 
       if (distanceToTarget > this.width) {
         m = distanceToTarget/agent.maxSpeed;
         dvLoves.mult(m);
-        steer = exports.Vector.VectorSub(dvLoves, agent.velocity);
+        steer = Burner.Vector.VectorSub(dvLoves, agent.velocity);
         steer.limit(agent.maxSteeringForce);
         return steer;
       }
-      agent.velocity = new exports.Vector();
-      agent.acceleration = new exports.Vector();
-      return new exports.Vector();
+      agent.velocity = new Burner.Vector();
+      agent.acceleration = new Burner.Vector();
+      return new Burner.Vector();
 
     /**
      * Arrives at target but does not stop
      */
     case "EXPLORER":
 
-      var dvExplorer = exports.Vector.VectorSub(this.target.location, this.location);
+      var dvExplorer = Burner.Vector.VectorSub(this.target.location, this.location);
       distanceToTarget = dvExplorer.mag();
       dvExplorer.normalize();
 
       m = distanceToTarget/agent.maxSpeed;
       dvExplorer.mult(-m);
 
-      steer = exports.Vector.VectorSub(dvExplorer, agent.velocity);
+      steer = Burner.Vector.VectorSub(dvExplorer, agent.velocity);
       steer.limit(agent.maxSteeringForce * 0.01);
       return steer;
 
@@ -226,7 +235,7 @@ Sensor.prototype.getActivationForce = function(agent) {
       return v.mult(-agent.minSpeed);
 
     default:
-      return new exports.Vector();
+      return new Burner.Vector();
   }
 };
 

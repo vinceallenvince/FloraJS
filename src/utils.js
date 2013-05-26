@@ -15,6 +15,7 @@ Utils.extend = function(subClass, superClass) {
   F.prototype = superClass.prototype;
   subClass.prototype = new F;
   subClass.prototype.constructor = subClass;
+  subClass._superClass = superClass;
 };
 
 /**
@@ -228,7 +229,7 @@ Utils.isInside = function(obj, container) {
  *    mouse is outside world.
  */
 Utils.mouseIsInsideWorld = function(world) {
-  var mouse = exports.Burner.System.mouse,
+  var mouse = Burner.System.mouse,
       x = mouse.location.x,
       y = mouse.location.y,
       left = world.el.offsetLeft,

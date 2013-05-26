@@ -20,7 +20,7 @@ function FlowField(opt_options) {
   this.field = options.field || null;
   this.createMarkers = options.createMarkers || false;
   // if a world is not passed, use the first world in the system
-  this.world = options.world || exports.Burner.System.allWorlds()[0];
+  this.world = options.world || Burner.System.allWorlds()[0];
 }
 
 FlowField.prototype.name = 'FlowField';
@@ -49,14 +49,14 @@ FlowField.prototype.build = function() {
       theta = exports.Utils.map(exports.SimplexNoise.noise(xoff, yoff, 0.1), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
       fieldX = Math.cos(theta);
       fieldY = Math.sin(theta);
-      field = new exports.Vector(fieldX, fieldY);
+      field = new Burner.Vector(fieldX, fieldY);
       vectorList[col][row] = field;
       angle = exports.Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
 
       if (this.createMarkers) {
 
         var ffm = new exports.FlowFieldMarker({ // create the marker
-          location: new exports.Vector(x, y),
+          location: new Burner.Vector(x, y),
           scale: 1,
           opacity: exports.Utils.map(angle, -360, 360, 0.1, 1),
           width: this.resolution,

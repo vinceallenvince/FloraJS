@@ -3,22 +3,30 @@
  * Creates a new Connector.
  *
  * @constructor
- * @extends Agent
- * @param {Object} parentA The object that starts the connection.
- * @param {Object} parentB The object that ends the connection.
- * @param {Object} [opt_options] Options.
- * @param {number} [opt_options.opacity = 1] Opacity.
- * @param {number} [opt_options.zIndex = 0] zIndex.
- * @param {number} [opt_options.borderTopWidth = 0] Border top width.
- * @param {number} [opt_options.borderTopStyle = 'dotted'] Border top style.
+ * @extends Burner.Item
  */
 function Connector(opt_options) {
-
   var options = opt_options || {};
+  options.name = options.name || 'Connector';
+  Burner.Item.call(this, options);
+}
+exports.Utils.extend(Connector, Burner.Item);
 
-  exports.Agent.call(this, options);
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} options A map of initial properties.
+ * @param {Object} parentA The object that starts the connection.
+ * @param {Object} parentB The object that ends the connection.
+ * @param {number} [options.opacity = 1] Opacity.
+ * @param {number} [options.zIndex = 0] zIndex.
+ * @param {number} [options.borderWidth = 1] Border width.
+ * @param {string} [options.borderStyle = 'dotted'] Border style.
+ * @param {Array} [options.borderColor = [100, 100, 100]] Border color.
+ */
+Connector.prototype.init = function(options) {
 
-  if (!options.parentA || !options.parentB) {
+  if (!options || !options.parentA || !options.parentB) {
     throw new Error('Connector: both parentA and parentB are required.');
   }
   this.parentA = options.parentA;
@@ -27,21 +35,15 @@ function Connector(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
   this.zIndex = options.zIndex || 0;
 
-  this.borderWidth = 2;
-  this.borderRadius = '0%';
-  this.borderStyle = 'none';
-  this.borderColor = 'red';
-
-  this.borderTopStyle = 'dotted';
-  this.borderRightStyle = 'none';
-  this.borderBottomStyle = 'none';
-  this.borderLeftStyle = 'none';
+  this.borderWidth = 1;
+  this.borderRadius = 0;
+  this.borderStyle = 'dotted';
+  this.borderColor = [100, 100, 100];
 
   this.width = 0;
   this.height = 0;
   this.color = 'transparent';
-}
-exports.Utils.extend(Connector, exports.Agent);
+};
 
 Connector.prototype.name = 'Connector';
 
@@ -50,15 +52,13 @@ Connector.prototype.name = 'Connector';
  */
 Connector.prototype.step = function() {
 
-
-
   var a = this.parentA.location,
       b = this.parentB.location;
 
-  this.width = Math.floor(exports.Vector.VectorSub(this.parentA.location,
+  this.width = Math.floor(Burner.Vector.VectorSub(this.parentA.location,
       this.parentB.location).mag());
 
-  this.location = exports.Vector.VectorAdd(this.parentA.location,
+  this.location = Burner.Vector.VectorAdd(this.parentA.location,
       this.parentB.location).div(2); // midpoint = (v1 + v2)/2
 
   this.angle = exports.Utils.radiansToDegrees(Math.atan2(b.y - a.y, b.x - a.x) );

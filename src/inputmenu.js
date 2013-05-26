@@ -7,14 +7,15 @@
  * @constructor
  *
  * @param {Object} [opt_options] Options.
+ * @param {Object} [opt_options.world] A world.
  * @param {string} [opt_options.position = 'top left'] A text representation
  *    of the menu's location. Possible values are 'top left', 'top center', 'top right',
  *    'bottom left', 'bottom center', 'bottom right', 'center'.
  * @param {number} [opt_options.opacity = 0.75] The menu's opacity.
- * @param {number} [opt_options.color = [255, 255, 255]] The menu's color.
- * @param {string} [opt_options.borderWidth = '1px'] The menu's border width.
+ * @param {Array} [opt_options.color = [255, 255, 255]] The menu's color.
+ * @param {number} [opt_options.borderWidth = 1] The menu's border width.
  * @param {string} [opt_options.borderStyle = 'solid'] The menu's border style.
- * @param {Array|string} [opt_options.borderColor = 0.75] The menu's border color.
+ * @param {Array} [opt_options.borderColor = [204, 204, 204]] The menu's border color.
  */
 function InputMenu(opt_options) {
 
@@ -25,12 +26,12 @@ function InputMenu(opt_options) {
   this.position = options.position || 'top left';
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.color = options.color || [255, 255, 255];
-  this.borderWidth = options.borderWidth || '1px';
-  this.borderStyle = options.borderStyle || 'solid';
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || [204, 204, 204];
-  this.colorMode = options.colorMode || 'rgb';
+  this.colorMode = 'rgb';
 
-  if (exports.Burner.System.supportedFeatures.touch) {
+  if (Burner.System.supportedFeatures.touch) {
     this.text =  exports.config.touchMap.stats + '-finger tap = stats | ' +
         exports.config.touchMap.pause + '-finger tap = pause | ' +
         exports.config.touchMap.reset + '-finger tap = reset';
@@ -54,7 +55,7 @@ function InputMenu(opt_options) {
   this.el.style.opacity = this.opacity;
   this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
         ', ' + this.color[2] + ')';
-  this.el.style.borderWidth = this.borderWidth;
+  this.el.style.borderWidth = this.borderWidth + 'px';
   this.el.style.borderStyle = this.borderStyle;
   if (typeof this.borderColor === 'string') {
     this.el.style.borderColor = this.borderColor;
@@ -67,7 +68,7 @@ function InputMenu(opt_options) {
     document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
   }
 
-  if (exports.Burner.System.supportedFeatures.touch) {
+  if (Burner.System.supportedFeatures.touch) {
     exports.Utils.addEvent(this.el, 'touchstart', function() {
       me.destroy();
     });
@@ -81,6 +82,16 @@ function InputMenu(opt_options) {
 }
 
 InputMenu.prototype.name = 'InputMenu';
+
+/**
+ * A noop.
+ */
+InputMenu.prototype.reset = function () {};
+
+/**
+ * A noop.
+ */
+InputMenu.prototype.init = function () {};
 
 /**
  * Removes the menu's DOM element.

@@ -2,10 +2,25 @@
 /**
  * Creates a new Agent.
  *
- * Agents can follow the mouse.
- * Agents can seek targets.
- * Agents can flock.
+ * Agents are basic Flora elements that respond to forces like gravity, attraction,
+ * repulsion, etc. They can also chase after other Agents, organize with other Agents
+ * in a flocking behavior, and steer away from obstacles. They can also follow the mouse.
  *
+ * @param {Object} opt_options= A map of initial properties.
+ * @constructor
+ * @extends Mover
+ */
+function Agent(opt_options) {
+  var options = opt_options || {};
+  options.name = options.name || 'Agent';
+  exports.Mover.call(this, options);
+}
+exports.Utils.extend(Agent, exports.Mover);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} opt_options= A map of initial properties.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
  * @param {boolean} [opt_options.seekTarget = null] An object to seek.
@@ -17,26 +32,15 @@
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
  * @param {array} [opt_options.sensors = []] A list of sensors attached to this object.
  * @param {string|Array} [opt_options.color = [197, 177, 115]] Color.
- * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
- * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {string|Array} [opt_options.borderColor = [167, 219, 216]] Border color.
- * @param {string|number} [opt_options.borderRadius = null] Border radius.
- * @param {string} [opt_options.borderTopLeftRadius = '0'] Border top left radius.
- * @param {string} [opt_options.borderTopRightRadius = '100%'] Border top right radius.
- * @param {string} [opt_options.borderBottomRightRadius = '100%'] Border bottom right radius.
- * @param {string} [opt_options.borderBottomLeftRadius = '0'] Border bottom left radius.
- *
- * @constructor
- * @extends Mover
+ * @param {string|number} [opt_options.borderWidth = 0] Border width.
+ * @param {string} [opt_options.borderStyle = 'none'] Border style.
+ * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
+ * @param {string|number} [opt_options.borderRadius = 0] Border radius.
  */
-function Agent(opt_options) {
+Agent.prototype.init = function(opt_options) {
 
-  var options;
-
-  opt_options.name = this.name;
-  exports.Mover.call(this, opt_options);
-
-  options = opt_options || {};
+  var options = opt_options || {};
+  Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
   this.maxSteeringForce = options.maxSteeringForce || 10;
@@ -53,22 +57,16 @@ function Agent(opt_options) {
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius || null;
-  this.borderTopLeftRadius = options.borderTopLeftRadius || '0';
-  this.borderTopRightRadius = options.borderTopRightRadius || '0';
-  this.borderBottomRightRadius = options.borderBottomRightRadius || '0';
-  this.borderBottomLeftRadius = options.borderBottomLeftRadius || '0';
+  this.borderRadius = options.borderRadius || this.sensors.length ? 100 : 0;
 
   //
 
-  this.separateSumForceVector = new exports.Vector(); // used in Agent.separate()
-  this.alignSumForceVector = new exports.Vector(); // used in Agent.align()
-  this.cohesionSumForceVector = new exports.Vector(); // used in Agent.cohesion()
-  this.followTargetVector = new exports.Vector(); // used in Agent.applyForces()
-  this.followDesiredVelocity = new exports.Vector(); // used in Agent.follow()
-
-}
-exports.Utils.extend(Agent, exports.Mover);
+  this.separateSumForceVector = new Burner.Vector(); // used in Agent.separate()
+  this.alignSumForceVector = new Burner.Vector(); // used in Agent.align()
+  this.cohesionSumForceVector = new Burner.Vector(); // used in Agent.cohesion()
+  this.followTargetVector = new Burner.Vector(); // used in Agent.applyForces()
+  this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
+};
 
 Agent.prototype.name = 'Agent';
 
@@ -80,10 +78,10 @@ Agent.prototype.name = 'Agent';
 Agent.prototype.applyForces = function() {
 
   var i, max, sensorActivated, dir, sensor, r, theta, x, y,
-      liquids = exports.Burner.System._Caches.Liquid,
-      attractors = exports.Burner.System._Caches.Attractor,
-      repellers = exports.Burner.System._Caches.Repeller,
-      heat = exports.Burner.System._Caches.Heat;
+      liquids = Burner.System._caches.Liquid,
+      attractors = Burner.System._caches.Attractor,
+      repellers = Burner.System._caches.Repeller,
+      heat = Burner.System._caches.Heat;
 
   if (liquids && liquids.list.length > 0) { // liquid
     for (i = 0, max = liquids.list.length; i < max; i += 1) {
@@ -121,10 +119,10 @@ Agent.prototype.applyForces = function() {
 
       sensor.location.x = this.location.x;
       sensor.location.y = this.location.y;
-      sensor.location.add(new exports.Vector(x, y)); // position the sensor
+      sensor.location.add(new Burner.Vector(x, y)); // position the sensor
 
-      if (i > 0) {
-        sensor.visibility = 'hidden';
+      if (i) {
+        sensor.borderStyle = 'none';
       }
 
       if (sensor.activated) {
@@ -152,8 +150,8 @@ Agent.prototype.applyForces = function() {
 
   if (this.followMouse) { // follow mouse
     var t = {
-      location: new exports.Vector(exports.Burner.System.mouse.location.x,
-          exports.Burner.System.mouse.location.y)
+      location: new Burner.Vector(Burner.System.mouse.location.x,
+          Burner.System.mouse.location.y)
     };
     this.applyForce(this._seek(t));
   }
@@ -186,7 +184,7 @@ Agent.prototype.applyForces = function() {
   }
 
   if (this.flocking) {
-    this.flock(exports.Burner.System.getAllElementsByName('Agent'));
+    this.flock(Burner.System.getAllElementsByName('Agent'));
   }
 
   return this.acceleration;
@@ -247,7 +245,7 @@ Agent.prototype.separate = function(elements) {
       d = this.location.distance(element.location);
 
       if ((d > 0) && (d < this.desiredSeparation)) {
-        diff = exports.Vector.VectorSub(this.location, element.location);
+        diff = Burner.Vector.VectorSub(this.location, element.location);
         diff.normalize();
         diff.div(d);
         sum.add(diff);
@@ -263,7 +261,7 @@ Agent.prototype.separate = function(elements) {
     sum.limit(this.maxSteeringForce);
     return sum;
   }
-  return new exports.Vector();
+  return new Burner.Vector();
 };
 
 /**
@@ -303,7 +301,7 @@ Agent.prototype.align = function(elements) {
     sum.limit(this.maxSteeringForce);
     return sum;
   }
-  return new exports.Vector();
+  return new Burner.Vector();
 };
 
 /**
@@ -344,7 +342,7 @@ Agent.prototype.cohesion = function(elements) {
     sum.limit(this.maxSteeringForce);
     return sum;
   }
-  return new exports.Vector();
+  return new Burner.Vector();
 };
 
 /**
@@ -357,7 +355,7 @@ Agent.prototype.cohesion = function(elements) {
 Agent.prototype.getLocation = function (type) {
 
   if (!type) {
-    return new exports.Vector(this.location.x, this.location.y);
+    return new Burner.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
     return this.location.x;
   } else if (type === 'y') {
@@ -375,7 +373,7 @@ Agent.prototype.getLocation = function (type) {
 Agent.prototype.getVelocity = function (type) {
 
   if (!type) {
-    return new exports.Vector(this.location.x, this.location.y);
+    return new Burner.Vector(this.location.x, this.location.y);
   } else if (type === 'x') {
     return this.velocity.x;
   } else if (type === 'y') {

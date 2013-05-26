@@ -5,7 +5,19 @@
  * @constructor
  * @extends Agent
  *
- * @param {Object} [opt_options] ParticleSystem options.
+ * @param {Object} opt_options= A map of initial properties.
+ */
+function ParticleSystem(opt_options) {
+  var options = opt_options || {};
+  options.name = options.name || 'ParticleSystem';
+  exports.Agent.call(this, options);
+}
+exports.Utils.extend(ParticleSystem, exports.Agent);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} opt_options= A map of initial properties.
  * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move.
  * @param {number} [opt_options.lifespan = 1000] The max life of the system. Set to -1 for infinite life.
  * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, system is destroyed.
@@ -13,23 +25,22 @@
  * @param {number} [opt_options.height = 0] Height
  * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
  * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
- * @param {Object} [opt_options.emitRadius = 3] The ParticleSystem adds this offset to the location of the Particles it creates.
+ * @param {number} [opt_options.emitRadius = 3] The ParticleSystem adds this offset to the location of the Particles it creates.
  * @param {Array} [opt_options.startColor = [100, 20, 20]] The starting color of the particle's palette range.
  * @param {Array} [opt_options.endColor = [255, 0, 0]] The ending color of the particle's palette range.
  * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
- * @param {string|number} [opt_options.borderWidth = 0] Border width.
+ * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
- * @param {Array} [opt_options.borderColor = 'transparent'] Border color.
- * @param {string} [opt_options.borderRadius = '0%'] Border radius.
+ * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
+ * @param {number} [opt_options.borderRadius = 0] Border radius.
  */
-function ParticleSystem(opt_options) {
+ParticleSystem.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
-
-  exports.Agent.call(this, options);
+  ParticleSystem._superClass.prototype.init.call(this, options);
 
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || 1000;
+  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
   this.life = options.life === 0 ? 0 : options.life || 0;
   this.width = options.width === 0 ? 0 : options.width || 0;
   this.height = options.height === 0 ? 0 : options.height || 0;
@@ -53,7 +64,8 @@ function ParticleSystem(opt_options) {
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius || '0%';
+  this.borderRadius = options.borderRadius || 0;
+  this.clock = 0;
 
   var pl = new exports.ColorPalette();
   pl.addColor({ // adds a random sampling of colors to palette
@@ -72,36 +84,40 @@ function ParticleSystem(opt_options) {
     if (this.life < this.lifespan) {
       this.life += 1;
     } else if (this.lifespan !== -1) {
-      exports.Burner.System.destroyElement(this);
+      Burner.System.destroyItem(this);
       return;
     }
 
     if (this.clock % this.burstRate === 0) {
 
       location = this.getLocation(); // use the system's location
-      offset = new exports.Vector(1, 1); // get the emit radius
+      offset = new Burner.Vector(1, 1); // get the emit radius
       offset.normalize();
       offset.mult(this.emitRadius); // expand emit randius in a random direction
       offset.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
       location.add(offset);
 
       for (var i = 0; i < this.burst; i++) {
+        console.log(this.particleOptions);
         this.particleOptions.world = this.world;
         this.particleOptions.life = 0;
         this.particleOptions.color = pl.getColor();
-        this.particleOptions.acceleration = new exports.Vector(1, 1);
+        this.particleOptions.borderStyle = 'solid';
+        this.particleOptions.borderColor = pl.getColor();
+        this.particleOptions.boxShadowColor = pl.getColor();
+        this.particleOptions.acceleration = new Burner.Vector(1, 1);
         this.particleOptions.acceleration.normalize();
         this.particleOptions.acceleration.mult(maxSpeed ? maxSpeed : 3);
         this.particleOptions.acceleration.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
-        this.particleOptions.velocity = new exports.Vector();
+        this.particleOptions.velocity = new Burner.Vector();
         this.particleOptions.location = ParticleSystem.getParticleLocation(location);
 
-        exports.Burner.System.add('Particle', this.particleOptions);
+        Burner.System.add('Particle', this.particleOptions);
       }
     }
+    this.clock++;
   };
-}
-exports.Utils.extend(ParticleSystem, exports.Agent);
+};
 
 /**
  * Returns a self-executing function that is executed
@@ -113,7 +129,7 @@ exports.Utils.extend(ParticleSystem, exports.Agent);
  */
 ParticleSystem.getParticleLocation = function(location) {
   return (function() {
-    return new exports.Vector(location.x, location.y);
+    return new Burner.Vector(location.x, location.y);
   })();
 };
 

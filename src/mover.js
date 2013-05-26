@@ -3,9 +3,9 @@
  * Creates a new Mover. All Flora elements extend Mover.
  *
  * @constructor
- * @extends Burner.Element
+ * @extends Burner.Item
  *
- * @param {Object} [opt_options] options.
+ * @param {Object} opt_options= A map of initial properties.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
  * @param {number} [opt_options.mass = 10] Mass
@@ -22,7 +22,7 @@
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
  * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
  * @param {boolean} [opt_options.controlCamera = false] If true, camera will follow this object.
- * @param {boolean} [opt_options.checkEdges = true] Set to true to check the object's location against the world's bounds.
+ * @param {boolean} [opt_options.checkWorldEdges = true] Set to true to check the object's location against the world's bounds.
  * @param {boolean} [opt_options.wrapEdges = false] Set to true to set the object's location to the opposite
  * side of the world if the object moves outside the world's bounds.
  * @param {boolean} [opt_options.avoidEdges = false] Set to true to calculate a steering force away from the
@@ -37,17 +37,48 @@
  * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
  */
 function Mover(opt_options) {
+  var options = opt_options || {};
+  options.name = options.name || 'Mover';
+  Burner.Item.call(this, options);
+}
+exports.Utils.extend(Mover, Burner.Item);
 
-  var myDiv, options, utils = exports.Burner.Utils;
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} opt_options= A map of initial properties.
+ * @param {number} [opt_options.width = 10] Width
+ * @param {number} [opt_options.height = 10] Height
+ * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
+ * @param {number} [opt_options.motorSpeed = 2] Motor speed
+ * @param {number} [opt_options.angle = 10] Angle
+ * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
+ * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
+ * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
+ * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the object's parent.
+ * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
+ * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
+ */
+Mover.prototype.init = function(options) {
 
-  opt_options.name = this.name;
-  exports.Burner.Element.call(this, opt_options);
-
-  options = opt_options || {};
-
-  this.options = options;
-  this.world = options.world;
   this.width = options.width || 20;
+  this.height = options.height || 20;
+  this.color = options.color || [255, 255, 255];
+  this.motorSpeed = options.motorSpeed || 0;
+  this.angle = options.angle || 0;
+  this.pointToDirection = options.pointToDirection || true;
+  this.draggable = !!options.draggable;
+  this.parent = options.parent || null;
+  this.offsetDistance = options.offsetDistance || 30;
+  this.beforeStep = options.beforeStep || null;
+  this.afterStep = options.afterStep || null;
+
+  //var myDiv, options, utils = exports.Utils;
+
+  //this.options = options;
+  //this.world = options.world;
+
+  /*this.width = options.width || 20;
   this.height = options.height || 20;
   this.mass = options.mass || 10;
   this.bounciness = options.bounciness || 0.75;
@@ -58,12 +89,12 @@ function Mover(opt_options) {
   this.motorSpeed = options.motorSpeed || 0;
   this.pointToDirection = options.pointToDirection || true;
   this.acceleration = utils.getDataType(options.acceleration) === 'function' ?
-      options.acceleration() : options.acceleration || new exports.Vector();
+      options.acceleration() : options.acceleration || new Burner.Vector();
   this.velocity = utils.getDataType(options.velocity) === 'function' ?
-      options.velocity() : options.velocity || new exports.Vector();
+      options.velocity() : options.velocity || new Burner.Vector();
   this.location = utils.getDataType(options.location) === 'function' ?
       options.location() : options.location ||
-      new exports.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
+      new Burner.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
   this.angle = options.angle || 0;
   this.scale = options.scale || 1;
 
@@ -96,7 +127,7 @@ function Mover(opt_options) {
   this.isStatic = !!options.isStatic;
   this.draggable = !!options.draggable;
   this.controlCamera = !!options.controlCamera;
-  this.checkEdges = options.checkEdges || true;
+  this.checkWorldEdges = options.checkWorldEdges || true;
   this.wrapEdges = options.wrapEdges || false;
   this.avoidEdges = !!options.avoidEdges;
   this.avoidEdgesStrength = options.avoidEdgesStrength || 50;
@@ -111,15 +142,15 @@ function Mover(opt_options) {
   this.beforeStep = options.beforeStep || null;
   this.afterStep = options.afterStep || null;
 
-  this._forceVector = new exports.Vector(); // used to cache Vector properties in applyForce()
-  this.checkCameraEdgesVector = new exports.Vector(); // used in Mover._checkCameraEdges()
-  this.cameraDiffVector = new exports.Vector(); // used in Mover._checkWorldEdges()
+  this._forceVector = new Burner.Vector(); // used to cache Vector properties in applyForce()
+  this.checkCameraEdgesVector = new Burner.Vector(); // used in Mover._checkCameraEdges()
+  this.cameraDiffVector = new Burner.Vector(); // used in Mover._checkWorldEdges()
 
   // increments in step()
-  this.clock = 0;
+  this.clock = 0;*/
 
   // view
-  this.viewArgs = options.viewArgs || [];
+  /*this.viewArgs = options.viewArgs || [];
 
   myDiv = document.createElement("div");
 
@@ -132,14 +163,14 @@ function Mover(opt_options) {
   }
 
   this.el.id = this.id;
-  if (!this.options.sensors) {
+  if (!this.sensors) {
     this.el.className = 'element ' + this.name.toLowerCase();
   } else {
     this.el.className = 'element ' + this.name.toLowerCase() + ' ' + 'hasSensor';
   }
   this.el.style.visibility = 'hidden';
 
-  this.options.world.el.appendChild(this.el);
+  this.world.el.appendChild(this.el);*/
 
   //
 
@@ -183,8 +214,7 @@ function Mover(opt_options) {
     exports.Utils.addEvent(this.el, 'mouseup', mouseup);
     exports.Utils.addEvent(this.el, 'mouseout', mouseout);
   }
-}
-exports.Burner.Utils.extend(Mover, exports.Burner.Element);
+};
 
 Mover.prototype.name = 'Mover';
 
@@ -245,7 +275,7 @@ Mover.prototype.mousemove = function(e) {
     }
 
     if (exports.Utils.mouseIsInsideWorld(this.world)) {
-      this.location = new exports.Vector(x, y);
+      this.location = new Burner.Vector(x, y);
     } else {
       this.isPressed = false;
     }
@@ -271,7 +301,7 @@ Mover.prototype.mouseout = function(e, obj) {
 
 
 
-  var me = obj, mouse = exports.Burner.System.mouse,
+  var me = obj, mouse = Burner.System.mouse,
       x, y;
 
   if (obj.isPressed) {
@@ -285,7 +315,7 @@ Mover.prototype.mouseout = function(e, obj) {
         x = mouse.location.x - me.world.el.offsetLeft;
         y = mouse.location.y - me.world.el.offsetTop;
 
-        me.location = new exports.Vector(x, y);
+        me.location = new Burner.Vector(x, y);
       }
     }, 16);
   }
@@ -325,13 +355,7 @@ Mover.prototype.step = function() {
 
     this.velocity.add(this.acceleration); // add acceleration
 
-    if (this.maxSpeed) {
-      this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
-    }
-
-    if (this.minSpeed) {
-      this.velocity.limit(null, this.minSpeed); // check if velocity < minSpeed
-    }
+    this.velocity.limit(this.maxSpeed, this.minSpeed);
 
     this.location.add(this.velocity); // add velocity
     if (this.pointToDirection) { // object rotates toward direction
@@ -345,7 +369,7 @@ Mover.prototype.step = function() {
     this._checkCameraEdges();
   }
 
-  if (this.checkEdges) {
+  if (this.checkWorldEdges) {
     this._checkWorldEdges();
   }
 
@@ -360,7 +384,7 @@ Mover.prototype.step = function() {
 
       this.location.x = this.parent.location.x;
       this.location.y = this.parent.location.y;
-      this.location.add(new exports.Vector(x, y)); // position the child
+      this.location.add(new Burner.Vector(x, y)); // position the child
 
     } else {
       this.location = this.parent.location;
@@ -372,15 +396,12 @@ Mover.prototype.step = function() {
   if (this.life < this.lifespan) {
     this.life += 1;
   } else if (this.lifespan !== -1) {
-    exports.Burner.System.destroyElement(this);
+    Burner.System.destroyItem(this);
   }
 
   if (this.afterStep) {
     this.afterStep.apply(this);
   }
-
-  this.clock++;
-  return this.clock;
 };
 
 /**
@@ -389,7 +410,7 @@ Mover.prototype.step = function() {
  * @param {Object} force A Vector representing a force to apply.
  * @returns {Object} A Vector representing a new acceleration.
  */
-Mover.prototype.applyForce = function(force) {
+/*Mover.prototype.applyForce = function(force) {
   if (force) {
     this._forceVector.x = force.x;
     this._forceVector.y = force.y;
@@ -398,7 +419,7 @@ Mover.prototype.applyForce = function(force) {
     return this.acceleration;
   }
   return null;
-};
+};*/
 
 /**
  * Calculates a steering force to apply to an object seeking another object.
@@ -410,7 +431,7 @@ Mover.prototype.applyForce = function(force) {
 Mover.prototype._seek = function(target) {
 
   var world = this.world,
-    desiredVelocity = exports.Vector.VectorSub(target.location, this.location),
+    desiredVelocity = Burner.Vector.VectorSub(target.location, this.location),
     distanceToTarget = desiredVelocity.mag();
 
   desiredVelocity.normalize();
@@ -431,11 +452,11 @@ Mover.prototype._seek = function(target) {
 /**
  * Moves the world in the opposite direction of the Camera's controlObj.
  */
-Mover.prototype._checkCameraEdges = function() {
+/*Mover.prototype._checkCameraEdges = function() {
   this.checkCameraEdgesVector.x = this.velocity.x;
   this.checkCameraEdgesVector.y = this.velocity.y;
   this.world.location.add(this.checkCameraEdgesVector.mult(-1));
-};
+};*/
 
 /**
  * Determines if this object is outside the world bounds.
@@ -443,7 +464,7 @@ Mover.prototype._checkCameraEdges = function() {
  * @returns {boolean} Returns true if the object is outside the world.
  * @private
  */
-Mover.prototype._checkWorldEdges = function() {
+/*Mover.prototype._checkWorldEdges = function() {
 
   var x = this.location.x,
     y = this.location.y,
@@ -530,7 +551,7 @@ Mover.prototype._checkWorldEdges = function() {
     this.world.location.add(this.cameraDiffVector); // add the distance difference to World.location
   }
   return check;
-};
+};*/
 
 /**
  * Checks if object is within range of a world edge. If so, steers the object
@@ -547,7 +568,7 @@ Mover.prototype._checkAvoidEdges = function() {
     maxSpeed = -this.maxSpeed;
   }
   if (maxSpeed) {
-    desiredVelocity = new exports.Vector(maxSpeed, this.velocity.y);
+    desiredVelocity = new Burner.Vector(maxSpeed, this.velocity.y);
     desiredVelocity.sub(this.velocity);
     desiredVelocity.limit(this.maxSteeringForce);
     this.applyForce(desiredVelocity);
@@ -559,7 +580,7 @@ Mover.prototype._checkAvoidEdges = function() {
     maxSpeed = -this.maxSpeed;
   }
   if (maxSpeed) {
-    desiredVelocity = new exports.Vector(this.velocity.x, maxSpeed);
+    desiredVelocity = new Burner.Vector(this.velocity.x, maxSpeed);
     desiredVelocity.sub(this.velocity);
     desiredVelocity.limit(this.maxSteeringForce);
     this.applyForce(desiredVelocity);
@@ -594,7 +615,7 @@ Mover.prototype.drag = function(target) {
  */
 Mover.prototype.attract = function(attractor) {
 
-  var force = exports.Vector.VectorSub(attractor.location, this.location),
+  var force = Burner.Vector.VectorSub(attractor.location, this.location),
     distance, strength;
 
   distance = force.mag();
@@ -630,7 +651,7 @@ Mover.prototype.isInside = function(container) {
  *
  * @returns {string} A string representing the corresponding DOM element's cssText.
  */
-Mover.prototype.draw = function() {
+/*Mover.prototype.draw = function() {
 
   var cssText, el = this.el;
 
@@ -670,7 +691,7 @@ Mover.prototype.draw = function() {
     el.style.cssText = cssText;
   }
   return cssText;
-};
+};*/
 
 /**
  * Concatenates a new cssText string based on passed properties.
@@ -678,10 +699,10 @@ Mover.prototype.draw = function() {
  * @param {Object} props A map of properties.
  * @returns {string} A string representing the corresponding DOM element's cssText.
  */
-Mover._getCSSText = function(props) {
+/*Mover._getCSSText = function(props) {
 
   var color, position, borderRadius, borderWidth, borderStyle, borderColor,
-      system = exports.Burner.System, utils = exports.Burner.Utils;
+      system = Burner.System, utils = exports.Utils;
 
   if (system.supportedFeatures.csstransforms3d) {
     position = [
@@ -757,6 +778,6 @@ Mover._getCSSText = function(props) {
     'border-style: ' + borderStyle,
     'border-color: ' + borderColor
   ].join(';');
-};
+};*/
 
 exports.Mover = Mover;

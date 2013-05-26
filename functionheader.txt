@@ -1,0 +1,9 @@
+/**
+ * @namespace
+ * @requires Burner
+ */
+var Flora = {}, exports = Flora;
+
+(function(exports) {
+'use strict';
+

@@ -11,7 +11,7 @@ var config = {
     'groove',
     'ridge'
   ],
-  defaultColorList: [
+  /*defaultColorList: [
     {
       name: 'heat',
       startColor: [255, 132, 86],
@@ -37,11 +37,10 @@ var config = {
       startColor: [255, 227, 127],
       endColor: [189, 148, 0]
     }
-  ],
+  ],*/
   keyMap: {
     pause: 80,
     resetSystem: 82,
-    destroySystem: 68,
     stats: 83,
     thrustLeft: 37,
     thrustUp: 38,

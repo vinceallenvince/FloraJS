@@ -79,8 +79,6 @@ Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_fro
  */
 Interface.checkDataType = function(option, typesToMatch) {
 
-
-
   var i, max;
 
   for (i = 0, max = typesToMatch.length; i < max; i++) {
@@ -97,8 +95,6 @@ Interface.checkDataType = function(option, typesToMatch) {
  * @returns {string} The data type of the passed variable.
  */
 Interface.getDataType = function(element) {
-
-
 
   if (Object.prototype.toString.call(element) === '[object Array]') {
     return 'array';
