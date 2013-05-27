@@ -6,35 +6,6 @@
  * @extends Burner.Item
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.width = 10] Width
- * @param {number} [opt_options.height = 10] Height
- * @param {number} [opt_options.mass = 10] Mass
- * @param {number} [opt_options.bounciness = 0.75] Set the strength of the rebound when an object is outside the
- * world's bounds and wrapEdges = false.
- * @param {number} [opt_options.visibility = 'visible'] Visibility
- * @param {number} [opt_options.maxSpeed = 10] Maximum speed
- * @param {number} [opt_options.minSpeed = 0] Minimum speed
- * @param {number} [opt_options.motorSpeed = 2] Motor speed
- * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
- * @param {Object} [opt_options.acceleration = new Vector()] Acceleration
- * @param {Object} [opt_options.velocity = new Vector()] Velocity
- * @param {Object} [opt_options.location = new Vector()] Location
- * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
- * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
- * @param {boolean} [opt_options.controlCamera = false] If true, camera will follow this object.
- * @param {boolean} [opt_options.checkWorldEdges = true] Set to true to check the object's location against the world's bounds.
- * @param {boolean} [opt_options.wrapEdges = false] Set to true to set the object's location to the opposite
- * side of the world if the object moves outside the world's bounds.
- * @param {boolean} [opt_options.avoidEdges = false] Set to true to calculate a steering force away from the
- *    world's bounds.
- * @param {number} [opt_options.avoidEdgesStrength = 200] Sets the strength of the steering force when avoidEdges = true.
- * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
- * @param {number} [opt_options.lifespan = -1] The max life of the object. Set to -1 for infinite life.
- * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
- * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
- * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the object's parent.
- * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
- * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
  */
 function Mover(opt_options) {
   var options = opt_options || {};
@@ -56,8 +27,8 @@ exports.Utils.extend(Mover, Burner.Item);
  * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
  * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the object's parent.
- * @param {function} [opt_options.beforeStep = ''] A function to run before the step() function.
- * @param {function} [opt_options.afterStep = ''] A function to run after the step() function.
+ * @param {function} [opt_options.beforeStep = null] A function to run before the step() function.
+ * @param {function} [opt_options.afterStep = null] A function to run after the step() function.
  */
 Mover.prototype.init = function(options) {
 
@@ -72,105 +43,6 @@ Mover.prototype.init = function(options) {
   this.offsetDistance = options.offsetDistance || 30;
   this.beforeStep = options.beforeStep || null;
   this.afterStep = options.afterStep || null;
-
-  //var myDiv, options, utils = exports.Utils;
-
-  //this.options = options;
-  //this.world = options.world;
-
-  /*this.width = options.width || 20;
-  this.height = options.height || 20;
-  this.mass = options.mass || 10;
-  this.bounciness = options.bounciness || 0.75;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
-  this.visibility = options.visibility || 'visible';
-  this.maxSpeed = options.maxSpeed === 0 ? 0 : options.maxSpeed || 10;
-  this.minSpeed = options.minSpeed || 0;
-  this.motorSpeed = options.motorSpeed || 0;
-  this.pointToDirection = options.pointToDirection || true;
-  this.acceleration = utils.getDataType(options.acceleration) === 'function' ?
-      options.acceleration() : options.acceleration || new Burner.Vector();
-  this.velocity = utils.getDataType(options.velocity) === 'function' ?
-      options.velocity() : options.velocity || new Burner.Vector();
-  this.location = utils.getDataType(options.location) === 'function' ?
-      options.location() : options.location ||
-      new Burner.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
-  this.angle = options.angle || 0;
-  this.scale = options.scale || 1;
-
-  this.borderWidth = options.borderWidth || 0;
-  this.borderStyle = options.borderStyle || 'none';
-  this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius || 0;
-
-  this.borderTopWidth = options.borderTopWidth || 0;
-  this.borderTopStyle = options.borderTopStyle || 'none';
-  this.borderTopColor = options.borderTopColor || 'transparent';
-
-  this.borderRightWidth = options.borderRightWidth || 0;
-  this.borderRightStyle = options.borderRightStyle || 'none';
-  this.borderRightColor = options.borderRightColor || 'transparent';
-
-  this.borderBottomWidth = options.borderBottomWidth || 0;
-  this.borderBottomStyle = options.borderBottomStyle || 'none';
-  this.borderBottomColor = options.borderBottomColor || 'transparent';
-
-  this.borderLeftWidth = options.borderLeftWidth || 0;
-  this.borderLeftStyle = options.borderLeftStyle || 'none';
-  this.borderLeftColor = options.borderLeftColor || 'transparent';
-
-  this.borderTopLeftRadius = options.borderTopLeftRadius || '100%';
-  this.borderTopRightRadius = options.borderTopRightRadius || '100%';
-  this.borderBottomRightRadius = options.borderBottomRightRadius || '100%';
-  this.borderBottomLeftRadius = options.borderBottomLeftRadius || '100%';
-
-  this.isStatic = !!options.isStatic;
-  this.draggable = !!options.draggable;
-  this.controlCamera = !!options.controlCamera;
-  this.checkWorldEdges = options.checkWorldEdges || true;
-  this.wrapEdges = options.wrapEdges || false;
-  this.avoidEdges = !!options.avoidEdges;
-  this.avoidEdgesStrength = options.avoidEdgesStrength || 50;
-
-  this.pointToDirection = options.pointToDirection === false ? false : true;
-  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
-  this.life = options.life === 0 ? 0 : options.life || -1;
-
-  this.parent = options.parent || null;
-  this.offsetDistance = options.offsetDistance || 30;
-
-  this.beforeStep = options.beforeStep || null;
-  this.afterStep = options.afterStep || null;
-
-  this._forceVector = new Burner.Vector(); // used to cache Vector properties in applyForce()
-  this.checkCameraEdgesVector = new Burner.Vector(); // used in Mover._checkCameraEdges()
-  this.cameraDiffVector = new Burner.Vector(); // used in Mover._checkWorldEdges()
-
-  // increments in step()
-  this.clock = 0;*/
-
-  // view
-  /*this.viewArgs = options.viewArgs || [];
-
-  myDiv = document.createElement("div");
-
-  if (options.view && exports.Interface.getDataType(options.view) === 'function') { // if view is supplied and is a function
-    this.el = options.view.apply(this, this.viewArgs);
-  } else if (exports.Interface.getDataType(options.view) === 'object') { // if view is supplied and is an object
-    this.el = options.view;
-  } else {
-    this.el = myDiv;
-  }
-
-  this.el.id = this.id;
-  if (!this.sensors) {
-    this.el.className = 'element ' + this.name.toLowerCase();
-  } else {
-    this.el.className = 'element ' + this.name.toLowerCase() + ' ' + 'hasSensor';
-  }
-  this.el.style.visibility = 'hidden';
-
-  this.world.el.appendChild(this.el);*/
 
   //
 
@@ -405,23 +277,6 @@ Mover.prototype.step = function() {
 };
 
 /**
- * Adds a force to acceleration. Calculated via F = m * a;
- *
- * @param {Object} force A Vector representing a force to apply.
- * @returns {Object} A Vector representing a new acceleration.
- */
-/*Mover.prototype.applyForce = function(force) {
-  if (force) {
-    this._forceVector.x = force.x;
-    this._forceVector.y = force.y;
-    this._forceVector.div(this.mass);
-    this.acceleration.add(this._forceVector);
-    return this.acceleration;
-  }
-  return null;
-};*/
-
-/**
  * Calculates a steering force to apply to an object seeking another object.
  *
  * @param {Object} target The object to seek.
@@ -450,110 +305,6 @@ Mover.prototype._seek = function(target) {
 };
 
 /**
- * Moves the world in the opposite direction of the Camera's controlObj.
- */
-/*Mover.prototype._checkCameraEdges = function() {
-  this.checkCameraEdgesVector.x = this.velocity.x;
-  this.checkCameraEdgesVector.y = this.velocity.y;
-  this.world.location.add(this.checkCameraEdgesVector.mult(-1));
-};*/
-
-/**
- * Determines if this object is outside the world bounds.
- *
- * @returns {boolean} Returns true if the object is outside the world.
- * @private
- */
-/*Mover.prototype._checkWorldEdges = function() {
-
-  var x = this.location.x,
-    y = this.location.y,
-    velocity = this.velocity,
-    check = false;
-
-  // transform origin is at the center of the object
-
-  if (this.wrapEdges) {
-    if (this.location.x > this.world.bounds[1]) {
-      this.location.x = 0;
-      check = true;
-      if (this.controlCamera) {
-        this.cameraDiffVector.x = x - this.location.x;
-        this.cameraDiffVector.y = 0;
-      }
-    } else if (this.location.x < 0) {
-      this.location.x = this.world.bounds[1];
-      check = true;
-      if (this.controlCamera) {
-        this.cameraDiffVector.x = x - this.location.x;
-        this.cameraDiffVector.y = 0;
-      }
-    }
-  } else {
-    if (this.location.x + this.width/2 > this.world.bounds[1]) {
-      this.location.x = this.world.bounds[1] - this.width/2;
-      velocity.x *= -1 * this.bounciness;
-      check = true;
-      if (this.controlCamera) {
-        this.cameraDiffVector.x = x - this.location.x;
-        this.cameraDiffVector.y = 0;
-      }
-    } else if (this.location.x < this.width/2) {
-      this.location.x = this.width/2;
-      velocity.x *= -1 * this.bounciness;
-      check = true;
-      if (this.controlCamera) {
-       this.cameraDiffVector.x = x - this.location.x;
-        this.cameraDiffVector.y = 0;
-      }
-    }
-  }
-
-  ////
-
-  if (this.wrapEdges) {
-    if (this.location.y > this.world.bounds[2]) {
-      this.location.y = 0;
-      check = true;
-      if (this.controlCamera) {
-        this.cameraDiffVector.x = 0;
-        this.cameraDiffVector.y = y - this.location.y;
-      }
-    } else if (this.location.y < 0) {
-      this.location.y = this.world.bounds[2];
-      check = true;
-      if (this.controlCamera) {
-        this.cameraDiffVector.x = 0;
-        this.cameraDiffVector.y = y - this.location.y;
-      }
-    }
-  } else {
-    if (this.location.y + this.height/2 > this.world.bounds[2]) {
-      this.location.y = this.world.bounds[2] - this.height/2;
-      this.velocity.y *= -1 * this.bounciness;
-      check = true;
-      if (this.controlCamera) {
-       this.cameraDiffVector.x = 0;
-        this.cameraDiffVector.y = y - this.location.y;
-      }
-    } else if (this.location.y < this.height/2) {
-      this.location.y = this.height/2;
-      this.velocity.y *= -1 * this.bounciness;
-      check = true;
-      if (this.controlCamera) {
-        this.cameraDiffVector.x = 0;
-        this.cameraDiffVector.y = y - this.location.y;
-      }
-    }
-  }
-
-  if (check && this.controlCamera) {
-    this.world.location.add(this.cameraDiffVector); // add the distance difference to World.location
-  }
-  return check;
-};*/
-
-/**
  * Checks if object is within range of a world edge. If so, steers the object
  * in the opposite direction.
  * @private
@@ -562,9 +313,9 @@ Mover.prototype._checkAvoidEdges = function() {
 
   var maxSpeed, desiredVelocity;
 
-  if (this.location.x < this.avoidEdgesStrength) {
+  if (this.location.x < this.avoidWorldEdgesStrength) {
     maxSpeed = this.maxSpeed;
-  } else if (this.location.x > this.world.bounds[1] - this.avoidEdgesStrength) {
+  } else if (this.location.x > this.world.bounds[1] - this.avoidWorldEdgesStrength) {
     maxSpeed = -this.maxSpeed;
   }
   if (maxSpeed) {
@@ -574,9 +325,9 @@ Mover.prototype._checkAvoidEdges = function() {
     this.applyForce(desiredVelocity);
   }
 
-  if (this.location.y < this.avoidEdgesStrength) {
+  if (this.location.y < this.avoidWorldEdgesStrength) {
     maxSpeed = this.maxSpeed;
-  } else if (this.location.y > this.world.bounds[2] - this.avoidEdgesStrength) {
+  } else if (this.location.y > this.world.bounds[2] - this.avoidWorldEdgesStrength) {
     maxSpeed = -this.maxSpeed;
   }
   if (maxSpeed) {
@@ -645,139 +396,5 @@ Mover.prototype.isInside = function(container) {
   }
   return false;
 };
-
-/**
- * Updates the corresponding DOM element's style property.
- *
- * @returns {string} A string representing the corresponding DOM element's cssText.
- */
-/*Mover.prototype.draw = function() {
-
-  var cssText, el = this.el;
-
-  if (el) {
-    cssText = Mover._getCSSText({
-      x: this.location.x - this.width / 2,
-      y: this.location.y - this.height / 2,
-      width: this.width,
-      height: this.height,
-      opacity: this.opacity,
-      visibility: this.visibility,
-      a: this.angle,
-      s: this.scale,
-      color: this.color,
-      z: this.zIndex || 1,
-      borderWidth: this.borderWidth,
-      borderStyle: this.borderStyle,
-      borderColor: this.borderColor,
-      borderRadius: this.borderRadius,
-      borderTopWidth: this.borderTopWidth,
-      borderTopStyle: this.borderTopStyle,
-      borderTopColor: this.borderTopColor,
-      borderRightWidth: this.borderRightWidth,
-      borderRightStyle: this.borderRightStyle,
-      borderRightColor: this.borderRightColor,
-      borderBottomWidth: this.borderBottomWidth,
-      borderBottomStyle: this.borderBottomStyle,
-      borderBottomColor: this.borderBottomColor,
-      borderLeftWidth: this.borderLeftWidth,
-      borderLeftStyle: this.borderLeftStyle,
-      borderLeftColor: this.borderLeftColor,
-      borderTopLeftRadius: this.borderTopLeftRadius,
-      borderTopRightRadius: this.borderTopRightRadius,
-      borderBottomRightRadius: this.borderBottomRightRadius,
-      borderBottomLeftRadius: this.borderBottomLeftRadius
-    });
-    el.style.cssText = cssText;
-  }
-  return cssText;
-};*/
-
-/**
- * Concatenates a new cssText string based on passed properties.
- *
- * @param {Object} props A map of properties.
- * @returns {string} A string representing the corresponding DOM element's cssText.
- */
-/*Mover._getCSSText = function(props) {
-
-  var color, position, borderRadius, borderWidth, borderStyle, borderColor,
-      system = Burner.System, utils = exports.Utils;
-
-  if (system.supportedFeatures.csstransforms3d) {
-    position = [
-      '-webkit-transform: translate3d(' + props.x + 'px, ' + props.y + 'px, 0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translate3d(' + props.x + 'px, ' + props.y + 'px, 0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translate3d(' + props.x + 'px, ' + props.y + 'px, 0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-ms-transform: translate3d(' + props.x + 'px, ' + props.y + 'px, 0) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
-    ].join(';');
-  } else if (system.supportedFeatures.csstransforms) {
-    position = [
-      '-webkit-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-moz-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-o-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')',
-      '-ms-transform: translateX(' + props.x + 'px) translateY(' + props.y + 'px) rotate(' + props.a + 'deg) scaleX(' + props.s + ') scaleY(' + props.s + ')'
-    ].join(';');
-  } else {
-    position = [
-      'position: absolute',
-      'left: ' + props.x + 'px',
-      'top: ' + props.y + 'px'
-    ].join(';');
-  }
-
-  if (utils.getDataType(props.color) === 'array') {
-    color = 'rgb(' + props.color[0] + ', ' + props.color[1] + ', ' + props.color[2] + ')';
-  }
-
-  if (props.borderWidth) {
-    borderWidth = utils.getDataType(props.borderWidth) === 'number' ? props.borderWidth + 'px' : props.borderWidth;
-  } else if (props.borderTopWidth && props.borderRightWidth && props.borderBottomWidth && props.borderLeftWidth) {
-    borderWidth = props.borderTopWidth + 'px ' + props.borderRightWidth + 'px ' +
-        props.borderBottomWidth + 'px ' + props.borderLeftWidth + 'px';
-  }
-
-  if (props.borderStyle && props.borderStyle !== 'none') {
-    borderStyle = props.borderStyle;
-  } else if (props.borderTopStyle || props.borderRightStyle || props.borderBottomStyle || props.borderLeftStyle) {
-    borderStyle = props.borderTopStyle + ' ' + props.borderRightStyle + ' ' +
-        props.borderBottomStyle + ' ' + props.borderLeftStyle;
-  }
-
-  if (props.borderColor && props.borderColor !== 'transparent') {
-    borderColor =
-        utils.getDataType(props.borderColor) === 'array' ? 'rgb(' + props.borderColor[0] + ', ' + props.borderColor[1] + ', ' + props.borderColor[2] + ')' : props.borderColor;
-  } else if (props.borderTopColor && props.borderRightColor && props.borderBottomColor && props.borderLeftColor) {
-    var bc1 = utils.getDataType(props.borderTopColor) === 'array' ? 'rgb(' + props.borderTopColor[0] + ', ' + props.borderTopColor[1] + ', ' + props.borderTopColor[2] + ') ' : props.borderTopColor + ' ';
-    var bc2 = utils.getDataType(props.borderRightColor) === 'array' ? 'rgb(' + props.borderRightColor[0] + ', ' + props.borderRightColor[1] + ', ' + props.borderRightColor[2] + ') ' : props.borderRightColor + ' ';
-    var bc3 = utils.getDataType(props.borderBottomColor) === 'array' ? 'rgb(' + props.borderBottomColor[0] + ', ' + props.borderBottomColor[1] + ', ' + props.borderBottomColor[2] + ') ' : props.borderBottomColor + ' ';
-    var bc4 = utils.getDataType(props.borderLeftColor) === 'array' ? 'rgb(' + props.borderLeftColor[0] + ', ' + props.borderLeftColor[1] + ', ' + props.borderLeftColor[2] + ')' : props.borderLeftColor;
-    borderColor = bc1 + bc2 + bc3 + bc4;
-  }
-
-  if (props.borderRadius !== null) {
-    borderRadius = utils.getDataType(props.borderRadius) === 'number' ? props.borderRadius + 'px' : props.borderRadius;
-  } else if (props.borderTopLeftRadius && props.borderTopRightRadius && props.borderBottomRightRadius && props.borderBottomLeftRadius) {
-    var br1 = utils.getDataType(props.borderTopLeftRadius) === 'number' ? props.borderTopLeftRadius + 'px ' : props.borderTopLeftRadius + ' ';
-    var br2 = utils.getDataType(props.borderTopRightRadius) === 'number' ? props.borderTopRightRadius + 'px ' : props.borderTopRightRadius + ' ';
-    var br3 = utils.getDataType(props.borderBottomRightRadius) === 'number' ? props.borderBottomRightRadius + 'px ' : props.borderBottomRightRadius + ' ';
-    var br4 = utils.getDataType(props.borderBottomLeftRadius) === 'number' ? props.borderBottomLeftRadius + 'px ' : props.borderBottomLeftRadius;
-    borderRadius = br1 + br2 + br3 + br4;
-  }
-
-  return [
-    position,
-    'width: ' + props.width + 'px',
-    'height: ' + props.height + 'px',
-    'opacity: ' + props.opacity,
-    'visibility: ' + props.visibility,
-    'background-color: ' + color,
-    'z-index: ' + props.z,
-    'border-radius: ' + borderRadius,
-    'border-width: ' + borderWidth,
-    'border-style: ' + borderStyle,
-    'border-color: ' + borderColor
-  ].join(';');
-};*/
 
 exports.Mover = Mover;

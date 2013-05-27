@@ -39,6 +39,10 @@ exports.Utils.extend(Walker, exports.Mover);
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
  * @param {string|Array} [opt_options.borderColor = [255, 255, 255]] Border color.
  * @param {string} [opt_options.borderRadius = 100] Border radius.
+ * @param {boolean} [opt_options.avoidWorldEdges = false] If set to true, object steers away from
+ *    world boundaries.
+ * @param {number} [opt_options.avoidWorldEdgesStrength = 0] The distance threshold for object
+ *    start steering away from world boundaries.
  */
 Walker.prototype.init = function(opt_options) {
 
@@ -61,6 +65,8 @@ Walker.prototype.init = function(opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.borderRadius = options.borderRadius || 100;
+  this.avoidWorldEdges = !!options.avoidWorldEdges;
+  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength || 50;
 };
 
 /**
@@ -89,7 +95,7 @@ Walker.prototype.applyForces = function() {
     this.applyForce(this._seek(this.seekTarget));
   }
 
-  if (this.avoidEdges) {
+  if (this.avoidWorldEdges) {
     this._checkAvoidEdges();
   }
 };

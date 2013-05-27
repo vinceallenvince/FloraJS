@@ -23,7 +23,7 @@ exports.Utils.extend(Agent, exports.Mover);
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
- * @param {boolean} [opt_options.seekTarget = null] An object to seek.
+ * @param {Object} [opt_options.seekTarget = null] An object to seek.
  * @param {boolean} [opt_options.flocking = false] Set to true to apply flocking forces to this object.
  * @param {number} [opt_options.desiredSeparation = Twice the object's default width] Sets the desired separation from other objects when flocking = true.
  * @param {number} [opt_options.separateStrength = 1] The strength of the force to apply to separating when flocking = true.
