@@ -302,6 +302,15 @@
     <!-- Copy: copy min build and css files -->
   <target name="deployRelease">
 
+    <!-- copy fat js file to /dist/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${dist.dir}" overwrite="true"/>
+    <!-- copy fat css file to /dist/css -->
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${dist.dir}" overwrite="true"/>
+    <!-- copy min js file to /dist/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.min.js" todir="${dist.dir}" overwrite="true"/>
+    <!-- copy min css file to /dist/css -->
+    <copy file="${build.dir}/${buildNameLower}.min.css" todir="${dist.dir}" overwrite="true"/>
+
     <!-- copy fat js file to tests/lib/ -->
     <copy file="${build.dir}/${buildNameLower}.js" todir="${tests.dir}/lib" overwrite="true"/>
 
