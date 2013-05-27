@@ -8,7 +8,7 @@ The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'T
 
 FloraJS has two major components, a set of classes for elements in a natural system, and a renderer called <a href='http://github.com/foldi/Burner'>Burner</a> to draw those elements to the DOM.
 
-To setup a simple Flora system, reference the <a href='http://github.com/foldi/Burner/tree/master/build'>Burner</a> and <a href='http://github.com/foldi/FloraJS/tree/master/build'>Flora</a> .js files from scripts tag in the &lt;head&gt; of your document. Also, reference the Burnder and Flora .css files from link tags.
+To setup a simple Flora system, reference the <a href='http://github.com/foldi/Burner/tree/master/dist'>Burner</a> and <a href='http://github.com/foldi/FloraJS/tree/master/dist'>Flora</a> .js files from scripts tag in the &lt;head&gt; of your document. Also, reference the Burnder and Flora .css files from link tags.
 
 In the body, add a &lt;script&gt; tag and create a new system. Pass the system a function that describes the elements in your world.
 
