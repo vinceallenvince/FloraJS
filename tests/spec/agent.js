@@ -10,13 +10,13 @@ describe("Agent", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(null, document.getElementById('worldA'));
+    system = Burner.System;
+    system.init(null, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
@@ -37,11 +37,7 @@ describe("Agent", function() {
     expect(getDataType(obj.borderWidth)).toEqual('number');
     expect(getDataType(obj.borderStyle)).toEqual('string');
     expect(getDataType(obj.borderColor)).toEqual('string');
-    expect(obj.borderRadius).toEqual(null);
-    expect(getDataType(obj.borderTopLeftRadius)).toEqual('string');
-    expect(getDataType(obj.borderTopRightRadius)).toEqual('string');
-    expect(getDataType(obj.borderBottomRightRadius)).toEqual('string');
-    expect(getDataType(obj.borderBottomLeftRadius)).toEqual('string');
+    expect(obj.borderRadius).toEqual(0);
     expect(obj.name).toEqual('Agent');
   });
 
@@ -49,14 +45,14 @@ describe("Agent", function() {
 
     var walker = system.add('Walker', {
       location: function() {
-        return new Flora.Vector(10, 10);
+        return new Burner.Vector(10, 10);
       }
     });
 
     var mover = system.add('Agent', {
       seekTarget: walker,
       location: function() {
-        return new Flora.Vector(20000, 20000);
+        return new Burner.Vector(20000, 20000);
       }
     });
     expect(Math.round(mover.applyForces().x)).toEqual(-1);
@@ -67,16 +63,16 @@ describe("Agent", function() {
 
     var walker = system.add('Walker', {
       location: function() {
-        return new Flora.Vector(100, 100);
+        return new Burner.Vector(100, 100);
       }
     });
 
     var location = function() {
-      return new Flora.Vector(2000 + (i * 10), 2000 + (i * 10));
+      return new Burner.Vector(2000 + (i * 10), 2000 + (i * 10));
     };
 
     var velocity = function() {
-      return new Flora.Vector();
+      return new Burner.Vector();
     };
 
     for (var i = 0; i < 2; i++) {
@@ -87,24 +83,24 @@ describe("Agent", function() {
         velocity: velocity
       });
     }
-    expect(Math.round(system.lastElement().separate(system.getAllElementsByName('Agent')).x)).toEqual(7);
-    expect(Math.round(system.lastElement().separate(system.getAllElementsByName('Agent')).y)).toEqual(7);
+    expect(Math.round(system.lastItem().separate(system.getAllItemsByName('Agent')).x)).toEqual(7);
+    expect(Math.round(system.lastItem().separate(system.getAllItemsByName('Agent')).y)).toEqual(7);
   });
 
   it("should have a method to apply an alignment force." , function() {
 
     var walker = system.add('Walker', {
       location: function() {
-        return new Flora.Vector(10, 10);
+        return new Burner.Vector(10, 10);
       }
     });
 
     var location = function() {
-      return new Flora.Vector(2000 + (i * 20), 2000 + (i * 20));
+      return new Burner.Vector(2000 + (i * 20), 2000 + (i * 20));
     };
 
     var velocity = function() {
-      return new Flora.Vector(i + 5, i + 5);
+      return new Burner.Vector(i + 5, i + 5);
     };
 
     for (var i = 0; i < 2; i++) {
@@ -115,24 +111,24 @@ describe("Agent", function() {
         velocity: velocity
       });
     }
-    expect(Math.round(system.lastElement().align(system.getAllElementsByName('Agent')).x)).toEqual(1);
-    expect(Math.round(system.lastElement().align(system.getAllElementsByName('Agent')).y)).toEqual(1);
+    expect(Math.round(system.lastItem().align(system.getAllItemsByName('Agent')).x)).toEqual(1);
+    expect(Math.round(system.lastItem().align(system.getAllItemsByName('Agent')).y)).toEqual(1);
   });
 
   it("should have a method to apply a cohesion force." , function() {
 
     var walker = system.add('Walker', {
       location: function() {
-        return new Flora.Vector(10, 10);
+        return new Burner.Vector(10, 10);
       }
     });
 
     var location = function() {
-      return new Flora.Vector(2000 + (i * 5), 2000 + (i * 5));
+      return new Burner.Vector(2000 + (i * 5), 2000 + (i * 5));
     };
 
     var velocity = function() {
-      return new Flora.Vector(i + 5, i + 5);
+      return new Burner.Vector(i + 5, i + 5);
     };
 
     for (var i = 0; i < 2; i++) {
@@ -143,24 +139,24 @@ describe("Agent", function() {
         velocity: velocity
       });
     }
-    expect(Math.round(system.lastElement().cohesion(system.getAllElementsByName('Agent')).x)).toEqual(-7);
-    expect(Math.round(system.lastElement().cohesion(system.getAllElementsByName('Agent')).y)).toEqual(-7);
+    expect(Math.round(system.lastItem().cohesion(system.getAllItemsByName('Agent')).x)).toEqual(-7);
+    expect(Math.round(system.lastItem().cohesion(system.getAllItemsByName('Agent')).y)).toEqual(-7);
   });
 
   it("should have a method flock() to apply several flocking forces." , function() {
 
     var walker = system.add('Walker', {
       location: function() {
-        return new Flora.Vector(10, 10);
+        return new Burner.Vector(10, 10);
       }
     });
 
     var location = function() {
-      return new Flora.Vector(2000 + (i * 5), 2000 + (i * 5));
+      return new Burner.Vector(2000 + (i * 5), 2000 + (i * 5));
     };
 
     var velocity = function() {
-      return new Flora.Vector(i + 5, i + 5);
+      return new Burner.Vector(i + 5, i + 5);
     };
 
     for (var i = 0; i < 2; i++) {
@@ -171,8 +167,8 @@ describe("Agent", function() {
         velocity: velocity
       });
     }
-    expect(system.lastElement().flock(system.getAllElementsByName('Agent')).x.toFixed(2)).toEqual('-0.02');
-    expect(system.lastElement().flock(system.getAllElementsByName('Agent')).y.toFixed(2)).toEqual('-0.03');
+    expect(system.lastItem().flock(system.getAllItemsByName('Agent')).x.toFixed(2)).toEqual('-0.02');
+    expect(system.lastItem().flock(system.getAllItemsByName('Agent')).y.toFixed(2)).toEqual('-0.03');
   });
 
   // getLocation

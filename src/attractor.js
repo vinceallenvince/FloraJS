@@ -1,11 +1,11 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Attractor object.
  *
  * @constructor
  * @extends Agent
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Attractor(opt_options) {
   var options = opt_options || {};
@@ -17,7 +17,7 @@ exports.Utils.extend(Attractor, exports.Agent);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.G = 10] Universal Gravitational Constant.
  * @param {number} [opt_options.mass = 1000] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.

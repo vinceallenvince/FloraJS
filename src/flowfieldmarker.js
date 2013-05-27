@@ -1,4 +1,4 @@
-/*global exports, document */
+/*global exports, Burner, document */
 /**
  * Creates a new FlowFieldMarker.
  *
@@ -28,22 +28,24 @@ function FlowFieldMarker(options) {
 
   if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
 
-    el = document.createElement("div");
-    nose = document.createElement("div");
-    el.className = "flowFieldMarker element";
-    nose.className = "nose";
+    el = document.createElement('div');
+    nose = document.createElement('div');
+    el.className = 'flowFieldMarker item';
+    nose.className = 'nose';
     el.appendChild(nose);
 
-    el.style.cssText = exports.Mover._getCSSText({
+    el.style.cssText = Burner.System.getCSSText({
       x: options.location.x - options.width / 2,
       y: options.location.y - options.height / 2,
       width: options.width,
       height: options.height,
       opacity: options.opacity,
-      a: options.angle,
-      s: options.scale,
-      color: options.color,
-      z: options.zIndex,
+      angle: options.angle,
+      colorMode: options.colorMode,
+      color0: options.color[0],
+      color1: options.color[1],
+      color2: options.color[2],
+      zIndex: options.zIndex,
       borderRadius: options.borderRadius
     });
 

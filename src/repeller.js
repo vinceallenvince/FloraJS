@@ -1,11 +1,11 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Repeller.
  *
  * @constructor
  * @extends Agent
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Repeller(opt_options) {
   var options = opt_options || {};
@@ -17,7 +17,7 @@ exports.Utils.extend(Repeller, exports.Agent);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.G = 1] Universal Gravitational Constant.
  * @param {number} [opt_options.mass = 100] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.

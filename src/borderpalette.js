@@ -4,6 +4,7 @@
  *
  * Use this class to create a palette of border styles.
  *
+ * @param {string|number} [opt_id=] An optional id. If an id is not passed, a default id is created.
  * @constructor
  */
 function BorderPalette(opt_id) {
@@ -15,7 +16,7 @@ function BorderPalette(opt_id) {
   this._borders = [];
 
   this.id = opt_id || BorderPalette._idCount;
-  BorderPalette._idCount += 1; // increment id
+  BorderPalette._idCount++; // increment id
 }
 
 /**

@@ -11,41 +11,42 @@ var config = {
     'groove',
     'ridge'
   ],
-  /*defaultColorList: [
-    {
-      name: 'heat',
-      startColor: [255, 132, 86],
-      endColor: [175, 47, 0]
-    },
+  defaultColorList: [
     {
       name: 'cold',
       startColor: [88, 129, 135],
-      endColor: [171, 244, 255]
+      endColor: [171, 244, 255],
+      boxShadowColor: [132, 192, 201]
     },
     {
       name: 'food',
       startColor: [186, 255, 130],
-      endColor: [84, 187, 0]
+      endColor: [84, 187, 0],
+      boxShadowColor: [57, 128, 0]
     },
     {
-      name: 'oxygen',
-      startColor: [109, 215, 255],
-      endColor: [0, 140, 192]
+      name: 'heat',
+      startColor: [255, 132, 86],
+      endColor: [175, 47, 0],
+      boxShadowColor: [255, 69, 0]
     },
     {
       name: 'light',
-      startColor: [255, 227, 127],
-      endColor: [189, 148, 0]
+      startColor: [255, 255, 255],
+      endColor: [189, 148, 0],
+      boxShadowColor: [255, 200, 0]
+    },
+    {
+      name: 'oxygen',
+      startColor: [130, 136, 255],
+      endColor: [49, 56, 205],
+      boxShadowColor: [60, 64, 140]
     }
-  ],*/
+  ],
   keyMap: {
     pause: 80,
     resetSystem: 82,
-    stats: 83,
-    thrustLeft: 37,
-    thrustUp: 38,
-    thrustRight: 39,
-    thrustDown: 40
+    stats: 83
   },
   touchMap: {
     stats: 2,

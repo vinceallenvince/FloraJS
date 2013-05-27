@@ -1,24 +1,23 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Liquid.
  *
  * @constructor
  * @extends Agent
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Liquid(opt_options) {
-
   var options = opt_options || {};
+  options.name = options.name || 'Liquid';
   exports.Agent.call(this, options);
-  this.name = 'Liquid';
 }
 exports.Utils.extend(Liquid, exports.Agent);
 
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.c = 1] Drag coefficient.
  * @param {number} [opt_options.mass = 50] Mass.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.

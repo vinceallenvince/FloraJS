@@ -1,16 +1,28 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new FlowField.
  *
  * @constructor
- * @param {Object} [opt_options] Options.
- * @param {number} [opt_options.resolution = 50] The lower the value, the more vectors are created to define the flow field. Low values increase processing time to create the field.
+ */
+function FlowField(opt_options) {
+  var options = opt_options || {};
+  options.name = options.name || 'FlowField';
+  Burner.Item.call(this, options);
+}
+exports.Utils.extend(FlowField, Burner.Item);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.resolution = 50] The lower the value, the more vectors are created
+ *    to define the flow field. Low values increase processing time to create the field.
  * @param {number} [opt_options.perlinSpeed = 0.01] The speed to move through the Perlin Noise space.
  * @param {number} [opt_options.perlinTime = 100] Sets the Perlin Noise time.
  * @param {Object} [opt_options.field = null] A list of vectors that define the flow field.
  * @param {Object} [opt_options.createMarkers = false] Set to true to visualize the flow field.
  */
-function FlowField(opt_options) {
+FlowField.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
@@ -20,8 +32,8 @@ function FlowField(opt_options) {
   this.field = options.field || null;
   this.createMarkers = options.createMarkers || false;
   // if a world is not passed, use the first world in the system
-  this.world = options.world || Burner.System.allWorlds()[0];
-}
+  this.world = options.world || Burner.System.firstWorld();
+};
 
 FlowField.prototype.name = 'FlowField';
 
@@ -58,13 +70,15 @@ FlowField.prototype.build = function() {
         var ffm = new exports.FlowFieldMarker({ // create the marker
           location: new Burner.Vector(x, y),
           scale: 1,
-          opacity: exports.Utils.map(angle, -360, 360, 0.1, 1),
+          opacity: exports.Utils.map(angle, -360, 360, 0.1, 0.75),
           width: this.resolution,
           height: this.resolution/2,
           field: field,
           angle: angle,
           colorMode: 'rgb',
-          color: [200, 100, 50]
+          color: [200, 100, 50],
+          borderRadius: 0,
+          zIndex: 0
         });
         world.el.appendChild(ffm);
       }

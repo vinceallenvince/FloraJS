@@ -1,11 +1,11 @@
-/*global exports, document, clearInterval, setInterval */
+/*global exports, Burner, document, clearInterval, setInterval */
 /**
  * Creates a new Mover. All Flora elements extend Mover.
  *
  * @constructor
  * @extends Burner.Item
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
  * @param {number} [opt_options.mass = 10] Mass
@@ -46,7 +46,7 @@ exports.Utils.extend(Mover, Burner.Item);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
  * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
@@ -66,7 +66,7 @@ Mover.prototype.init = function(options) {
   this.color = options.color || [255, 255, 255];
   this.motorSpeed = options.motorSpeed || 0;
   this.angle = options.angle || 0;
-  this.pointToDirection = options.pointToDirection || true;
+  this.pointToDirection = options.pointToDirection === false ? false : true;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
   this.offsetDistance = options.offsetDistance || 30;

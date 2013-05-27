@@ -1,10 +1,10 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Point.
  *
  * @constructor
  * @extends Burner.Item
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Point(opt_options) {
   var options = opt_options || {};
@@ -16,7 +16,7 @@ exports.Utils.extend(Point, Burner.Item);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 5] Width.
  * @param {number} [opt_options.height = 5] Height.
  * @param {number} [opt_options.opacity = 0.25] Opacity.

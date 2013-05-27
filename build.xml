@@ -21,7 +21,7 @@
       deploy,
       test,
       document,
-      deploy">
+      deployRelease">
   </target>
 
   <loadproperties srcfile="build.properties" />
@@ -123,6 +123,7 @@
         <file name="oscillator.js" />
         <file name="attractor.js" />
         <file name="repeller.js" />
+        <file name="stimulus.js" />
         <file name="flowfield.js" />
         <file name="flowfieldmarker.js" />
       </filelist>

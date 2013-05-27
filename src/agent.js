@@ -1,4 +1,4 @@
-/*global exports, document */
+/*global exports, Burner, document */
 /**
  * Creates a new Agent.
  *
@@ -6,7 +6,7 @@
  * repulsion, etc. They can also chase after other Agents, organize with other Agents
  * in a flocking behavior, and steer away from obstacles. They can also follow the mouse.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @constructor
  * @extends Mover
  */
@@ -20,7 +20,7 @@ exports.Utils.extend(Agent, exports.Mover);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
  * @param {boolean} [opt_options.seekTarget = null] An object to seek.
@@ -30,12 +30,12 @@ exports.Utils.extend(Agent, exports.Mover);
  * @param {number} [opt_options.alignStrength = 1] The strength of the force to apply to aligning when flocking = true.
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
- * @param {array} [opt_options.sensors = []] A list of sensors attached to this object.
- * @param {string|Array} [opt_options.color = [197, 177, 115]] Color.
- * @param {string|number} [opt_options.borderWidth = 0] Border width.
+ * @param {Array} [opt_options.sensors = []] A list of sensors attached to this object.
+ * @param {Array} [opt_options.color = [197, 177, 115]] Color.
+ * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
  * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
- * @param {string|number} [opt_options.borderRadius = 0] Border radius.
+ * @param {number} [opt_options.borderRadius = 0] Border radius.
  */
 Agent.prototype.init = function(opt_options) {
 
@@ -99,7 +99,7 @@ Agent.prototype.applyForces = function() {
     }
   }
 
-  if (repellers && repellers.list.length > 0) { // attractor
+  if (repellers && repellers.list.length > 0) { // repeller
     for (i = 0, max = repellers.list.length; i < max; i += 1) {
       if (this.id !== repellers.list[i].id) {
         this.applyForce(this.attract(repellers.list[i]));
@@ -184,7 +184,7 @@ Agent.prototype.applyForces = function() {
   }
 
   if (this.flocking) {
-    this.flock(Burner.System.getAllElementsByName('Agent'));
+    this.flock(Burner.System.getAllItemsByName('Agent'));
   }
 
   return this.acceleration;

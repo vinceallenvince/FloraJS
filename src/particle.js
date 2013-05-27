@@ -1,11 +1,11 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Particle.
  *
  * @constructor
  * @extends Agent
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Particle(opt_options) {
   var options = opt_options || {};
@@ -17,7 +17,7 @@ exports.Utils.extend(Particle, exports.Agent);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
  * @param {number} [opt_options.lifespan = 40] The max life of the object. Set to -1 for infinite life.

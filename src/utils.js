@@ -1,4 +1,4 @@
-/*global exports, document, window, console */
+/*global exports, Burner, document, window, console */
 /*jshint supernew:true */
 
 /**

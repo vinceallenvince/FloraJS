@@ -1,4 +1,4 @@
-/*global exports, document */
+/*global exports, Burner, document */
 /**
  * Creates a new InputMenu object.
  * An Input Menu lists key strokes and other input available
@@ -6,7 +6,7 @@
  *
  * @constructor
  *
- * @param {Object} [opt_options] Options.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {Object} [opt_options.world] A world.
  * @param {string} [opt_options.position = 'top left'] A text representation
  *    of the menu's location. Possible values are 'top left', 'top center', 'top right',

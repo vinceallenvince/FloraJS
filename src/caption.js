@@ -1,4 +1,4 @@
-/*global exports, document */
+/*global exports, Burner, document */
 /**
  * Creates a new Caption object.
  * Use captions to communicate short messages to users like a title
@@ -6,7 +6,7 @@
  *
  * @constructor
  *
- * @param {Object} [opt_options] Options.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {Object} [opt_options.world] A world.
  * @param {string} [opt_options.position = 'top left'] A text representation
  *    of the caption's location. Possible values are 'top left', 'top center', 'top right',

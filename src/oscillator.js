@@ -1,4 +1,4 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Oscillator.
  *
@@ -9,7 +9,7 @@
  * @constructor
  * @extends Burner.Item
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Oscillator(opt_options) {
   var options = opt_options || {};
@@ -21,7 +21,7 @@ exports.Utils.extend(Oscillator, Burner.Item);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
  *    angle if pointToDirection = true.

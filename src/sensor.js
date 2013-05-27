@@ -1,11 +1,11 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Sensor object.
  *
  * @constructor
  * @extends Mover
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Sensor(opt_options) {
   var options = opt_options || {};
@@ -17,7 +17,7 @@ exports.Utils.extend(Sensor, exports.Mover);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
  * @param {string} [opt_options.behavior = 'LOVE'] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 2] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
@@ -215,7 +215,7 @@ Sensor.prototype.getActivationForce = function(agent) {
       dvExplorer.mult(-m);
 
       steer = Burner.Vector.VectorSub(dvExplorer, agent.velocity);
-      steer.limit(agent.maxSteeringForce * 0.01);
+      steer.limit(agent.maxSteeringForce * 0.05);
       return steer;
 
     /**

@@ -1,11 +1,11 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Cold.
  *
  * @constructor
  * @extends Agent
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Cold(opt_options) {
   var options = opt_options || {};
@@ -17,7 +17,7 @@ exports.Utils.extend(Cold, exports.Agent);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.mass = 50] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 100] Width.

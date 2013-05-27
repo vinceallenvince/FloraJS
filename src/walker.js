@@ -1,4 +1,4 @@
-/*global exports, document */
+/*global exports, Burner, document */
 /**
  * Creates a new Walker.
  *
@@ -8,7 +8,7 @@
  *
  * @constructor
  * @extends Mover
- *
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Walker(opt_options) {
 
@@ -21,7 +21,7 @@ exports.Utils.extend(Walker, exports.Mover);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
  * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.

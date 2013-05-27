@@ -1,11 +1,11 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new ParticleSystem.
  *
  * @constructor
  * @extends Agent
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function ParticleSystem(opt_options) {
   var options = opt_options || {};
@@ -17,7 +17,7 @@ exports.Utils.extend(ParticleSystem, exports.Agent);
 /**
  * Initializes an instance.
  *
- * @param {Object} opt_options= A map of initial properties.
+ * @param {Object} [opt_options=] A map of initial properties.
  * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move.
  * @param {number} [opt_options.lifespan = 1000] The max life of the system. Set to -1 for infinite life.
  * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, system is destroyed.
@@ -98,7 +98,6 @@ ParticleSystem.prototype.init = function(opt_options) {
       location.add(offset);
 
       for (var i = 0; i < this.burst; i++) {
-        console.log(this.particleOptions);
         this.particleOptions.world = this.world;
         this.particleOptions.life = 0;
         this.particleOptions.color = pl.getColor();

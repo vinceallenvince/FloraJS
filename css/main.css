@@ -10,18 +10,6 @@ body {
   border-radius: 100%;
 }
 
-.liquid {
-  box-shadow: 0 0 0 1em rgb(224, 228, 204);
-}
-
-.attractor {
-  box-shadow: 0 0 0 1em rgb(64, 129, 0);
-}
-
-.repeller {
-  box-shadow: 0 0 0 1em rgb(243, 134, 48);
-}
-
 .nose {
   position: absolute;
   left: 80%;
@@ -30,28 +18,6 @@ body {
   background: rgb(255, 255, 255);
 }
 
-/* STIMULI - start */
-.cold {
-  box-shadow: 0 0 0 1em rgb(0, 150, 172);
-}
-
-.food {
-  box-shadow: 0 0 0 1em rgb(104, 173, 48);
-
-}
-
-.heat {
-  box-shadow: 0 0 0 1em rgb(243, 134, 48);
-}
-
-.light {
-  box-shadow: 0 0 0 1em rgb(255, 255, 100);
-}
-
-.oxygen {
-  box-shadow: 0 0 0 1em rgb(183, 219, 219);
-}
-/* STIMULI - end */
 
 /* CAPTION / INPUT MENU */
 .caption, .inputMenu {

@@ -1,9 +1,10 @@
-/*global exports */
+/*global exports, Burner */
 /**
  * Creates a new Connector.
  *
  * @constructor
  * @extends Burner.Item
+ * @param {Object} [opt_options=] A map of initial properties.
  */
 function Connector(opt_options) {
   var options = opt_options || {};
@@ -38,7 +39,7 @@ Connector.prototype.init = function(options) {
   this.borderWidth = 1;
   this.borderRadius = 0;
   this.borderStyle = 'dotted';
-  this.borderColor = [100, 100, 100];
+  this.borderColor = [150, 150, 150];
 
   this.width = 0;
   this.height = 0;
