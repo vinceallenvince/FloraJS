@@ -8,7 +8,7 @@ The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'T
 
 FloraJS has two major components, a set of classes for elements in a natural system, and a renderer called <a href='http://github.com/foldi/Burner'>Burner</a> to draw those elements to the DOM.
 
-To setup a simple Flora system, reference the <a href='http://github.com/foldi/FloraJS/tree/master/build'>Flora</a> combined .js file from a script tag in the &lt;head&gt; of your document. Also, reference the combined flora .css file from a link tag.
+To setup a simple Flora system, reference the <a href='http://github.com/foldi/Burner/tree/master/build'>Burner</a> and <a href='http://github.com/foldi/FloraJS/tree/master/build'>Flora</a> .js files from scripts tag in the &lt;head&gt; of your document. Also, reference the Burnder and Flora .css files from link tags.
 
 In the body, add a &lt;script&gt; tag and create a new system. Pass the system a function that describes the elements in your world.
 
@@ -25,7 +25,7 @@ In the body, add a &lt;script&gt; tag and create a new system. Pass the system a
     <script type="text/javascript" charset="utf-8">
 
       // start the system; pass initial instuctions
-      Flora.Burner.System.create(function() {
+      Burner.System.init(function() {
         this.add('Agent');
       });
     </script>
@@ -48,16 +48,13 @@ Worlds carry two properties that directly affect their elements.
 * gravity {Vector} default: new Vector(0, 1)
 * c (coefficient of friction) {number} 0.01
 
-We can change these defaults after the system starts via the World's update() method.
+We can change these defaults after the system starts via the 2nd parameter to the Burner.System.init() method.
 
-      Flora.Burner.System.create(function() {
-
-        Flora.Burner.World.update({
-          gravity: new Flora.Vector(0, -1),
-          c: 0.75
-        });
-
+      Burner.System.init(function() {
         this.add('Agent');
+      }, {
+        gravity: new Burner.Vector(0, -1),
+        c: 0.75
       });
 
 We've reversed the World's gravity and increased its friction. Now the block slowly drifts upwards.
@@ -68,24 +65,18 @@ http://www.florajs.com/examples/world_update.html
 
 Agents are basic Flora elements that respond to forces like gravity, attraction, repulsion, etc. They can also chase after other Agents, organize with other Agents in a flocking behavior, and steer away from obstacles.
 
-All other Flora elements like Walkers and Oscillators inherit properties from Agents.
-
 Agents are highly configurable. For a complete list of options see the docs at http://www.florajs.com/docs/symbols/Agent.html
 
 For an example of the Agent's seek behavior, set 'followMouse' to 'true' when creating the Agent.
 
-      Flora.Burner.System.create(function() {
-
-        Flora.Burner.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
-        });
-
+      Burner.System.init(function() {
         this.add('Agent', {
           followMouse: true
         });
+      }, {
+        gravity: new Burner.Vector(),
+        c: 0
       });
-
 
 http://www.florajs.com/examples/agent_follows_mouse.html
 
@@ -100,16 +91,9 @@ Walkers carry two properties that directly affect how they 'walk'.
 
 By default, Walkers use an algorithm called Perlin Noise (http://en.wikipedia.org/wiki/Perlin_noise) to navigate their World. Below is an example.
 
-      Flora.Burner.System.create(function() {
-
-        Flora.Burner.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
-        });
-
+      Burner.System.init(function() {
         this.add('Walker');
       });
-
 
 http://www.florajs.com/examples/walker.html
 
@@ -117,18 +101,14 @@ http://www.florajs.com/examples/walker.html
 
 In the Agent example above, the Agent targeted the mouse. By saving a reference to a new Walker and passing at as a 'seekTarget' for a new Agent, we can make the Agent seek the Walker.
 
-      Flora.Burner.System.create(function() {
-
-        Flora.Burner.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
-        });
-
+      Burner.System.init(function() {
         this.add('Agent', {
           seekTarget: this.add('Walker')
         });
+      }, {
+        gravity: new Burner.Vector(),
+        c: 0
       });
-
 
 http://www.florajs.com/examples/agent_seeks_walker.html
 
@@ -144,12 +124,7 @@ Agents can also organize in flocks. The following properties affect flocking beh
 
 In the example below, we create 20 Agents and set their 'seekTarget' to the Walker. We also set 'flocking' to true to enable the flocking behavior.
 
-      Flora.Burner.System.create(function() {
-
-        Flora.Burner.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
-        });
+      Burner.System.init(function() {
 
         var walker = this.add('Walker');
 
@@ -159,19 +134,16 @@ In the example below, we create 20 Agents and set their 'seekTarget' to the Walk
             flocking: true
           });
         }
+      }, {
+        gravity: new Burner.Vector(),
+        c: 0
       });
 
 http://www.florajs.com/examples/agents_flock_to_walker.html
 
 In the example below, Agents flock to the mouse. We've also adjusted the 'width' and 'height' properties.
 
-      Flora.Burner.System.create(function() {
-
-        Flora.Burner.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
-        });
-
+      Burner.System.init(function() {
         for (var i = 0; i < 10; i++) {
           this.add('Agent', {
             followMouse: true,
@@ -180,8 +152,10 @@ In the example below, Agents flock to the mouse. We've also adjusted the 'width'
             height: 15
           });
         }
+      }, {
+        gravity: new Burner.Vector(),
+        c: 0
       });
-
 
 http://www.florajs.com/examples/agents_flock_to_mouse.html
 
@@ -195,20 +169,16 @@ FloraJS has some built in Proximity objects that exert a force on Agents that co
 
 In the example below, we create a Liquid object and an Agent that follows the mouse. You can click and drag to place the Liquid anywhere in the World. Use your mouse to make the Agent pass through the Liquid.
 
-      Flora.Burner.System.create(function() {
-
-        Flora.Burner.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
-        });
-
+      Burner.System.init(function() {
         this.add('Agent', {
           followMouse: true
         });
-
         this.add('Liquid', {
           draggable: true
         });
+      }, {
+        gravity: new Burner.Vector(),
+        c: 0
       });
 
 You can replace 'Liquid' with 'Attractor' and 'Repeller' to view how the Proximity objects affect an Agent.
@@ -217,7 +187,7 @@ http://www.florajs.com/examples/liquid.html
 
 #### Sensors and Stimuli
 
-Agents can carry an unlimited amount of Sensors that react to Flora's Stimulus objects. The following Stimulus objects are available:
+Agents can carry an unlimited amount of Sensors that react to Flora's Stimulus types. The following Stimulus types are available:
 
 * Cold
 * Heat
@@ -237,17 +207,11 @@ Sensors are tuned specifically to a Stimulant and can be configured to activate 
 
 In the example below, the Agent carries a Sensor that senses Heat. When activated, it triggers the 'COWARD' behavior.
 
-      Flora.Burner.System.create(function() {
-
-        Flora.Burner.World.update({
-          gravity: new Flora.Vector(),
-          c: 0
-        });
-
-        this.add('Heat', {
+      Burner.System.init(function() {
+        this.add('Stimulus', {
+          type: 'heat',
           draggable: true
         });
-
         this.add('Agent', {
           sensors: [
             this.add('Sensor', {
@@ -255,10 +219,13 @@ In the example below, the Agent carries a Sensor that senses Heat. When activate
               behavior: 'COWARD'
             })
           ],
-          velocity: new Flora.Vector(1, 0.5),
+          velocity: new Burner.Vector(1, 0.5),
           maxSpeed: 5,
           motorSpeed: 10
         });
+      }, {
+        gravity: new Burner.Vector(),
+        c: 0
       });
 
 Notice, we've updated the World and removed any gravitational forces. We've also updated the 'motorSpeed' property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Heat objects.
@@ -269,59 +236,59 @@ http://www.florajs.com/examples/sensor.html
 
 Putting it all together, we can observe Agents navigate a World with multiple Stimuli and Proximity objects.
 
-    Flora.Burner.System.create(function() {
+    Burner.System.init(function() {
 
-      Flora.Burner.World.update({
-        gravity: new Flora.Vector(),
-        c: 0
-      });
-
-      this.add('Heat', {
+      this.add('Stimulus', {
+        type: 'heat',
         draggable: true,
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.25, this.world.bounds[2] * 0.15);
+          return new Burner.Vector(this.world.width * 0.25, this.world.height * 0.15);
         }
       });
 
-      this.add('Heat', {
+      this.add('Stimulus', {
+        type: 'heat',
         draggable: true,
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.85, this.world.bounds[2] * 0.15);
+          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.15);
         }
       });
 
-      this.add('Heat', {
+      this.add('Stimulus', {
+        type: 'heat',
         draggable: true,
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.85, this.world.bounds[2] * 0.85);
+          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.85);
         }
       });
 
-      this.add('Heat', {
+      this.add('Stimulus', {
+        type: 'heat',
         draggable: true,
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.15, this.world.bounds[2] * 0.75);
+          return new Burner.Vector(this.world.width * 0.15, this.world.height * 0.75);
         }
       });
 
-      this.add('Cold', {
+      this.add('Stimulus', {
+        type: 'cold',
         draggable: true,
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.5, this.world.bounds[2] * 0.5);
-        }
-      });
-
-      this.add('Liquid', {
-        draggable: true,
-        location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.45, this.world.bounds[2] * 0.8);
+          return new Burner.Vector(this.world.width * 0.5, this.world.height * 0.5);
         }
       });
 
       this.add('Liquid', {
         draggable: true,
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.65, this.world.bounds[2] * 0.2);
+          return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
+        }
+      });
+
+      this.add('Liquid', {
+        draggable: true,
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
         }
       });
 
@@ -336,13 +303,15 @@ Putting it all together, we can observe Agents navigate a World with multiple St
             behavior: 'ACCELERATE'
           })
         ],
-        velocity: new Flora.Vector(1, 0.5),
+        velocity: new Burner.Vector(1, 0.5),
         minSpeed: 1,
         mass: 10,
         motorSpeed: 4
       });
+    }, {
+      gravity: new Burner.Vector(),
+      c: 0
     });
-
 
 http://www.florajs.com/examples/sensor_stimuli.html
 
@@ -350,59 +319,56 @@ http://www.florajs.com/examples/sensor_stimuli.html
 
 In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course, there can only be one agent controlling the World's Camera.
 
-    Flora.Burner.System.create(function() {
+    Burner.System.init(function() {
 
-      Flora.Burner.World.update({
-        gravity: new Flora.Vector(),
-        c: 0,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: [100, 100, 100]
-      });
-
-      this.add('Heat', {
+      this.add('Stimulus', {
+        type: 'heat',
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.25, this.world.bounds[2] * 0.15);
+          return new Burner.Vector(this.world.width * 0.25, this.world.height * 0.15);
         }
       });
 
-      this.add('Heat', {
+      this.add('Stimulus', {
+        type: 'heat',
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.85, this.world.bounds[2] * 0.15);
+          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.15);
         }
       });
 
-      this.add('Heat', {
+      this.add('Stimulus', {
+        type: 'heat',
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.85, this.world.bounds[2] * 0.85);
+          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.85);
         }
       });
 
-      this.add('Heat', {
+      this.add('Stimulus', {
+        type: 'heat',
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.15, this.world.bounds[2] * 0.75);
+          return new Burner.Vector(this.world.width * 0.15, this.world.height * 0.75);
         }
       });
 
-      this.add('Cold', {
+      this.add('Stimulus', {
+        type: 'cold',
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.5, this.world.bounds[2] * 0.5);
-        }
-      });
-
-      this.add('Liquid', {
-        location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.45, this.world.bounds[2] * 0.8);
+          return new Burner.Vector(this.world.width * 0.5, this.world.height * 0.5);
         }
       });
 
       this.add('Liquid', {
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.65, this.world.bounds[2] * 0.2);
+          return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
         }
       });
 
-      for (var i = 0; i < 5; i += 1) {
+      this.add('Liquid', {
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
+        }
+      });
+
+      for (var i = 0; i < 5; i ++) {
 
         this.add('Agent', {
           sensors: [
@@ -415,16 +381,22 @@ In the above example, we have a fixed, third-person perspective of our World. Bu
               behavior: 'ACCELERATE'
             })
           ],
-          velocity: new Flora.Vector(Flora.Utils.getRandomNumber(-1, 1, true),
+          velocity: new Burner.Vector(Flora.Utils.getRandomNumber(-1, 1, true),
               Flora.Utils.getRandomNumber(-1, 1, true)),
           minSpeed: 1,
           mass: 10,
           motorSpeed: 4,
-          wrapEdges: true,
+          wrapWorldEdges: true,
           controlCamera: !i,
           color: !i ? [255, 100, 0] : [197, 177, 115]
         });
       }
+    }, {
+      gravity: new Burner.Vector(),
+      c: 0,
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderColor: [100, 100, 100]
     });
 
 http://www.florajs.com/examples/camera.html
