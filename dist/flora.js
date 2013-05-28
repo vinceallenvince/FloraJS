@@ -22,8 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 2.0.0 */
-/* Build time: May 27, 2013 02:00:55 *//**
+/* Version: 2.0.1 */
+/* Build time: May 28, 2013 01:22:11 *//**
  * @namespace
  * @requires Burner
  */
@@ -2430,15 +2430,15 @@ exports.Connector = Connector;
  * Creates a new Point.
  *
  * @constructor
- * @extends Burner.Item
+ * @extends Mover
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Point(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Point';
-  Burner.Item.call(this, options);
+  exports.Mover.call(this, options);
 }
-exports.Utils.extend(Point, Burner.Item);
+exports.Utils.extend(Point, exports.Mover);
 
 /**
  * Initializes an instance.

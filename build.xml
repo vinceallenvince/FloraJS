@@ -297,6 +297,12 @@
     <!-- copy fat css file to braitenberg/css -->
     <copy file="${build.dir}/${buildNameLower}.css" todir="${braitenberg.dir}/css" overwrite="true"/>
 
+    <!-- copy fat js file to particles/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${particles.dir}/scripts" overwrite="true"/>
+
+    <!-- copy fat css file to particles/css -->
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${particles.dir}/css" overwrite="true"/>
+
   </target>
 
     <!-- Copy: copy min build and css files -->
@@ -334,6 +340,13 @@
     <!-- copy fat css file to braitenberg/css -->
     <copy file="${build.dir}/${buildNameLower}.css" todir="${braitenberg.dir}/css" overwrite="true"/>
     <copy file="${build.dir}/${buildNameLower}.min.css" todir="${braitenberg.dir}/css" overwrite="true"/>
+
+    <!-- copy fat js file to particles/scripts -->
+    <copy file="${build.dir}/${buildNameLower}.js" todir="${particles.dir}/scripts" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.min.js" todir="${particles.dir}/scripts" overwrite="true"/>
+    <!-- copy fat css file to particles/css -->
+    <copy file="${build.dir}/${buildNameLower}.css" todir="${particles.dir}/css" overwrite="true"/>
+    <copy file="${build.dir}/${buildNameLower}.min.css" todir="${particles.dir}/css" overwrite="true"/>
 
   </target>
 

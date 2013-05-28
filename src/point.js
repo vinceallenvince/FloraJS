@@ -3,15 +3,15 @@
  * Creates a new Point.
  *
  * @constructor
- * @extends Burner.Item
+ * @extends Mover
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Point(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Point';
-  Burner.Item.call(this, options);
+  exports.Mover.call(this, options);
 }
-exports.Utils.extend(Point, Burner.Item);
+exports.Utils.extend(Point, exports.Mover);
 
 /**
  * Initializes an instance.
