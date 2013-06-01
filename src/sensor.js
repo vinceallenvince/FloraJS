@@ -50,8 +50,8 @@ Sensor.prototype.init = function(opt_options) {
   this.target = options.target || null;
   this.activated = !!options.activated;
   this.activatedColor = options.activatedColor || [255, 255, 255];
-  this.borderRadius = 100;
-  this.borderWidth = 2;
+  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
+  this.borderWidth = options.borderWidth === 0 ? 0 : 2;
   this.borderStyle = 'solid';
   this.borderColor = [255, 255, 255];
 };

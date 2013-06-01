@@ -46,11 +46,11 @@ Liquid.prototype.init = function(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
   this.color = options.color || [105, 210, 231];
-  this.borderWidth = options.borderWidth || this.width / 4;
+  this.borderWidth = options.borderWidth === 0 ? 0 : this.width / 4;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [167, 219, 216];
-  this.borderRadius = options.borderRadius || 100;
-  this.boxShadowSpread = options.boxShadowSpread || this.width / 8;
+  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
+  this.boxShadowSpread = options.boxShadowSpread === 0 ? 0 : this.width / 8;
   this.boxShadowColor = options.boxShadowColor || [147, 199, 196];
 
   Burner.System.updateCache(this);

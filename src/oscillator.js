@@ -75,7 +75,7 @@ Oscillator.prototype.init = function(opt_options) {
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 150, 50];
-  this.borderRadius = options.borderRadius || 100;
+  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
   this.boxShadowSpread = options.boxShadowSpread || 0;
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
 };

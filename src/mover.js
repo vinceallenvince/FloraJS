@@ -40,7 +40,7 @@ Mover.prototype.init = function(options) {
   this.pointToDirection = options.pointToDirection === false ? false : true;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
-  this.offsetDistance = options.offsetDistance || 30;
+  this.offsetDistance = options.offsetDistance === 0 ? 0 : 30;
   this.beforeStep = options.beforeStep || null;
   this.afterStep = options.afterStep || null;
 

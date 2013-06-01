@@ -38,8 +38,8 @@ Point.prototype.init = function(opt_options) {
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
   this.color = options.color || [200, 200, 200];
-  this.borderRadius = options.borderRadius || 100;
-  this.borderWidth = options.borderWidth || 2;
+  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
+  this.borderWidth = options.borderWidth === 0 ? 0 : 2;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [60, 60, 60];
 };

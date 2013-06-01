@@ -47,14 +47,14 @@ Particle.prototype.init = function(opt_options) {
   this.fade = options.fade === false ? false : true;
   this.shrink = options.shrink === false ? false : true;
   this.checkEdges = !!options.checkEdges;
-  this.maxSpeed = options.maxSpeed || 4;
-  this.zIndex = options.zIndex || 1;
+  this.maxSpeed = options.maxSpeed === 0 ? 0 : 4;
+  this.zIndex = options.zIndex === 0 ? 0 : 1;
   this.color = options.color || [200, 200, 200];
-  this.borderWidth = options.borderWidth || this.width / 4;
+  this.borderWidth = options.borderWidth === 0 ? 0 : this.width / 4;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius || 100;
-  this.boxShadowSpread = options.boxShadowSpread || this.width / 4;
+  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
+  this.boxShadowSpread = options.boxShadowSpread === 0 ? 0 : this.width / 4;
   this.boxShadowColor = options.boxShadowColor || 'transparent';
 
   if (!options.acceleration) {

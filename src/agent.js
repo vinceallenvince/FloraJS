@@ -43,7 +43,7 @@ Agent.prototype.init = function(opt_options) {
   Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
-  this.maxSteeringForce = options.maxSteeringForce || 10;
+  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : 10;
   this.seekTarget = options.seekTarget || null;
   this.flocking = !!options.flocking;
   this.desiredSeparation = options.desiredSeparation === 0 ? 0 : options.desiredSeparation || this.width * 2;

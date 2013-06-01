@@ -48,25 +48,25 @@ Walker.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width || 10;
-  this.height = options.height || 10;
+  this.width = options.width === 0 ? 0 : 10;
+  this.height = options.height === 0 ? 0 : 10;
   this.perlin = options.perlin || true;
   this.remainsOnScreen = !!options.remainsOnScreen;
-  this.perlinSpeed = options.perlinSpeed || 0.005;
+  this.perlinSpeed = options.perlinSpeed === 0 ? 0 : 0.005;
   this.perlinTime = options.perlinTime || 0;
   this.perlinAccelLow = options.perlinAccelLow || -0.075;
   this.perlinAccelHigh = options.perlinAccelHigh || 0.075;
   this.offsetX = options.offsetX || Math.random() * 10000;
   this.offsetY = options.offsetY || Math.random() * 10000;
   this.random = !!options.random;
-  this.randomRadius = options.randomRadius || 100;
+  this.randomRadius = options.randomRadius === 0 ? 0 : 100;
   this.color = options.color || [255, 150, 50];
-  this.borderWidth = options.borderWidth || 2;
+  this.borderWidth = options.borderWidth === 0 ? 0 : 2;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius || 100;
+  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
   this.avoidWorldEdges = !!options.avoidWorldEdges;
-  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength || 50;
+  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength === 0 ? 0 : 50;
 };
 
 /**

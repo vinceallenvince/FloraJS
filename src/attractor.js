@@ -47,11 +47,11 @@ Attractor.prototype.init = function(opt_options) {
   this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
   this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
   this.color = options.color || [92, 187, 0];
-  this.borderWidth = options.borderWidth || this.width / 4;
+  this.borderWidth = options.borderWidth === 0 ? 0 : this.width / 4;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
-  this.borderRadius = options.borderRadius || 100;
-  this.boxShadowSpread = options.boxShadowSpread || this.width / 4;
+  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
+  this.boxShadowSpread = options.boxShadowSpread === 0 ? 0 : this.width / 4;
   this.boxShadowColor = options.boxShadowColor || [64, 129, 0];
 
   Burner.System.updateCache(this);
