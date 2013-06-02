@@ -32,14 +32,14 @@ Point.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width === 0 ? 0 : options.width || 10;
-  this.height = options.height === 0 ? 0 : options.height || 10;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
+  this.width = options.width === undefined ? 10 : options.width;
+  this.height = options.height === undefined ? 10 : options.height;
+  this.opacity = options.opacity === undefined ? 1 : options.opacity;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
+  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
   this.color = options.color || [200, 200, 200];
-  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
-  this.borderWidth = options.borderWidth === 0 ? 0 : 2;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [60, 60, 60];
 };

@@ -43,13 +43,13 @@ Agent.prototype.init = function(opt_options) {
   Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
-  this.maxSteeringForce = options.maxSteeringForce === 0 ? 0 : 10;
+  this.maxSteeringForce = options.maxSteeringForce === undefined ? 10 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;
   this.flocking = !!options.flocking;
-  this.desiredSeparation = options.desiredSeparation === 0 ? 0 : options.desiredSeparation || this.width * 2;
-  this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;
-  this.alignStrength = options.alignStrength === 0 ? 0 : options.alignStrength || 0.2;
-  this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;
+  this.desiredSeparation = options.desiredSeparation === undefined ? this.width * 2 : options.desiredSeparation;
+  this.separateStrength = options.separateStrength === undefined ? 0.3 : options.separateStrength;
+  this.alignStrength = options.alignStrength === undefined ? 0.2 : options.alignStrength;
+  this.cohesionStrength = options.cohesionStrength === undefined ? 0.1 : options.cohesionStrength;
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
 

@@ -26,7 +26,7 @@ function Caption(opt_options) {
   this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';
   this.text = options.text || '';
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';

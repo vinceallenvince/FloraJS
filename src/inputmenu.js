@@ -24,7 +24,7 @@ function InputMenu(opt_options) {
   // if a world is not passed, use the first world in the universe
   this.world = options.world || exports.universe.first();
   this.position = options.position || 'top left';
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';

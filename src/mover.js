@@ -32,15 +32,15 @@ exports.Utils.extend(Mover, Burner.Item);
  */
 Mover.prototype.init = function(options) {
 
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.width = options.width === undefined ? 20 : options.width;
+  this.height = options.height === undefined ? 20 : options.height;
   this.color = options.color || [255, 255, 255];
   this.motorSpeed = options.motorSpeed || 0;
   this.angle = options.angle || 0;
-  this.pointToDirection = options.pointToDirection === false ? false : true;
+  this.pointToDirection = options.pointToDirection === undefined ? true : options.pointToDirection;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
-  this.offsetDistance = options.offsetDistance === 0 ? 0 : 30;
+  this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
   this.beforeStep = options.beforeStep || null;
   this.afterStep = options.afterStep || null;
 

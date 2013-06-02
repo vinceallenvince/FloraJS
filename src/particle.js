@@ -40,21 +40,21 @@ Particle.prototype.init = function(opt_options) {
   var options = opt_options || {};
   Particle._superClass.prototype.init.call(this, options);
 
-  this.width = options.width === 0 ? 0 : options.width || 20;
-  this.height = options.height === 0 ? 0 : options.height || 20;
-  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || 50;
-  this.life = options.life === 0 ? 0 : options.life || 0;
-  this.fade = options.fade === false ? false : true;
-  this.shrink = options.shrink === false ? false : true;
+  this.width = options.width === undefined ? 20 : options.width;
+  this.height = options.height === undefined ? 20 : options.height;
+  this.lifespan = options.lifespan === undefined ? 50 : options.lifespan;
+  this.life = options.life || 0;
+  this.fade = options.fade === undefined ? true : false;
+  this.shrink = options.shrink === undefined ? true : false;
   this.checkEdges = !!options.checkEdges;
-  this.maxSpeed = options.maxSpeed === 0 ? 0 : 4;
-  this.zIndex = options.zIndex === 0 ? 0 : 1;
+  this.maxSpeed = options.maxSpeed === undefined ? 4 : 0;
+  this.zIndex = options.zIndex === undefined ? 1 : 0;
   this.color = options.color || [200, 200, 200];
-  this.borderWidth = options.borderWidth === 0 ? 0 : this.width / 4;
+  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
-  this.boxShadowSpread = options.boxShadowSpread === 0 ? 0 : this.width / 4;
+  this.borderRadius = options.borderRadius === undefined ? 100 : 0;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : 0;
   this.boxShadowColor = options.boxShadowColor || 'transparent';
 
   if (!options.acceleration) {

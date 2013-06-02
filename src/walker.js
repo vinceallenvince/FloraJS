@@ -48,25 +48,26 @@ Walker.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width === 0 ? 0 : 10;
-  this.height = options.height === 0 ? 0 : 10;
-  this.perlin = options.perlin || true;
+  this.width = options.width === undefined ? 10 : options.width;
+  this.height = options.height === undefined ? 10 : options.height;
+  this.perlin = options.perlin === undefined ? true : options.perlin;
   this.remainsOnScreen = !!options.remainsOnScreen;
-  this.perlinSpeed = options.perlinSpeed === 0 ? 0 : 0.005;
+  this.perlinSpeed = options.perlinSpeed === undefined ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
-  this.perlinAccelLow = options.perlinAccelLow || -0.075;
-  this.perlinAccelHigh = options.perlinAccelHigh || 0.075;
-  this.offsetX = options.offsetX || Math.random() * 10000;
-  this.offsetY = options.offsetY || Math.random() * 10000;
+  this.perlinAccelLow = options.perlinAccelLow === undefined ? -0.075 : options.perlinAccelLow;
+  this.perlinAccelHigh = options.perlinAccelHigh === undefined ? 0.075 : options.perlinAccelHigh;
+  this.offsetX = options.offsetX === undefined ? Math.random() * 10000 : options.offsetX;
+  this.offsetY = options.offsetY === undefined ? Math.random() * 10000 : options.offsetY;
   this.random = !!options.random;
-  this.randomRadius = options.randomRadius === 0 ? 0 : 100;
+  this.randomRadius = options.randomRadius === undefined ? 100 : options.randomRadius;
   this.color = options.color || [255, 150, 50];
-  this.borderWidth = options.borderWidth === 0 ? 0 : 2;
+  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
   this.avoidWorldEdges = !!options.avoidWorldEdges;
-  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength === 0 ? 0 : 50;
+  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength === undefined ?
+      50 : options.avoidWorldEdgesStrength;
 };
 
 /**

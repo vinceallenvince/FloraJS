@@ -38,19 +38,19 @@ Liquid.prototype.init = function(opt_options) {
   var options = opt_options || {};
   Liquid._superClass.prototype.init.call(this, options);
 
-  this.c = options.c === 0 ? 0 : options.c || 1;
-  this.mass = options.mass === 0 ? 0 : options.mass || 50;
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 100;
-  this.height = options.height === 0 ? 0 : options.height || 100;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
+  this.c = options.c === undefined ? 1 : options.c;
+  this.mass = options.mass === undefined ? 50 : options.mass;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.width = options.width === undefined ? 100 : options.width;
+  this.height = options.height === undefined ? 100 : options.height;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
   this.color = options.color || [105, 210, 231];
-  this.borderWidth = options.borderWidth === 0 ? 0 : this.width / 4;
+  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [167, 219, 216];
-  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
-  this.boxShadowSpread = options.boxShadowSpread === 0 ? 0 : this.width / 8;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 8 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [147, 199, 196];
 
   Burner.System.updateCache(this);

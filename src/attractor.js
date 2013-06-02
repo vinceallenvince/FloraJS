@@ -39,19 +39,19 @@ Attractor.prototype.init = function(opt_options) {
 
   Attractor._superClass.prototype.init.call(this, options);
 
-  this.G = options.G === 0 ? 0 : options.G || 10;
-  this.mass = options.mass === 0 ? 0 : options.mass || 1000;
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 100;
-  this.height = options.height === 0 ? 0 : options.height || 100;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
+  this.G = options.G === undefined ? 10 : options.G;
+  this.mass = options.mass === undefined ? 1000 : options.mass;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.width = options.width === undefined ? 100 : options.width;
+  this.height = options.height === undefined ? 100 : options.height;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
   this.color = options.color || [92, 187, 0];
-  this.borderWidth = options.borderWidth === 0 ? 0 : this.width / 4;
+  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : 0;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
-  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
-  this.boxShadowSpread = options.boxShadowSpread === 0 ? 0 : this.width / 4;
+  this.borderRadius = options.borderRadius === undefined ? 100 : 0;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : 0;
   this.boxShadowColor = options.boxShadowColor || [64, 129, 0];
 
   Burner.System.updateCache(this);

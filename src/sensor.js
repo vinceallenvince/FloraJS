@@ -41,17 +41,17 @@ Sensor.prototype.init = function(opt_options) {
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
-  this.sensitivity = options.sensitivity === 0 ? 0 : options.sensitivity || 2;
-  this.width = options.width === 0 ? 0 : options.width || 7;
-  this.height = options.height === 0 ? 0 : options.height || 7;
-  this.offsetDistance = options.offsetDistance === 0 ? 0 : options.offsetDistance|| 30;
+  this.sensitivity = options.sensitivity === undefined ? 2 : options.sensitivity;
+  this.width = options.width === undefined ? 7 : options.width;
+  this.height = options.height === undefined ? 7 : options.height;
+  this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
   this.target = options.target || null;
   this.activated = !!options.activated;
   this.activatedColor = options.activatedColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
-  this.borderWidth = options.borderWidth === 0 ? 0 : 2;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
   this.borderStyle = 'solid';
   this.borderColor = [255, 255, 255];
 };

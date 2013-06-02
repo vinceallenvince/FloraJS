@@ -33,7 +33,7 @@ Connector.prototype.init = function(options) {
   this.parentA = options.parentA;
   this.parentB = options.parentB;
 
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
+  this.opacity = options.opacity === undefined ? 1 : options.opacity;
   this.zIndex = options.zIndex || 0;
 
   this.borderWidth = 1;

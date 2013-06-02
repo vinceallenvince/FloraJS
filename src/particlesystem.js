@@ -39,21 +39,21 @@ ParticleSystem.prototype.init = function(opt_options) {
   var options = opt_options || {};
   ParticleSystem._superClass.prototype.init.call(this, options);
 
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
-  this.life = options.life === 0 ? 0 : options.life || 0;
-  this.width = options.width === 0 ? 0 : options.width || 0;
-  this.height = options.height === 0 ? 0 : options.height || 0;
-  this.burst = options.burst === 0 ? 0 : options.burst || 1;
-  this.burstRate = options.burstRate === 0 ? 0 : options.burstRate || 4;
-  this.emitRadius = options.emitRadius === 0 ? 0 : options.emitRadius || 3;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.lifespan = options.lifespan === undefined ? -1: options.lifespan;
+  this.life = options.life || 0;
+  this.width = options.width || 0;
+  this.height = options.height || 0;
+  this.burst = options.burst === undefined ? 1 : options.burst;
+  this.burstRate = options.burstRate === undefined ? 4 : options.burstRate;
+  this.emitRadius = options.emitRadius === undefined ? 3 : options.emitRadius;
   this.startColor = options.startColor || [100, 20, 20];
   this.endColor = options.endColor || [255, 0, 0];
   this.particleOptions = options.particleOptions || {
     width : 15,
     height : 15,
     lifespan : 50,
-    borderRadius : '100%',
+    borderRadius : 100,
     checkEdges : false,
     acceleration: null,
     velocity: null,

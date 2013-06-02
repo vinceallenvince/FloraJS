@@ -22,8 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 2.0.1 */
-/* Build time: May 28, 2013 01:22:11 *//**
+/* Version: 2.0.3 */
+/* Build time: June 2, 2013 02:59:15 *//**
  * @namespace
  * @requires Burner
  */
@@ -1037,7 +1037,7 @@ function Caption(opt_options) {
   this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';
   this.text = options.text || '';
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
@@ -1128,7 +1128,7 @@ function InputMenu(opt_options) {
   // if a world is not passed, use the first world in the universe
   this.world = options.world || exports.universe.first();
   this.position = options.position || 'top left';
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
@@ -1246,15 +1246,15 @@ exports.Utils.extend(Mover, Burner.Item);
  */
 Mover.prototype.init = function(options) {
 
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.width = options.width === undefined ? 20 : options.width;
+  this.height = options.height === undefined ? 20 : options.height;
   this.color = options.color || [255, 255, 255];
   this.motorSpeed = options.motorSpeed || 0;
   this.angle = options.angle || 0;
-  this.pointToDirection = options.pointToDirection === false ? false : true;
+  this.pointToDirection = options.pointToDirection === undefined ? true : options.pointToDirection;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
-  this.offsetDistance = options.offsetDistance || 30;
+  this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
   this.beforeStep = options.beforeStep || null;
   this.afterStep = options.afterStep || null;
 
@@ -1657,13 +1657,13 @@ Agent.prototype.init = function(opt_options) {
   Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
-  this.maxSteeringForce = options.maxSteeringForce || 10;
+  this.maxSteeringForce = options.maxSteeringForce === undefined ? 10 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;
   this.flocking = !!options.flocking;
-  this.desiredSeparation = options.desiredSeparation === 0 ? 0 : options.desiredSeparation || this.width * 2;
-  this.separateStrength = options.separateStrength === 0 ? 0 : options.separateStrength || 0.3;
-  this.alignStrength = options.alignStrength === 0 ? 0 : options.alignStrength || 0.2;
-  this.cohesionStrength = options.cohesionStrength === 0 ? 0 : options.cohesionStrength || 0.1;
+  this.desiredSeparation = options.desiredSeparation === undefined ? this.width * 2 : options.desiredSeparation;
+  this.separateStrength = options.separateStrength === undefined ? 0.3 : options.separateStrength;
+  this.alignStrength = options.alignStrength === undefined ? 0.2 : options.alignStrength;
+  this.cohesionStrength = options.cohesionStrength === undefined ? 0.1 : options.cohesionStrength;
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
 
@@ -2045,25 +2045,26 @@ Walker.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width || 10;
-  this.height = options.height || 10;
-  this.perlin = options.perlin || true;
+  this.width = options.width === undefined ? 10 : options.width;
+  this.height = options.height === undefined ? 10 : options.height;
+  this.perlin = options.perlin === undefined ? true : options.perlin;
   this.remainsOnScreen = !!options.remainsOnScreen;
-  this.perlinSpeed = options.perlinSpeed || 0.005;
+  this.perlinSpeed = options.perlinSpeed === undefined ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
-  this.perlinAccelLow = options.perlinAccelLow || -0.075;
-  this.perlinAccelHigh = options.perlinAccelHigh || 0.075;
-  this.offsetX = options.offsetX || Math.random() * 10000;
-  this.offsetY = options.offsetY || Math.random() * 10000;
+  this.perlinAccelLow = options.perlinAccelLow === undefined ? -0.075 : options.perlinAccelLow;
+  this.perlinAccelHigh = options.perlinAccelHigh === undefined ? 0.075 : options.perlinAccelHigh;
+  this.offsetX = options.offsetX === undefined ? Math.random() * 10000 : options.offsetX;
+  this.offsetY = options.offsetY === undefined ? Math.random() * 10000 : options.offsetY;
   this.random = !!options.random;
-  this.randomRadius = options.randomRadius || 100;
+  this.randomRadius = options.randomRadius === undefined ? 100 : options.randomRadius;
   this.color = options.color || [255, 150, 50];
-  this.borderWidth = options.borderWidth || 2;
+  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius || 100;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
   this.avoidWorldEdges = !!options.avoidWorldEdges;
-  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength || 50;
+  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength === undefined ?
+      50 : options.avoidWorldEdgesStrength;
 };
 
 /**
@@ -2141,17 +2142,17 @@ Sensor.prototype.init = function(opt_options) {
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
-  this.sensitivity = options.sensitivity === 0 ? 0 : options.sensitivity || 2;
-  this.width = options.width === 0 ? 0 : options.width || 7;
-  this.height = options.height === 0 ? 0 : options.height || 7;
-  this.offsetDistance = options.offsetDistance === 0 ? 0 : options.offsetDistance|| 30;
+  this.sensitivity = options.sensitivity === undefined ? 2 : options.sensitivity;
+  this.width = options.width === undefined ? 7 : options.width;
+  this.height = options.height === undefined ? 7 : options.height;
+  this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
   this.target = options.target || null;
   this.activated = !!options.activated;
   this.activatedColor = options.activatedColor || [255, 255, 255];
-  this.borderRadius = 100;
-  this.borderWidth = 2;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
   this.borderStyle = 'solid';
   this.borderColor = [255, 255, 255];
 };
@@ -2392,7 +2393,7 @@ Connector.prototype.init = function(options) {
   this.parentA = options.parentA;
   this.parentB = options.parentB;
 
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
+  this.opacity = options.opacity === undefined ? 1 : options.opacity;
   this.zIndex = options.zIndex || 0;
 
   this.borderWidth = 1;
@@ -2459,14 +2460,14 @@ Point.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width === 0 ? 0 : options.width || 10;
-  this.height = options.height === 0 ? 0 : options.height || 10;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 1;
+  this.width = options.width === undefined ? 10 : options.width;
+  this.height = options.height === undefined ? 10 : options.height;
+  this.opacity = options.opacity === undefined ? 1 : options.opacity;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
+  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
   this.color = options.color || [200, 200, 200];
-  this.borderRadius = options.borderRadius || 100;
-  this.borderWidth = options.borderWidth || 2;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [60, 60, 60];
 };
@@ -2516,21 +2517,21 @@ Particle.prototype.init = function(opt_options) {
   var options = opt_options || {};
   Particle._superClass.prototype.init.call(this, options);
 
-  this.width = options.width === 0 ? 0 : options.width || 20;
-  this.height = options.height === 0 ? 0 : options.height || 20;
-  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || 50;
-  this.life = options.life === 0 ? 0 : options.life || 0;
-  this.fade = options.fade === false ? false : true;
-  this.shrink = options.shrink === false ? false : true;
+  this.width = options.width === undefined ? 20 : options.width;
+  this.height = options.height === undefined ? 20 : options.height;
+  this.lifespan = options.lifespan === undefined ? 50 : options.lifespan;
+  this.life = options.life || 0;
+  this.fade = options.fade === undefined ? true : false;
+  this.shrink = options.shrink === undefined ? true : false;
   this.checkEdges = !!options.checkEdges;
-  this.maxSpeed = options.maxSpeed || 4;
-  this.zIndex = options.zIndex || 1;
+  this.maxSpeed = options.maxSpeed === undefined ? 4 : 0;
+  this.zIndex = options.zIndex === undefined ? 1 : 0;
   this.color = options.color || [200, 200, 200];
-  this.borderWidth = options.borderWidth || this.width / 4;
+  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius || 100;
-  this.boxShadowSpread = options.boxShadowSpread || this.width / 4;
+  this.borderRadius = options.borderRadius === undefined ? 100 : 0;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : 0;
   this.boxShadowColor = options.boxShadowColor || 'transparent';
 
   if (!options.acceleration) {
@@ -2648,21 +2649,21 @@ ParticleSystem.prototype.init = function(opt_options) {
   var options = opt_options || {};
   ParticleSystem._superClass.prototype.init.call(this, options);
 
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.lifespan = options.lifespan === 0 ? 0 : options.lifespan || -1;
-  this.life = options.life === 0 ? 0 : options.life || 0;
-  this.width = options.width === 0 ? 0 : options.width || 0;
-  this.height = options.height === 0 ? 0 : options.height || 0;
-  this.burst = options.burst === 0 ? 0 : options.burst || 1;
-  this.burstRate = options.burstRate === 0 ? 0 : options.burstRate || 4;
-  this.emitRadius = options.emitRadius === 0 ? 0 : options.emitRadius || 3;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.lifespan = options.lifespan === undefined ? -1: options.lifespan;
+  this.life = options.life || 0;
+  this.width = options.width || 0;
+  this.height = options.height || 0;
+  this.burst = options.burst === undefined ? 1 : options.burst;
+  this.burstRate = options.burstRate === undefined ? 4 : options.burstRate;
+  this.emitRadius = options.emitRadius === undefined ? 3 : options.emitRadius;
   this.startColor = options.startColor || [100, 20, 20];
   this.endColor = options.endColor || [255, 0, 0];
   this.particleOptions = options.particleOptions || {
     width : 15,
     height : 15,
     lifespan : 50,
-    borderRadius : '100%',
+    borderRadius : 100,
     checkEdges : false,
     acceleration: null,
     velocity: null,
@@ -2777,7 +2778,7 @@ exports.Utils.extend(Oscillator, Burner.Item);
  *    constant acceleration.
  * @param {Object} [opt_options.aVelocity = new Vector()] Angular velocity.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
- * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
+ * @param {boolean} [opt_options.isPerlin = false] If set to true, object will use Perlin Noise to calculate its location.
  * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
  * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
  * @param {number} [opt_options.perlinAccelLow = -2] The lower bound of acceleration when isPerlin = true.
@@ -2808,20 +2809,20 @@ Oscillator.prototype.init = function(opt_options) {
   this.isStatic = !!options.isStatic;
 
   this.isPerlin = !!options.isPerlin;
-  this.perlinSpeed = options.perlinSpeed || 0.005;
+  this.perlinSpeed = options.perlinSpeed === undefined ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
-  this.perlinAccelLow = options.perlinAccelLow || -2;
-  this.perlinAccelHigh = options.perlinAccelHigh || 2;
-  this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
-  this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
+  this.perlinAccelLow = options.perlinAccelLow === undefined ? -2 : options.perlinAccelLow;
+  this.perlinAccelHigh = options.perlinAccelHigh === undefined ? 2 : options.perlinAccelHigh;
+  this.perlinOffsetX = options.perlinOffsetX === undefined ? Math.random() * 10000 : options.perlinOffsetX;
+  this.perlinOffsetY = options.perlinOffsetY === undefined ? Math.random() * 10000 : options.perlinOffsetY;
 
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.width = options.width === undefined ? 20 : options.width;
+  this.height = options.height === undefined ? 20 : options.height;
   this.color = options.color || [200, 100, 0];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 150, 50];
-  this.borderRadius = options.borderRadius || 100;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
   this.boxShadowSpread = options.boxShadowSpread || 0;
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
 };
@@ -2920,19 +2921,19 @@ Liquid.prototype.init = function(opt_options) {
   var options = opt_options || {};
   Liquid._superClass.prototype.init.call(this, options);
 
-  this.c = options.c === 0 ? 0 : options.c || 1;
-  this.mass = options.mass === 0 ? 0 : options.mass || 50;
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 100;
-  this.height = options.height === 0 ? 0 : options.height || 100;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
+  this.c = options.c === undefined ? 1 : options.c;
+  this.mass = options.mass === undefined ? 50 : options.mass;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.width = options.width === undefined ? 100 : options.width;
+  this.height = options.height === undefined ? 100 : options.height;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
   this.color = options.color || [105, 210, 231];
-  this.borderWidth = options.borderWidth || this.width / 4;
+  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [167, 219, 216];
-  this.borderRadius = options.borderRadius || 100;
-  this.boxShadowSpread = options.boxShadowSpread || this.width / 8;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 8 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [147, 199, 196];
 
   Burner.System.updateCache(this);
@@ -2980,19 +2981,19 @@ Attractor.prototype.init = function(opt_options) {
 
   Attractor._superClass.prototype.init.call(this, options);
 
-  this.G = options.G === 0 ? 0 : options.G || 10;
-  this.mass = options.mass === 0 ? 0 : options.mass || 1000;
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 100;
-  this.height = options.height === 0 ? 0 : options.height || 100;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
+  this.G = options.G === undefined ? 10 : options.G;
+  this.mass = options.mass === undefined ? 1000 : options.mass;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.width = options.width === undefined ? 100 : options.width;
+  this.height = options.height === undefined ? 100 : options.height;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
   this.color = options.color || [92, 187, 0];
-  this.borderWidth = options.borderWidth || this.width / 4;
+  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : 0;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
-  this.borderRadius = options.borderRadius || 100;
-  this.boxShadowSpread = options.boxShadowSpread || this.width / 4;
+  this.borderRadius = options.borderRadius === undefined ? 100 : 0;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : 0;
   this.boxShadowColor = options.boxShadowColor || [64, 129, 0];
 
   Burner.System.updateCache(this);
@@ -3041,19 +3042,19 @@ Repeller.prototype.init = function(opt_options) {
   var options = opt_options || {};
   Repeller._superClass.prototype.init.call(this, options);
 
-  this.G = options.G === 0 ? 0 : options.G || -10;
-  this.mass = options.mass === 0 ? 0 : options.mass || 1000;
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 100;
-  this.height = options.height === 0 ? 0 : options.height || 100;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 10;
+  this.G = options.G === undefined ? -10 : options.G;
+  this.mass = options.mass === undefined ? 1000 : options.mass;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.width = options.width === undefined ? 100 : options.width;
+  this.height = options.height === undefined ? 100 : options.height;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.zIndex = options.zIndex === undefined ? 10 : options.zIndex;
   this.color = options.color || [250, 105, 0];
-  this.borderWidth = options.borderWidth || this.width / 4;
+  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
-  this.borderRadius = options.borderRadius || 100;
-  this.boxShadowSpread = options.boxShadowSpread || this.width / 4;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [250, 105, 0];
 
   Burner.System.updateCache(this);
@@ -3133,19 +3134,22 @@ Stimulus.prototype.init = function(opt_options) {
   var options = opt_options || {}, name = this.name.toLowerCase();
   Stimulus._superClass.prototype.init.call(this, options);
 
-  this.mass = options.mass === 0 ? 0 : options.mass || 50;
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.width = options.width === 0 ? 0 : options.width || 50;
-  this.height = options.height === 0 ? 0 : options.height || 50;
-  this.opacity = options.opacity === 0 ? 0 : options.opacity || 0.75;
-  this.zIndex = options.zIndex === 0 ? 0 : options.zIndex || 1;
+  this.mass = options.mass === undefined ? 50 : options.mass ;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.width = options.width === undefined ? 50 : options.width;
+  this.height = options.height === undefined ? 50 : options.height;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
   this.color = options.color || palettes[name].getColor();
-  this.borderWidth = options.borderWidth || this.width / exports.Utils.getRandomNumber(2, 8);
-  this.borderStyle = options.borderStyle || borderPalette.getBorder();
-  this.borderColor = options.borderColor || palettes[name].getColor();
-  this.borderRadius = options.borderRadius || 100;
-  this.boxShadowSpread = options.boxShadowSpread || this.width / exports.Utils.getRandomNumber(2, 8);
-  this.boxShadowColor = options.boxShadowColor || boxShadowColors[name];
+  this.borderWidth = options.borderWidth === undefined ?
+      this.width / exports.Utils.getRandomNumber(2, 8) : options.borderWidth;
+  this.borderStyle = options.borderStyle === undefined ?
+      borderPalette.getBorder() : options.borderStyle;
+  this.borderColor = options.borderColor === undefined ? palettes[name].getColor() : options.borderColor;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ?
+      this.width / exports.Utils.getRandomNumber(2, 8) : options.boxShadowSpread;
+  this.boxShadowColor = options.boxShadowColor === undefined ? boxShadowColors[name] : options.boxShadowColor;
 
   Burner.System.updateCache(this);
 };
@@ -3181,11 +3185,11 @@ FlowField.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.resolution = options.resolution || 50;
-  this.perlinSpeed = options.perlinSpeed || 0.01;
-  this.perlinTime = options.perlinTime || 100;
+  this.resolution = options.resolution === undefined ? 50 : options.resolution;
+  this.perlinSpeed = options.perlinSpeed === undefined ? 0.01 : options.perlinSpeed;
+  this.perlinTime = options.perlinTime === undefined ? 100 : options.perlinTime;
   this.field = options.field || null;
-  this.createMarkers = options.createMarkers || false;
+  this.createMarkers = !!options.createMarkers;
   // if a world is not passed, use the first world in the system
   this.world = options.world || Burner.System.firstWorld();
 };
@@ -3288,6 +3292,7 @@ function FlowFieldMarker(options) {
       height: options.height,
       opacity: options.opacity,
       angle: options.angle,
+      scale: 1,
       colorMode: options.colorMode,
       color0: options.color[0],
       color1: options.color[1],

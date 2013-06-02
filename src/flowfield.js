@@ -26,11 +26,11 @@ FlowField.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.resolution = options.resolution || 50;
-  this.perlinSpeed = options.perlinSpeed || 0.01;
-  this.perlinTime = options.perlinTime || 100;
+  this.resolution = options.resolution === undefined ? 50 : options.resolution;
+  this.perlinSpeed = options.perlinSpeed === undefined ? 0.01 : options.perlinSpeed;
+  this.perlinTime = options.perlinTime === undefined ? 100 : options.perlinTime;
   this.field = options.field || null;
-  this.createMarkers = options.createMarkers || false;
+  this.createMarkers = !!options.createMarkers;
   // if a world is not passed, use the first world in the system
   this.world = options.world || Burner.System.firstWorld();
 };

@@ -31,7 +31,7 @@ exports.Utils.extend(Oscillator, Burner.Item);
  *    constant acceleration.
  * @param {Object} [opt_options.aVelocity = new Vector()] Angular velocity.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
- * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
+ * @param {boolean} [opt_options.isPerlin = false] If set to true, object will use Perlin Noise to calculate its location.
  * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
  * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
  * @param {number} [opt_options.perlinAccelLow = -2] The lower bound of acceleration when isPerlin = true.
@@ -62,20 +62,20 @@ Oscillator.prototype.init = function(opt_options) {
   this.isStatic = !!options.isStatic;
 
   this.isPerlin = !!options.isPerlin;
-  this.perlinSpeed = options.perlinSpeed || 0.005;
+  this.perlinSpeed = options.perlinSpeed === undefined ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
-  this.perlinAccelLow = options.perlinAccelLow || -2;
-  this.perlinAccelHigh = options.perlinAccelHigh || 2;
-  this.perlinOffsetX = options.perlinOffsetX || Math.random() * 10000;
-  this.perlinOffsetY = options.perlinOffsetY || Math.random() * 10000;
+  this.perlinAccelLow = options.perlinAccelLow === undefined ? -2 : options.perlinAccelLow;
+  this.perlinAccelHigh = options.perlinAccelHigh === undefined ? 2 : options.perlinAccelHigh;
+  this.perlinOffsetX = options.perlinOffsetX === undefined ? Math.random() * 10000 : options.perlinOffsetX;
+  this.perlinOffsetY = options.perlinOffsetY === undefined ? Math.random() * 10000 : options.perlinOffsetY;
 
-  this.width = options.width || 20;
-  this.height = options.height || 20;
+  this.width = options.width === undefined ? 20 : options.width;
+  this.height = options.height === undefined ? 20 : options.height;
   this.color = options.color || [200, 100, 0];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 150, 50];
-  this.borderRadius = options.borderRadius === 0 ? 0 : 100;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
   this.boxShadowSpread = options.boxShadowSpread || 0;
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
 };

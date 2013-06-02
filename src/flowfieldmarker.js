@@ -41,6 +41,7 @@ function FlowFieldMarker(options) {
       height: options.height,
       opacity: options.opacity,
       angle: options.angle,
+      scale: 1,
       colorMode: options.colorMode,
       color0: options.color[0],
       color1: options.color[1],
