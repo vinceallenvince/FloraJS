@@ -22,8 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 2.0.3 */
-/* Build time: June 2, 2013 02:59:15 *//**
+/* Version: 2.0.4 */
+/* Build time: June 2, 2013 03:02:16 *//**
  * @namespace
  * @requires Burner
  */
@@ -1584,7 +1584,7 @@ Mover.prototype.attract = function(attractor) {
     distance, strength;
 
   distance = force.mag();
-  distance = exports.Utils.constrain(distance, this.width * this.height/8, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
+  distance = exports.Utils.constrain(distance, this.width * this.height, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
   force.normalize();
   strength = (attractor.G * attractor.mass * this.mass) / (distance * distance);
   force.mult(strength);
