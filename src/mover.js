@@ -291,7 +291,7 @@ Mover.prototype._seek = function(target) {
 
   desiredVelocity.normalize();
 
-  if (distanceToTarget < world.bounds[1] / 2) {
+  if (distanceToTarget < world.bounds[1] / 2) { // slow down to arrive at target
     var m = exports.Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
     desiredVelocity.mult(m);
   } else {

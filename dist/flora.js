@@ -22,8 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 2.0.4 */
-/* Build time: June 2, 2013 03:02:16 *//**
+/* Version: 2.0.5 */
+/* Build time: June 2, 2013 06:03:33 *//**
  * @namespace
  * @requires Burner
  */
@@ -1505,7 +1505,7 @@ Mover.prototype._seek = function(target) {
 
   desiredVelocity.normalize();
 
-  if (distanceToTarget < world.bounds[1] / 2) {
+  if (distanceToTarget < world.bounds[1] / 2) { // slow down to arrive at target
     var m = exports.Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
     desiredVelocity.mult(m);
   } else {
@@ -2247,32 +2247,51 @@ Sensor.prototype.step = function() {
 };
 
 /**
- * Returns a force to apply to an agentwhen its sensor is activated.
+ * Returns a force to apply to an agent when its sensor is activated.
  *
  */
 Sensor.prototype.getActivationForce = function(agent) {
 
-  var distanceToTarget, m, v, steer;
+  var distanceToTarget, desiredVelocity, m, v, steer;
 
   switch (this.behavior) {
 
     /**
      * Steers toward target
      */
-    case "AGGRESSIVE":
-      return this._seek(this.target);
+    case 'AGGRESSIVE':
+      desiredVelocity = Burner.Vector.VectorSub(this.target.location, this.location);
+      distanceToTarget = desiredVelocity.mag();
+      desiredVelocity.normalize();
+
+      m = distanceToTarget/agent.maxSpeed;
+      desiredVelocity.mult(m);
+
+      desiredVelocity.sub(agent.velocity);
+      desiredVelocity.limit(agent.maxSteeringForce);
+
+    return desiredVelocity;
 
     /**
      * Steers away from the target
      */
-    case "COWARD":
-      var f = this._seek(this.target);
-      return f.mult(-1);
+    case 'COWARD':
+      desiredVelocity = Burner.Vector.VectorSub(this.target.location, this.location);
+      distanceToTarget = desiredVelocity.mag();
+      desiredVelocity.normalize();
+
+      m = distanceToTarget/agent.maxSpeed;
+      desiredVelocity.mult(-m);
+
+      desiredVelocity.sub(agent.velocity);
+      desiredVelocity.limit(agent.maxSteeringForce);
+
+    return desiredVelocity;
 
     /**
      * Speeds toward target and keeps moving
      */
-    case "LIKES":
+    case 'LIKES':
       var dvLikes = Burner.Vector.VectorSub(this.target.location, this.location);
       distanceToTarget = dvLikes.mag();
       dvLikes.normalize();
@@ -2287,7 +2306,7 @@ Sensor.prototype.getActivationForce = function(agent) {
     /**
      * Arrives at target and remains
      */
-    case "LOVES":
+    case 'LOVES':
       var dvLoves = Burner.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
       distanceToTarget = dvLoves.mag();
       dvLoves.normalize();
@@ -2306,7 +2325,7 @@ Sensor.prototype.getActivationForce = function(agent) {
     /**
      * Arrives at target but does not stop
      */
-    case "EXPLORER":
+    case 'EXPLORER':
 
       var dvExplorer = Burner.Vector.VectorSub(this.target.location, this.location);
       distanceToTarget = dvExplorer.mag();
@@ -2325,12 +2344,12 @@ Sensor.prototype.getActivationForce = function(agent) {
     /*case "RUN":
       return this.flee(this.target);*/
 
-    case "ACCELERATE":
+    case 'ACCELERATE':
       v = agent.velocity.clone();
       v.normalize();
       return v.mult(agent.minSpeed);
 
-    case "DECELERATE":
+    case 'DECELERATE':
       v = agent.velocity.clone();
       v.normalize();
       return v.mult(-agent.minSpeed);
