@@ -18,8 +18,10 @@ In the body, add a &lt;script&gt; tag and create a new system. Pass the system a
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Flora</title>
-    <link rel="stylesheet" href="css/flora.combined.min.css" type="text/css" charset="utf-8">
-    <script src="js/flora.combined.min.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="css/burner.css" type="text/css" charset="utf-8" />
+    <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8" />
+    <script src="scripts/burner.js" type="text/javascript" charset="utf-8"></script>
+    <script src="scripts/flora.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
