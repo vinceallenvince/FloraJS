@@ -22,8 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 2.0.5 */
-/* Build time: June 2, 2013 06:03:33 *//**
+/* Version: 2.0.6 */
+/* Build time: June 7, 2013 09:28:06 *//**
  * @namespace
  * @requires Burner
  */
@@ -1240,7 +1240,9 @@ exports.Utils.extend(Mover, Burner.Item);
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
  * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
+ * @param {boolean} [opt_options.pointToParentDirection = false] If true, object points in the direction of the parent's velocity.
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the object's parent.
+ * @param {number} [opt_options.offsetAngle = 0] The rotation around the center of the object's parent.
  * @param {function} [opt_options.beforeStep = null] A function to run before the step() function.
  * @param {function} [opt_options.afterStep = null] A function to run after the step() function.
  */
@@ -1254,7 +1256,9 @@ Mover.prototype.init = function(options) {
   this.pointToDirection = options.pointToDirection === undefined ? true : options.pointToDirection;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
+  this.pointToParentDirection = !!options.pointToParentDirection;
   this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
+  this.offsetAngle = options.offsetAngle || 0;
   this.beforeStep = options.beforeStep || null;
   this.afterStep = options.afterStep || null;
 
@@ -1471,6 +1475,10 @@ Mover.prototype.step = function() {
       this.location.x = this.parent.location.x;
       this.location.y = this.parent.location.y;
       this.location.add(new Burner.Vector(x, y)); // position the child
+
+      if (this.pointToParentDirection) {
+        this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.parent.velocity.y, this.parent.velocity.x));
+      }
 
     } else {
       this.location = this.parent.location;
