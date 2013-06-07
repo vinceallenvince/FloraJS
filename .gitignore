@@ -4,6 +4,8 @@ build/
 docs/
 lib/
 tests/lib/
+gists/
+assets/
 
 # FILES #
 #########
