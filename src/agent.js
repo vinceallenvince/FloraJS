@@ -148,7 +148,7 @@ Agent.prototype.applyForces = function() {
     this.applyForce(dir); // constantly applies a force
   }
 
-  if (this.followMouse) { // follow mouse
+  if (this.followMouse && !Burner.System.supportedFeatures.touch) { // follow mouse
     var t = {
       location: new Burner.Vector(Burner.System.mouse.location.x,
           Burner.System.mouse.location.y)
