@@ -23,7 +23,7 @@ exports.Utils.extend(Connector, Burner.Item);
  * @param {number} [options.zIndex = 0] zIndex.
  * @param {number} [options.borderWidth = 1] Border width.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
- * @param {Array} [options.borderColor = [100, 100, 100]] Border color.
+ * @param {Array} [options.borderColor = [150, 150, 150]] Border color.
  */
 Connector.prototype.init = function(options) {
 
@@ -39,7 +39,7 @@ Connector.prototype.init = function(options) {
   this.borderWidth = 1;
   this.borderRadius = 0;
   this.borderStyle = 'dotted';
-  this.borderColor = [150, 150, 150];
+  this.borderColor = options.borderColor === undefined ? [150, 150, 150] : options.borderColor;
 
   this.width = 0;
   this.height = 0;

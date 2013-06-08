@@ -22,8 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 2.0.6 */
-/* Build time: June 7, 2013 09:28:06 *//**
+/* Version: 2.0.7 */
+/* Build time: June 8, 2013 12:21:30 *//**
  * @namespace
  * @requires Burner
  */
@@ -408,6 +408,7 @@ Utils.capitalizeFirstLetter = function(string) {
 /**
  * Determines if this object is inside another.
  *
+ * @param {Object} obj The object.
  * @param {Object} container The containing object.
  * @returns {boolean} Returns true if the object is inside the container.
  */
@@ -1236,7 +1237,7 @@ exports.Utils.extend(Mover, Burner.Item);
  * @param {number} [opt_options.height = 10] Height
  * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
  * @param {number} [opt_options.motorSpeed = 2] Motor speed
- * @param {number} [opt_options.angle = 10] Angle
+ * @param {number} [opt_options.angle = 0] Angle
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
  * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
@@ -1567,8 +1568,6 @@ Mover.prototype._checkAvoidEdges = function() {
  * @returns {Object} A force to apply.
  */
 Mover.prototype.drag = function(target) {
-
-
 
   var speed = this.velocity.mag(),
     dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
@@ -2410,7 +2409,7 @@ exports.Utils.extend(Connector, Burner.Item);
  * @param {number} [options.zIndex = 0] zIndex.
  * @param {number} [options.borderWidth = 1] Border width.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
- * @param {Array} [options.borderColor = [100, 100, 100]] Border color.
+ * @param {Array} [options.borderColor = [150, 150, 150]] Border color.
  */
 Connector.prototype.init = function(options) {
 
@@ -2426,7 +2425,7 @@ Connector.prototype.init = function(options) {
   this.borderWidth = 1;
   this.borderRadius = 0;
   this.borderStyle = 'dotted';
-  this.borderColor = [150, 150, 150];
+  this.borderColor = options.borderColor === undefined ? [150, 150, 150] : options.borderColor;
 
   this.width = 0;
   this.height = 0;

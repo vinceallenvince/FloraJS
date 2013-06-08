@@ -22,7 +22,7 @@ exports.Utils.extend(Mover, Burner.Item);
  * @param {number} [opt_options.height = 10] Height
  * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
  * @param {number} [opt_options.motorSpeed = 2] Motor speed
- * @param {number} [opt_options.angle = 10] Angle
+ * @param {number} [opt_options.angle = 0] Angle
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
  * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
@@ -353,8 +353,6 @@ Mover.prototype._checkAvoidEdges = function() {
  * @returns {Object} A force to apply.
  */
 Mover.prototype.drag = function(target) {
-
-
 
   var speed = this.velocity.mag(),
     dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
