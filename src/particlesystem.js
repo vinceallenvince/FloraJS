@@ -67,6 +67,11 @@ ParticleSystem.prototype.init = function(opt_options) {
   this.borderRadius = options.borderRadius || 0;
   this.clock = 0;
 
+  if (this.particleOptions.acceleration) {
+    this.initParticleAcceleration = new Burner.Vector(this.particleOptions.acceleration.x,
+      this.particleOptions.acceleration.y);
+  }
+
   var pl = new exports.ColorPalette();
   pl.addColor({ // adds a random sampling of colors to palette
     min: 12,
@@ -78,8 +83,7 @@ ParticleSystem.prototype.init = function(opt_options) {
   this.beforeStep = function () {
 
     var location, offset,
-        acceleration = this.particleOptions.acceleration,
-        maxSpeed = this.particleOptions.maxSpeed;
+        initAcceleration = this.initParticleAcceleration;
 
     if (this.life < this.lifespan) {
       this.life += 1;
@@ -90,10 +94,10 @@ ParticleSystem.prototype.init = function(opt_options) {
 
     if (this.clock % this.burstRate === 0) {
 
-      location = this.getLocation(); // use the system's location
+      location = this.getLocation(); // use the particle system's location
       offset = new Burner.Vector(1, 1); // get the emit radius
       offset.normalize();
-      offset.mult(this.emitRadius); // expand emit randius in a random direction
+      offset.mult(this.emitRadius); // expand emit radius in a random direction
       offset.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
       location.add(offset);
 
@@ -104,11 +108,9 @@ ParticleSystem.prototype.init = function(opt_options) {
         this.particleOptions.borderStyle = 'solid';
         this.particleOptions.borderColor = pl.getColor();
         this.particleOptions.boxShadowColor = pl.getColor();
-        this.particleOptions.acceleration = new Burner.Vector(1, 1);
-        this.particleOptions.acceleration.normalize();
-        this.particleOptions.acceleration.mult(maxSpeed ? maxSpeed : 3);
-        this.particleOptions.acceleration.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
-        this.particleOptions.velocity = new Burner.Vector();
+        if (initAcceleration) {
+          this.particleOptions.acceleration = new Burner.Vector(initAcceleration.x, initAcceleration.y);
+        }
         this.particleOptions.location = ParticleSystem.getParticleLocation(location);
 
         Burner.System.add('Particle', this.particleOptions);

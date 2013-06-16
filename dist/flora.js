@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /* Version: 2.0.8 */
-/* Build time: June 8, 2013 09:58:32 *//**
+/* Build time: June 16, 2013 07:51:47 *//**
  * @namespace
  * @requires Burner
  */
@@ -352,27 +352,27 @@ Utils.log = function(msg) {
 
 /**
  * @returns {Object} The current window width and height.
- * @example getWindowDim() returns {width: 1024, height: 768}
+ * @example getWindowSize() returns {width: 1024, height: 768}
  */
 Utils.getWindowSize = function() {
   var d = {
     'width' : false,
     'height' : false
   };
-  if (typeof(window.innerWidth) !== "undefined") {
+  if (typeof(window.innerWidth) !== 'undefined') {
     d.width = window.innerWidth;
-  } else if (typeof(document.documentElement) !== "undefined" &&
-      typeof(document.documentElement.clientWidth) !== "undefined") {
+  } else if (typeof(document.documentElement) !== 'undefined' &&
+      typeof(document.documentElement.clientWidth) !== 'undefined') {
     d.width = document.documentElement.clientWidth;
-  } else if (typeof(document.body) !== "undefined") {
+  } else if (typeof(document.body) !== 'undefined') {
     d.width = document.body.clientWidth;
   }
-  if (typeof(window.innerHeight) !== "undefined") {
+  if (typeof(window.innerHeight) !== 'undefined') {
     d.height = window.innerHeight;
-  } else if (typeof(document.documentElement) !== "undefined" &&
-      typeof(document.documentElement.clientHeight) !== "undefined") {
+  } else if (typeof(document.documentElement) !== 'undefined' &&
+      typeof(document.documentElement.clientHeight) !== 'undefined') {
     d.height = document.documentElement.clientHeight;
-  } else if (typeof(document.body) !== "undefined") {
+  } else if (typeof(document.body) !== 'undefined') {
     d.height = document.body.clientHeight;
   }
   return d;
@@ -406,7 +406,7 @@ Utils.capitalizeFirstLetter = function(string) {
 };
 
 /**
- * Determines if this object is inside another.
+ * Determines if one object is inside another.
  *
  * @param {Object} obj The object.
  * @param {Object} container The containing object.
@@ -1307,8 +1307,6 @@ Mover.prototype.init = function(options) {
   }
 };
 
-Mover.prototype.name = 'Mover';
-
 Mover.prototype.mouseover = function(e) {
   this.isMouseOut = false;
   clearInterval(this.mouseOutInterval);
@@ -1689,8 +1687,6 @@ Agent.prototype.init = function(opt_options) {
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
 };
 
-Agent.prototype.name = 'Agent';
-
 /**
  * Applies Agent-specific forces.
  *
@@ -2015,10 +2011,9 @@ exports.Agent = Agent;
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Walker(opt_options) {
-
   var options = opt_options || {};
+  options.name = options.name || 'Walker';
   exports.Mover.call(this, options);
-  this.name = 'Walker';
 }
 exports.Utils.extend(Walker, exports.Mover);
 
@@ -2163,8 +2158,6 @@ Sensor.prototype.init = function(opt_options) {
   this.borderStyle = 'solid';
   this.borderColor = [255, 255, 255];
 };
-
-Sensor.prototype.name = 'Sensor';
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -2432,8 +2425,6 @@ Connector.prototype.init = function(options) {
   this.color = 'transparent';
 };
 
-Connector.prototype.name = 'Connector';
-
 /**
  * Called every frame, step() updates the instance's properties.
  */
@@ -2498,8 +2489,6 @@ Point.prototype.init = function(opt_options) {
   this.borderColor = options.borderColor || [60, 60, 60];
 };
 
-Point.prototype.name = 'Point';
-
 exports.Point = Point;
 /*global exports, Burner */
 /**
@@ -2527,7 +2516,7 @@ exports.Utils.extend(Particle, exports.Agent);
  * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
  * @param {boolean} {opt_options.fade = true} If true, opacity decreases proportionally with life.
  * @param {boolean} {opt_options.shrink = true} If true, width and height decrease proportionally with life.
- * @param {boolean} [opt_options.checkEdges = false] Set to true to check the object's location against the world's bounds.
+ * @param {boolean} [opt_options.checkWorldEdges = false] Set to true to check the object's location against the world's bounds.
  * @param {number} [opt_options.maxSpeed = 4] Maximum speed.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  * @param {Array} [opt_options.color = [200, 200, 200]] Color.
@@ -2549,7 +2538,7 @@ Particle.prototype.init = function(opt_options) {
   this.life = options.life || 0;
   this.fade = options.fade === undefined ? true : false;
   this.shrink = options.shrink === undefined ? true : false;
-  this.checkEdges = !!options.checkEdges;
+  this.checkWorldEdges = !!options.checkWorldEdges;
   this.maxSpeed = options.maxSpeed === undefined ? 4 : 0;
   this.zIndex = options.zIndex === undefined ? 1 : 0;
   this.color = options.color || [200, 200, 200];
@@ -2559,18 +2548,18 @@ Particle.prototype.init = function(opt_options) {
   this.borderRadius = options.borderRadius === undefined ? 100 : 0;
   this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : 0;
   this.boxShadowColor = options.boxShadowColor || 'transparent';
-
   if (!options.acceleration) {
     this.acceleration = new Burner.Vector(1, 1);
     this.acceleration.normalize();
-    this.acceleration.mult(30);
+    this.acceleration.mult(this.maxSpeed ? this.maxSpeed : 3);
     this.acceleration.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
+  }
+  if (!options.velocity) {
+    this.velocity = new Burner.Vector();
   }
   this.initWidth = this.width;
   this.initHeight = this.height;
 };
-
-Particle.prototype.name = 'Particle';
 
 /**
  * Calculates location via sum of acceleration + velocity.
@@ -2703,6 +2692,11 @@ ParticleSystem.prototype.init = function(opt_options) {
   this.borderRadius = options.borderRadius || 0;
   this.clock = 0;
 
+  if (this.particleOptions.acceleration) {
+    this.initParticleAcceleration = new Burner.Vector(this.particleOptions.acceleration.x,
+      this.particleOptions.acceleration.y);
+  }
+
   var pl = new exports.ColorPalette();
   pl.addColor({ // adds a random sampling of colors to palette
     min: 12,
@@ -2714,8 +2708,7 @@ ParticleSystem.prototype.init = function(opt_options) {
   this.beforeStep = function () {
 
     var location, offset,
-        acceleration = this.particleOptions.acceleration,
-        maxSpeed = this.particleOptions.maxSpeed;
+        initAcceleration = this.initParticleAcceleration;
 
     if (this.life < this.lifespan) {
       this.life += 1;
@@ -2726,10 +2719,10 @@ ParticleSystem.prototype.init = function(opt_options) {
 
     if (this.clock % this.burstRate === 0) {
 
-      location = this.getLocation(); // use the system's location
+      location = this.getLocation(); // use the particle system's location
       offset = new Burner.Vector(1, 1); // get the emit radius
       offset.normalize();
-      offset.mult(this.emitRadius); // expand emit randius in a random direction
+      offset.mult(this.emitRadius); // expand emit radius in a random direction
       offset.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
       location.add(offset);
 
@@ -2740,11 +2733,9 @@ ParticleSystem.prototype.init = function(opt_options) {
         this.particleOptions.borderStyle = 'solid';
         this.particleOptions.borderColor = pl.getColor();
         this.particleOptions.boxShadowColor = pl.getColor();
-        this.particleOptions.acceleration = new Burner.Vector(1, 1);
-        this.particleOptions.acceleration.normalize();
-        this.particleOptions.acceleration.mult(maxSpeed ? maxSpeed : 3);
-        this.particleOptions.acceleration.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
-        this.particleOptions.velocity = new Burner.Vector();
+        if (initAcceleration) {
+          this.particleOptions.acceleration = new Burner.Vector(initAcceleration.x, initAcceleration.y);
+        }
         this.particleOptions.location = ParticleSystem.getParticleLocation(location);
 
         Burner.System.add('Particle', this.particleOptions);
@@ -2767,8 +2758,6 @@ ParticleSystem.getParticleLocation = function(location) {
     return new Burner.Vector(location.x, location.y);
   })();
 };
-
-ParticleSystem.prototype.name = 'ParticleSystem';
 
 exports.ParticleSystem = ParticleSystem;
 /*global exports, Burner */
@@ -2853,8 +2842,6 @@ Oscillator.prototype.init = function(opt_options) {
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
 };
 
-Oscillator.prototype.name = 'Oscillator';
-
 /**
  * Updates the oscillator's properties.
  */
@@ -2888,7 +2875,7 @@ Oscillator.prototype.step = function () {
       this._checkCameraEdges();
     }
 
-    if (this.checkEdges || this.wrapEdges) {
+    if (this.checkWorldEdges || this.wrapWorldEdges) {
       this._checkWorldEdges(world);
     }
 
@@ -3025,8 +3012,6 @@ Attractor.prototype.init = function(opt_options) {
   Burner.System.updateCache(this);
 };
 
-Attractor.prototype.name = 'Attractor';
-
 exports.Attractor = Attractor;
 /*global exports, Burner */
 /**
@@ -3085,8 +3070,6 @@ Repeller.prototype.init = function(opt_options) {
 
   Burner.System.updateCache(this);
 };
-
-Repeller.prototype.name = 'Repeller';
 
 exports.Repeller = Repeller;
 /*global exports, Burner */
@@ -3180,8 +3163,6 @@ Stimulus.prototype.init = function(opt_options) {
   Burner.System.updateCache(this);
 };
 
-Stimulus.prototype.name = 'Stimulus';
-
 exports.Stimulus = Stimulus;
 /*global exports, Burner */
 /**
@@ -3219,8 +3200,6 @@ FlowField.prototype.init = function(opt_options) {
   // if a world is not passed, use the first world in the system
   this.world = options.world || Burner.System.firstWorld();
 };
-
-FlowField.prototype.name = 'FlowField';
 
 /**
  * Builds a FlowField.

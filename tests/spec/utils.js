@@ -87,19 +87,4 @@ describe("Utils", function() {
     objA.location.x = 2000;
     expect(utils.isInside(objA, objB)).toEqual(false);
   });
-
-/*extend
-map
-getRandomNumber
-degreesToRadians
-radiansToDegrees
-constrain
-clone
-addEvent
-log
-getWindowSize
-getDataType
-capitalizeFirstLetter
-isInside
-mouseIsInsideWorld*/
 });

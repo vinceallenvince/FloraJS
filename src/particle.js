@@ -56,12 +56,14 @@ Particle.prototype.init = function(opt_options) {
   this.borderRadius = options.borderRadius === undefined ? 100 : 0;
   this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : 0;
   this.boxShadowColor = options.boxShadowColor || 'transparent';
-
   if (!options.acceleration) {
     this.acceleration = new Burner.Vector(1, 1);
     this.acceleration.normalize();
-    this.acceleration.mult(30);
+    this.acceleration.mult(this.maxSpeed ? this.maxSpeed : 3);
     this.acceleration.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
+  }
+  if (!options.velocity) {
+    this.velocity = new Burner.Vector();
   }
   this.initWidth = this.width;
   this.initHeight = this.height;
