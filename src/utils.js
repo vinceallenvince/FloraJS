@@ -150,27 +150,27 @@ Utils.log = function(msg) {
 
 /**
  * @returns {Object} The current window width and height.
- * @example getWindowDim() returns {width: 1024, height: 768}
+ * @example getWindowSize() returns {width: 1024, height: 768}
  */
 Utils.getWindowSize = function() {
   var d = {
     'width' : false,
     'height' : false
   };
-  if (typeof(window.innerWidth) !== "undefined") {
+  if (typeof(window.innerWidth) !== 'undefined') {
     d.width = window.innerWidth;
-  } else if (typeof(document.documentElement) !== "undefined" &&
-      typeof(document.documentElement.clientWidth) !== "undefined") {
+  } else if (typeof(document.documentElement) !== 'undefined' &&
+      typeof(document.documentElement.clientWidth) !== 'undefined') {
     d.width = document.documentElement.clientWidth;
-  } else if (typeof(document.body) !== "undefined") {
+  } else if (typeof(document.body) !== 'undefined') {
     d.width = document.body.clientWidth;
   }
-  if (typeof(window.innerHeight) !== "undefined") {
+  if (typeof(window.innerHeight) !== 'undefined') {
     d.height = window.innerHeight;
-  } else if (typeof(document.documentElement) !== "undefined" &&
-      typeof(document.documentElement.clientHeight) !== "undefined") {
+  } else if (typeof(document.documentElement) !== 'undefined' &&
+      typeof(document.documentElement.clientHeight) !== 'undefined') {
     d.height = document.documentElement.clientHeight;
-  } else if (typeof(document.body) !== "undefined") {
+  } else if (typeof(document.body) !== 'undefined') {
     d.height = document.body.clientHeight;
   }
   return d;

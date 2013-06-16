@@ -22,8 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version: 2.0.7 */
-/* Build time: June 8, 2013 12:21:30 *//**
+/* Version: 2.0.8 */
+/* Build time: June 8, 2013 09:58:32 *//**
  * @namespace
  * @requires Burner
  */
@@ -1769,7 +1769,7 @@ Agent.prototype.applyForces = function() {
     this.applyForce(dir); // constantly applies a force
   }
 
-  if (this.followMouse) { // follow mouse
+  if (this.followMouse && !Burner.System.supportedFeatures.touch) { // follow mouse
     var t = {
       location: new Burner.Vector(Burner.System.mouse.location.x,
           Burner.System.mouse.location.y)
@@ -3049,7 +3049,7 @@ exports.Utils.extend(Repeller, exports.Agent);
  *
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.G = 1] Universal Gravitational Constant.
- * @param {number} [opt_options.mass = 100] Mass. Increase for a greater gravitational effect.
+ * @param {number} [opt_options.mass = 1000] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 10] Width.
  * @param {number} [opt_options.height = 10] Height.
