@@ -10,16 +10,16 @@ describe("Liquid", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(function() {
+    system = Burner.System;
+    system.init(function() {
       this.add('Liquid');
-    }, document.getElementById('worldA'));
+    }, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
-    obj = system.lastElement();
+    obj = system.lastItem();
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 

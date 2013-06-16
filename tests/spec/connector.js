@@ -4,33 +4,24 @@ describe("Connector", function() {
 
   beforeEach(function() {
 
-  });
-
-  afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
-    obj = null;
-  });
-
-  it("should create a Connector with its required properties.", function() {
-
     // create world element
     var world = document.createElement('div');
     world.id = 'worldA';
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(function() {
+    system = Burner.System;
+    system.init(function() {
 
       var pointA = this.add('Point', {
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.1, this.world.bounds[2] * 0.15);
+          return new Burner.Vector(0, 0);
         }
       });
 
       var pointB = this.add('Point', {
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.9, this.world.bounds[2] * 0.5);
+          return new Burner.Vector(100, 0);
         }
       });
 
@@ -38,22 +29,28 @@ describe("Connector", function() {
         parentA: pointA,
         parentB: pointB
       });
-    }, document.getElementById('worldA'));
+
+    }, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
-    obj = system.lastElement();
+    obj = system.lastItem();
+  });
+
+  afterEach(function() {
+    system._destroySystem();
+    obj = null;
+  });
+
+  it("should create a Connector with its required properties.", function() {
+
     obj.step();
     obj.draw();
 
-    // !! depends on browser width
-    /*
     expect(obj.opacity).toEqual(1);
     expect(obj.zIndex).toEqual(0);
-    expect(obj.width).toEqual(940);
+    expect(obj.width).toEqual(95);
     expect(obj.height).toEqual(0);
-    expect(obj.color).toEqual('transparent');*/
-
+    expect(obj.color).toEqual('transparent');
     expect(obj.name).toEqual('Connector');
   });
-  // !! create Points and test length of connector
 
 });

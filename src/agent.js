@@ -68,8 +68,6 @@ Agent.prototype.init = function(opt_options) {
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
 };
 
-Agent.prototype.name = 'Agent';
-
 /**
  * Applies Agent-specific forces.
  *

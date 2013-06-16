@@ -10,21 +10,21 @@ describe("A new ColorPalette", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(null, document.getElementById('worldA'));
+    system = Burner.System;
+    system.init(null, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
-    obj = new exports.ColorPalette();
+    obj = new exports.ColorPalette(1);
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
   it("should have its required properties.", function() {
     expect(getDataType(obj._gradients)).toEqual('array');
     expect(getDataType(obj._colors)).toEqual('array');
-    expect(obj.id).toEqual(0);
+    expect(obj.id).toEqual(1);
     expect(obj.name).toEqual('ColorPalette');
   });
 

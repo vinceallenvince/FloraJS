@@ -10,20 +10,20 @@ describe("A new BorderPalette", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(null, document.getElementById('worldA'));
+    system = Burner.System;
+    system.init(null, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
     obj = new exports.BorderPalette();
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
   it("should have its required properties.", function() {
     expect(getDataType(obj._borders)).toEqual('array');
-    expect(obj.id).toEqual(0);
+    expect(obj.id).toEqual(1);
     expect(obj.name).toEqual('BorderPalette');
   });
 

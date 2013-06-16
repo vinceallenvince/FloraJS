@@ -46,8 +46,6 @@ Connector.prototype.init = function(options) {
   this.color = 'transparent';
 };
 
-Connector.prototype.name = 'Connector';
-
 /**
  * Called every frame, step() updates the instance's properties.
  */

@@ -56,6 +56,4 @@ Repeller.prototype.init = function(opt_options) {
   Burner.System.updateCache(this);
 };
 
-Repeller.prototype.name = 'Repeller';
-
 exports.Repeller = Repeller;

@@ -24,7 +24,7 @@ exports.Utils.extend(Particle, exports.Agent);
  * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
  * @param {boolean} {opt_options.fade = true} If true, opacity decreases proportionally with life.
  * @param {boolean} {opt_options.shrink = true} If true, width and height decrease proportionally with life.
- * @param {boolean} [opt_options.checkEdges = false] Set to true to check the object's location against the world's bounds.
+ * @param {boolean} [opt_options.checkWorldEdges = false] Set to true to check the object's location against the world's bounds.
  * @param {number} [opt_options.maxSpeed = 4] Maximum speed.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  * @param {Array} [opt_options.color = [200, 200, 200]] Color.
@@ -46,7 +46,7 @@ Particle.prototype.init = function(opt_options) {
   this.life = options.life || 0;
   this.fade = options.fade === undefined ? true : false;
   this.shrink = options.shrink === undefined ? true : false;
-  this.checkEdges = !!options.checkEdges;
+  this.checkWorldEdges = !!options.checkWorldEdges;
   this.maxSpeed = options.maxSpeed === undefined ? 4 : 0;
   this.zIndex = options.zIndex === undefined ? 1 : 0;
   this.color = options.color || [200, 200, 200];
@@ -66,8 +66,6 @@ Particle.prototype.init = function(opt_options) {
   this.initWidth = this.width;
   this.initHeight = this.height;
 };
-
-Particle.prototype.name = 'Particle';
 
 /**
  * Calculates location via sum of acceleration + velocity.

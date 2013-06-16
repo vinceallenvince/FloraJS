@@ -3,19 +3,20 @@ describe("A new Sensor", function() {
   var agent, sensor, heat, v, getDataType, system, records;
 
   beforeEach(function() {
+
     // create world element
     var world = document.createElement('div');
     world.id = 'worldA';
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(function() {
+    system = Burner.System;
+    system.init(function() {
 
-      this.add('Heat', {
-        draggable: true,
+      this.add('Stimulus', {
+        type: 'Heat',
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.5, this.world.bounds[2] * 0.5);
+          return new Burner.Vector(this.world.bounds[1] * 0.5, this.world.bounds[2] * 0.5);
         }
       });
 
@@ -29,38 +30,38 @@ describe("A new Sensor", function() {
         mass: 10,
         motorSpeed: 4,
         location: function () {
-          return new Flora.Vector(this.world.bounds[1] * 0.5, this.world.bounds[2] * 0.5);
+          return new Burner.Vector(this.world.bounds[1] * 0.5, this.world.bounds[2] * 0.5);
         }
       });
-    }, document.getElementById('worldA'));
+    }, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
-    agent = system.lastElement();
-    sensor = system.getAllElementsByName('Sensor')[0];
-    heat = system.getAllElementsByName('Heat')[0];
+    agent = system.lastItem();
+    sensor = system.getAllItemsByName('Sensor')[0];
+    heat = system.getAllItemsByName('Heat')[0];
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     agent = null;
     sensor = null;
+    heat = null;
   });
 
   it("should have its required properties.", function() {
-    expect(typeof sensor.type).toEqual('string');
-    expect(typeof sensor.behavior).toEqual('string');
-    expect(typeof sensor.sensitivity).toEqual('number');
-    expect(typeof sensor.width).toEqual('number');
-    expect(typeof sensor.height).toEqual('number');
-    expect(typeof sensor.offsetDistance).toEqual('number');
-    expect(typeof sensor.offsetAngle).toEqual('number');
-    expect(typeof sensor.opacity).toEqual('number');
-    expect(typeof sensor.target).toEqual('object');
-    expect(typeof sensor.activated).toEqual('boolean');
+    expect(getDataType(sensor.type)).toEqual('string');
+    expect(getDataType(sensor.behavior)).toEqual('string');
+    expect(getDataType(sensor.sensitivity)).toEqual('number');
+    expect(getDataType(sensor.width)).toEqual('number');
+    expect(getDataType(sensor.height)).toEqual('number');
+    expect(getDataType(sensor.offsetDistance)).toEqual('number');
+    expect(getDataType(sensor.offsetAngle)).toEqual('number');
+    expect(getDataType(sensor.opacity)).toEqual('number');
+    expect(getDataType(sensor.target)).toEqual('object');
+    expect(getDataType(sensor.activated)).toEqual('boolean');
     expect(sensor.name).toEqual('Sensor');
   });
 
   it("should have a method getActivationForce() that return a force to apply to an agentwhen its sensor is activated.", function() {
-    // !! depends on browser width
     /*sensor.target = heat;
     sensor.activated = true;
 

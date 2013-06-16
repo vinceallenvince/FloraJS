@@ -10,22 +10,22 @@ describe("A new Caption", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(function() {
-
+    system = Burner.System;
+    system.init(function() {
       this.add('Caption', {
         text: 'Simple',
         opacity: 0.4,
         borderColor: 'transparent',
         position: 'top center'
       });
-    }, document.getElementById('worldA'));
+    }, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
-    obj = system.lastElement();
+
+    obj = system.lastItem();
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
@@ -35,7 +35,7 @@ describe("A new Caption", function() {
     expect(getDataType(obj.text)).toEqual('string');
     expect(getDataType(obj.opacity)).toEqual('number');
     expect(getDataType(obj.color)).toEqual('array');
-    expect(getDataType(obj.borderWidth)).toEqual('string');
+    expect(getDataType(obj.borderWidth)).toEqual('number');
     expect(getDataType(obj.borderStyle)).toEqual('string');
     expect(getDataType(obj.borderColor)).toEqual('string');
     expect(getDataType(obj.colorMode)).toEqual('string');

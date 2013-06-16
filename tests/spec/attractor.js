@@ -10,13 +10,13 @@ describe("Attractor", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(null, document.getElementById('worldA'));
+    system = Burner.System;
+    system.init(null, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
@@ -26,7 +26,7 @@ describe("Attractor", function() {
     expect(getDataType(obj.mass)).toEqual('number');
     expect(getDataType(obj.isStatic)).toEqual('boolean');
     expect(getDataType(obj.width)).toEqual('number');
-    expect(getDataType(obj.width)).toEqual('number');
+    expect(getDataType(obj.height)).toEqual('number');
     expect(getDataType(obj.opacity)).toEqual('number');
     expect(getDataType(obj.zIndex)).toEqual('number');
     expect(obj.name).toEqual('Attractor');

@@ -89,6 +89,4 @@ Stimulus.prototype.init = function(opt_options) {
   Burner.System.updateCache(this);
 };
 
-Stimulus.prototype.name = 'Stimulus';
-
 exports.Stimulus = Stimulus;

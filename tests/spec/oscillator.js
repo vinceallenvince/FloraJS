@@ -10,13 +10,13 @@ describe("Oscillator", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(null, document.getElementById('worldA'));
+    system = Burner.System;
+    system.init(null, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 

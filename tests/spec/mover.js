@@ -10,119 +10,79 @@ describe("Mover", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(function() {
-
-    }, document.getElementById('worldA'));
+    system = Burner.System;
+    system.init(function() {
+      this.add('Mover', {
+        lifespan: 10,
+        location: function() {
+          return new Burner.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
+        }
+      });
+    }, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
+    obj = system.lastItem();
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
   it("should create a mover with its required properties.", function() {
-    obj = system.add('Mover', {
-      location: function() {
-        return new Flora.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
-      }
-    });
-    expect(getDataType(obj.el)).toEqual('object');
-    expect(getDataType(obj._forceVector)).toEqual('object');
-    expect(getDataType(obj.acceleration)).toEqual('object');
-    expect(getDataType(obj.clock)).toEqual('number');
-    expect(getDataType(obj.height)).toEqual('number');
     expect(getDataType(obj.id)).toEqual('string');
-    expect(getDataType(obj.location)).toEqual('object');
-    expect(getDataType(obj.mass)).toEqual('number');
-    expect(getDataType(obj.name)).toEqual('string');
-    expect(getDataType(obj.options)).toEqual('object');
-    expect(getDataType(obj.velocity)).toEqual('object');
-    expect(getDataType(obj.visibility)).toEqual('string');
+    expect(getDataType(obj.el)).toEqual('object');
     expect(getDataType(obj.width)).toEqual('number');
-    expect(getDataType(obj.world)).toEqual('object');
-    expect(getDataType(obj.lifespan)).toEqual('number');
-    expect(getDataType(obj.life)).toEqual('number');
+    expect(getDataType(obj.height)).toEqual('number');
+    expect(getDataType(obj.color)).toEqual('array');
+    expect(getDataType(obj.motorSpeed)).toEqual('number');
+    expect(getDataType(obj.angle)).toEqual('number');
+    expect(getDataType(obj.pointToDirection)).toEqual('boolean');
+    expect(getDataType(obj.draggable)).toEqual('boolean');
+    expect(getDataType(obj.parent)).toEqual('object');
+    expect(getDataType(obj.pointToParentDirection)).toEqual('boolean');
+    expect(getDataType(obj.offsetDistance)).toEqual('number');
+    expect(getDataType(obj.offsetAngle)).toEqual('number');
+    expect(getDataType(obj.beforeStep)).toEqual('object');
+    expect(getDataType(obj.afterStep)).toEqual('object');
     expect(obj.name).toEqual('Mover');
   });
 
-  it("should have a method step() that updates roperties.", function() {
+  it("should have a method step() that updates properties.", function() {
 
-    obj = system.add('Mover', {
-      location: function() {
-        return new Flora.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
-      }
-    });
+    var lifeLast = obj.life;
 
-    var clockLast = obj.clock,
-        clock = obj.step();
+    obj.step();
 
-    expect(clock - clockLast).toEqual(1);
+    expect(obj.life - lifeLast).toEqual(1);
   });
 
   it("should have a method applyForce() that updates acceleration.", function() {
 
-    obj = system.add('Mover', {
-      location: function() {
-        return new Flora.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
-      }
-    });
-
-    obj.acceleration = new Flora.Vector();
+    obj.acceleration = new Burner.Vector();
     obj.mass = 10;
-    var f = obj.applyForce(new Flora.Vector(10, 5));
+    var f = obj.applyForce(new Burner.Vector(10, 5));
 
     expect(f.x).toEqual(1);
     expect(f.y).toEqual(0.5);
   });
 
   it("should have a method draw() that updates the corresponding DOM element's style property.", function() {
-
-    obj = system.add('Mover', {
-      location: function() {
-        return new Flora.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
-      }
-    });
-
-    var cssText = obj.draw();
-    expect(getDataType(cssText)).toEqual('string');
-  });
-
-  it("should have a method getCSSText() that concatenates a new cssText string based on passed properties.", function() {
-
-    obj = system.add('Mover', {
-      location: function() {
-        return new Flora.Vector(this.world.bounds[1]/2, this.world.bounds[2]/2);
-      }
-    });
-
-    var cssText = obj._getCSSText({
-      x: 100,
-      y: 50,
-      width: 20,
-      height: 20,
-      visibility: 'visible',
-      a: 90,
-      s: 1
-    });
-    // !! depends on browser width
-    //console.log(cssText);
-    //expect(cssText).toEqual('-webkit-transform: translate3d(100px, 50px, 0) rotate(90deg) scaleX(1) scaleY(1);-moz-transform: translate3d(100px, 50px, 0) rotate(90deg) scaleX(1) scaleY(1);-o-transform: translate3d(100px, 50px, 0) rotate(90deg) scaleX(1) scaleY(1);-ms-transform: translate3d(100px, 50px, 0) rotate(90deg) scaleX(1) scaleY(1);width: 20px;height: 20px;opacity: undefined;visibility: visible;background-color: undefined;z-index: undefined');
+    obj.draw();
+    expect(getDataType(obj.el.style.cssText)).toEqual('string');
   });
 
   it("should have a method seek() that calculates a steering force to apply to an object seeking another object.", function() {
 
       var walker = system.add('Walker', {
         location: function() {
-          return new Flora.Vector(10, 10);
+          return new Burner.Vector(10, 10);
         }
       });
 
       var mover = system.add('Mover', {
         seekTarget: walker,
         location: function() {
-          return new Flora.Vector(20000, 20000);
+          return new Burner.Vector(20000, 20000);
         }
       });
 
@@ -132,24 +92,31 @@ describe("Mover", function() {
 
   it("should have a method checkWorldEdges() that determines if this object is outside the world bounds.", function() {
 
+    var world = system.firstItem();
+
     var mover = system.add('Mover', {
       location: function() {
-        return new Flora.Vector(this.world.bounds[1] * 2, this.world.bounds[2] * 2);
+        return new Burner.Vector(world.bounds[1] * 2, world.bounds[2] * 2);
       }
     });
 
-    expect(mover._checkWorldEdges()).toEqual(true);
+    mover._checkWorldEdges();
 
-    var w = exports.Burner.System.getWorld(document.getElementById('worldA'));
-    w.bounds[2] = 2000;
+    expect(mover.location.x <= mover.world.width).toEqual(true);
+
+    //
+
+    world.bounds[2] = 2000;
 
     mover = system.add('Mover', {
       location: function() {
-        return new Flora.Vector(this.world.bounds[3] + 100, this.world.bounds[0] + 100);
+        return new Burner.Vector(this.world.bounds[3] + 100, this.world.bounds[0] + 100);
       }
     });
 
-    expect(mover._checkWorldEdges()).toEqual(false);
+    mover._checkWorldEdges();
+
+    expect(mover.world.width > mover.location.x).toEqual(true);
 
   });
   // _checkCameraEdges

@@ -12,13 +12,13 @@ describe("FlowField", function() {
     world.style.height = '768px';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(null, document.getElementById('worldA'));
+    system = Burner.System;
+    system.init(null, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
@@ -36,7 +36,7 @@ describe("FlowField", function() {
   it("should have a method build() that creates a list of vectors that define the field.", function() {
     obj = system.add('FlowField', { createMarkers: true });
     obj.build();
-    expect(obj.field[0][0] instanceof Flora.Vector).toEqual(true);
+    expect(obj.field[0][0] instanceof Burner.Vector).toEqual(true);
   });
 
 });

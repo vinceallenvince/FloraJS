@@ -35,8 +35,6 @@ FlowField.prototype.init = function(opt_options) {
   this.world = options.world || Burner.System.firstWorld();
 };
 
-FlowField.prototype.name = 'FlowField';
-
 /**
  * Builds a FlowField.
  */

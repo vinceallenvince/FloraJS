@@ -56,8 +56,6 @@ Sensor.prototype.init = function(opt_options) {
   this.borderColor = [255, 255, 255];
 };
 
-Sensor.prototype.name = 'Sensor';
-
 /**
  * Called every frame, step() updates the instance's properties.
  */

@@ -10,16 +10,16 @@ describe("Walker", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(function() {
+    system = Burner.System;
+    system.init(function() {
       this.add('Walker');
-    }, document.getElementById('worldA'));
+    }, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
-    obj = system.lastElement();
+    obj = system.lastItem();
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
@@ -38,8 +38,8 @@ describe("Walker", function() {
     expect(getDataType(obj.randomRadius)).toEqual('number');
     expect(getDataType(obj.borderWidth)).toEqual('number');
     expect(getDataType(obj.borderStyle)).toEqual('string');
-    expect(getDataType(obj.borderColor)).toEqual('string');
-    expect(getDataType(obj.borderRadius)).toEqual('string');
+    expect(getDataType(obj.borderColor)).toEqual('array');
+    expect(getDataType(obj.borderRadius)).toEqual('number');
     expect(obj.name).toEqual('Walker');
   });
 

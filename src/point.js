@@ -44,6 +44,4 @@ Point.prototype.init = function(opt_options) {
   this.borderColor = options.borderColor || [60, 60, 60];
 };
 
-Point.prototype.name = 'Point';
-
 exports.Point = Point;

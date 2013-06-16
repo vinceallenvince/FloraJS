@@ -57,6 +57,4 @@ Attractor.prototype.init = function(opt_options) {
   Burner.System.updateCache(this);
 };
 
-Attractor.prototype.name = 'Attractor';
-
 exports.Attractor = Attractor;

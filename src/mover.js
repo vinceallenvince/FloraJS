@@ -92,8 +92,6 @@ Mover.prototype.init = function(options) {
   }
 };
 
-Mover.prototype.name = 'Mover';
-
 Mover.prototype.mouseover = function(e) {
   this.isMouseOut = false;
   clearInterval(this.mouseOutInterval);

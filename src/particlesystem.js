@@ -132,6 +132,4 @@ ParticleSystem.getParticleLocation = function(location) {
   })();
 };
 
-ParticleSystem.prototype.name = 'ParticleSystem';
-
 exports.ParticleSystem = ParticleSystem;

@@ -204,7 +204,7 @@ Utils.capitalizeFirstLetter = function(string) {
 };
 
 /**
- * Determines if this object is inside another.
+ * Determines if one object is inside another.
  *
  * @param {Object} obj The object.
  * @param {Object} container The containing object.

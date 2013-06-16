@@ -80,8 +80,6 @@ Oscillator.prototype.init = function(opt_options) {
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
 };
 
-Oscillator.prototype.name = 'Oscillator';
-
 /**
  * Updates the oscillator's properties.
  */
@@ -115,7 +113,7 @@ Oscillator.prototype.step = function () {
       this._checkCameraEdges();
     }
 
-    if (this.checkEdges || this.wrapEdges) {
+    if (this.checkWorldEdges || this.wrapWorldEdges) {
       this._checkWorldEdges(world);
     }
 

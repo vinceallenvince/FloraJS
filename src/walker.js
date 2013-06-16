@@ -11,10 +11,9 @@
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Walker(opt_options) {
-
   var options = opt_options || {};
+  options.name = options.name || 'Walker';
   exports.Mover.call(this, options);
-  this.name = 'Walker';
 }
 exports.Utils.extend(Walker, exports.Mover);
 

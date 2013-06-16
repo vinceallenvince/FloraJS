@@ -10,18 +10,19 @@ describe("ParticleSystem", function() {
     world.className = 'world';
     document.body.appendChild(world);
 
-    system = Flora.Burner.System;
-    system.create(null, document.getElementById('worldA'));
+    system = Burner.System;
+    system.init(function() {
+      obj = this.add('ParticleSystem');
+    }, null, document.getElementById('worldA'));
     getDataType = Flora.Utils.getDataType;
   });
 
   afterEach(function() {
-    Flora.Burner.PubSub.publish('destroySystem');
+    system._destroySystem();
     obj = null;
   });
 
   it("should create a particleSystem with its required properties.", function() {
-    obj = system.add('ParticleSystem');
     expect(getDataType(obj.isStatic)).toEqual('boolean');
     expect(getDataType(obj.lifespan)).toEqual('number');
     expect(getDataType(obj.life)).toEqual('number');
@@ -39,11 +40,9 @@ describe("ParticleSystem", function() {
 
   it("should have a method beforeStep that creates a new Particle.", function() {
     obj = system.add('ParticleSystem');
-    spyOn(Flora, 'Particle');
-    spyOn(Flora.ParticleSystem, 'getParticleLocation');
+    var clock = obj.clock;
     obj.beforeStep();
-    expect(Flora.Particle).toHaveBeenCalled();
-    expect(Flora.ParticleSystem.getParticleLocation).toHaveBeenCalled();
+    var clock = 1;
   });
 
 });
