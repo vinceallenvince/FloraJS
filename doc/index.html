@@ -93,14 +93,16 @@
 
 <ul><li>gravity {Vector} default: new Vector(0, 1)</li><li>c (coefficient of friction) {number} 0.01</li></ul>
 
-<p>We can change these defaults after the system starts via the 2nd parameter to the Burner.System.init() method.</p>
+<p>We can change these defaults after the system starts by first creating a world and passing options. Next, we pass the world as a 2nd parameter to the Burner.System.init() method.</p>
 
-<pre><code>  Burner.System.init(function() {
-    this.add(&#39;Agent&#39;);
-  }, {
+<pre><code>  var world = new Burner.World(document.body, {
     gravity: new Burner.Vector(0, -1),
     c: 0.75
-  });</code></pre>
+  });
+
+  Burner.System.init(function() {
+    this.add(&#39;Agent&#39;);
+  }, world);</code></pre>
 
 <p>We&#39;ve reversed the World&#39;s gravity and increased its friction. Now the block slowly drifts upwards.</p>
 
@@ -114,14 +116,16 @@
 
 <p>For an example of the Agent&#39;s seek behavior, set &#39;followMouse&#39; to &#39;true&#39; when creating the Agent.</p>
 
-<pre><code>  Burner.System.init(function() {
+<pre><code>  var world = new Burner.World(document.body, {
+    gravity: new Burner.Vector(),
+    c: 0
+  });
+
+  Burner.System.init(function() {
     this.add(&#39;Agent&#39;, {
       followMouse: true
     });
-  }, {
-    gravity: new Burner.Vector(),
-    c: 0
-  });</code></pre>
+  }, world);</code></pre>
 
 <p>http://www.florajs.com/examples/agent<em>follows</em>mouse.html</p>
 
@@ -145,14 +149,16 @@
 
 <p>In the Agent example above, the Agent targeted the mouse. By saving a reference to a new Walker and passing at as a &#39;seekTarget&#39; for a new Agent, we can make the Agent seek the Walker.</p>
 
-<pre><code>  Burner.System.init(function() {
+<pre><code>  var world = new Burner.World(document.body, {
+    gravity: new Burner.Vector(),
+    c: 0
+  });
+
+  Burner.System.init(function() {
     this.add(&#39;Agent&#39;, {
       seekTarget: this.add(&#39;Walker&#39;)
     });
-  }, {
-    gravity: new Burner.Vector(),
-    c: 0
-  });</code></pre>
+  }, world);</code></pre>
 
 <p>http://www.florajs.com/examples/agent<em>seeks</em>walker.html</p>
 
@@ -164,7 +170,12 @@
 
 <p>In the example below, we create 20 Agents and set their &#39;seekTarget&#39; to the Walker. We also set &#39;flocking&#39; to true to enable the flocking behavior.</p>
 
-<pre><code>  Burner.System.init(function() {
+<pre><code>  var world = new Burner.World(document.body, {
+    gravity: new Burner.Vector(),
+    c: 0
+  });
+
+  Burner.System.init(function() {
 
     var walker = this.add(&#39;Walker&#39;);
 
@@ -174,16 +185,18 @@
         flocking: true
       });
     }
-  }, {
-    gravity: new Burner.Vector(),
-    c: 0
-  });</code></pre>
+  }, world);</code></pre>
 
 <p>http://www.florajs.com/examples/agents<em>flock</em>to_walker.html</p>
 
 <p>In the example below, Agents flock to the mouse. We&#39;ve also adjusted the &#39;width&#39; and &#39;height&#39; properties.</p>
 
-<pre><code>  Burner.System.init(function() {
+<pre><code>  var world = new Burner.World(document.body, {
+    gravity: new Burner.Vector(),
+    c: 0
+  });
+
+  Burner.System.init(function() {
     for (var i = 0; i &lt; 10; i++) {
       this.add(&#39;Agent&#39;, {
         followMouse: true,
@@ -192,10 +205,7 @@
         height: 15
       });
     }
-  }, {
-    gravity: new Burner.Vector(),
-    c: 0
-  });</code></pre>
+  }, world);</code></pre>
 
 <p>http://www.florajs.com/examples/agents<em>flock</em>to_mouse.html</p>
 
@@ -207,17 +217,19 @@
 
 <p>In the example below, we create a Liquid object and an Agent that follows the mouse. You can click and drag to place the Liquid anywhere in the World. Use your mouse to make the Agent pass through the Liquid.</p>
 
-<pre><code>  Burner.System.init(function() {
+<pre><code>  var world = new Burner.World(document.body, {
+    gravity: new Burner.Vector(),
+    c: 0
+  });
+
+  Burner.System.init(function() {
     this.add(&#39;Agent&#39;, {
       followMouse: true
     });
     this.add(&#39;Liquid&#39;, {
       draggable: true
     });
-  }, {
-    gravity: new Burner.Vector(),
-    c: 0
-  });</code></pre>
+  }, world);</code></pre>
 
 <p>You can replace &#39;Liquid&#39; with &#39;Attractor&#39; and &#39;Repeller&#39; to view how the Proximity objects affect an Agent.</p>
 
@@ -235,7 +247,12 @@
 
 <p>In the example below, the Agent carries a Sensor that senses Heat. When activated, it triggers the &#39;COWARD&#39; behavior.</p>
 
-<pre><code>  Burner.System.init(function() {
+<pre><code>  var world = new Burner.World(document.body, {
+    gravity: new Burner.Vector(),
+    c: 0
+  });
+
+  Burner.System.init(function() {
     this.add(&#39;Stimulus&#39;, {
       type: &#39;heat&#39;,
       draggable: true
@@ -251,10 +268,7 @@
       maxSpeed: 5,
       motorSpeed: 10
     });
-  }, {
-    gravity: new Burner.Vector(),
-    c: 0
-  });</code></pre>
+  }, world);</code></pre>
 
 <p>Notice, we&#39;ve updated the World and removed any gravitational forces. We&#39;ve also updated the &#39;motorSpeed&#39; property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Heat objects.</p>
 
@@ -264,7 +278,12 @@
 
 <p>Putting it all together, we can observe Agents navigate a World with multiple Stimuli and Proximity objects.</p>
 
-<pre><code>Burner.System.init(function() {
+<pre><code>var world = new Burner.World(document.body, {
+  gravity: new Burner.Vector(),
+  c: 0
+});
+
+Burner.System.init(function() {
 
   this.add(&#39;Stimulus&#39;, {
     type: &#39;heat&#39;,
@@ -336,10 +355,7 @@
     mass: 10,
     motorSpeed: 4
   });
-}, {
-  gravity: new Burner.Vector(),
-  c: 0
-});</code></pre>
+}, world);</code></pre>
 
 <p>http://www.florajs.com/examples/sensor_stimuli.html</p>
 
@@ -347,7 +363,15 @@
 
 <p>In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting &#39;controlCamera&#39; to &#39;true&#39; on an agent will force Flora&#39;s camera to track that agent. Of course, there can only be one agent controlling the World&#39;s Camera.</p>
 
-<pre><code>Burner.System.init(function() {
+<pre><code>var world = new Burner.World(document.body, {
+  gravity: new Burner.Vector(),
+  c: 0,
+  borderWidth: 1,
+  borderStyle: &#39;dashed&#39;,
+  borderColor: [100, 100, 100]
+});
+
+Burner.System.init(function() {
 
   this.add(&#39;Stimulus&#39;, {
     type: &#39;heat&#39;,
@@ -419,13 +443,7 @@
       color: !i ? [255, 100, 0] : [197, 177, 115]
     });
   }
-}, {
-  gravity: new Burner.Vector(),
-  c: 0,
-  borderWidth: 1,
-  borderStyle: &#39;dashed&#39;,
-  borderColor: [100, 100, 100]
-});</code></pre>
+}, world);</code></pre>
 
 <p>http://www.florajs.com/examples/camera.html</p>
 
@@ -443,7 +461,32 @@
 
 <p>You can find code for the examples above at:</p>
 
-<ul><li><p>&lt;a href=&#39;http://github.com/foldi/FloraJS-Examples&#39;&gt;Examples&lt;/a&gt;</p></li><li><p>&lt;a href=&#39;http://github.com/foldi/FloraJS-Flocking&#39;&gt;Flocking&lt;/a&gt;</p></li><li><p>&lt;a href=&#39;http://github.com/foldi/Braitenberg-Vehicles&#39;&gt;Braitenberg Vehicles&lt;/a&gt;</p></li></ul></article>
+<ul><li><p>&lt;a href=&#39;http://github.com/foldi/FloraJS-Examples&#39;&gt;Examples&lt;/a&gt;</p></li><li><p>&lt;a href=&#39;http://github.com/foldi/FloraJS-Flocking&#39;&gt;Flocking&lt;/a&gt;</p></li><li><p>&lt;a href=&#39;http://github.com/foldi/Braitenberg-Vehicles&#39;&gt;Braitenberg Vehicles&lt;/a&gt;</p></li></ul>
+
+<h2>Building this project</h2>
+
+<p>This project uses <a href="http://gruntjs.com">Grunt</a>. To build the project first install the node modules.</p>
+
+<p><code>
+npm install
+</code></p>
+
+<p>Next, run grunt.</p>
+
+<p><code>
+grunt
+</code></p>
+
+<p>A pre-commit hook is defined in /pre-commit that runs jshint. To use the hook, run the following:</p>
+
+<p><code>
+ln -s ../../pre-commit .git/hooks/pre-commit
+</code></p>
+
+<p>A post-commit hook is defined in /post-commit that runs the Plato complexity analysis tools. To use the hook, run the following:</p>
+
+<p><code></code>`
+ln -s ../../post-commit .git/hooks/post-commit</p></article>
     </section>
 
 
@@ -460,7 +503,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Sep 10 2013 23:07:22 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Wed Sep 11 2013 17:16:15 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
