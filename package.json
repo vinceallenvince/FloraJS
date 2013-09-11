@@ -1,7 +1,7 @@
 {
-  "name": "Burner",
-  "version": "2.1.1",
-  "description": "A rendering engine.",
+  "name": "Flora",
+  "version": "2.1.0",
+  "description": "A JavaScript framework for rendering natural systems in a web browser.",
   "main": "src/main.js",
   "scripts": {
     "test": "grunt test"
