@@ -1,0 +1,14 @@
+/*
+FloraJS
+Copyright (c) 2013 Vince Allen | vince@vinceallen.com | http://www.vinceallen.com | florajs.com/license
+*/
+/* Version: 2.0.8 */
+/* Build time: June 16, 2013 07:51:47 */body {margin: 0;padding: 0;overflow: hidden;width: 100%; height: 100%;background-color: rgb(0, 0, 0);}
+.hasSensor {border-radius: 100%;}
+.nose {position: absolute;left: 80%;top: 40%;width: 20%; height: 20%;background: rgb(255, 255, 255);}
+.caption, .inputMenu {width: auto;position: absolute;font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;color: rgb(0, 0, 0);text-align: center;cursor: default;-webkit-user-select: none;-moz-user-select: none;-o-user-select: none;-ms-user-select: none;user-select: none;}
+.captionTop, .inputMenuTop {bottom: 90%;}
+.captionBottom, .inputMenuBottom {top: 90%;}
+.captionLeft, .inputMenuLeft {left: 0;}
+.captionRight, .inputMenuRight {right: 0;}
+.captionCenter, .inputMenuCenter {width: 100%;text-align: center;margin: 0 auto;}
