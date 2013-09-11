@@ -30,8 +30,8 @@ Utils.extend(Agent, Mover);
  * @param {number} [opt_options.alignStrength = 1] The strength of the force to apply to aligning when flocking = true.
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
- * @param {Array} [opt_options.sensors = []] A list of sensors attached to this object.
- * @param {Array} [opt_options.color = [197, 177, 115]] Color.
+ * @param {Array} [opt_options.sensors = ] A list of sensors attached to this object.
+ * @param {Array} [opt_options.color = 197, 177, 115] Color.
  * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
  * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
@@ -43,13 +43,13 @@ Agent.prototype.init = function(opt_options) {
   Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
-  this.maxSteeringForce = options.maxSteeringForce === undefined ? 10 : options.maxSteeringForce;
+  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 10 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;
   this.flocking = !!options.flocking;
-  this.desiredSeparation = options.desiredSeparation === undefined ? this.width * 2 : options.desiredSeparation;
-  this.separateStrength = options.separateStrength === undefined ? 0.3 : options.separateStrength;
-  this.alignStrength = options.alignStrength === undefined ? 0.2 : options.alignStrength;
-  this.cohesionStrength = options.cohesionStrength === undefined ? 0.1 : options.cohesionStrength;
+  this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
+  this.separateStrength = typeof options.separateStrength === 'undefined' ? 0.3 : options.separateStrength;
+  this.alignStrength = typeof options.alignStrength === 'undefined' ? 0.2 : options.alignStrength;
+  this.cohesionStrength = typeof options.cohesionStrength === 'undefined' ? 0.1 : options.cohesionStrength;
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
 

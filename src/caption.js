@@ -13,10 +13,10 @@
  *    'bottom left', 'bottom center', 'bottom right', 'center'.
  * @param {string} [opt_options.text = ''] The caption's text.
  * @param {number} [opt_options.opacity = 0.75] The caption's opacity.
- * @param {Array} [opt_options.color = [255, 255, 255]] The caption's color.
+ * @param {Array} [opt_options.color = 255, 255, 255] The caption's color.
  * @param {number} [opt_options.borderWidth = 1] The caption's border width.
  * @param {string} [opt_options.borderStyle = 'solid'] The caption's border style.
- * @param {Array} [opt_options.borderColor = [204, 204, 204]] The caption's border color.
+ * @param {Array} [opt_options.borderColor = 204, 204, 204] The caption's border color.
  */
 function Caption(opt_options) {
 
@@ -26,7 +26,7 @@ function Caption(opt_options) {
   this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';
   this.text = options.text || '';
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';

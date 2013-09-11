@@ -33,10 +33,10 @@ Utils.extend(Walker, Mover);
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.random = false] Set to true for walker to move in a random direction.
  * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
- * @param {string|Array} [opt_options.color = [255, 150, 50]] Color.
+ * @param {string|Array} [opt_options.color = 255, 150, 50] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {string|Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {string|Array} [opt_options.borderColor = 255, 255, 255] Border color.
  * @param {string} [opt_options.borderRadius = 100] Border radius.
  * @param {boolean} [opt_options.avoidWorldEdges = false] If set to true, object steers away from
  *    world boundaries.
@@ -47,25 +47,25 @@ Walker.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width === undefined ? 10 : options.width;
-  this.height = options.height === undefined ? 10 : options.height;
-  this.perlin = options.perlin === undefined ? true : options.perlin;
+  this.width = typeof options.width === 'undefined' ? 10 : options.width;
+  this.height = typeof options.height === 'undefined' ? 10 : options.height;
+  this.perlin = typeof options.perlin === 'undefined' ? true : options.perlin;
   this.remainsOnScreen = !!options.remainsOnScreen;
-  this.perlinSpeed = options.perlinSpeed === undefined ? 0.005 : options.perlinSpeed;
+  this.perlinSpeed = typeof options.perlinSpeed === 'undefined' ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
-  this.perlinAccelLow = options.perlinAccelLow === undefined ? -0.075 : options.perlinAccelLow;
-  this.perlinAccelHigh = options.perlinAccelHigh === undefined ? 0.075 : options.perlinAccelHigh;
-  this.offsetX = options.offsetX === undefined ? Math.random() * 10000 : options.offsetX;
-  this.offsetY = options.offsetY === undefined ? Math.random() * 10000 : options.offsetY;
+  this.perlinAccelLow = typeof options.perlinAccelLow === 'undefined' ? -0.075 : options.perlinAccelLow;
+  this.perlinAccelHigh = typeof options.perlinAccelHigh === 'undefined' ? 0.075 : options.perlinAccelHigh;
+  this.offsetX = typeof options.offsetX === 'undefined' ? Math.random() * 10000 : options.offsetX;
+  this.offsetY = typeof options.offsetY === 'undefined' ? Math.random() * 10000 : options.offsetY;
   this.random = !!options.random;
-  this.randomRadius = options.randomRadius === undefined ? 100 : options.randomRadius;
+  this.randomRadius = typeof options.randomRadius === 'undefined' ? 100 : options.randomRadius;
   this.color = options.color || [255, 150, 50];
-  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.avoidWorldEdges = !!options.avoidWorldEdges;
-  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength === undefined ?
+  this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
       50 : options.avoidWorldEdgesStrength;
 };
 

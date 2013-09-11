@@ -20,7 +20,7 @@ Utils.extend(Mover, Burner.Item);
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
- * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
+ * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.motorSpeed = 2] Motor speed
  * @param {number} [opt_options.angle = 0] Angle
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
@@ -34,16 +34,16 @@ Utils.extend(Mover, Burner.Item);
  */
 Mover.prototype.init = function(options) {
 
-  this.width = options.width === undefined ? 20 : options.width;
-  this.height = options.height === undefined ? 20 : options.height;
+  this.width = typeof options.width === 'undefined' ? 20 : options.width;
+  this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [255, 255, 255];
   this.motorSpeed = options.motorSpeed || 0;
   this.angle = options.angle || 0;
-  this.pointToDirection = options.pointToDirection === undefined ? true : options.pointToDirection;
+  this.pointToDirection = typeof options.pointToDirection === 'undefined' ? true : options.pointToDirection;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
   this.pointToParentDirection = !!options.pointToParentDirection;
-  this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
+  this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 30 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
   this.beforeStep = options.beforeStep || null;
   this.afterStep = options.afterStep || null;

@@ -9,6 +9,8 @@ var Utils = {};
 /**
  * Use to extend the properties and methods of a superClass
  * onto a subClass.
+ * @function extend
+ * @memberof Utils
  */
 Utils.extend = function(subClass, superClass) {
   function F() {}
@@ -21,6 +23,8 @@ Utils.extend = function(subClass, superClass) {
 /**
  * Re-maps a number from one range to another.
  *
+ * @function map
+ * @memberof Utils
  * @param {number} value The value to be converted.
  * @param {number} min1 Lower bound of the value's current range.
  * @param {number} max1 Upper bound of the value's current range.
@@ -36,6 +40,8 @@ Utils.map = function(value, min1, max1, min2, max2) { // returns a new value rel
 /**
  * Generates a psuedo-random number within a range.
  *
+ * @function getRandomNumber
+ * @memberof Utils
  * @param {number} low The low end of the range.
  * @param {number} high The high end of the range.
  * @param {boolean} [flt] Set to true to return a float.
@@ -51,6 +57,8 @@ Utils.getRandomNumber = function(low, high, flt) {
 /**
  * Converts degrees to radians.
  *
+ * @function degreesToRadians
+ * @memberof Utils
  * @param {number} degrees The degrees value to be converted.
  * @returns {number} A number in radians.
  */
@@ -68,6 +76,8 @@ Utils.degreesToRadians = function(degrees) {
 /**
  * Converts radians to degrees.
  *
+ * @function radiansToDegrees
+ * @memberof Utils
  * @param {number} radians The radians value to be converted.
  * @returns {number} A number in degrees.
  */
@@ -85,6 +95,8 @@ Utils.radiansToDegrees = function(radians) {
 /**
  * Constrain a value within a range.
  *
+ * @function constrain
+ * @memberof Utils
  * @param {number} val The value to constrain.
  * @param {number} low The lower bound of the range.
  * @param {number} high The upper bound of the range.
@@ -103,6 +115,8 @@ Utils.constrain = function(val, low, high) {
  * Returns a new object with all properties and methods of the
  * old object copied to the new object's prototype.
  *
+ * @function clone
+ * @memberof Utils
  * @param {Object} object The object to clone.
  * @returns {Object} An object.
  */
@@ -115,6 +129,8 @@ Utils.clone = function(object) {
 /**
  * Add an event listener to a DOM element.
  *
+ * @function addEvent
+ * @memberof Utils
  * @param {Object} target The element to receive the event listener.
  * @param {string} eventType The event type.
  * @param {function} The function to run when the event is triggered.
@@ -135,6 +151,8 @@ Utils.addEvent = function(target, eventType, handler) {
 /**
  * Logs a message to the browser console.
  *
+ * @function log
+ * @memberof Utils
  * @param {string} msg The message to log.
  */
 Utils.log = function(msg) {
@@ -149,6 +167,10 @@ Utils.log = function(msg) {
 };
 
 /**
+ * Returns the current window width and height.
+ *
+ * @function getWindowSize
+ * @memberof Utils
  * @returns {Object} The current window width and height.
  * @example getWindowSize() returns {width: 1024, height: 768}
  */
@@ -179,8 +201,10 @@ Utils.getWindowSize = function() {
 /**
  * Returns the data type of the passed argument.
  *
+ * @function getDataType
+ * @memberof Utils
  * @param {*} element The variable to test.
-*/
+ */
 Utils.getDataType = function(element) {
   if (Object.prototype.toString.call(element) === '[object Array]') {
     return 'array';
@@ -196,6 +220,8 @@ Utils.getDataType = function(element) {
 /**
  * Capitalizes the first character in a string.
  *
+ * @function capitalizeFirstLetter
+ * @memberof Utils
  * @param {string} string The string to capitalize.
  * @returns {string} The string with the first character capitalized.
  */
@@ -206,6 +232,8 @@ Utils.capitalizeFirstLetter = function(string) {
 /**
  * Determines if one object is inside another.
  *
+ * @function isInside
+ * @memberof Utils
  * @param {Object} obj The object.
  * @param {Object} container The containing object.
  * @returns {boolean} Returns true if the object is inside the container.
@@ -225,6 +253,8 @@ Utils.isInside = function(obj, container) {
 /**
  * Checks if mouse location is inside the world.
  *
+ * @function mouseIsInsideWorld
+ * @memberof Utils
  * @param {Object} world A Flora world.
  * @returns {boolean} True if mouse is inside world; False if
  *    mouse is outside world.

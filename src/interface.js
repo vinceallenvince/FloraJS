@@ -4,6 +4,8 @@ var Interface = {};
 
 /**
  * @description Compares passed options to a set of required options.
+ * @function checkRequiredParams
+ * @memberof Interface
  * @param {Object} optionsPassed An object containing options passed to a function.
  * @param {Object} optionsRequired An object containing a function's required options.
  * @param {string=} opt_from A message or identifier from the calling function.
@@ -72,6 +74,8 @@ Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_fro
  * Loops through an array of data types and checks if the
  * passed option matches any entry.
  *
+ * @function checkDataType
+ * @memberof Interface
  * @param {string} option The data type to check.
  * @param {array} typesToMatch An array of data types to check option against.
  * @returns {boolean} If option matches any entry in typesToMatch,
@@ -92,6 +96,8 @@ Interface.checkDataType = function(option, typesToMatch) {
 /**
  * Checks for data type.
  *
+ * @function getDataType
+ * @memberof Interface
  * @returns {string} The data type of the passed variable.
  */
 Interface.getDataType = function(element) {

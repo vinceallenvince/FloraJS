@@ -12,10 +12,10 @@
  *    of the menu's location. Possible values are 'top left', 'top center', 'top right',
  *    'bottom left', 'bottom center', 'bottom right', 'center'.
  * @param {number} [opt_options.opacity = 0.75] The menu's opacity.
- * @param {Array} [opt_options.color = [255, 255, 255]] The menu's color.
+ * @param {Array} [opt_options.color = 255, 255, 255] The menu's color.
  * @param {number} [opt_options.borderWidth = 1] The menu's border width.
  * @param {string} [opt_options.borderStyle = 'solid'] The menu's border style.
- * @param {Array} [opt_options.borderColor = [204, 204, 204]] The menu's border color.
+ * @param {Array} [opt_options.borderColor = 204, 204, 204] The menu's border color.
  */
 function InputMenu(opt_options) {
 
@@ -24,7 +24,7 @@ function InputMenu(opt_options) {
   // if a world is not passed, use the first world in the System
   this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';

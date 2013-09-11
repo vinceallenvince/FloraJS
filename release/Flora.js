@@ -1,4 +1,4 @@
-/*! Flora v2.1.0 - 2013-09-10 10:09:50 
+/*! Flora v2.1.0 - 2013-09-10 11:09:27 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -79,6 +79,8 @@ var Interface = {};
 
 /**
  * @description Compares passed options to a set of required options.
+ * @function checkRequiredParams
+ * @memberof Interface
  * @param {Object} optionsPassed An object containing options passed to a function.
  * @param {Object} optionsRequired An object containing a function's required options.
  * @param {string=} opt_from A message or identifier from the calling function.
@@ -147,6 +149,8 @@ Interface.checkRequiredParams = function(optionsPassed, optionsRequired, opt_fro
  * Loops through an array of data types and checks if the
  * passed option matches any entry.
  *
+ * @function checkDataType
+ * @memberof Interface
  * @param {string} option The data type to check.
  * @param {array} typesToMatch An array of data types to check option against.
  * @returns {boolean} If option matches any entry in typesToMatch,
@@ -167,6 +171,8 @@ Interface.checkDataType = function(option, typesToMatch) {
 /**
  * Checks for data type.
  *
+ * @function getDataType
+ * @memberof Interface
  * @returns {string} The data type of the passed variable.
  */
 Interface.getDataType = function(element) {
@@ -194,6 +200,8 @@ var Utils = {};
 /**
  * Use to extend the properties and methods of a superClass
  * onto a subClass.
+ * @function extend
+ * @memberof Utils
  */
 Utils.extend = function(subClass, superClass) {
   function F() {}
@@ -206,6 +214,8 @@ Utils.extend = function(subClass, superClass) {
 /**
  * Re-maps a number from one range to another.
  *
+ * @function map
+ * @memberof Utils
  * @param {number} value The value to be converted.
  * @param {number} min1 Lower bound of the value's current range.
  * @param {number} max1 Upper bound of the value's current range.
@@ -221,6 +231,8 @@ Utils.map = function(value, min1, max1, min2, max2) { // returns a new value rel
 /**
  * Generates a psuedo-random number within a range.
  *
+ * @function getRandomNumber
+ * @memberof Utils
  * @param {number} low The low end of the range.
  * @param {number} high The high end of the range.
  * @param {boolean} [flt] Set to true to return a float.
@@ -236,6 +248,8 @@ Utils.getRandomNumber = function(low, high, flt) {
 /**
  * Converts degrees to radians.
  *
+ * @function degreesToRadians
+ * @memberof Utils
  * @param {number} degrees The degrees value to be converted.
  * @returns {number} A number in radians.
  */
@@ -253,6 +267,8 @@ Utils.degreesToRadians = function(degrees) {
 /**
  * Converts radians to degrees.
  *
+ * @function radiansToDegrees
+ * @memberof Utils
  * @param {number} radians The radians value to be converted.
  * @returns {number} A number in degrees.
  */
@@ -270,6 +286,8 @@ Utils.radiansToDegrees = function(radians) {
 /**
  * Constrain a value within a range.
  *
+ * @function constrain
+ * @memberof Utils
  * @param {number} val The value to constrain.
  * @param {number} low The lower bound of the range.
  * @param {number} high The upper bound of the range.
@@ -288,6 +306,8 @@ Utils.constrain = function(val, low, high) {
  * Returns a new object with all properties and methods of the
  * old object copied to the new object's prototype.
  *
+ * @function clone
+ * @memberof Utils
  * @param {Object} object The object to clone.
  * @returns {Object} An object.
  */
@@ -300,6 +320,8 @@ Utils.clone = function(object) {
 /**
  * Add an event listener to a DOM element.
  *
+ * @function addEvent
+ * @memberof Utils
  * @param {Object} target The element to receive the event listener.
  * @param {string} eventType The event type.
  * @param {function} The function to run when the event is triggered.
@@ -320,6 +342,8 @@ Utils.addEvent = function(target, eventType, handler) {
 /**
  * Logs a message to the browser console.
  *
+ * @function log
+ * @memberof Utils
  * @param {string} msg The message to log.
  */
 Utils.log = function(msg) {
@@ -334,6 +358,10 @@ Utils.log = function(msg) {
 };
 
 /**
+ * Returns the current window width and height.
+ *
+ * @function getWindowSize
+ * @memberof Utils
  * @returns {Object} The current window width and height.
  * @example getWindowSize() returns {width: 1024, height: 768}
  */
@@ -364,8 +392,10 @@ Utils.getWindowSize = function() {
 /**
  * Returns the data type of the passed argument.
  *
+ * @function getDataType
+ * @memberof Utils
  * @param {*} element The variable to test.
-*/
+ */
 Utils.getDataType = function(element) {
   if (Object.prototype.toString.call(element) === '[object Array]') {
     return 'array';
@@ -381,6 +411,8 @@ Utils.getDataType = function(element) {
 /**
  * Capitalizes the first character in a string.
  *
+ * @function capitalizeFirstLetter
+ * @memberof Utils
  * @param {string} string The string to capitalize.
  * @returns {string} The string with the first character capitalized.
  */
@@ -391,6 +423,8 @@ Utils.capitalizeFirstLetter = function(string) {
 /**
  * Determines if one object is inside another.
  *
+ * @function isInside
+ * @memberof Utils
  * @param {Object} obj The object.
  * @param {Object} container The containing object.
  * @returns {boolean} Returns true if the object is inside the container.
@@ -410,6 +444,8 @@ Utils.isInside = function(obj, container) {
 /**
  * Checks if mouse location is inside the world.
  *
+ * @function mouseIsInsideWorld
+ * @memberof Utils
  * @param {Object} world A Flora world.
  * @returns {boolean} True if mouse is inside world; False if
  *    mouse is outside world.
@@ -451,7 +487,7 @@ exports.Utils = Utils;
  */
 var SimplexNoise = (function (r) {
 
-  if (r === undefined) {
+  if (typeof r === 'undefined') {
     r = Math;
   }
   var i;
@@ -981,10 +1017,10 @@ exports.ColorTable = ColorTable;
  *    'bottom left', 'bottom center', 'bottom right', 'center'.
  * @param {string} [opt_options.text = ''] The caption's text.
  * @param {number} [opt_options.opacity = 0.75] The caption's opacity.
- * @param {Array} [opt_options.color = [255, 255, 255]] The caption's color.
+ * @param {Array} [opt_options.color = 255, 255, 255] The caption's color.
  * @param {number} [opt_options.borderWidth = 1] The caption's border width.
  * @param {string} [opt_options.borderStyle = 'solid'] The caption's border style.
- * @param {Array} [opt_options.borderColor = [204, 204, 204]] The caption's border color.
+ * @param {Array} [opt_options.borderColor = 204, 204, 204] The caption's border color.
  */
 function Caption(opt_options) {
 
@@ -994,7 +1030,7 @@ function Caption(opt_options) {
   this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';
   this.text = options.text || '';
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
@@ -1073,10 +1109,10 @@ exports.Caption = Caption;
  *    of the menu's location. Possible values are 'top left', 'top center', 'top right',
  *    'bottom left', 'bottom center', 'bottom right', 'center'.
  * @param {number} [opt_options.opacity = 0.75] The menu's opacity.
- * @param {Array} [opt_options.color = [255, 255, 255]] The menu's color.
+ * @param {Array} [opt_options.color = 255, 255, 255] The menu's color.
  * @param {number} [opt_options.borderWidth = 1] The menu's border width.
  * @param {string} [opt_options.borderStyle = 'solid'] The menu's border style.
- * @param {Array} [opt_options.borderColor = [204, 204, 204]] The menu's border color.
+ * @param {Array} [opt_options.borderColor = 204, 204, 204] The menu's border color.
  */
 function InputMenu(opt_options) {
 
@@ -1085,7 +1121,7 @@ function InputMenu(opt_options) {
   // if a world is not passed, use the first world in the System
   this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
@@ -1191,7 +1227,7 @@ Utils.extend(Mover, Burner.Item);
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
- * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
+ * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.motorSpeed = 2] Motor speed
  * @param {number} [opt_options.angle = 0] Angle
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
@@ -1205,16 +1241,16 @@ Utils.extend(Mover, Burner.Item);
  */
 Mover.prototype.init = function(options) {
 
-  this.width = options.width === undefined ? 20 : options.width;
-  this.height = options.height === undefined ? 20 : options.height;
+  this.width = typeof options.width === 'undefined' ? 20 : options.width;
+  this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [255, 255, 255];
   this.motorSpeed = options.motorSpeed || 0;
   this.angle = options.angle || 0;
-  this.pointToDirection = options.pointToDirection === undefined ? true : options.pointToDirection;
+  this.pointToDirection = typeof options.pointToDirection === 'undefined' ? true : options.pointToDirection;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
   this.pointToParentDirection = !!options.pointToParentDirection;
-  this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
+  this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 30 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
   this.beforeStep = options.beforeStep || null;
   this.afterStep = options.afterStep || null;
@@ -1605,8 +1641,8 @@ Utils.extend(Agent, Mover);
  * @param {number} [opt_options.alignStrength = 1] The strength of the force to apply to aligning when flocking = true.
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
- * @param {Array} [opt_options.sensors = []] A list of sensors attached to this object.
- * @param {Array} [opt_options.color = [197, 177, 115]] Color.
+ * @param {Array} [opt_options.sensors = ] A list of sensors attached to this object.
+ * @param {Array} [opt_options.color = 197, 177, 115] Color.
  * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
  * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
@@ -1618,13 +1654,13 @@ Agent.prototype.init = function(opt_options) {
   Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
-  this.maxSteeringForce = options.maxSteeringForce === undefined ? 10 : options.maxSteeringForce;
+  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 10 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;
   this.flocking = !!options.flocking;
-  this.desiredSeparation = options.desiredSeparation === undefined ? this.width * 2 : options.desiredSeparation;
-  this.separateStrength = options.separateStrength === undefined ? 0.3 : options.separateStrength;
-  this.alignStrength = options.alignStrength === undefined ? 0.2 : options.alignStrength;
-  this.cohesionStrength = options.cohesionStrength === undefined ? 0.1 : options.cohesionStrength;
+  this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
+  this.separateStrength = typeof options.separateStrength === 'undefined' ? 0.3 : options.separateStrength;
+  this.alignStrength = typeof options.alignStrength === 'undefined' ? 0.2 : options.alignStrength;
+  this.cohesionStrength = typeof options.cohesionStrength === 'undefined' ? 0.1 : options.cohesionStrength;
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
 
@@ -1990,10 +2026,10 @@ Utils.extend(Walker, Mover);
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.random = false] Set to true for walker to move in a random direction.
  * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
- * @param {string|Array} [opt_options.color = [255, 150, 50]] Color.
+ * @param {string|Array} [opt_options.color = 255, 150, 50] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {string|Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {string|Array} [opt_options.borderColor = 255, 255, 255] Border color.
  * @param {string} [opt_options.borderRadius = 100] Border radius.
  * @param {boolean} [opt_options.avoidWorldEdges = false] If set to true, object steers away from
  *    world boundaries.
@@ -2004,25 +2040,25 @@ Walker.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width === undefined ? 10 : options.width;
-  this.height = options.height === undefined ? 10 : options.height;
-  this.perlin = options.perlin === undefined ? true : options.perlin;
+  this.width = typeof options.width === 'undefined' ? 10 : options.width;
+  this.height = typeof options.height === 'undefined' ? 10 : options.height;
+  this.perlin = typeof options.perlin === 'undefined' ? true : options.perlin;
   this.remainsOnScreen = !!options.remainsOnScreen;
-  this.perlinSpeed = options.perlinSpeed === undefined ? 0.005 : options.perlinSpeed;
+  this.perlinSpeed = typeof options.perlinSpeed === 'undefined' ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
-  this.perlinAccelLow = options.perlinAccelLow === undefined ? -0.075 : options.perlinAccelLow;
-  this.perlinAccelHigh = options.perlinAccelHigh === undefined ? 0.075 : options.perlinAccelHigh;
-  this.offsetX = options.offsetX === undefined ? Math.random() * 10000 : options.offsetX;
-  this.offsetY = options.offsetY === undefined ? Math.random() * 10000 : options.offsetY;
+  this.perlinAccelLow = typeof options.perlinAccelLow === 'undefined' ? -0.075 : options.perlinAccelLow;
+  this.perlinAccelHigh = typeof options.perlinAccelHigh === 'undefined' ? 0.075 : options.perlinAccelHigh;
+  this.offsetX = typeof options.offsetX === 'undefined' ? Math.random() * 10000 : options.offsetX;
+  this.offsetY = typeof options.offsetY === 'undefined' ? Math.random() * 10000 : options.offsetY;
   this.random = !!options.random;
-  this.randomRadius = options.randomRadius === undefined ? 100 : options.randomRadius;
+  this.randomRadius = typeof options.randomRadius === 'undefined' ? 100 : options.randomRadius;
   this.color = options.color || [255, 150, 50];
-  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.avoidWorldEdges = !!options.avoidWorldEdges;
-  this.avoidWorldEdgesStrength = options.avoidWorldEdgesStrength === undefined ?
+  this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
       50 : options.avoidWorldEdgesStrength;
 };
 
@@ -2090,11 +2126,11 @@ Utils.extend(Sensor, Mover);
  * @param {number} [opt_options.opacity = 0.75] Opacity.
  * @param {Object} [opt_options.target = null] A stimulator.
  * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
- * @param {Array} [opt_options.activatedColor = [255, 255, 255]] The color the sensor will display when activated.
+ * @param {Array} [opt_options.activatedColor = 255, 255, 255] The color the sensor will display when activated.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
- * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
  */
 Sensor.prototype.init = function(opt_options) {
 
@@ -2103,17 +2139,17 @@ Sensor.prototype.init = function(opt_options) {
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
-  this.sensitivity = options.sensitivity === undefined ? 2 : options.sensitivity;
-  this.width = options.width === undefined ? 7 : options.width;
-  this.height = options.height === undefined ? 7 : options.height;
-  this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
+  this.sensitivity = typeof options.sensitivity === 'undefined' ? 2 : options.sensitivity;
+  this.width = typeof options.width === 'undefined' ? 7 : options.width;
+  this.height = typeof options.height === 'undefined' ? 7 : options.height;
+  this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 30 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.target = options.target || null;
   this.activated = !!options.activated;
   this.activatedColor = options.activatedColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
-  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = 'solid';
   this.borderColor = [255, 255, 255];
 };
@@ -2362,7 +2398,7 @@ Utils.extend(Connector, Burner.Item);
  * @param {number} [options.zIndex = 0] zIndex.
  * @param {number} [options.borderWidth = 1] Border width.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
- * @param {Array} [options.borderColor = [150, 150, 150]] Border color.
+ * @param {Array} [options.borderColor = 150, 150, 150] Border color.
  */
 Connector.prototype.init = function(options) {
 
@@ -2372,13 +2408,13 @@ Connector.prototype.init = function(options) {
   this.parentA = options.parentA;
   this.parentB = options.parentB;
 
-  this.opacity = options.opacity === undefined ? 1 : options.opacity;
+  this.opacity = typeof options.opacity === 'undefined' ? 1 : options.opacity;
   this.zIndex = options.zIndex || 0;
 
   this.borderWidth = 1;
   this.borderRadius = 0;
   this.borderStyle = 'dotted';
-  this.borderColor = options.borderColor === undefined ? [150, 150, 150] : options.borderColor;
+  this.borderColor = typeof options.borderColor === 'undefined' ? [150, 150, 150] : options.borderColor;
 
   this.width = 0;
   this.height = 0;
@@ -2427,24 +2463,24 @@ Utils.extend(Point, Mover);
  * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.zIndex = 1] zIndex.
- * @param {Array} [opt_options.color = [200, 200, 200]] Color.
+ * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
- * @param {Array} [opt_options.borderColor = [60, 60, 60]] Border color.
+ * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
  */
 Point.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width === undefined ? 10 : options.width;
-  this.height = options.height === undefined ? 10 : options.height;
-  this.opacity = options.opacity === undefined ? 1 : options.opacity;
+  this.width = typeof options.width === 'undefined' ? 10 : options.width;
+  this.height = typeof options.height === 'undefined' ? 10 : options.height;
+  this.opacity = typeof options.opacity === 'undefined' ? 1 : options.opacity;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
   this.color = options.color || [200, 200, 200];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
-  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [60, 60, 60];
 };
@@ -2479,7 +2515,7 @@ Utils.extend(Particle, Agent);
  * @param {boolean} [opt_options.checkWorldEdges = false] Set to true to check the object's location against the world's bounds.
  * @param {number} [opt_options.maxSpeed = 4] Maximum speed.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
- * @param {Array} [opt_options.color = [200, 200, 200]] Color.
+ * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
  * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
@@ -2492,21 +2528,21 @@ Particle.prototype.init = function(opt_options) {
   var options = opt_options || {};
   Particle._superClass.prototype.init.call(this, options);
 
-  this.width = options.width === undefined ? 20 : options.width;
-  this.height = options.height === undefined ? 20 : options.height;
-  this.lifespan = options.lifespan === undefined ? 50 : options.lifespan;
+  this.width = typeof options.width === 'undefined' ? 20 : options.width;
+  this.height = typeof options.height === 'undefined' ? 20 : options.height;
+  this.lifespan = typeof options.lifespan === 'undefined' ? 50 : options.lifespan;
   this.life = options.life || 0;
-  this.fade = options.fade === undefined ? true : false;
-  this.shrink = options.shrink === undefined ? true : false;
+  this.fade = typeof options.fade === 'undefined' ? true : false;
+  this.shrink = typeof options.shrink === 'undefined' ? true : false;
   this.checkWorldEdges = !!options.checkWorldEdges;
-  this.maxSpeed = options.maxSpeed === undefined ? 4 : 0;
-  this.zIndex = options.zIndex === undefined ? 1 : 0;
+  this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 4 : 0;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : 0;
   this.color = options.color || [200, 200, 200];
-  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : 0;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius === undefined ? 100 : 0;
-  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : 0;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : 0;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : 0;
   this.boxShadowColor = options.boxShadowColor || 'transparent';
   if (!options.acceleration) {
     this.acceleration = new Burner.Vector(1, 1);
@@ -2611,8 +2647,8 @@ Utils.extend(ParticleSystem, Agent);
  * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
  * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
  * @param {number} [opt_options.emitRadius = 3] The ParticleSystem adds this offset to the location of the Particles it creates.
- * @param {Array} [opt_options.startColor = [100, 20, 20]] The starting color of the particle's palette range.
- * @param {Array} [opt_options.endColor = [255, 0, 0]] The ending color of the particle's palette range.
+ * @param {Array} [opt_options.startColor = 100, 20, 20] The starting color of the particle's palette range.
+ * @param {Array} [opt_options.endColor = 255, 0, 0] The ending color of the particle's palette range.
  * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
  * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
@@ -2624,14 +2660,14 @@ ParticleSystem.prototype.init = function(opt_options) {
   var options = opt_options || {};
   ParticleSystem._superClass.prototype.init.call(this, options);
 
-  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
-  this.lifespan = options.lifespan === undefined ? -1: options.lifespan;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.lifespan = typeof options.lifespan === 'undefined' ? -1: options.lifespan;
   this.life = options.life || 0;
   this.width = options.width || 0;
   this.height = options.height || 0;
-  this.burst = options.burst === undefined ? 1 : options.burst;
-  this.burstRate = options.burstRate === undefined ? 4 : options.burstRate;
-  this.emitRadius = options.emitRadius === undefined ? 3 : options.emitRadius;
+  this.burst = typeof options.burst === 'undefined' ? 1 : options.burst;
+  this.burstRate = typeof options.burstRate === 'undefined' ? 4 : options.burstRate;
+  this.emitRadius = typeof options.emitRadius === 'undefined' ? 3 : options.emitRadius;
   this.startColor = options.startColor || [100, 20, 20];
   this.endColor = options.endColor || [255, 0, 0];
   this.particleOptions = options.particleOptions || {
@@ -2762,13 +2798,13 @@ Utils.extend(Oscillator, Burner.Item);
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {number} [opt_options.width = 20] Width.
  * @param {number} [opt_options.height = 20] Height.
- * @param {Array} [opt_options.color = [200, 100, 0]] Color.
+ * @param {Array} [opt_options.color = 200, 100, 0] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
- * @param {Array} [opt_options.borderColor = [255, 150, 0]] Border color.
+ * @param {Array} [opt_options.borderColor = 255, 150, 0] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- * @param {Array} [opt_options.boxShadowColor = [147, 199, 196]] Box-shadow color.
+ * @param {Array} [opt_options.boxShadowColor = 147, 199, 196] Box-shadow color.
  */
 Oscillator.prototype.init = function(opt_options) {
 
@@ -2784,20 +2820,20 @@ Oscillator.prototype.init = function(opt_options) {
   this.isStatic = !!options.isStatic;
 
   this.isPerlin = !!options.isPerlin;
-  this.perlinSpeed = options.perlinSpeed === undefined ? 0.005 : options.perlinSpeed;
+  this.perlinSpeed = typeof options.perlinSpeed === 'undefined' ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
-  this.perlinAccelLow = options.perlinAccelLow === undefined ? -2 : options.perlinAccelLow;
-  this.perlinAccelHigh = options.perlinAccelHigh === undefined ? 2 : options.perlinAccelHigh;
-  this.perlinOffsetX = options.perlinOffsetX === undefined ? Math.random() * 10000 : options.perlinOffsetX;
-  this.perlinOffsetY = options.perlinOffsetY === undefined ? Math.random() * 10000 : options.perlinOffsetY;
+  this.perlinAccelLow = typeof options.perlinAccelLow === 'undefined' ? -2 : options.perlinAccelLow;
+  this.perlinAccelHigh = typeof options.perlinAccelHigh === 'undefined' ? 2 : options.perlinAccelHigh;
+  this.perlinOffsetX = typeof options.perlinOffsetX === 'undefined' ? Math.random() * 10000 : options.perlinOffsetX;
+  this.perlinOffsetY = typeof options.perlinOffsetY === 'undefined' ? Math.random() * 10000 : options.perlinOffsetY;
 
-  this.width = options.width === undefined ? 20 : options.width;
-  this.height = options.height === undefined ? 20 : options.height;
+  this.width = typeof options.width === 'undefined' ? 20 : options.width;
+  this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [200, 100, 0];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 150, 50];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.boxShadowSpread = options.boxShadowSpread || 0;
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
 };
@@ -2882,32 +2918,32 @@ Utils.extend(Liquid, Agent);
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] The particle's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
- * @param {string|Array} [opt_options.color = [105, 210, 231]] Color.
+ * @param {string|Array} [opt_options.color = 105, 210, 231] Color.
  * @param {string|number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {string|Array} [opt_options.borderColor = [167, 219, 216]] Border color.
+ * @param {string|Array} [opt_options.borderColor = 167, 219, 216] Border color.
  * @param {string} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- * @param {Array} [opt_options.boxShadowColor = [147, 199, 196]] Box-shadow color.
+ * @param {Array} [opt_options.boxShadowColor = 147, 199, 196] Box-shadow color.
  */
 Liquid.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
   Liquid._superClass.prototype.init.call(this, options);
 
-  this.c = options.c === undefined ? 1 : options.c;
-  this.mass = options.mass === undefined ? 50 : options.mass;
-  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
-  this.width = options.width === undefined ? 100 : options.width;
-  this.height = options.height === undefined ? 100 : options.height;
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
-  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
+  this.c = typeof options.c === 'undefined' ? 1 : options.c;
+  this.mass = typeof options.mass === 'undefined' ? 50 : options.mass;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.width = typeof options.width === 'undefined' ? 100 : options.width;
+  this.height = typeof options.height === 'undefined' ? 100 : options.height;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
   this.color = options.color || [105, 210, 231];
-  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : options.borderWidth;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [167, 219, 216];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
-  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 8 : options.boxShadowSpread;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 8 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [147, 199, 196];
 
   Burner.System.updateCache(this);
@@ -2941,13 +2977,13 @@ Utils.extend(Attractor, Agent);
  * @param {number} [opt_options.height = 100] Height.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
- * @param {Array} [opt_options.color = [92, 187, 0]] Color.
+ * @param {Array} [opt_options.color = 92, 187, 0] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [224, 228, 204]] Border color.
+ * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 8] Box-shadow spread.
- * @param {Array} [opt_options.boxShadowColor = [92, 187, 0]] Box-shadow color.
+ * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
  */
 Attractor.prototype.init = function(opt_options) {
 
@@ -2955,19 +2991,19 @@ Attractor.prototype.init = function(opt_options) {
 
   Attractor._superClass.prototype.init.call(this, options);
 
-  this.G = options.G === undefined ? 10 : options.G;
-  this.mass = options.mass === undefined ? 1000 : options.mass;
-  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
-  this.width = options.width === undefined ? 100 : options.width;
-  this.height = options.height === undefined ? 100 : options.height;
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
-  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
+  this.G = typeof options.G === 'undefined' ? 10 : options.G;
+  this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.width = typeof options.width === 'undefined' ? 100 : options.width;
+  this.height = typeof options.height === 'undefined' ? 100 : options.height;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.zIndex = typeof options.zIndex === 'undefined '? 1 : options.zIndex;
   this.color = options.color || [92, 187, 0];
-  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : 0;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : 0;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
-  this.borderRadius = options.borderRadius === undefined ? 100 : 0;
-  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : 0;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : 0;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : 0;
   this.boxShadowColor = options.boxShadowColor || [64, 129, 0];
 
   Burner.System.updateCache(this);
@@ -3001,32 +3037,32 @@ Utils.extend(Repeller, Agent);
  * @param {number} [opt_options.height = 10] Height.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 10] The object's zIndex.
- * @param {Array} [opt_options.color = [250, 105, 0]] Color.
+ * @param {Array} [opt_options.color = 250, 105, 0] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [224, 228, 204]] Border color.
+ * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 8] Box-shadow spread.
- * @param {Array} [opt_options.boxShadowColor = [250, 105, 0]] Box-shadow color.
+ * @param {Array} [opt_options.boxShadowColor = 250, 105, 0] Box-shadow color.
  */
 Repeller.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
   Repeller._superClass.prototype.init.call(this, options);
 
-  this.G = options.G === undefined ? -10 : options.G;
-  this.mass = options.mass === undefined ? 1000 : options.mass;
-  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
-  this.width = options.width === undefined ? 100 : options.width;
-  this.height = options.height === undefined ? 100 : options.height;
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
-  this.zIndex = options.zIndex === undefined ? 10 : options.zIndex;
+  this.G = typeof options.G === 'undefined' ? -10 : options.G;
+  this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.width = typeof options.width === 'undefined' ? 100 : options.width;
+  this.height = typeof options.height === 'undefined' ? 100 : options.height;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 10 : options.zIndex;
   this.color = options.color || [250, 105, 0];
-  this.borderWidth = options.borderWidth === undefined ? this.width / 4 : options.borderWidth;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
-  this.boxShadowSpread = options.boxShadowSpread === undefined ? this.width / 4 : options.boxShadowSpread;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [250, 105, 0];
 
   Burner.System.updateCache(this);
@@ -3090,35 +3126,35 @@ Utils.extend(Stimulus, Agent);
  * @param {number} [opt_options.height = 50] Height.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
- * @param {Array} [opt_options.color = [255, 200, 0]] Color.
+ * @param {Array} [opt_options.color = 255, 200, 0] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- * @param {Array} [opt_options.boxShadowColor = [255, 200, 0]] Box-shadow color.
+ * @param {Array} [opt_options.boxShadowColor = 255, 200, 0] Box-shadow color.
  */
 Stimulus.prototype.init = function(opt_options) {
 
   var options = opt_options || {}, name = this.name.toLowerCase();
   Stimulus._superClass.prototype.init.call(this, options);
 
-  this.mass = options.mass === undefined ? 50 : options.mass ;
-  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
-  this.width = options.width === undefined ? 50 : options.width;
-  this.height = options.height === undefined ? 50 : options.height;
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
-  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
+  this.mass = typeof options.mass === 'undefined' ? 50 : options.mass ;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.width = typeof options.width === 'undefined' ? 50 : options.width;
+  this.height = typeof options.height === 'undefined' ? 50 : options.height;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
   this.color = options.color || palettes[name].getColor();
-  this.borderWidth = options.borderWidth === undefined ?
+  this.borderWidth = typeof options.borderWidth === 'undefined' ?
       this.width / Utils.getRandomNumber(2, 8) : options.borderWidth;
-  this.borderStyle = options.borderStyle === undefined ?
+  this.borderStyle = typeof options.borderStyle === 'undefined' ?
       borderPalette.getBorder() : options.borderStyle;
-  this.borderColor = options.borderColor === undefined ? palettes[name].getColor() : options.borderColor;
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
-  this.boxShadowSpread = options.boxShadowSpread === undefined ?
+  this.borderColor = typeof options.borderColor === 'undefined' ? palettes[name].getColor() : options.borderColor;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ?
       this.width / Utils.getRandomNumber(2, 8) : options.boxShadowSpread;
-  this.boxShadowColor = options.boxShadowColor === undefined ? boxShadowColors[name] : options.boxShadowColor;
+  this.boxShadowColor = typeof options.boxShadowColor === 'undefined' ? boxShadowColors[name] : options.boxShadowColor;
 
   Burner.System.updateCache(this);
 };
@@ -3152,9 +3188,9 @@ FlowField.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.resolution = options.resolution === undefined ? 50 : options.resolution;
-  this.perlinSpeed = options.perlinSpeed === undefined ? 0.01 : options.perlinSpeed;
-  this.perlinTime = options.perlinTime === undefined ? 100 : options.perlinTime;
+  this.resolution = typeof options.resolution === 'undefined' ? 50 : options.resolution;
+  this.perlinSpeed = typeof options.perlinSpeed === 'undefined' ? 0.01 : options.perlinSpeed;
+  this.perlinTime = typeof options.perlinTime === 'undefined' ? 100 : options.perlinTime;
   this.field = options.field || null;
   this.createMarkers = !!options.createMarkers;
   // if a world is not passed, use the first world in the system
@@ -3220,14 +3256,14 @@ exports.FlowField = FlowField;
  *
  * @constructor
  * @param {Object} options Options.
- * @param {Object} options.location Location.
- * @param {number} options.scale Scale.
- * @param {number} options.opacity Opacity
- * @param {number} options.width Width.
- * @param {number} options.height Height.
- * @param {number} options.angle Angle.
- * @param {string} options.colorMode Color mode.
- * @param {Object} options.color Color.
+ * @param {Object} [options.location] Location.
+ * @param {number} [options.scale] Scale.
+ * @param {number} [options.opacity] Opacity
+ * @param {number} [options.width] Width.
+ * @param {number} [options.height] Height.
+ * @param {number} [options.angle] Angle.
+ * @param {string} [options.colorMode] Color mode.
+ * @param {Object} [options.color] Color.
  */
 function FlowFieldMarker(options) {
 

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <div id='worldB'></div>
+    <div id='worldC'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var worldA = new Burner.World(document.getElementById('worldA'), {
+        boundToWindow: false,
+        width: 320,
+        height: 480,
+        color: [60, 60, 60],
+        gravity: new Burner.Vector(),
+        c: 0,
+        location: new Burner.Vector(160, 240)
+      });
+
+      var worldB = new Burner.World(document.getElementById('worldB'), {
+        boundToWindow: false,
+        width: 320,
+        height: 480,
+        color: [60, 60, 60],
+        gravity: new Burner.Vector(),
+        c: 0,
+        location: new Burner.Vector(490, 240)
+      });
+
+      var worldC = new Burner.World(document.getElementById('worldC'), {
+        boundToWindow: false,
+        width: 320,
+        height: 480,
+        color: [60, 60, 60],
+        gravity: new Burner.Vector(),
+        c: 0,
+        location: new Burner.Vector(820, 240)
+      });
+
+      Burner.System.init(function() {
+
+        this.add('ParticleSystem', {
+          startColor: [255, 255, 255],
+          particleOptions: {
+            maxSpeed: 3
+          }
+        }, worldA);
+
+        for (var i = 0; i < 10; i++) {
+          this.add('Walker', null, worldB);
+        }
+
+        for (var i = 0; i < 10; i++) {
+          var size = Burner.System.getRandomNumber(5, 30);
+          this.add('Agent', {
+            width: size,
+            height: size,
+            mass: size,
+            followMouse: true,
+            flocking: true
+          }, worldC);
+        }
+
+        this.add('Caption', {
+          text: 'Muliple Worlds',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+
+      }, [worldA, worldB, worldC]);
+    </script>
+  </body>
+</html>

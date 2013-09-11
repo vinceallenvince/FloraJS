@@ -26,8 +26,8 @@ Utils.extend(ParticleSystem, Agent);
  * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
  * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
  * @param {number} [opt_options.emitRadius = 3] The ParticleSystem adds this offset to the location of the Particles it creates.
- * @param {Array} [opt_options.startColor = [100, 20, 20]] The starting color of the particle's palette range.
- * @param {Array} [opt_options.endColor = [255, 0, 0]] The ending color of the particle's palette range.
+ * @param {Array} [opt_options.startColor = 100, 20, 20] The starting color of the particle's palette range.
+ * @param {Array} [opt_options.endColor = 255, 0, 0] The ending color of the particle's palette range.
  * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
  * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
@@ -39,14 +39,14 @@ ParticleSystem.prototype.init = function(opt_options) {
   var options = opt_options || {};
   ParticleSystem._superClass.prototype.init.call(this, options);
 
-  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
-  this.lifespan = options.lifespan === undefined ? -1: options.lifespan;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.lifespan = typeof options.lifespan === 'undefined' ? -1: options.lifespan;
   this.life = options.life || 0;
   this.width = options.width || 0;
   this.height = options.height || 0;
-  this.burst = options.burst === undefined ? 1 : options.burst;
-  this.burstRate = options.burstRate === undefined ? 4 : options.burstRate;
-  this.emitRadius = options.emitRadius === undefined ? 3 : options.emitRadius;
+  this.burst = typeof options.burst === 'undefined' ? 1 : options.burst;
+  this.burstRate = typeof options.burstRate === 'undefined' ? 4 : options.burstRate;
+  this.emitRadius = typeof options.emitRadius === 'undefined' ? 3 : options.emitRadius;
   this.startColor = options.startColor || [100, 20, 20];
   this.endColor = options.endColor || [255, 0, 0];
   this.particleOptions = options.particleOptions || {

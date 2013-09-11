@@ -22,24 +22,24 @@ Utils.extend(Point, Mover);
  * @param {number} [opt_options.opacity = 0.25] Opacity.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.zIndex = 1] zIndex.
- * @param {Array} [opt_options.color = [200, 200, 200]] Color.
+ * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
- * @param {Array} [opt_options.borderColor = [60, 60, 60]] Border color.
+ * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
  */
 Point.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = options.width === undefined ? 10 : options.width;
-  this.height = options.height === undefined ? 10 : options.height;
-  this.opacity = options.opacity === undefined ? 1 : options.opacity;
+  this.width = typeof options.width === 'undefined' ? 10 : options.width;
+  this.height = typeof options.height === 'undefined' ? 10 : options.height;
+  this.opacity = typeof options.opacity === 'undefined' ? 1 : options.opacity;
   this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
   this.color = options.color || [200, 200, 200];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
-  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [60, 60, 60];
 };

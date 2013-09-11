@@ -40,13 +40,13 @@ Utils.extend(Oscillator, Burner.Item);
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {number} [opt_options.width = 20] Width.
  * @param {number} [opt_options.height = 20] Height.
- * @param {Array} [opt_options.color = [200, 100, 0]] Color.
+ * @param {Array} [opt_options.color = 200, 100, 0] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
- * @param {Array} [opt_options.borderColor = [255, 150, 0]] Border color.
+ * @param {Array} [opt_options.borderColor = 255, 150, 0] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- * @param {Array} [opt_options.boxShadowColor = [147, 199, 196]] Box-shadow color.
+ * @param {Array} [opt_options.boxShadowColor = 147, 199, 196] Box-shadow color.
  */
 Oscillator.prototype.init = function(opt_options) {
 
@@ -62,20 +62,20 @@ Oscillator.prototype.init = function(opt_options) {
   this.isStatic = !!options.isStatic;
 
   this.isPerlin = !!options.isPerlin;
-  this.perlinSpeed = options.perlinSpeed === undefined ? 0.005 : options.perlinSpeed;
+  this.perlinSpeed = typeof options.perlinSpeed === 'undefined' ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
-  this.perlinAccelLow = options.perlinAccelLow === undefined ? -2 : options.perlinAccelLow;
-  this.perlinAccelHigh = options.perlinAccelHigh === undefined ? 2 : options.perlinAccelHigh;
-  this.perlinOffsetX = options.perlinOffsetX === undefined ? Math.random() * 10000 : options.perlinOffsetX;
-  this.perlinOffsetY = options.perlinOffsetY === undefined ? Math.random() * 10000 : options.perlinOffsetY;
+  this.perlinAccelLow = typeof options.perlinAccelLow === 'undefined' ? -2 : options.perlinAccelLow;
+  this.perlinAccelHigh = typeof options.perlinAccelHigh === 'undefined' ? 2 : options.perlinAccelHigh;
+  this.perlinOffsetX = typeof options.perlinOffsetX === 'undefined' ? Math.random() * 10000 : options.perlinOffsetX;
+  this.perlinOffsetY = typeof options.perlinOffsetY === 'undefined' ? Math.random() * 10000 : options.perlinOffsetY;
 
-  this.width = options.width === undefined ? 20 : options.width;
-  this.height = options.height === undefined ? 20 : options.height;
+  this.width = typeof options.width === 'undefined' ? 20 : options.width;
+  this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [200, 100, 0];
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 150, 50];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.boxShadowSpread = options.boxShadowSpread || 0;
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
 };

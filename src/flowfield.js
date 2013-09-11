@@ -26,9 +26,9 @@ FlowField.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.resolution = options.resolution === undefined ? 50 : options.resolution;
-  this.perlinSpeed = options.perlinSpeed === undefined ? 0.01 : options.perlinSpeed;
-  this.perlinTime = options.perlinTime === undefined ? 100 : options.perlinTime;
+  this.resolution = typeof options.resolution === 'undefined' ? 50 : options.resolution;
+  this.perlinSpeed = typeof options.perlinSpeed === 'undefined' ? 0.01 : options.perlinSpeed;
+  this.perlinTime = typeof options.perlinTime === 'undefined' ? 100 : options.perlinTime;
   this.field = options.field || null;
   this.createMarkers = !!options.createMarkers;
   // if a world is not passed, use the first world in the system

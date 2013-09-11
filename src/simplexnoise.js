@@ -16,7 +16,7 @@
  */
 var SimplexNoise = (function (r) {
 
-  if (r === undefined) {
+  if (typeof r === 'undefined') {
     r = Math;
   }
   var i;

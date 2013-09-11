@@ -4,14 +4,14 @@
  *
  * @constructor
  * @param {Object} options Options.
- * @param {Object} options.location Location.
- * @param {number} options.scale Scale.
- * @param {number} options.opacity Opacity
- * @param {number} options.width Width.
- * @param {number} options.height Height.
- * @param {number} options.angle Angle.
- * @param {string} options.colorMode Color mode.
- * @param {Object} options.color Color.
+ * @param {Object} [options.location] Location.
+ * @param {number} [options.scale] Scale.
+ * @param {number} [options.opacity] Opacity
+ * @param {number} [options.width] Width.
+ * @param {number} [options.height] Height.
+ * @param {number} [options.angle] Angle.
+ * @param {string} [options.colorMode] Color mode.
+ * @param {Object} [options.color] Color.
  */
 function FlowFieldMarker(options) {
 

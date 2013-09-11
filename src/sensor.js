@@ -28,11 +28,11 @@ Utils.extend(Sensor, Mover);
  * @param {number} [opt_options.opacity = 0.75] Opacity.
  * @param {Object} [opt_options.target = null] A stimulator.
  * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
- * @param {Array} [opt_options.activatedColor = [255, 255, 255]] The color the sensor will display when activated.
+ * @param {Array} [opt_options.activatedColor = 255, 255, 255] The color the sensor will display when activated.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
- * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
  */
 Sensor.prototype.init = function(opt_options) {
 
@@ -41,17 +41,17 @@ Sensor.prototype.init = function(opt_options) {
 
   this.type = options.type || '';
   this.behavior = options.behavior || 'LOVE';
-  this.sensitivity = options.sensitivity === undefined ? 2 : options.sensitivity;
-  this.width = options.width === undefined ? 7 : options.width;
-  this.height = options.height === undefined ? 7 : options.height;
-  this.offsetDistance = options.offsetDistance === undefined ? 30 : options.offsetDistance;
+  this.sensitivity = typeof options.sensitivity === 'undefined' ? 2 : options.sensitivity;
+  this.width = typeof options.width === 'undefined' ? 7 : options.width;
+  this.height = typeof options.height === 'undefined' ? 7 : options.height;
+  this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 30 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
-  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.target = options.target || null;
   this.activated = !!options.activated;
   this.activatedColor = options.activatedColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
-  this.borderWidth = options.borderWidth === undefined ? 2 : options.borderWidth;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = 'solid';
   this.borderColor = [255, 255, 255];
 };
