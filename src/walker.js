@@ -13,9 +13,9 @@
 function Walker(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Walker';
-  exports.Mover.call(this, options);
+  Mover.call(this, options);
 }
-exports.Utils.extend(Walker, exports.Mover);
+Utils.extend(Walker, Mover);
 
 /**
  * Initializes an instance.
@@ -70,6 +70,8 @@ Walker.prototype.init = function(opt_options) {
 };
 
 /**
+ * If walker uses perlin noise, updates acceleration based on noise space. If walker
+ * is a random walker, updates location based on random location.
  */
 Walker.prototype.applyForces = function() {
 
@@ -81,16 +83,16 @@ Walker.prototype.applyForces = function() {
     if (this.remainsOnScreen) {
       this.acceleration = new Burner.Vector();
       this.velocity = new Burner.Vector();
-      this.location.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, 0, this.world.bounds[1]);
-      this.location.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, 0, this.world.bounds[2]);
+      this.location.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, 0, this.world.bounds[1]);
+      this.location.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, 0, this.world.bounds[2]);
     } else {
-      this.acceleration.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
-      this.acceleration.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.acceleration.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.offsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
     }
 
   } else if (this.random) {
     this.seekTarget = { // find a random point and steer toward it
-      location: Burner.Vector.VectorAdd(this.location, new Burner.Vector(exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius), exports.Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
+      location: Burner.Vector.VectorAdd(this.location, new Burner.Vector(Utils.getRandomNumber(-this.randomRadius, this.randomRadius), Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
     };
     this.applyForce(this._seek(this.seekTarget));
   }

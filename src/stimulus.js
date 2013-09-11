@@ -3,9 +3,9 @@
 var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {},
     borderStyles = ['double', 'double', 'dotted', 'dashed'];
 
-for (i = 0, max = exports.Config.defaultColorList.length; i < max; i++) {
-  color = exports.Config.defaultColorList[i];
-  pal = new exports.ColorPalette();
+for (i = 0, max = Config.defaultColorList.length; i < max; i++) {
+  color = Config.defaultColorList[i];
+  pal = new ColorPalette();
   pal.addColor({
     min: 20,
     max: 200,
@@ -17,7 +17,7 @@ for (i = 0, max = exports.Config.defaultColorList.length; i < max; i++) {
   boxShadowColors[color.name] = color.boxShadowColor;
 }
 
-borderPalette = new exports.BorderPalette();
+borderPalette = new BorderPalette();
 for (i = 0, max = borderStyles.length; i < max; i++) {
   border = borderStyles[i];
   borderPalette.addBorder({
@@ -42,9 +42,9 @@ function Stimulus(options) {
   }
   options.name = options.type.substr(0, 1).toUpperCase() +
       options.type.toLowerCase().substr(1, options.type.length);
-  exports.Agent.call(this, options);
+  Agent.call(this, options);
 }
-exports.Utils.extend(Stimulus, exports.Agent);
+Utils.extend(Stimulus, Agent);
 
 /**
  * Initializes an instance.
@@ -77,13 +77,13 @@ Stimulus.prototype.init = function(opt_options) {
   this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
   this.color = options.color || palettes[name].getColor();
   this.borderWidth = options.borderWidth === undefined ?
-      this.width / exports.Utils.getRandomNumber(2, 8) : options.borderWidth;
+      this.width / Utils.getRandomNumber(2, 8) : options.borderWidth;
   this.borderStyle = options.borderStyle === undefined ?
       borderPalette.getBorder() : options.borderStyle;
   this.borderColor = options.borderColor === undefined ? palettes[name].getColor() : options.borderColor;
   this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
   this.boxShadowSpread = options.boxShadowSpread === undefined ?
-      this.width / exports.Utils.getRandomNumber(2, 8) : options.boxShadowSpread;
+      this.width / Utils.getRandomNumber(2, 8) : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor === undefined ? boxShadowColors[name] : options.boxShadowColor;
 
   Burner.System.updateCache(this);

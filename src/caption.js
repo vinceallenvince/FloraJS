@@ -42,7 +42,7 @@ function Caption(opt_options) {
   this.el.className = 'caption ';
   classNames = this.position.split(' ');
   for (i = 0, max = classNames.length; i < max; i++) {
-    this.el.className = this.el.className + 'caption' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+    this.el.className = this.el.className + 'caption' + Utils.capitalizeFirstLetter(classNames[i]) + ' ';
   }
   this.el.style.opacity = this.opacity;
   this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +

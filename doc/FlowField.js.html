@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: FlowField.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: FlowField.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/*global Burner */
+/**
+ * Creates a new FlowField.
+ *
+ * @constructor
+ */
+function FlowField(opt_options) {
+  var options = opt_options || {};
+  options.name = options.name || 'FlowField';
+  Burner.Item.call(this, options);
+}
+Utils.extend(FlowField, Burner.Item);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.resolution = 50] The lower the value, the more vectors are created
+ *    to define the flow field. Low values increase processing time to create the field.
+ * @param {number} [opt_options.perlinSpeed = 0.01] The speed to move through the Perlin Noise space.
+ * @param {number} [opt_options.perlinTime = 100] Sets the Perlin Noise time.
+ * @param {Object} [opt_options.field = null] A list of vectors that define the flow field.
+ * @param {Object} [opt_options.createMarkers = false] Set to true to visualize the flow field.
+ */
+FlowField.prototype.init = function(opt_options) {
+
+  var options = opt_options || {};
+
+  this.resolution = options.resolution === undefined ? 50 : options.resolution;
+  this.perlinSpeed = options.perlinSpeed === undefined ? 0.01 : options.perlinSpeed;
+  this.perlinTime = options.perlinTime === undefined ? 100 : options.perlinTime;
+  this.field = options.field || null;
+  this.createMarkers = !!options.createMarkers;
+  // if a world is not passed, use the first world in the system
+  this.world = options.world || Burner.System.firstWorld();
+};
+
+/**
+ * Builds a FlowField.
+ */
+FlowField.prototype.build = function() {
+
+  var col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
+      vectorList = {},
+      world = this.world,
+      cols = Math.ceil(world.bounds[1] / parseFloat(this.resolution)),
+      rows = Math.ceil(world.bounds[2] / parseFloat(this.resolution)),
+      xoff = this.perlinTime, // create markers and vectors
+      yoff;
+
+  for (col = 0, colMax = cols; col &lt; colMax ; col += 1) {
+    yoff = this.perlinTime;
+    vectorList[col] = {};
+    for (row = 0, rowMax = rows; row &lt; rowMax ; row += 1) {
+
+      x = col * this.resolution + this.resolution / 2; // get location on the grid
+      y = row * this.resolution + this.resolution / 2;
+
+      theta = Utils.map(SimplexNoise.noise(xoff, yoff, 0.1), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
+      fieldX = Math.cos(theta);
+      fieldY = Math.sin(theta);
+      field = new Burner.Vector(fieldX, fieldY);
+      vectorList[col][row] = field;
+      angle = Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
+
+      if (this.createMarkers) {
+
+        var ffm = new FlowFieldMarker({ // create the marker
+          location: new Burner.Vector(x, y),
+          scale: 1,
+          opacity: Utils.map(angle, -360, 360, 0.1, 0.75),
+          width: this.resolution,
+          height: this.resolution/2,
+          field: field,
+          angle: angle,
+          colorMode: 'rgb',
+          color: [200, 100, 50],
+          borderRadius: 0,
+          zIndex: 0
+        });
+        world.el.appendChild(ffm);
+      }
+      yoff += parseFloat(this.perlinSpeed);
+    }
+    xoff += parseFloat(this.perlinSpeed);
+  }
+  this.field = vectorList;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="BorderPalette.html">BorderPalette</a></li><li><a href="Caption.html">Caption</a></li><li><a href="ColorPalette.html">ColorPalette</a></li><li><a href="ColorTable.html">ColorTable</a></li><li><a href="Connector.html">Connector</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Liquid.html">Liquid</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="Config.html">Config</a></li><li><a href="Interface.html">Interface</a></li><li><a href="SimplexNoise.html">SimplexNoise</a></li><li><a href="Utils.html">Utils</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Sep 10 2013 22:17:55 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

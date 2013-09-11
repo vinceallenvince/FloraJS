@@ -61,13 +61,13 @@ ColorPalette.prototype.addColor = function(options) {
     endColor: 'array'
   }, i, ln, colors;
 
-  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+  if (Interface.checkRequiredParams(options, requiredOptions)) {
 
-    ln = exports.Utils.getRandomNumber(options.min, options.max);
+    ln = Utils.getRandomNumber(options.min, options.max);
     colors = ColorPalette._createColorRange(options.startColor, options.endColor, 255);
 
     for (i = 0; i < ln; i++) {
-      this._colors.push(colors[exports.Utils.getRandomNumber(0, colors.length - 1)]);
+      this._colors.push(colors[Utils.getRandomNumber(0, colors.length - 1)]);
     }
   }
   return this;
@@ -90,7 +90,7 @@ ColorPalette.prototype.createGradient = function(options) {
     endColor: 'array'
   };
 
-  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+  if (Interface.checkRequiredParams(options, requiredOptions)) {
 
     this.startColor = options.startColor;
     this.endColor = options.endColor;
@@ -111,7 +111,7 @@ ColorPalette.prototype.createGradient = function(options) {
 ColorPalette.prototype.getColor = function() {
 
   if (this._colors.length > 0) {
-    return this._colors[exports.Utils.getRandomNumber(0, this._colors.length - 1)];
+    return this._colors[Utils.getRandomNumber(0, this._colors.length - 1)];
   } else {
     throw new Error('ColorPalette.getColor: You must add colors via addColor() before using getColor().');
   }

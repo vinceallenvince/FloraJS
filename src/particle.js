@@ -10,9 +10,9 @@
 function Particle(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Particle';
-  exports.Agent.call(this, options);
+  Agent.call(this, options);
 }
-exports.Utils.extend(Particle, exports.Agent);
+Utils.extend(Particle, Agent);
 
 /**
  * Initializes an instance.
@@ -60,7 +60,7 @@ Particle.prototype.init = function(opt_options) {
     this.acceleration = new Burner.Vector(1, 1);
     this.acceleration.normalize();
     this.acceleration.mult(this.maxSpeed ? this.maxSpeed : 3);
-    this.acceleration.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
+    this.acceleration.rotate(Utils.getRandomNumber(0, Math.PI * 2, true));
   }
   if (!options.velocity) {
     this.velocity = new Burner.Vector();
@@ -81,7 +81,7 @@ Particle.prototype.step = function() {
   // start apply forces
 
   if (this.world.c) { // friction
-    friction = exports.Utils.clone(this.velocity);
+    friction = Utils.clone(this.velocity);
     friction.mult(-1);
     friction.normalize();
     friction.mult(this.world.c);
@@ -112,12 +112,12 @@ Particle.prototype.step = function() {
   this.location.add(this.velocity); // add velocity
 
   if (this.fade) {
-    this.opacity = exports.Utils.map(this.life, 0, this.lifespan, 1, 0);
+    this.opacity = Utils.map(this.life, 0, this.lifespan, 1, 0);
   }
 
   if (this.shrink) {
-    this.width = exports.Utils.map(this.life, 0, this.lifespan, this.initWidth, 0);
-    this.height = exports.Utils.map(this.life, 0, this.lifespan, this.initHeight, 0);
+    this.width = Utils.map(this.life, 0, this.lifespan, this.initWidth, 0);
+    this.height = Utils.map(this.life, 0, this.lifespan, this.initHeight, 0);
   }
 
   this.acceleration.mult(0);

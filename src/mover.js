@@ -12,7 +12,7 @@ function Mover(opt_options) {
   options.name = options.name || 'Mover';
   Burner.Item.call(this, options);
 }
-exports.Utils.extend(Mover, Burner.Item);
+Utils.extend(Mover, Burner.Item);
 
 /**
  * Initializes an instance.
@@ -84,11 +84,11 @@ Mover.prototype.init = function(options) {
   })(this);
 
   if (this.draggable) {
-    exports.Utils.addEvent(this.el, 'mouseover', mouseover);
-    exports.Utils.addEvent(this.el, 'mousedown', mousedown);
-    exports.Utils.addEvent(this.el, 'mousemove', mousemove);
-    exports.Utils.addEvent(this.el, 'mouseup', mouseup);
-    exports.Utils.addEvent(this.el, 'mouseout', mouseout);
+    Utils.addEvent(this.el, 'mouseover', mouseover);
+    Utils.addEvent(this.el, 'mousedown', mousedown);
+    Utils.addEvent(this.el, 'mousemove', mousemove);
+    Utils.addEvent(this.el, 'mouseup', mouseup);
+    Utils.addEvent(this.el, 'mouseout', mouseout);
   }
 };
 
@@ -148,7 +148,7 @@ Mover.prototype.mousemove = function(e) {
       y = touch.pageY - this.world.el.offsetTop;
     }
 
-    if (exports.Utils.mouseIsInsideWorld(this.world)) {
+    if (Utils.mouseIsInsideWorld(this.world)) {
       this.location = new Burner.Vector(x, y);
     } else {
       this.isPressed = false;
@@ -213,7 +213,7 @@ Mover.prototype.step = function() {
     // start apply forces
 
     if (this.world.c) { // friction
-      friction = exports.Utils.clone(this.velocity);
+      friction = Utils.clone(this.velocity);
       friction.mult(-1);
       friction.normalize();
       friction.mult(this.world.c);
@@ -234,7 +234,7 @@ Mover.prototype.step = function() {
     this.location.add(this.velocity); // add velocity
     if (this.pointToDirection) { // object rotates toward direction
       if (this.velocity.mag() > 0.1) {
-        this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
+        this.angle = Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
       }
     }
   }
@@ -252,7 +252,7 @@ Mover.prototype.step = function() {
     if (this.offsetDistance) {
 
       r = this.offsetDistance; // use angle to calculate x, y
-      theta = exports.Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
+      theta = Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
       x = r * Math.cos(theta);
       y = r * Math.sin(theta);
 
@@ -261,7 +261,7 @@ Mover.prototype.step = function() {
       this.location.add(new Burner.Vector(x, y)); // position the child
 
       if (this.pointToParentDirection) {
-        this.angle = exports.Utils.radiansToDegrees(Math.atan2(this.parent.velocity.y, this.parent.velocity.x));
+        this.angle = Utils.radiansToDegrees(Math.atan2(this.parent.velocity.y, this.parent.velocity.x));
       }
 
     } else {
@@ -298,7 +298,7 @@ Mover.prototype._seek = function(target) {
   desiredVelocity.normalize();
 
   if (distanceToTarget < world.bounds[1] / 2) { // slow down to arrive at target
-    var m = exports.Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
+    var m = Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
     desiredVelocity.mult(m);
   } else {
     desiredVelocity.mult(this.maxSpeed);
@@ -354,7 +354,7 @@ Mover.prototype.drag = function(target) {
 
   var speed = this.velocity.mag(),
     dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
-    drag = exports.Utils.clone(this.velocity);
+    drag = Utils.clone(this.velocity);
 
   drag.normalize(); // drag direction
   drag.mult(dragMagnitude);
@@ -374,7 +374,7 @@ Mover.prototype.attract = function(attractor) {
     distance, strength;
 
   distance = force.mag();
-  distance = exports.Utils.constrain(distance, this.width * this.height, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
+  distance = Utils.constrain(distance, this.width * this.height, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
   force.normalize();
   strength = (attractor.G * attractor.mass * this.mass) / (distance * distance);
   force.mult(strength);

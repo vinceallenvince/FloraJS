@@ -10,9 +10,9 @@
 function Repeller(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Repeller';
-  exports.Agent.call(this, options);
+  Agent.call(this, options);
 }
-exports.Utils.extend(Repeller, exports.Agent);
+Utils.extend(Repeller, Agent);
 
 /**
  * Initializes an instance.

@@ -13,9 +13,9 @@
 function Agent(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Agent';
-  exports.Mover.call(this, options);
+  Mover.call(this, options);
 }
-exports.Utils.extend(Agent, exports.Mover);
+Utils.extend(Agent, Mover);
 
 /**
  * Initializes an instance.
@@ -83,7 +83,7 @@ Agent.prototype.applyForces = function() {
 
   if (liquids && liquids.list.length > 0) { // liquid
     for (i = 0, max = liquids.list.length; i < max; i += 1) {
-      if (this.id !== liquids.list[i].id && exports.Utils.isInside(this, liquids.list[i])) {
+      if (this.id !== liquids.list[i].id && Utils.isInside(this, liquids.list[i])) {
         this.applyForce(this.drag(liquids.list[i]));
       }
     }
@@ -111,7 +111,7 @@ Agent.prototype.applyForces = function() {
       sensor = this.sensors[i];
 
       r = sensor.offsetDistance; // use angle to calculate x, y
-      theta = exports.Utils.degreesToRadians(this.angle + sensor.offsetAngle);
+      theta = Utils.degreesToRadians(this.angle + sensor.offsetAngle);
       x = r * Math.cos(theta);
       y = r * Math.sin(theta);
 
@@ -136,7 +136,7 @@ Agent.prototype.applyForces = function() {
    * apply a force in the direction of the current velocity.
    */
   if (!sensorActivated && this.motorSpeed) {
-    dir = exports.Utils.clone(this.velocity);
+    dir = Utils.clone(this.velocity);
     dir.normalize();
     if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
       dir.mult(-this.motorSpeed);

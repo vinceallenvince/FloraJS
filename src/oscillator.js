@@ -16,7 +16,7 @@ function Oscillator(opt_options) {
   options.name = options.name || 'Oscillator';
   Burner.Item.call(this, options);
 }
-exports.Utils.extend(Oscillator, Burner.Item);
+Utils.extend(Oscillator, Burner.Item);
 
 /**
  * Initializes an instance.
@@ -95,8 +95,8 @@ Oscillator.prototype.step = function () {
 
     if (this.isPerlin) {
       this.perlinTime += this.perlinSpeed;
-      this.aVelocity.x =  exports.Utils.map(exports.SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
-      this.aVelocity.y =  exports.Utils.map(exports.SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.aVelocity.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.aVelocity.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
     } else {
       this.aVelocity.add(this.acceleration); // add acceleration
     }
@@ -106,7 +106,7 @@ Oscillator.prototype.step = function () {
 
     if (this.pointToDirection) { // object rotates toward direction
         velDiff = Burner.Vector.VectorSub(this.location, this.lastLocation);
-        this.angle = exports.Utils.radiansToDegrees(Math.atan2(velDiff.y, velDiff.x));
+        this.angle = Utils.radiansToDegrees(Math.atan2(velDiff.y, velDiff.x));
     }
 
     if (this.controlCamera) {

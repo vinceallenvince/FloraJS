@@ -45,9 +45,9 @@ BorderPalette.prototype.addBorder = function(options) {
     style: 'string'
   }, i, ln;
 
-  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+  if (Interface.checkRequiredParams(options, requiredOptions)) {
 
-    ln = exports.Utils.getRandomNumber(options.min, options.max);
+    ln = Utils.getRandomNumber(options.min, options.max);
 
     for (i = 0; i < ln; i++) {
       this._borders.push(options.style);
@@ -63,7 +63,7 @@ BorderPalette.prototype.addBorder = function(options) {
 BorderPalette.prototype.getBorder = function() {
 
   if (this._borders.length > 0) {
-    return this._borders[exports.Utils.getRandomNumber(0, this._borders.length - 1)];
+    return this._borders[Utils.getRandomNumber(0, this._borders.length - 1)];
   } else {
     throw new Error('BorderPalette.getBorder: You must add borders via addBorder() before using getBorder().');
   }

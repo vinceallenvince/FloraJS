@@ -10,9 +10,9 @@
 function ParticleSystem(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'ParticleSystem';
-  exports.Agent.call(this, options);
+  Agent.call(this, options);
 }
-exports.Utils.extend(ParticleSystem, exports.Agent);
+Utils.extend(ParticleSystem, Agent);
 
 /**
  * Initializes an instance.
@@ -72,7 +72,7 @@ ParticleSystem.prototype.init = function(opt_options) {
       this.particleOptions.acceleration.y);
   }
 
-  var pl = new exports.ColorPalette();
+  var pl = new ColorPalette();
   pl.addColor({ // adds a random sampling of colors to palette
     min: 12,
     max: 24,
@@ -98,7 +98,7 @@ ParticleSystem.prototype.init = function(opt_options) {
       offset = new Burner.Vector(1, 1); // get the emit radius
       offset.normalize();
       offset.mult(this.emitRadius); // expand emit radius in a random direction
-      offset.rotate(exports.Utils.getRandomNumber(0, Math.PI * 2, true));
+      offset.rotate(Utils.getRandomNumber(0, Math.PI * 2, true));
       location.add(offset);
 
       for (var i = 0; i < this.burst; i++) {

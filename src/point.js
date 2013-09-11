@@ -9,9 +9,9 @@
 function Point(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Point';
-  exports.Mover.call(this, options);
+  Mover.call(this, options);
 }
-exports.Utils.extend(Point, exports.Mover);
+Utils.extend(Point, Mover);
 
 /**
  * Initializes an instance.

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Stimulus.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: Stimulus.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/*global Burner */
+
+var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {},
+    borderStyles = ['double', 'double', 'dotted', 'dashed'];
+
+for (i = 0, max = Config.defaultColorList.length; i &lt; max; i++) {
+  color = Config.defaultColorList[i];
+  pal = new ColorPalette();
+  pal.addColor({
+    min: 20,
+    max: 200,
+    startColor: color.startColor,
+    endColor: color.endColor
+  });
+  palettes[color.name] = pal;
+  borderColors[color.name] = color.borderColor;
+  boxShadowColors[color.name] = color.boxShadowColor;
+}
+
+borderPalette = new BorderPalette();
+for (i = 0, max = borderStyles.length; i &lt; max; i++) {
+  border = borderStyles[i];
+  borderPalette.addBorder({
+    min: 2,
+    max: 10,
+    style: border
+  });
+}
+
+/**
+ * Creates a new Stimulus.
+ *
+ * @constructor
+ * @extends Agent
+ *
+ * @param {Object} options A map of initial properties.
+ */
+function Stimulus(options) {
+
+  if (!options || !options.type) {
+    throw new Error('Stimulus: options.type is required.');
+  }
+  options.name = options.type.substr(0, 1).toUpperCase() +
+      options.type.toLowerCase().substr(1, options.type.length);
+  Agent.call(this, options);
+}
+Utils.extend(Stimulus, Agent);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.mass = 50] Mass.
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
+ * @param {number} [opt_options.width = 50] Width.
+ * @param {number} [opt_options.height = 50] Height.
+ * @param {number} [opt_options.opacity = 0.75] The object's opacity.
+ * @param {number} [opt_options.zIndex = 1] The object's zIndex.
+ * @param {Array} [opt_options.color = [255, 200, 0]] Color.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {string} [opt_options.borderStyle = 'double'] Border style.
+ * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
+ * @param {Array} [opt_options.boxShadowColor = [255, 200, 0]] Box-shadow color.
+ */
+Stimulus.prototype.init = function(opt_options) {
+
+  var options = opt_options || {}, name = this.name.toLowerCase();
+  Stimulus._superClass.prototype.init.call(this, options);
+
+  this.mass = options.mass === undefined ? 50 : options.mass ;
+  this.isStatic = options.isStatic === undefined ? true : options.isStatic;
+  this.width = options.width === undefined ? 50 : options.width;
+  this.height = options.height === undefined ? 50 : options.height;
+  this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
+  this.zIndex = options.zIndex === undefined ? 1 : options.zIndex;
+  this.color = options.color || palettes[name].getColor();
+  this.borderWidth = options.borderWidth === undefined ?
+      this.width / Utils.getRandomNumber(2, 8) : options.borderWidth;
+  this.borderStyle = options.borderStyle === undefined ?
+      borderPalette.getBorder() : options.borderStyle;
+  this.borderColor = options.borderColor === undefined ? palettes[name].getColor() : options.borderColor;
+  this.borderRadius = options.borderRadius === undefined ? 100 : options.borderRadius;
+  this.boxShadowSpread = options.boxShadowSpread === undefined ?
+      this.width / Utils.getRandomNumber(2, 8) : options.boxShadowSpread;
+  this.boxShadowColor = options.boxShadowColor === undefined ? boxShadowColors[name] : options.boxShadowColor;
+
+  Burner.System.updateCache(this);
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="BorderPalette.html">BorderPalette</a></li><li><a href="Caption.html">Caption</a></li><li><a href="ColorPalette.html">ColorPalette</a></li><li><a href="ColorTable.html">ColorTable</a></li><li><a href="Connector.html">Connector</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Liquid.html">Liquid</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="Config.html">Config</a></li><li><a href="Interface.html">Interface</a></li><li><a href="SimplexNoise.html">SimplexNoise</a></li><li><a href="Utils.html">Utils</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Sep 10 2013 22:17:55 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

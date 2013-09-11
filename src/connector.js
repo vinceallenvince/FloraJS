@@ -11,7 +11,7 @@ function Connector(opt_options) {
   options.name = options.name || 'Connector';
   Burner.Item.call(this, options);
 }
-exports.Utils.extend(Connector, Burner.Item);
+Utils.extend(Connector, Burner.Item);
 
 /**
  * Initializes an instance.
@@ -60,5 +60,5 @@ Connector.prototype.step = function() {
   this.location = Burner.Vector.VectorAdd(this.parentA.location,
       this.parentB.location).div(2); // midpoint = (v1 + v2)/2
 
-  this.angle = exports.Utils.radiansToDegrees(Math.atan2(b.y - a.y, b.x - a.x) );
+  this.angle = Utils.radiansToDegrees(Math.atan2(b.y - a.y, b.x - a.x) );
 };

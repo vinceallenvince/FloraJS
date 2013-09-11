@@ -10,9 +10,9 @@
 function Attractor(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Attractor';
-  exports.Agent.call(this, options);
+  Agent.call(this, options);
 }
-exports.Utils.extend(Attractor, exports.Agent);
+Utils.extend(Attractor, Agent);
 
 /**
  * Initializes an instance.

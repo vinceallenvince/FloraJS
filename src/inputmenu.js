@@ -21,8 +21,8 @@ function InputMenu(opt_options) {
 
   var me = this, options = opt_options || {}, i, max, classNames;
 
-  // if a world is not passed, use the first world in the universe
-  this.world = options.world || exports.universe.first();
+  // if a world is not passed, use the first world in the System
+  this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';
   this.opacity = options.opacity === undefined ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
@@ -32,13 +32,13 @@ function InputMenu(opt_options) {
   this.colorMode = 'rgb';
 
   if (Burner.System.supportedFeatures.touch) {
-    this.text =  exports.Config.touchMap.stats + '-finger tap = stats | ' +
-        exports.Config.touchMap.pause + '-finger tap = pause | ' +
-        exports.Config.touchMap.reset + '-finger tap = reset';
+    this.text =  Config.touchMap.stats + '-finger tap = stats | ' +
+        Config.touchMap.pause + '-finger tap = pause | ' +
+        Config.touchMap.reset + '-finger tap = reset';
   } else {
-    this.text = '\'' + String.fromCharCode(exports.Config.keyMap.pause).toLowerCase() + '\' = pause | ' +
-      '\'' + String.fromCharCode(exports.Config.keyMap.resetSystem).toLowerCase() + '\' = reset | ' +
-      '\'' + String.fromCharCode(exports.Config.keyMap.stats).toLowerCase() + '\' = stats';
+    this.text = '\'' + String.fromCharCode(Config.keyMap.pause).toLowerCase() + '\' = pause | ' +
+      '\'' + String.fromCharCode(Config.keyMap.resetSystem).toLowerCase() + '\' = reset | ' +
+      '\'' + String.fromCharCode(Config.keyMap.stats).toLowerCase() + '\' = stats';
   }
 
   /**
@@ -50,7 +50,7 @@ function InputMenu(opt_options) {
   this.el.className = 'inputMenu ';
   classNames = this.position.split(' ');
   for (i = 0, max = classNames.length; i < max; i++) {
-    this.el.className = this.el.className + 'inputMenu' + exports.Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+    this.el.className = this.el.className + 'inputMenu' + Utils.capitalizeFirstLetter(classNames[i]) + ' ';
   }
   this.el.style.opacity = this.opacity;
   this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
@@ -69,11 +69,11 @@ function InputMenu(opt_options) {
   }
 
   if (Burner.System.supportedFeatures.touch) {
-    exports.Utils.addEvent(this.el, 'touchstart', function() {
+    Utils.addEvent(this.el, 'touchstart', function() {
       me.destroy();
     });
   } else {
-    exports.Utils.addEvent(this.el, 'mouseup', function() {
+    Utils.addEvent(this.el, 'mouseup', function() {
       me.destroy();
     });
   }

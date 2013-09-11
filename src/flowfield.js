@@ -9,7 +9,7 @@ function FlowField(opt_options) {
   options.name = options.name || 'FlowField';
   Burner.Item.call(this, options);
 }
-exports.Utils.extend(FlowField, Burner.Item);
+Utils.extend(FlowField, Burner.Item);
 
 /**
  * Initializes an instance.
@@ -56,19 +56,19 @@ FlowField.prototype.build = function() {
       x = col * this.resolution + this.resolution / 2; // get location on the grid
       y = row * this.resolution + this.resolution / 2;
 
-      theta = exports.Utils.map(exports.SimplexNoise.noise(xoff, yoff, 0.1), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
+      theta = Utils.map(SimplexNoise.noise(xoff, yoff, 0.1), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
       fieldX = Math.cos(theta);
       fieldY = Math.sin(theta);
       field = new Burner.Vector(fieldX, fieldY);
       vectorList[col][row] = field;
-      angle = exports.Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
+      angle = Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
 
       if (this.createMarkers) {
 
-        var ffm = new exports.FlowFieldMarker({ // create the marker
+        var ffm = new FlowFieldMarker({ // create the marker
           location: new Burner.Vector(x, y),
           scale: 1,
-          opacity: exports.Utils.map(angle, -360, 360, 0.1, 0.75),
+          opacity: Utils.map(angle, -360, 360, 0.1, 0.75),
           width: this.resolution,
           height: this.resolution/2,
           field: field,

@@ -26,7 +26,7 @@ function FlowFieldMarker(options) {
         color: 'array'
       }, el, nose;
 
-  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+  if (Interface.checkRequiredParams(options, requiredOptions)) {
 
     el = document.createElement('div');
     nose = document.createElement('div');

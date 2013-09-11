@@ -10,9 +10,9 @@
 function Sensor(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Sensor';
-  exports.Mover.call(this, options);
+  Mover.call(this, options);
 }
-exports.Utils.extend(Sensor, exports.Mover);
+Utils.extend(Sensor, Mover);
 
 /**
  * Initializes an instance.

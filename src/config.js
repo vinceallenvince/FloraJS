@@ -1,3 +1,6 @@
+/*global Burner, Flora */
+Burner.Classes = Flora;
+
 /**
  * @namespace
  */

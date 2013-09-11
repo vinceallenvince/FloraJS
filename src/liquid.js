@@ -10,9 +10,9 @@
 function Liquid(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Liquid';
-  exports.Agent.call(this, options);
+  Agent.call(this, options);
 }
-exports.Utils.extend(Liquid, exports.Agent);
+Utils.extend(Liquid, Agent);
 
 /**
  * Initializes an instance.

@@ -35,7 +35,7 @@ ColorTable.prototype.addColor = function(options) {
     endColor: 'array'
   };
 
-  if (exports.Interface.checkRequiredParams(options, requiredOptions)) {
+  if (Interface.checkRequiredParams(options, requiredOptions)) {
     this[options.name] = {
       startColor: options.startColor,
       endColor: options.endColor
@@ -75,7 +75,7 @@ ColorTable.prototype.getColor = function(name, startColor, endColor) {
 
   var color, startCol, endCol;
 
-  if (exports.Interface.getDataType(name) === 'string') {
+  if (Interface.getDataType(name) === 'string') {
 
     if (this[name]) {
 
