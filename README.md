@@ -50,14 +50,16 @@ Worlds carry two properties that directly affect their elements.
 * gravity {Vector} default: new Vector(0, 1)
 * c (coefficient of friction) {number} 0.01
 
-We can change these defaults after the system starts via the 2nd parameter to the Burner.System.init() method.
+We can change these defaults after the system starts by first creating a world and passing options. Next, we pass the world as a 2nd parameter to the Burner.System.init() method.
 
-      Burner.System.init(function() {
-        this.add('Agent');
-      }, {
+      var world = new Burner.World(document.body, {
         gravity: new Burner.Vector(0, -1),
         c: 0.75
       });
+
+      Burner.System.init(function() {
+        this.add('Agent');
+      }, world);
 
 We've reversed the World's gravity and increased its friction. Now the block slowly drifts upwards.
 
@@ -71,14 +73,16 @@ Agents are highly configurable. For a complete list of options see the docs at h
 
 For an example of the Agent's seek behavior, set 'followMouse' to 'true' when creating the Agent.
 
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0
+      });
+
       Burner.System.init(function() {
         this.add('Agent', {
           followMouse: true
         });
-      }, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+      }, world);
 
 http://www.florajs.com/examples/agent_follows_mouse.html
 
@@ -103,14 +107,16 @@ http://www.florajs.com/examples/walker.html
 
 In the Agent example above, the Agent targeted the mouse. By saving a reference to a new Walker and passing at as a 'seekTarget' for a new Agent, we can make the Agent seek the Walker.
 
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0
+      });
+
       Burner.System.init(function() {
         this.add('Agent', {
           seekTarget: this.add('Walker')
         });
-      }, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+      }, world);
 
 http://www.florajs.com/examples/agent_seeks_walker.html
 
@@ -126,6 +132,11 @@ Agents can also organize in flocks. The following properties affect flocking beh
 
 In the example below, we create 20 Agents and set their 'seekTarget' to the Walker. We also set 'flocking' to true to enable the flocking behavior.
 
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0
+      });
+
       Burner.System.init(function() {
 
         var walker = this.add('Walker');
@@ -136,14 +147,16 @@ In the example below, we create 20 Agents and set their 'seekTarget' to the Walk
             flocking: true
           });
         }
-      }, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+      }, world);
 
 http://www.florajs.com/examples/agents_flock_to_walker.html
 
 In the example below, Agents flock to the mouse. We've also adjusted the 'width' and 'height' properties.
+
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0
+      });
 
       Burner.System.init(function() {
         for (var i = 0; i < 10; i++) {
@@ -154,10 +167,7 @@ In the example below, Agents flock to the mouse. We've also adjusted the 'width'
             height: 15
           });
         }
-      }, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+      }, world);
 
 http://www.florajs.com/examples/agents_flock_to_mouse.html
 
@@ -171,6 +181,11 @@ FloraJS has some built in Proximity objects that exert a force on Agents that co
 
 In the example below, we create a Liquid object and an Agent that follows the mouse. You can click and drag to place the Liquid anywhere in the World. Use your mouse to make the Agent pass through the Liquid.
 
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0
+      });
+
       Burner.System.init(function() {
         this.add('Agent', {
           followMouse: true
@@ -178,10 +193,7 @@ In the example below, we create a Liquid object and an Agent that follows the mo
         this.add('Liquid', {
           draggable: true
         });
-      }, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+      }, world);
 
 You can replace 'Liquid' with 'Attractor' and 'Repeller' to view how the Proximity objects affect an Agent.
 
@@ -209,6 +221,11 @@ Sensors are tuned specifically to a Stimulant and can be configured to activate 
 
 In the example below, the Agent carries a Sensor that senses Heat. When activated, it triggers the 'COWARD' behavior.
 
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0
+      });
+
       Burner.System.init(function() {
         this.add('Stimulus', {
           type: 'heat',
@@ -225,10 +242,7 @@ In the example below, the Agent carries a Sensor that senses Heat. When activate
           maxSpeed: 5,
           motorSpeed: 10
         });
-      }, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+      }, world);
 
 Notice, we've updated the World and removed any gravitational forces. We've also updated the 'motorSpeed' property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Heat objects.
 
@@ -237,6 +251,11 @@ http://www.florajs.com/examples/sensor.html
 #### A small World
 
 Putting it all together, we can observe Agents navigate a World with multiple Stimuli and Proximity objects.
+
+    var world = new Burner.World(document.body, {
+      gravity: new Burner.Vector(),
+      c: 0
+    });
 
     Burner.System.init(function() {
 
@@ -310,16 +329,21 @@ Putting it all together, we can observe Agents navigate a World with multiple St
         mass: 10,
         motorSpeed: 4
       });
-    }, {
-      gravity: new Burner.Vector(),
-      c: 0
-    });
+    }, world);
 
 http://www.florajs.com/examples/sensor_stimuli.html
 
 #### Camera
 
 In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course, there can only be one agent controlling the World's Camera.
+
+    var world = new Burner.World(document.body, {
+      gravity: new Burner.Vector(),
+      c: 0,
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderColor: [100, 100, 100]
+    });
 
     Burner.System.init(function() {
 
@@ -393,13 +417,7 @@ In the above example, we have a fixed, third-person perspective of our World. Bu
           color: !i ? [255, 100, 0] : [197, 177, 115]
         });
       }
-    }, {
-      gravity: new Burner.Vector(),
-      c: 0,
-      borderWidth: 1,
-      borderStyle: 'dashed',
-      borderColor: [100, 100, 100]
-    });
+    }, world);
 
 http://www.florajs.com/examples/camera.html
 
