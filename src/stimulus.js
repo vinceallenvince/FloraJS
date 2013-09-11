@@ -3,8 +3,8 @@
 var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {},
     borderStyles = ['double', 'double', 'dotted', 'dashed'];
 
-for (i = 0, max = exports.config.defaultColorList.length; i < max; i++) {
-  color = exports.config.defaultColorList[i];
+for (i = 0, max = exports.Config.defaultColorList.length; i < max; i++) {
+  color = exports.Config.defaultColorList[i];
   pal = new exports.ColorPalette();
   pal.addColor({
     min: 20,

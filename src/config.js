@@ -1,7 +1,7 @@
 /**
  * @namespace
  */
-var config = {
+var Config = {
   borderStyles: [
     'none',
     'solid',
