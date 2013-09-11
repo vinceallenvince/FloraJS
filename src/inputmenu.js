@@ -32,13 +32,13 @@ function InputMenu(opt_options) {
   this.colorMode = 'rgb';
 
   if (Burner.System.supportedFeatures.touch) {
-    this.text =  exports.config.touchMap.stats + '-finger tap = stats | ' +
-        exports.config.touchMap.pause + '-finger tap = pause | ' +
-        exports.config.touchMap.reset + '-finger tap = reset';
+    this.text =  exports.Config.touchMap.stats + '-finger tap = stats | ' +
+        exports.Config.touchMap.pause + '-finger tap = pause | ' +
+        exports.Config.touchMap.reset + '-finger tap = reset';
   } else {
-    this.text = '\'' + String.fromCharCode(exports.config.keyMap.pause).toLowerCase() + '\' = pause | ' +
-      '\'' + String.fromCharCode(exports.config.keyMap.resetSystem).toLowerCase() + '\' = reset | ' +
-      '\'' + String.fromCharCode(exports.config.keyMap.stats).toLowerCase() + '\' = stats';
+    this.text = '\'' + String.fromCharCode(exports.Config.keyMap.pause).toLowerCase() + '\' = pause | ' +
+      '\'' + String.fromCharCode(exports.Config.keyMap.resetSystem).toLowerCase() + '\' = reset | ' +
+      '\'' + String.fromCharCode(exports.Config.keyMap.stats).toLowerCase() + '\' = stats';
   }
 
   /**

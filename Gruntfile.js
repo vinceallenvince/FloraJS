@@ -14,7 +14,8 @@ module.exports = function(grunt) {
                   ' *  License: <%= pkg.license %> */\n\n' +
                   'var ' + latest + ' = {}, exports = ' + latest + ';\n\n' +
                   '(function(exports) {\n\n' +
-                  '"use strict";\n\n';
+                  '"use strict";\n\n' +
+                  'Burner.Classes = Flora;';
 
   bannerContentMin = '/*! <%= pkg.name %> v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd hh:mm:ss") %> \n' +
                   '<%= pkg.author.name %> |' +
