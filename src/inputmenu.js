@@ -1,4 +1,4 @@
-/*global exports, Burner, document */
+/*global Burner, document */
 /**
  * Creates a new InputMenu object.
  * An Input Menu lists key strokes and other input available
@@ -106,5 +106,3 @@ InputMenu.prototype.destroy = function() {
   }
   return;
 };
-
-exports.InputMenu = InputMenu;

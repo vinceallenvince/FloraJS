@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new Sensor object.
  *
@@ -273,4 +273,3 @@ Sensor.prototype.isInside = function(item, container, sensitivity) {
   }
   return false;
 };
-exports.Sensor = Sensor;

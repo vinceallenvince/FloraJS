@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new Point.
  *
@@ -43,5 +43,3 @@ Point.prototype.init = function(opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [60, 60, 60];
 };
-
-exports.Point = Point;

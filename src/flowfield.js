@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new FlowField.
  *
@@ -86,5 +86,3 @@ FlowField.prototype.build = function() {
   }
   this.field = vectorList;
 };
-
-exports.FlowField = FlowField;

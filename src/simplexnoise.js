@@ -1,4 +1,3 @@
-/*global exports */
 /*jshint bitwise:false */
 /**
 * https://gist.github.com/304522
@@ -198,10 +197,6 @@ return {
 
 }({
 random: function () {
-
-
-
   return 0.1;
 }
 }));
-exports.SimplexNoise = SimplexNoise;

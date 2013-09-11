@@ -1,4 +1,4 @@
-/*global exports, Burner, document, window, console */
+/*global Burner, document, window, console */
 /*jshint supernew:true */
 
 /**
@@ -246,5 +246,3 @@ Utils.mouseIsInsideWorld = function(world) {
   }
   return false;
 };
-
-exports.Utils = Utils;

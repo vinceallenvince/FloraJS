@@ -1,4 +1,4 @@
-/*global exports, Burner, document */
+/*global Burner, document */
 /**
  * Creates a new Agent.
  *
@@ -378,4 +378,3 @@ Agent.prototype.getVelocity = function (type) {
     return this.velocity.y;
   }
 };
-exports.Agent = Agent;

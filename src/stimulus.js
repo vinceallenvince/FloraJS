@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 
 var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {},
     borderStyles = ['double', 'double', 'dotted', 'dashed'];
@@ -88,5 +88,3 @@ Stimulus.prototype.init = function(opt_options) {
 
   Burner.System.updateCache(this);
 };
-
-exports.Stimulus = Stimulus;

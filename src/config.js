@@ -1,4 +1,6 @@
-/*global exports */
+/**
+ * @namespace
+ */
 var config = {
   borderStyles: [
     'none',
@@ -54,4 +56,3 @@ var config = {
     reset: 4
   }
 };
-exports.config = config;

@@ -1,4 +1,4 @@
-/*global exports, document */
+/*global document */
 /**
  * Creates a new ColorPalette object.
  *
@@ -168,5 +168,3 @@ ColorPalette._createColorRange = function(startColor, endColor, totalColors) {
   }
   return colors;
 };
-
-exports.ColorPalette = ColorPalette;

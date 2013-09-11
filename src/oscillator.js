@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new Oscillator.
  *
@@ -131,4 +131,3 @@ Oscillator.prototype.step = function () {
     }
   }
 };
-exports.Oscillator = Oscillator;

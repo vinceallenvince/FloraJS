@@ -1,12 +1,7 @@
-# FOLDERS #
-###########
-build/
-docs/
-lib/
-tests/lib/
-gists/
-assets/
+#### FOLDERS ####
+node_modules
+reports
 
-# FILES #
-#########
-.DS_Store
+#### FILES ####
+*.DS_Store
+*.swp

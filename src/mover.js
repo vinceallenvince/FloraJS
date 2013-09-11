@@ -1,4 +1,4 @@
-/*global exports, Burner, document, clearInterval, setInterval */
+/*global Burner, document, clearInterval, setInterval */
 /**
  * Creates a new Mover. All Flora elements extend Mover.
  *
@@ -400,5 +400,3 @@ Mover.prototype.isInside = function(container) {
   }
   return false;
 };
-
-exports.Mover = Mover;

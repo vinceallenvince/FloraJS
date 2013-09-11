@@ -1,4 +1,4 @@
-/*global exports, console */
+/*global console */
 /** @namespace */
 var Interface = {};
 
@@ -106,5 +106,3 @@ Interface.getDataType = function(element) {
 
   return typeof element;
 };
-
-exports.Interface = Interface;

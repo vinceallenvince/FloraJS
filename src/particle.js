@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new Particle.
  *
@@ -129,5 +129,3 @@ Particle.prototype.step = function() {
   }
 
 };
-
-exports.Particle = Particle;

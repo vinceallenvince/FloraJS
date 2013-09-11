@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new Repeller.
  *
@@ -55,5 +55,3 @@ Repeller.prototype.init = function(opt_options) {
 
   Burner.System.updateCache(this);
 };
-
-exports.Repeller = Repeller;

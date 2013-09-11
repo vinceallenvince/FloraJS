@@ -1,4 +1,4 @@
-/*global exports, Burner, document */
+/*global Burner, document */
 /**
  * Creates a new Caption object.
  * Use captions to communicate short messages to users like a title
@@ -89,5 +89,3 @@ Caption.prototype.destroy = function() {
   }
   return;
 };
-
-exports.Caption = Caption;

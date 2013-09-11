@@ -1,4 +1,4 @@
-/*global exports, Burner, document */
+/*global Burner, document */
 /**
  * Creates a new Walker.
  *
@@ -99,5 +99,3 @@ Walker.prototype.applyForces = function() {
     this._checkAvoidEdges();
   }
 };
-
-exports.Walker = Walker;

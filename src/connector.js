@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new Connector.
  *
@@ -62,5 +62,3 @@ Connector.prototype.step = function() {
 
   this.angle = exports.Utils.radiansToDegrees(Math.atan2(b.y - a.y, b.x - a.x) );
 };
-
-exports.Connector = Connector;

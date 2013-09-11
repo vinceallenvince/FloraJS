@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new Liquid.
  *
@@ -55,5 +55,3 @@ Liquid.prototype.init = function(opt_options) {
 
   Burner.System.updateCache(this);
 };
-
-exports.Liquid = Liquid;

@@ -1,4 +1,3 @@
-/*global exports */
 /**
  * Creates a new BorderPalette object.
  *
@@ -69,4 +68,3 @@ BorderPalette.prototype.getBorder = function() {
     throw new Error('BorderPalette.getBorder: You must add borders via addBorder() before using getBorder().');
   }
 };
-exports.BorderPalette = BorderPalette;

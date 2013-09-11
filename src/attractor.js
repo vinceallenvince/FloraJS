@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new Attractor object.
  *
@@ -56,5 +56,3 @@ Attractor.prototype.init = function(opt_options) {
 
   Burner.System.updateCache(this);
 };
-
-exports.Attractor = Attractor;

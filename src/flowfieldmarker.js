@@ -1,4 +1,4 @@
-/*global exports, Burner, document */
+/*global Burner, document */
 /**
  * Creates a new FlowFieldMarker.
  *
@@ -55,5 +55,3 @@ function FlowFieldMarker(options) {
 }
 
 FlowFieldMarker.prototype.name = 'FlowFieldMarker';
-
-exports.FlowFieldMarker = FlowFieldMarker;

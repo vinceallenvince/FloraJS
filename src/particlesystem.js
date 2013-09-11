@@ -1,4 +1,4 @@
-/*global exports, Burner */
+/*global Burner */
 /**
  * Creates a new ParticleSystem.
  *
@@ -133,5 +133,3 @@ ParticleSystem.getParticleLocation = function(location) {
     return new Burner.Vector(location.x, location.y);
   })();
 };
-
-exports.ParticleSystem = ParticleSystem;

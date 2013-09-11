@@ -1,4 +1,3 @@
-/*global exports */
 /**
  * Creates a new ColorTable.
  *
@@ -105,5 +104,3 @@ ColorTable.prototype.getColor = function(name, startColor, endColor) {
     throw new Error('ColorTable: You must pass a name (string) for the color entry in the table.');
   }
 };
-
-exports.ColorTable = ColorTable;
