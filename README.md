@@ -421,6 +421,144 @@ In the above example, we have a fixed, third-person perspective of our World. Bu
 
 http://www.florajs.com/examples/camera.html
 
+#### Your own worlds
+
+Burner allows you to define worlds using any DOM element. This is useful if you want your world to live alongside other DOM elements or simply do not want the entire body defined as a world.
+
+To define a world, just create the DOM element you want to represent the world and reference it when calling new Burner.World().
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=UTF-8' />
+    <title>Flora</title>
+    <link rel='stylesheet' href='css/Burner.min.css' type='text/css' charset='utf-8' />
+    <link rel='stylesheet' href='css/Flora.min.css' type='text/css' charset='utf-8' />
+    <script src='scripts/Burner.min.js' type='text/javascript' charset='utf-8'></script>
+    <script src='scripts/Flora.min.js' type='text/javascript' charset='utf-8'></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var world = new Burner.World(document.getElementById('worldA'), {
+        boundToWindow: false,
+        width: 320,
+        height: 480,
+        color: [60, 60, 60],
+        gravity: new Burner.Vector(0, 0),
+        c: 0
+      });
+
+      Burner.System.init(function() {
+        this.add('Agent');
+      });
+    </script>
+  </body>
+</html>
+```
+
+http://www.florajs.com/examples/dom_worlds.html
+
+Notice we passed 'boundToWindow: false' as an option. This means if we resize the browser, it has no effect on the world. If we passed 'true', the world would resize with the browser. This is useful if you want to layer worlds that span the full width and height of the browser.
+
+#### Multiple worlds
+
+Burner also supports multiple worlds. First, define your worlds. Next, pass them in an array as the second argument to Burner.System.init(). Here's an example.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='content-type' content='text/html; charset=UTF-8' />
+    <title>Flora</title>
+    <link rel='stylesheet' href='css/Burner.min.css' type='text/css' charset='utf-8' />
+    <link rel='stylesheet' href='css/Flora.min.css' type='text/css' charset='utf-8' />
+    <script src='scripts/Burner.min.js' type='text/javascript' charset='utf-8'></script>
+    <script src='scripts/Flora.min.js' type='text/javascript' charset='utf-8'></script>
+  </head>
+  <body>
+    <div id='worldA'></div>
+    <div id='worldB'></div>
+    <div id='worldC'></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var worldA = new Burner.World(document.getElementById('worldA'), {
+        boundToWindow: false,
+        width: 320,
+        height: 480,
+        color: [60, 60, 60],
+        gravity: new Burner.Vector(),
+        c: 0,
+        location: new Burner.Vector(160, 240)
+      });
+
+      var worldB = new Burner.World(document.getElementById('worldB'), {
+        boundToWindow: false,
+        width: 320,
+        height: 480,
+        color: [60, 60, 60],
+        gravity: new Burner.Vector(),
+        c: 0,
+        location: new Burner.Vector(490, 240)
+      });
+
+      var worldC = new Burner.World(document.getElementById('worldC'), {
+        boundToWindow: false,
+        width: 320,
+        height: 480,
+        color: [60, 60, 60],
+        gravity: new Burner.Vector(),
+        c: 0,
+        location: new Burner.Vector(820, 240)
+      });
+
+      Burner.System.init(function() {
+
+        this.add('ParticleSystem', {
+          startColor: [255, 255, 255],
+          particleOptions: {
+            maxSpeed: 3
+          }
+        }, worldA);
+
+        for (var i = 0; i < 10; i++) {
+          this.add('Walker', null, worldB);
+        }
+
+        for (var i = 0; i < 10; i++) {
+          var size = Burner.System.getRandomNumber(5, 30);
+          this.add('Agent', {
+            width: size,
+            height: size,
+            mass: size,
+            followMouse: true,
+            flocking: true
+          }, worldC);
+        }
+
+        this.add('Caption', {
+          text: 'Muliple Worlds',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+
+      }, [worldA, worldB, worldC]);
+    </script>
+  </body>
+</html>
+```
+
+http://www.florajs.com/examples/multiple_worlds.html
+
 #### DOM Renderer
 
 If you want to drop the Flora classes and use your own, use <a href='http://github.com/foldi/Burner'>Burner</a> to render your system.
