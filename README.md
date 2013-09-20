@@ -459,7 +459,7 @@ To define a world, just create the DOM element you want to represent the world a
 </html>
 ```
 
-http://www.florajs.com/examples/dom_worlds.html
+http://www.florajs.com/examples/dom_world.html
 
 Notice we passed 'boundToWindow: false' as an option. This means if we resize the browser, it has no effect on the world. If we passed 'true', the world would resize with the browser. This is useful if you want to layer worlds that span the full width and height of the browser.
 
