@@ -3,16 +3,16 @@
  * Creates a new Particle.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Particle(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Particle';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Particle, Agent);
+Utils.extend(Particle, Mover);
 
 /**
  * Initializes an instance.

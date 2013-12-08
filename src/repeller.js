@@ -3,16 +3,16 @@
  * Creates a new Repeller.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Repeller(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Repeller';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Repeller, Agent);
+Utils.extend(Repeller, Mover);
 
 /**
  * Initializes an instance.
@@ -36,6 +36,7 @@ Utils.extend(Repeller, Agent);
 Repeller.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
+
   Repeller._superClass.prototype.init.call(this, options);
 
   this.G = typeof options.G === 'undefined' ? -10 : options.G;
@@ -54,4 +55,29 @@ Repeller.prototype.init = function(opt_options) {
   this.boxShadowColor = options.boxShadowColor || [250, 105, 0];
 
   Burner.System.updateCache(this);
+};
+
+/**
+ * Calculates a force to apply to simulate attraction/repulsion on an object.
+ * !! also used by Attractor; maybe should abstract out to an external force object
+ * @param {Object} obj The target object.
+ * @returns {Object} A force to apply.
+ */
+Repeller.prototype.attract = function(obj) {
+
+  var force = Burner.Vector.VectorSub(this.location, obj.location),
+    distance, strength;
+
+  distance = force.mag();
+  distance = Utils.constrain(
+      distance,
+      obj.width * obj.height,
+      this.width * this.height); // min = the size of obj; max = the size of this attractor
+  force.normalize();
+
+  // strength is proportional to the mass of the objects and their proximity to each other
+  strength = (this.G * this.mass * obj.mass) / (distance * distance);
+  force.mult(strength);
+
+  return force;
 };

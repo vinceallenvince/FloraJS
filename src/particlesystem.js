@@ -3,16 +3,16 @@
  * Creates a new ParticleSystem.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function ParticleSystem(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'ParticleSystem';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(ParticleSystem, Agent);
+Utils.extend(ParticleSystem, Mover);
 
 /**
  * Initializes an instance.
@@ -94,7 +94,7 @@ ParticleSystem.prototype.init = function(opt_options) {
 
     if (this.clock % this.burstRate === 0) {
 
-      location = this.getLocation(); // use the particle system's location
+      location = this.location; // use the particle system's location
       offset = new Burner.Vector(1, 1); // get the emit radius
       offset.normalize();
       offset.mult(this.emitRadius); // expand emit radius in a random direction

@@ -9,6 +9,11 @@
  */
 function Sensor(opt_options) {
   var options = opt_options || {};
+
+  if (!options || !options.type) {
+    throw new Error('Stimulus: options.type is required.');
+  }
+
   options.name = options.name || 'Sensor';
   Mover.call(this, options);
 }
@@ -40,7 +45,7 @@ Sensor.prototype.init = function(opt_options) {
   Sensor._superClass.prototype.init.call(this, options);
 
   this.type = options.type || '';
-  this.behavior = options.behavior || 'LOVE';
+  this.behavior = options.behavior || function() {};
   this.sensitivity = typeof options.sensitivity === 'undefined' ? 2 : options.sensitivity;
   this.width = typeof options.width === 'undefined' ? 7 : options.width;
   this.height = typeof options.height === 'undefined' ? 7 : options.height;
@@ -54,6 +59,9 @@ Sensor.prototype.init = function(opt_options) {
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = 'solid';
   this.borderColor = [255, 255, 255];
+
+  this.activationLocation = new Burner.Vector();
+  this._force = new Burner.Vector(); // used as a cache Vector
 };
 
 /**
@@ -61,200 +69,285 @@ Sensor.prototype.init = function(opt_options) {
  */
 Sensor.prototype.step = function() {
 
-  var check = false, i, max;
+  var check = false, i, max, list;
 
-  var heat = Burner.System._caches.Heat || {list: []},
-      cold = Burner.System._caches.Cold || {list: []},
-      predators = Burner.System._caches.Predators || {list: []},
-      lights = Burner.System._caches.Light || {list: []},
-      oxygen = Burner.System._caches.Oxygen || {list: []},
-      food = Burner.System._caches.Food || {list: []};
-
-  // what if cache does not exist?
-
-  if (this.type === 'heat' && heat.list && heat.list.length > 0) {
-    for (i = 0, max = heat.list.length; i < max; i++) { // heat
-      if (this.isInside(this, heat.list[i], this.sensitivity)) {
-        this.target = heat.list[i]; // target this stimulator
+  /**
+   * Check if any Simulus objects exist that match this sensor. If so,
+   * loop thru the list and check if sensor should activate.
+   */
+  if (Burner.System._caches[this.type]) {
+    list = Burner.System._caches[this.type].list;
+    for (i = 0, max = list.length; i < max; i++) { // heat
+      if (this.isInside(this, list[i], this.sensitivity)) {
+        this.target = list[i]; // target this stimulator
+        if (!this.activationLocation.x && !this.activationLocation.y) {
+          this.activationLocation.x = this.parent.location.x;
+          this.activationLocation.y = this.parent.location.y;
+        }
         this.activated = true; // set activation
         check = true;
-      }
-    }
-  } else if (this.type === 'cold' && cold.list && cold.list.length > 0) {
-    for (i = 0, max = cold.list.length; i < max; i++) { // cold
-      if (this.isInside(this, cold.list[i], this.sensitivity)) {
-        this.target = cold.list[i]; // target this stimulator
-        this.activated = true; // set activation
-        check = true;
-      }
-    }
-  } else if (this.type === 'predator' && predators.list && predators.list.length > 0) {
-    for (i = 0, max = predators.list.length; i < max; i += 1) { // predator
-      if (this.isInside(this, predators.list[i], this.sensitivity)) {
-        this.target = predators.list[i]; // target this stimulator
-        this.activated = true; // set activation
-        check = true;
-      }
-    }
-  } else if (this.type === 'light' && lights.list && lights.list.length > 0) {
-    for (i = 0, max = lights.list.length; i < max; i++) { // light
-      // check the obj has not been marked as deleted
-      if (lights.lookup[lights.list[i].id]) {
-        if (this.isInside(this, lights.list[i], this.sensitivity)) {
-          this.target = lights.list[i]; // target this stimulator
-          this.activated = true; // set activation
-          check = true;
-        }
-      }
-    }
-  } else if (this.type === 'oxygen' && oxygen.list && oxygen.list.length > 0) {
-    for (i = 0, max = oxygen.list.length; i < max; i += 1) { // oxygen
-      // check the obj has not been marked as deleted
-      if (oxygen.lookup[oxygen.list[i].id]) {
-        if (this.isInside(this, oxygen.list[i], this.sensitivity)) {
-          this.target = oxygen.list[i]; // target this stimulator
-          this.activated = true; // set activation
-          check = true;
-        }
-      }
-    }
-  } else if (this.type === 'food' && food.list && food.list.length > 0) {
-    for (i = 0, max = food.list.length; i < max; i += 1) { // food
-      // check the obj has not been marked as deleted
-      if (food.lookup[food.list[i].id]) {
-        if (this.isInside(this, food.list[i], this.sensitivity)) {
-          this.target = food.list[i]; // target this stimulator
-          this.activated = true; // set activation
-          check = true;
-        }
       }
     }
   }
+
   if (!check) {
     this.target = null;
     this.activated = false;
+    this.state = null;
     this.color = 'transparent';
+    this.activationLocation.x = null;
+    this.activationLocation.y = null;
   } else {
     this.color = this.activatedColor;
   }
   if (this.afterStep) {
     this.afterStep.apply(this);
   }
-
 };
 
-/**
- * Returns a force to apply to an agent when its sensor is activated.
- *
- */
-Sensor.prototype.getActivationForce = function(agent) {
-
-  var distanceToTarget, desiredVelocity, m, v, steer;
+Sensor.prototype.getBehavior = function() {
 
   switch (this.behavior) {
 
-    /**
-     * Steers toward target
-     */
-    case 'AGGRESSIVE':
-      desiredVelocity = Burner.Vector.VectorSub(this.target.location, this.location);
-      distanceToTarget = desiredVelocity.mag();
-      desiredVelocity.normalize();
-
-      m = distanceToTarget/agent.maxSpeed;
-      desiredVelocity.mult(m);
-
-      desiredVelocity.sub(agent.velocity);
-      desiredVelocity.limit(agent.maxSteeringForce);
-
-    return desiredVelocity;
-
-    /**
-     * Steers away from the target
-     */
-    case 'COWARD':
-      desiredVelocity = Burner.Vector.VectorSub(this.target.location, this.location);
-      distanceToTarget = desiredVelocity.mag();
-      desiredVelocity.normalize();
-
-      m = distanceToTarget/agent.maxSpeed;
-      desiredVelocity.mult(-m);
-
-      desiredVelocity.sub(agent.velocity);
-      desiredVelocity.limit(agent.maxSteeringForce);
-
-    return desiredVelocity;
-
-    /**
-     * Speeds toward target and keeps moving
-     */
     case 'LIKES':
-      var dvLikes = Burner.Vector.VectorSub(this.target.location, this.location);
-      distanceToTarget = dvLikes.mag();
-      dvLikes.normalize();
+      return function(sensor, target) {
 
-      m = distanceToTarget/agent.maxSpeed;
-      dvLikes.mult(m);
+        /**
+         * LIKES
+         * Steer toward target at max speed.
+         */
 
-      steer = Burner.Vector.VectorSub(dvLikes, agent.velocity);
-      steer.limit(agent.maxSteeringForce);
-      return steer;
+        // desiredVelocity = difference in target location and agent location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
 
-    /**
-     * Arrives at target and remains
-     */
-    case 'LOVES':
-      var dvLoves = Burner.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
-      distanceToTarget = dvLoves.mag();
-      dvLoves.normalize();
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
 
-      if (distanceToTarget > this.width) {
-        m = distanceToTarget/agent.maxSpeed;
-        dvLoves.mult(m);
-        steer = Burner.Vector.VectorSub(dvLoves, agent.velocity);
-        steer.limit(agent.maxSteeringForce);
-        return steer;
+        return desiredVelocity;
       }
-      agent.velocity = new Burner.Vector();
-      agent.acceleration = new Burner.Vector();
-      return new Burner.Vector();
 
-    /**
-     * Arrives at target but does not stop
-     */
+    case 'DISLIKES':
+      return function(sensor, target) {
+
+        /**
+         * DISLIKES
+         * Steer away from target at max speed.
+         */
+
+        // desiredVelocity = difference in target location and agent location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
+
+        // reverse the force
+        desiredVelocity.mult(-1);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      }
+
+    case 'AGGRESSIVE':
+      return function(sensor, target) {
+
+        /**
+         * AGGRESSIVE
+         * Steer and arrive at target. Aggressive agents will hit their target.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
+
+        // get distance to target
+        var distanceToTarget = desiredVelocity.mag();
+
+        if (distanceToTarget < this.width * 2) {
+
+          // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+          desiredVelocity.normalize();
+
+          // as agent gets closer, velocity decreases
+          var m = distanceToTarget / this.maxSpeed;
+
+          // extend desiredVelocity vector
+          desiredVelocity.mult(m);
+
+        }
+
+        // subtract current velocity from desired to create a steering force
+        desiredVelocity.sub(this.velocity);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+
+      }
+
+    case 'COWARD':
+      return function(sensor, target) {
+
+        /**
+         * COWARD
+         * Steer and arrive at midpoint bw target location and agent location.
+         * After arriving, reverse direction and accelerate to max speed.
+         */
+
+        var desiredVelocity, distanceToTarget;
+
+        if (sensor.state !== 'running') {
+
+          var midpoint = sensor.activationLocation.midpoint(target.location);
+
+          // velocity = difference in location
+          desiredVelocity = Burner.Vector.VectorSub(midpoint, this.location);
+
+          // get distance to target
+          distanceToTarget = desiredVelocity.mag();
+
+          // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+          desiredVelocity.normalize();
+
+          // as agent gets closer, velocity decreases
+          var m = distanceToTarget / this.maxSpeed;
+
+          // extend desiredVelocity vector
+          desiredVelocity.mult(m);
+
+          // subtract current velocity from desired to create a steering force
+          desiredVelocity.sub(this.velocity);
+
+          if (m < 0.5) {
+            sensor.state = 'running';
+          }
+        } else {
+
+          // note: desired velocity when running is the difference bw target and this agent
+          desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
+
+          // reverse the force
+          desiredVelocity.mult(-1);
+
+        }
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      }
+
     case 'EXPLORER':
+      return function(sensor, target) {
 
-      var dvExplorer = Burner.Vector.VectorSub(this.target.location, this.location);
-      distanceToTarget = dvExplorer.mag();
-      dvExplorer.normalize();
+        /**
+         * EXPLORER
+         * Gets close to target but does not change velocity.
+         */
 
-      m = distanceToTarget/agent.maxSpeed;
-      dvExplorer.mult(-m);
+        // velocity = difference in location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
 
-      steer = Burner.Vector.VectorSub(dvExplorer, agent.velocity);
-      steer.limit(agent.maxSteeringForce * 0.05);
-      return steer;
+        // get distance to target
+        var distanceToTarget = desiredVelocity.mag();
 
-    /**
-     * Moves in the opposite direction as fast as possible
-     */
-    /*case "RUN":
-      return this.flee(this.target);*/
+        // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+        desiredVelocity.normalize();
+
+        // as agent gets closer, velocity decreases
+        var m = distanceToTarget / this.maxSpeed;
+
+        // extend desiredVelocity vector
+        desiredVelocity.mult(-m);
+
+        // subtract current velocity from desired to create a steering force
+        desiredVelocity.sub(this.velocity);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce * 0.05);
+
+        // add motor speed
+        this.dir.x = this.velocity.x;
+        this.dir.y = this.velocity.y;
+        this.dir.normalize();
+        if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
+          this.dir.mult(-this.motorSpeed);
+        } else {
+          this.dir.mult(this.motorSpeed);
+        }
+
+        desiredVelocity.add(this.dir);
+
+        return desiredVelocity;
+
+      }
+
+    case 'LOVES':
+      return function(sensor, target) {
+
+        /**
+         * LOVES
+         * Steer and arrive at target.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
+
+        // get total distance
+        var distanceToTarget = desiredVelocity.mag();
+
+        if (distanceToTarget > this.width / 2) {
+
+          // normalize so we can adjust
+          desiredVelocity.normalize();
+
+          //
+          var m = distanceToTarget / this.maxSpeed;
+
+          desiredVelocity.mult(m);
+
+          var steer = Burner.Vector.VectorSub(desiredVelocity, this.velocity);
+          steer.limit(this.maxSteeringForce);
+          return steer;
+
+        }
+
+        this.angle = Flora.Utils.radiansToDegrees(Math.atan2(desiredVelocity.y, desiredVelocity.x));
+
+        this.velocity.x = 0;
+        this.velocity.y = 0;
+        this.acceleration.x = 0;
+        this.acceleration.y = 0;
+
+      }
 
     case 'ACCELERATE':
-      v = agent.velocity.clone();
-      v.normalize();
-      return v.mult(agent.minSpeed);
+      return function(sensor, target) {
+
+        /**
+         * ACCELERATE
+         * Accelerate to max speed.
+         */
+
+        this._force.x = this.velocity.x;
+        this._force.y = this.velocity.y;
+        return this._force.mult(0.25);
+      }
 
     case 'DECELERATE':
-      v = agent.velocity.clone();
-      v.normalize();
-      return v.mult(-agent.minSpeed);
+      return function(sensor, target) {
 
-    default:
-      return new Burner.Vector();
+        /**
+         * DECELERATE
+         * Decelerate to min speed.
+         */
+
+        this._force.x = this.velocity.x;
+        this._force.y = this.velocity.y;
+        return this._force.mult(-0.25);
+      }
   }
+
 };
+
 
 /**
  * Checks if a sensor can detect a stimulator.
@@ -265,10 +358,10 @@ Sensor.prototype.getActivationForce = function(agent) {
  */
 Sensor.prototype.isInside = function(item, container, sensitivity) {
 
-  if (item.location.x + item.width/2 > container.location.x - container.width/2 - (sensitivity * container.width) &&
-    item.location.x - item.width/2 < container.location.x + container.width/2 + (sensitivity * container.width) &&
-    item.location.y + item.height/2 > container.location.y - container.height/2 - (sensitivity * container.height) &&
-    item.location.y - item.height/2 < container.location.y + container.height/2 + (sensitivity * container.height)) {
+  if (item.location.x + item.width / 2 > container.location.x - container.width / 2 - (sensitivity * container.width) &&
+    item.location.x - item.width / 2 < container.location.x + container.width / 2 + (sensitivity * container.width) &&
+    item.location.y + item.height / 2 > container.location.y - container.height / 2 - (sensitivity * container.height) &&
+    item.location.y - item.height / 2 < container.location.y + container.height / 2 + (sensitivity * container.height)) {
     return true;
   }
   return false;

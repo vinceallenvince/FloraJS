@@ -31,6 +31,7 @@ Utils.extend(Agent, Mover);
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
  * @param {Array} [opt_options.sensors = ] A list of sensors attached to this object.
+ * @param {number} [opt_options.motorSpeed = 2] Motor speed
  * @param {Array} [opt_options.color = 197, 177, 115] Color.
  * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
@@ -39,11 +40,11 @@ Utils.extend(Agent, Mover);
  */
 Agent.prototype.init = function(opt_options) {
 
-  var options = opt_options || {};
+  var i, max, options = opt_options || {};
   Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
-  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 10 : options.maxSteeringForce;
+  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 5 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;
   this.flocking = !!options.flocking;
   this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
@@ -52,6 +53,18 @@ Agent.prototype.init = function(opt_options) {
   this.cohesionStrength = typeof options.cohesionStrength === 'undefined' ? 0.1 : options.cohesionStrength;
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
+  for (i = 0, max = this.sensors.length; i < max; i++) {
+    this.sensors[i].parent = this;
+  }
+
+  this.motorSpeed = options.motorSpeed || 0;
+  if (!this.velocity.mag()) {
+    this.velocity.x = 1; // angle = 0;
+    this.velocity.y = 0;
+    this.velocity.normalize();
+    this.velocity.rotate(Flora.Utils.degreesToRadians(this.angle));
+    this.velocity.mult(this.motorSpeed);
+  }
 
   this.color = options.color || [197, 177, 115];
   this.borderWidth = options.borderWidth || 0;
@@ -66,6 +79,9 @@ Agent.prototype.init = function(opt_options) {
   this.cohesionSumForceVector = new Burner.Vector(); // used in Agent.cohesion()
   this.followTargetVector = new Burner.Vector(); // used in Agent.applyForces()
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
+  this.motorDir = new Burner.Vector(); // used in Agent.applyForces()
+
+  Burner.System.updateCache(this);
 };
 
 /**
@@ -75,36 +91,7 @@ Agent.prototype.init = function(opt_options) {
  */
 Agent.prototype.applyForces = function() {
 
-  var i, max, sensorActivated, dir, sensor, r, theta, x, y,
-      liquids = Burner.System._caches.Liquid,
-      attractors = Burner.System._caches.Attractor,
-      repellers = Burner.System._caches.Repeller,
-      heat = Burner.System._caches.Heat;
-
-  if (liquids && liquids.list.length > 0) { // liquid
-    for (i = 0, max = liquids.list.length; i < max; i += 1) {
-      if (this.id !== liquids.list[i].id && Utils.isInside(this, liquids.list[i])) {
-        this.applyForce(this.drag(liquids.list[i]));
-      }
-    }
-  }
-
-  if (attractors && attractors.list.length > 0) { // attractor
-    for (i = 0, max = attractors.list.length; i < max; i += 1) {
-      if (this.id !== attractors.list[i].id) {
-        this.applyForce(this.attract(attractors.list[i]));
-      }
-    }
-  }
-
-  if (repellers && repellers.list.length > 0) { // repeller
-    for (i = 0, max = repellers.list.length; i < max; i += 1) {
-      if (this.id !== repellers.list[i].id) {
-        this.applyForce(this.attract(repellers.list[i]));
-      }
-    }
-  }
-
+  var i, max, sensorActivated, sensor, r, theta, x, y;
   if (this.sensors.length > 0) { // Sensors
     for (i = 0, max = this.sensors.length; i < max; i += 1) {
 
@@ -124,7 +111,11 @@ Agent.prototype.applyForces = function() {
       }
 
       if (sensor.activated) {
-        this.applyForce(sensor.getActivationForce(this));
+        if (typeof sensor.behavior === 'function') {
+          this.applyForce(sensor.behavior.call(this, sensor, sensor.target));
+        } else {
+          this.applyForce(sensor.getBehavior().call(this, sensor, sensor.target));
+        }
         sensorActivated = true;
       }
 
@@ -136,14 +127,15 @@ Agent.prototype.applyForces = function() {
    * apply a force in the direction of the current velocity.
    */
   if (!sensorActivated && this.motorSpeed) {
-    dir = Utils.clone(this.velocity);
-    dir.normalize();
+    this.motorDir.x = this.velocity.x;
+    this.motorDir.y = this.velocity.y;
+    this.motorDir.normalize();
     if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
-      dir.mult(-this.motorSpeed);
+      this.motorDir.mult(-this.motorSpeed);
     } else {
-      dir.mult(this.motorSpeed);
+      this.motorDir.mult(this.motorSpeed);
     }
-    this.applyForce(dir); // constantly applies a force
+    this.applyForce(this.motorDir); // constantly applies a force
   }
 
   if (this.followMouse && !Burner.System.supportedFeatures.touch) { // follow mouse
@@ -182,10 +174,38 @@ Agent.prototype.applyForces = function() {
   }
 
   if (this.flocking) {
-    this.flock(Burner.System.getAllItemsByName('Agent'));
+    this.flock(Burner.System.getAllItemsByName(this.name));
   }
 
   return this.acceleration;
+};
+
+/**
+ * Calculates a steering force to apply to an object seeking another object.
+ *
+ * @param {Object} target The object to seek.
+ * @returns {Object} The force to apply.
+ * @private
+ */
+Agent.prototype._seek = function(target) {
+
+  var world = this.world,
+    desiredVelocity = Burner.Vector.VectorSub(target.location, this.location),
+    distanceToTarget = desiredVelocity.mag();
+
+  desiredVelocity.normalize();
+
+  if (distanceToTarget < world.bounds[1] / 2) { // slow down to arrive at target
+    var m = Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
+    desiredVelocity.mult(m);
+  } else {
+    desiredVelocity.mult(this.maxSpeed);
+  }
+
+  desiredVelocity.sub(this.velocity);
+  desiredVelocity.limit(this.maxSteeringForce);
+
+  return desiredVelocity;
 };
 
 /**

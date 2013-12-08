@@ -7,16 +7,16 @@
  * by gravity or friction.
  *
  * @constructor
- * @extends Burner.Item
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Oscillator(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Oscillator';
-  Burner.Item.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Oscillator, Burner.Item);
+Utils.extend(Oscillator, Mover);
 
 /**
  * Initializes an instance.
@@ -27,7 +27,7 @@ Utils.extend(Oscillator, Burner.Item);
  *    angle if pointToDirection = true.
  * @param {Object} [opt_options.amplitude = {x: world width, y: world height}] Sets amplitude, the distance from the object's
  *    initial location (center of the motion) to either extreme.
- * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's acceleration. Oscillators have a
+ * @param {Object} [opt_options.acceleration = {x: 0.01, y: 0}] The object's acceleration. Oscillators have a
  *    constant acceleration.
  * @param {Object} [opt_options.aVelocity = new Vector()] Angular velocity.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
@@ -84,7 +84,7 @@ Oscillator.prototype.init = function(opt_options) {
  * Updates the oscillator's properties.
  */
 Oscillator.prototype.step = function () {
-
+  // !! add parenting here
   var world = this.world, velDiff;
 
   if (this.beforeStep) {
@@ -99,6 +99,11 @@ Oscillator.prototype.step = function () {
       this.aVelocity.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
     } else {
       this.aVelocity.add(this.acceleration); // add acceleration
+    }
+
+    if (this.parent) { // parenting
+      this.initialLocation.x = this.parent.location.x;
+      this.initialLocation.y = this.parent.location.y;
     }
 
     this.location.x = this.initialLocation.x + Math.sin(this.aVelocity.x) * this.amplitude.x;

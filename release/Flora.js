@@ -1,4 +1,4 @@
-/*! Flora v2.1.1 - 2013-09-11 05:09:09 
+/*! Flora v3.0.0 - 2013-12-07 05:12:30 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -1228,7 +1228,6 @@ Utils.extend(Mover, Burner.Item);
  * @param {number} [opt_options.width = 10] Width
  * @param {number} [opt_options.height = 10] Height
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
- * @param {number} [opt_options.motorSpeed = 2] Motor speed
  * @param {number} [opt_options.angle = 0] Angle
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
@@ -1241,11 +1240,11 @@ Utils.extend(Mover, Burner.Item);
  */
 Mover.prototype.init = function(options) {
 
-  this.width = typeof options.width === 'undefined' ? 20 : options.width;
-  this.height = typeof options.height === 'undefined' ? 20 : options.height;
+  //this.width = typeof options.width === 'undefined' ? 20 : options.width;
+  //this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [255, 255, 255];
-  this.motorSpeed = options.motorSpeed || 0;
-  this.angle = options.angle || 0;
+  //this.motorSpeed = options.motorSpeed || 0;
+  //this.angle = options.angle || 0;
   this.pointToDirection = typeof options.pointToDirection === 'undefined' ? true : options.pointToDirection;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
@@ -1411,6 +1410,10 @@ Mover.prototype.step = function() {
 
   var friction, r, theta, x, y;
 
+  var i, max, attractors = Burner.System._caches.Attractor,
+      repellers = Burner.System._caches.Repeller,
+      draggers = Burner.System._caches.Dragger;
+
   if (this.beforeStep) {
     this.beforeStep.apply(this);
   }
@@ -1427,6 +1430,30 @@ Mover.prototype.step = function() {
       this.applyForce(friction);
     }
     this.applyForce(this.world.gravity); // gravity
+
+    if (attractors && attractors.list.length > 0) { // attractor
+      for (i = 0, max = attractors.list.length; i < max; i += 1) {
+        if (this.id !== attractors.list[i].id) {
+          this.applyForce(attractors.list[i].attract(this));
+        }
+      }
+    }
+
+    if (repellers && repellers.list.length > 0) { // repeller
+      for (i = 0, max = repellers.list.length; i < max; i += 1) {
+        if (this.id !== repellers.list[i].id) {
+          this.applyForce(repellers.list[i].attract(this));
+        }
+      }
+    }
+
+    if (draggers && draggers.list.length > 0) { // liquid
+      for (i = 0, max = draggers.list.length; i < max; i += 1) {
+        if (this.id !== draggers.list[i].id && Utils.isInside(this, draggers.list[i])) {
+          this.applyForce(draggers.list[i].drag(this));
+        }
+      }
+    }
 
     if (this.applyForces) { // !! rename this
       this.applyForces();
@@ -1496,7 +1523,7 @@ Mover.prototype.step = function() {
  * @returns {Object} The force to apply.
  * @private
  */
-Mover.prototype._seek = function(target) {
+/*Mover.prototype._seek = function(target) {
 
   var world = this.world,
     desiredVelocity = Burner.Vector.VectorSub(target.location, this.location),
@@ -1515,14 +1542,14 @@ Mover.prototype._seek = function(target) {
   desiredVelocity.limit(this.maxSteeringForce);
 
   return desiredVelocity;
-};
+};*/
 
 /**
  * Checks if object is within range of a world edge. If so, steers the object
  * in the opposite direction.
  * @private
  */
-Mover.prototype._checkAvoidEdges = function() {
+/*Mover.prototype._checkAvoidEdges = function() {
 
   var maxSpeed, desiredVelocity;
 
@@ -1549,7 +1576,7 @@ Mover.prototype._checkAvoidEdges = function() {
     desiredVelocity.limit(this.maxSteeringForce);
     this.applyForce(desiredVelocity);
   }
-};
+};*/
 
 /**
  * Calculates a force to apply to simulate drag on an object.
@@ -1557,7 +1584,7 @@ Mover.prototype._checkAvoidEdges = function() {
  * @param {Object} target The object that is applying the drag force.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.drag = function(target) {
+/*Mover.prototype._drag = function(target) {
 
   var speed = this.velocity.mag(),
     dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
@@ -1567,7 +1594,7 @@ Mover.prototype.drag = function(target) {
   drag.mult(dragMagnitude);
 
   return drag;
-};
+};*/
 
 /**
  * Calculates a force to apply to simulate attraction on an object.
@@ -1575,19 +1602,24 @@ Mover.prototype.drag = function(target) {
  * @param {Object} attractor The attracting object.
  * @returns {Object} A force to apply.
  */
-Mover.prototype.attract = function(attractor) {
+/*Mover.prototype._attract = function(attractor) {
 
   var force = Burner.Vector.VectorSub(attractor.location, this.location),
     distance, strength;
 
   distance = force.mag();
-  distance = Utils.constrain(distance, this.width * this.height, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
+  distance = Utils.constrain(
+      distance,
+      this.width * this.height,
+      attractor.width * attractor.height); // min = the size of this mover; max = the size of the attractor
   force.normalize();
+
+  // strength is proportional to the mass of the objects and their proximity to each other
   strength = (attractor.G * attractor.mass * this.mass) / (distance * distance);
   force.mult(strength);
 
   return force;
-};
+};*/
 
 /**
  * Determines if this object is inside another.
@@ -1595,7 +1627,7 @@ Mover.prototype.attract = function(attractor) {
  * @param {Object} container The containing object.
  * @returns {boolean} Returns true if the object is inside the container.
  */
-Mover.prototype.isInside = function(container) {
+/*Mover.prototype.isInside = function(container) {
 
   if (container) {
     if (this.location.x + this.width / 2 > container.location.x - container.width / 2 &&
@@ -1606,7 +1638,7 @@ Mover.prototype.isInside = function(container) {
     }
   }
   return false;
-};
+};*/
 
 exports.Mover = Mover;
 
@@ -1642,6 +1674,7 @@ Utils.extend(Agent, Mover);
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
  * @param {Array} [opt_options.sensors = ] A list of sensors attached to this object.
+ * @param {number} [opt_options.motorSpeed = 2] Motor speed
  * @param {Array} [opt_options.color = 197, 177, 115] Color.
  * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
@@ -1650,11 +1683,11 @@ Utils.extend(Agent, Mover);
  */
 Agent.prototype.init = function(opt_options) {
 
-  var options = opt_options || {};
+  var i, max, options = opt_options || {};
   Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
-  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 10 : options.maxSteeringForce;
+  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 5 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;
   this.flocking = !!options.flocking;
   this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
@@ -1663,6 +1696,18 @@ Agent.prototype.init = function(opt_options) {
   this.cohesionStrength = typeof options.cohesionStrength === 'undefined' ? 0.1 : options.cohesionStrength;
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
+  for (i = 0, max = this.sensors.length; i < max; i++) {
+    this.sensors[i].parent = this;
+  }
+
+  this.motorSpeed = options.motorSpeed || 0;
+  if (!this.velocity.mag()) {
+    this.velocity.x = 1; // angle = 0;
+    this.velocity.y = 0;
+    this.velocity.normalize();
+    this.velocity.rotate(Flora.Utils.degreesToRadians(this.angle));
+    this.velocity.mult(this.motorSpeed);
+  }
 
   this.color = options.color || [197, 177, 115];
   this.borderWidth = options.borderWidth || 0;
@@ -1677,6 +1722,9 @@ Agent.prototype.init = function(opt_options) {
   this.cohesionSumForceVector = new Burner.Vector(); // used in Agent.cohesion()
   this.followTargetVector = new Burner.Vector(); // used in Agent.applyForces()
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
+  this.motorDir = new Burner.Vector(); // used in Agent.applyForces()
+
+  Burner.System.updateCache(this);
 };
 
 /**
@@ -1686,36 +1734,7 @@ Agent.prototype.init = function(opt_options) {
  */
 Agent.prototype.applyForces = function() {
 
-  var i, max, sensorActivated, dir, sensor, r, theta, x, y,
-      liquids = Burner.System._caches.Liquid,
-      attractors = Burner.System._caches.Attractor,
-      repellers = Burner.System._caches.Repeller,
-      heat = Burner.System._caches.Heat;
-
-  if (liquids && liquids.list.length > 0) { // liquid
-    for (i = 0, max = liquids.list.length; i < max; i += 1) {
-      if (this.id !== liquids.list[i].id && Utils.isInside(this, liquids.list[i])) {
-        this.applyForce(this.drag(liquids.list[i]));
-      }
-    }
-  }
-
-  if (attractors && attractors.list.length > 0) { // attractor
-    for (i = 0, max = attractors.list.length; i < max; i += 1) {
-      if (this.id !== attractors.list[i].id) {
-        this.applyForce(this.attract(attractors.list[i]));
-      }
-    }
-  }
-
-  if (repellers && repellers.list.length > 0) { // repeller
-    for (i = 0, max = repellers.list.length; i < max; i += 1) {
-      if (this.id !== repellers.list[i].id) {
-        this.applyForce(this.attract(repellers.list[i]));
-      }
-    }
-  }
-
+  var i, max, sensorActivated, sensor, r, theta, x, y;
   if (this.sensors.length > 0) { // Sensors
     for (i = 0, max = this.sensors.length; i < max; i += 1) {
 
@@ -1735,7 +1754,11 @@ Agent.prototype.applyForces = function() {
       }
 
       if (sensor.activated) {
-        this.applyForce(sensor.getActivationForce(this));
+        if (typeof sensor.behavior === 'function') {
+          this.applyForce(sensor.behavior.call(this, sensor, sensor.target));
+        } else {
+          this.applyForce(sensor.getBehavior().call(this, sensor, sensor.target));
+        }
         sensorActivated = true;
       }
 
@@ -1747,14 +1770,15 @@ Agent.prototype.applyForces = function() {
    * apply a force in the direction of the current velocity.
    */
   if (!sensorActivated && this.motorSpeed) {
-    dir = Utils.clone(this.velocity);
-    dir.normalize();
+    this.motorDir.x = this.velocity.x;
+    this.motorDir.y = this.velocity.y;
+    this.motorDir.normalize();
     if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
-      dir.mult(-this.motorSpeed);
+      this.motorDir.mult(-this.motorSpeed);
     } else {
-      dir.mult(this.motorSpeed);
+      this.motorDir.mult(this.motorSpeed);
     }
-    this.applyForce(dir); // constantly applies a force
+    this.applyForce(this.motorDir); // constantly applies a force
   }
 
   if (this.followMouse && !Burner.System.supportedFeatures.touch) { // follow mouse
@@ -1793,10 +1817,38 @@ Agent.prototype.applyForces = function() {
   }
 
   if (this.flocking) {
-    this.flock(Burner.System.getAllItemsByName('Agent'));
+    this.flock(Burner.System.getAllItemsByName(this.name));
   }
 
   return this.acceleration;
+};
+
+/**
+ * Calculates a steering force to apply to an object seeking another object.
+ *
+ * @param {Object} target The object to seek.
+ * @returns {Object} The force to apply.
+ * @private
+ */
+Agent.prototype._seek = function(target) {
+
+  var world = this.world,
+    desiredVelocity = Burner.Vector.VectorSub(target.location, this.location),
+    distanceToTarget = desiredVelocity.mag();
+
+  desiredVelocity.normalize();
+
+  if (distanceToTarget < world.bounds[1] / 2) { // slow down to arrive at target
+    var m = Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
+    desiredVelocity.mult(m);
+  } else {
+    desiredVelocity.mult(this.maxSpeed);
+  }
+
+  desiredVelocity.sub(this.velocity);
+  desiredVelocity.limit(this.maxSteeringForce);
+
+  return desiredVelocity;
 };
 
 /**
@@ -2107,6 +2159,11 @@ exports.Walker = Walker;
  */
 function Sensor(opt_options) {
   var options = opt_options || {};
+
+  if (!options || !options.type) {
+    throw new Error('Stimulus: options.type is required.');
+  }
+
   options.name = options.name || 'Sensor';
   Mover.call(this, options);
 }
@@ -2138,7 +2195,7 @@ Sensor.prototype.init = function(opt_options) {
   Sensor._superClass.prototype.init.call(this, options);
 
   this.type = options.type || '';
-  this.behavior = options.behavior || 'LOVE';
+  this.behavior = options.behavior || function() {};
   this.sensitivity = typeof options.sensitivity === 'undefined' ? 2 : options.sensitivity;
   this.width = typeof options.width === 'undefined' ? 7 : options.width;
   this.height = typeof options.height === 'undefined' ? 7 : options.height;
@@ -2152,6 +2209,9 @@ Sensor.prototype.init = function(opt_options) {
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = 'solid';
   this.borderColor = [255, 255, 255];
+
+  this.activationLocation = new Burner.Vector();
+  this._force = new Burner.Vector(); // used as a cache Vector
 };
 
 /**
@@ -2159,200 +2219,285 @@ Sensor.prototype.init = function(opt_options) {
  */
 Sensor.prototype.step = function() {
 
-  var check = false, i, max;
+  var check = false, i, max, list;
 
-  var heat = Burner.System._caches.Heat || {list: []},
-      cold = Burner.System._caches.Cold || {list: []},
-      predators = Burner.System._caches.Predators || {list: []},
-      lights = Burner.System._caches.Light || {list: []},
-      oxygen = Burner.System._caches.Oxygen || {list: []},
-      food = Burner.System._caches.Food || {list: []};
-
-  // what if cache does not exist?
-
-  if (this.type === 'heat' && heat.list && heat.list.length > 0) {
-    for (i = 0, max = heat.list.length; i < max; i++) { // heat
-      if (this.isInside(this, heat.list[i], this.sensitivity)) {
-        this.target = heat.list[i]; // target this stimulator
+  /**
+   * Check if any Simulus objects exist that match this sensor. If so,
+   * loop thru the list and check if sensor should activate.
+   */
+  if (Burner.System._caches[this.type]) {
+    list = Burner.System._caches[this.type].list;
+    for (i = 0, max = list.length; i < max; i++) { // heat
+      if (this.isInside(this, list[i], this.sensitivity)) {
+        this.target = list[i]; // target this stimulator
+        if (!this.activationLocation.x && !this.activationLocation.y) {
+          this.activationLocation.x = this.parent.location.x;
+          this.activationLocation.y = this.parent.location.y;
+        }
         this.activated = true; // set activation
         check = true;
-      }
-    }
-  } else if (this.type === 'cold' && cold.list && cold.list.length > 0) {
-    for (i = 0, max = cold.list.length; i < max; i++) { // cold
-      if (this.isInside(this, cold.list[i], this.sensitivity)) {
-        this.target = cold.list[i]; // target this stimulator
-        this.activated = true; // set activation
-        check = true;
-      }
-    }
-  } else if (this.type === 'predator' && predators.list && predators.list.length > 0) {
-    for (i = 0, max = predators.list.length; i < max; i += 1) { // predator
-      if (this.isInside(this, predators.list[i], this.sensitivity)) {
-        this.target = predators.list[i]; // target this stimulator
-        this.activated = true; // set activation
-        check = true;
-      }
-    }
-  } else if (this.type === 'light' && lights.list && lights.list.length > 0) {
-    for (i = 0, max = lights.list.length; i < max; i++) { // light
-      // check the obj has not been marked as deleted
-      if (lights.lookup[lights.list[i].id]) {
-        if (this.isInside(this, lights.list[i], this.sensitivity)) {
-          this.target = lights.list[i]; // target this stimulator
-          this.activated = true; // set activation
-          check = true;
-        }
-      }
-    }
-  } else if (this.type === 'oxygen' && oxygen.list && oxygen.list.length > 0) {
-    for (i = 0, max = oxygen.list.length; i < max; i += 1) { // oxygen
-      // check the obj has not been marked as deleted
-      if (oxygen.lookup[oxygen.list[i].id]) {
-        if (this.isInside(this, oxygen.list[i], this.sensitivity)) {
-          this.target = oxygen.list[i]; // target this stimulator
-          this.activated = true; // set activation
-          check = true;
-        }
-      }
-    }
-  } else if (this.type === 'food' && food.list && food.list.length > 0) {
-    for (i = 0, max = food.list.length; i < max; i += 1) { // food
-      // check the obj has not been marked as deleted
-      if (food.lookup[food.list[i].id]) {
-        if (this.isInside(this, food.list[i], this.sensitivity)) {
-          this.target = food.list[i]; // target this stimulator
-          this.activated = true; // set activation
-          check = true;
-        }
       }
     }
   }
+
   if (!check) {
     this.target = null;
     this.activated = false;
+    this.state = null;
     this.color = 'transparent';
+    this.activationLocation.x = null;
+    this.activationLocation.y = null;
   } else {
     this.color = this.activatedColor;
   }
   if (this.afterStep) {
     this.afterStep.apply(this);
   }
-
 };
 
-/**
- * Returns a force to apply to an agent when its sensor is activated.
- *
- */
-Sensor.prototype.getActivationForce = function(agent) {
-
-  var distanceToTarget, desiredVelocity, m, v, steer;
+Sensor.prototype.getBehavior = function() {
 
   switch (this.behavior) {
 
-    /**
-     * Steers toward target
-     */
-    case 'AGGRESSIVE':
-      desiredVelocity = Burner.Vector.VectorSub(this.target.location, this.location);
-      distanceToTarget = desiredVelocity.mag();
-      desiredVelocity.normalize();
-
-      m = distanceToTarget/agent.maxSpeed;
-      desiredVelocity.mult(m);
-
-      desiredVelocity.sub(agent.velocity);
-      desiredVelocity.limit(agent.maxSteeringForce);
-
-    return desiredVelocity;
-
-    /**
-     * Steers away from the target
-     */
-    case 'COWARD':
-      desiredVelocity = Burner.Vector.VectorSub(this.target.location, this.location);
-      distanceToTarget = desiredVelocity.mag();
-      desiredVelocity.normalize();
-
-      m = distanceToTarget/agent.maxSpeed;
-      desiredVelocity.mult(-m);
-
-      desiredVelocity.sub(agent.velocity);
-      desiredVelocity.limit(agent.maxSteeringForce);
-
-    return desiredVelocity;
-
-    /**
-     * Speeds toward target and keeps moving
-     */
     case 'LIKES':
-      var dvLikes = Burner.Vector.VectorSub(this.target.location, this.location);
-      distanceToTarget = dvLikes.mag();
-      dvLikes.normalize();
+      return function(sensor, target) {
 
-      m = distanceToTarget/agent.maxSpeed;
-      dvLikes.mult(m);
+        /**
+         * LIKES
+         * Steer toward target at max speed.
+         */
 
-      steer = Burner.Vector.VectorSub(dvLikes, agent.velocity);
-      steer.limit(agent.maxSteeringForce);
-      return steer;
+        // desiredVelocity = difference in target location and agent location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
 
-    /**
-     * Arrives at target and remains
-     */
-    case 'LOVES':
-      var dvLoves = Burner.Vector.VectorSub(this.target.location, this.location); // desiredVelocity
-      distanceToTarget = dvLoves.mag();
-      dvLoves.normalize();
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
 
-      if (distanceToTarget > this.width) {
-        m = distanceToTarget/agent.maxSpeed;
-        dvLoves.mult(m);
-        steer = Burner.Vector.VectorSub(dvLoves, agent.velocity);
-        steer.limit(agent.maxSteeringForce);
-        return steer;
+        return desiredVelocity;
       }
-      agent.velocity = new Burner.Vector();
-      agent.acceleration = new Burner.Vector();
-      return new Burner.Vector();
 
-    /**
-     * Arrives at target but does not stop
-     */
+    case 'DISLIKES':
+      return function(sensor, target) {
+
+        /**
+         * DISLIKES
+         * Steer away from target at max speed.
+         */
+
+        // desiredVelocity = difference in target location and agent location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
+
+        // reverse the force
+        desiredVelocity.mult(-1);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      }
+
+    case 'AGGRESSIVE':
+      return function(sensor, target) {
+
+        /**
+         * AGGRESSIVE
+         * Steer and arrive at target. Aggressive agents will hit their target.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
+
+        // get distance to target
+        var distanceToTarget = desiredVelocity.mag();
+
+        if (distanceToTarget < this.width * 2) {
+
+          // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+          desiredVelocity.normalize();
+
+          // as agent gets closer, velocity decreases
+          var m = distanceToTarget / this.maxSpeed;
+
+          // extend desiredVelocity vector
+          desiredVelocity.mult(m);
+
+        }
+
+        // subtract current velocity from desired to create a steering force
+        desiredVelocity.sub(this.velocity);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+
+      }
+
+    case 'COWARD':
+      return function(sensor, target) {
+
+        /**
+         * COWARD
+         * Steer and arrive at midpoint bw target location and agent location.
+         * After arriving, reverse direction and accelerate to max speed.
+         */
+
+        var desiredVelocity, distanceToTarget;
+
+        if (sensor.state !== 'running') {
+
+          var midpoint = sensor.activationLocation.midpoint(target.location);
+
+          // velocity = difference in location
+          desiredVelocity = Burner.Vector.VectorSub(midpoint, this.location);
+
+          // get distance to target
+          distanceToTarget = desiredVelocity.mag();
+
+          // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+          desiredVelocity.normalize();
+
+          // as agent gets closer, velocity decreases
+          var m = distanceToTarget / this.maxSpeed;
+
+          // extend desiredVelocity vector
+          desiredVelocity.mult(m);
+
+          // subtract current velocity from desired to create a steering force
+          desiredVelocity.sub(this.velocity);
+
+          if (m < 0.5) {
+            sensor.state = 'running';
+          }
+        } else {
+
+          // note: desired velocity when running is the difference bw target and this agent
+          desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
+
+          // reverse the force
+          desiredVelocity.mult(-1);
+
+        }
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      }
+
     case 'EXPLORER':
+      return function(sensor, target) {
 
-      var dvExplorer = Burner.Vector.VectorSub(this.target.location, this.location);
-      distanceToTarget = dvExplorer.mag();
-      dvExplorer.normalize();
+        /**
+         * EXPLORER
+         * Gets close to target but does not change velocity.
+         */
 
-      m = distanceToTarget/agent.maxSpeed;
-      dvExplorer.mult(-m);
+        // velocity = difference in location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
 
-      steer = Burner.Vector.VectorSub(dvExplorer, agent.velocity);
-      steer.limit(agent.maxSteeringForce * 0.05);
-      return steer;
+        // get distance to target
+        var distanceToTarget = desiredVelocity.mag();
 
-    /**
-     * Moves in the opposite direction as fast as possible
-     */
-    /*case "RUN":
-      return this.flee(this.target);*/
+        // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+        desiredVelocity.normalize();
+
+        // as agent gets closer, velocity decreases
+        var m = distanceToTarget / this.maxSpeed;
+
+        // extend desiredVelocity vector
+        desiredVelocity.mult(-m);
+
+        // subtract current velocity from desired to create a steering force
+        desiredVelocity.sub(this.velocity);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce * 0.05);
+
+        // add motor speed
+        this.dir.x = this.velocity.x;
+        this.dir.y = this.velocity.y;
+        this.dir.normalize();
+        if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
+          this.dir.mult(-this.motorSpeed);
+        } else {
+          this.dir.mult(this.motorSpeed);
+        }
+
+        desiredVelocity.add(this.dir);
+
+        return desiredVelocity;
+
+      }
+
+    case 'LOVES':
+      return function(sensor, target) {
+
+        /**
+         * LOVES
+         * Steer and arrive at target.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
+
+        // get total distance
+        var distanceToTarget = desiredVelocity.mag();
+
+        if (distanceToTarget > this.width / 2) {
+
+          // normalize so we can adjust
+          desiredVelocity.normalize();
+
+          //
+          var m = distanceToTarget / this.maxSpeed;
+
+          desiredVelocity.mult(m);
+
+          var steer = Burner.Vector.VectorSub(desiredVelocity, this.velocity);
+          steer.limit(this.maxSteeringForce);
+          return steer;
+
+        }
+
+        this.angle = Flora.Utils.radiansToDegrees(Math.atan2(desiredVelocity.y, desiredVelocity.x));
+
+        this.velocity.x = 0;
+        this.velocity.y = 0;
+        this.acceleration.x = 0;
+        this.acceleration.y = 0;
+
+      }
 
     case 'ACCELERATE':
-      v = agent.velocity.clone();
-      v.normalize();
-      return v.mult(agent.minSpeed);
+      return function(sensor, target) {
+
+        /**
+         * ACCELERATE
+         * Accelerate to max speed.
+         */
+
+        this._force.x = this.velocity.x;
+        this._force.y = this.velocity.y;
+        return this._force.mult(0.25);
+      }
 
     case 'DECELERATE':
-      v = agent.velocity.clone();
-      v.normalize();
-      return v.mult(-agent.minSpeed);
+      return function(sensor, target) {
 
-    default:
-      return new Burner.Vector();
+        /**
+         * DECELERATE
+         * Decelerate to min speed.
+         */
+
+        this._force.x = this.velocity.x;
+        this._force.y = this.velocity.y;
+        return this._force.mult(-0.25);
+      }
   }
+
 };
+
 
 /**
  * Checks if a sensor can detect a stimulator.
@@ -2363,10 +2508,10 @@ Sensor.prototype.getActivationForce = function(agent) {
  */
 Sensor.prototype.isInside = function(item, container, sensitivity) {
 
-  if (item.location.x + item.width/2 > container.location.x - container.width/2 - (sensitivity * container.width) &&
-    item.location.x - item.width/2 < container.location.x + container.width/2 + (sensitivity * container.width) &&
-    item.location.y + item.height/2 > container.location.y - container.height/2 - (sensitivity * container.height) &&
-    item.location.y - item.height/2 < container.location.y + container.height/2 + (sensitivity * container.height)) {
+  if (item.location.x + item.width / 2 > container.location.x - container.width / 2 - (sensitivity * container.width) &&
+    item.location.x - item.width / 2 < container.location.x + container.width / 2 + (sensitivity * container.width) &&
+    item.location.y + item.height / 2 > container.location.y - container.height / 2 - (sensitivity * container.height) &&
+    item.location.y - item.height / 2 < container.location.y + container.height / 2 + (sensitivity * container.height)) {
     return true;
   }
   return false;
@@ -2376,6 +2521,10 @@ exports.Sensor = Sensor;
 
 /**
  * Creates a new Connector.
+ *
+ * Connectors render a straight line between two Flora items. The Connector carries
+ * a reference to the two items as parentA and parentB. If the parent items move,
+ * the Connector moves with them.
  *
  * @constructor
  * @extends Burner.Item
@@ -2394,9 +2543,7 @@ Utils.extend(Connector, Burner.Item);
  * @param {Object} options A map of initial properties.
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
- * @param {number} [options.opacity = 1] Opacity.
  * @param {number} [options.zIndex = 0] zIndex.
- * @param {number} [options.borderWidth = 1] Border width.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
  * @param {Array} [options.borderColor = 150, 150, 150] Border color.
  */
@@ -2408,15 +2555,17 @@ Connector.prototype.init = function(options) {
   this.parentA = options.parentA;
   this.parentB = options.parentB;
 
-  this.opacity = typeof options.opacity === 'undefined' ? 1 : options.opacity;
   this.zIndex = options.zIndex || 0;
 
-  this.borderWidth = 1;
-  this.borderRadius = 0;
-  this.borderStyle = 'dotted';
+  this.borderStyle = typeof options.borderStyle === 'undefined' ? 'dotted' : options.borderStyle;
   this.borderColor = typeof options.borderColor === 'undefined' ? [150, 150, 150] : options.borderColor;
 
-  this.width = 0;
+  /**
+   * Connectors have no height or color and rely on the associated DOM element's
+   * CSS border to render their line.
+   */
+  this.borderWidth = 1;
+  this.borderRadius = 0;
   this.height = 0;
   this.color = 'transparent';
 };
@@ -2443,26 +2592,24 @@ exports.Connector = Connector;
 /**
  * Creates a new Point.
  *
+ * Points are the most basic Flora item. They represent a fixed point in
+ * 2D space and are just an extension of Burner Item with isStatic set to true.
+ *
  * @constructor
- * @extends Mover
+ * @extends Burner.Item
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Point(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Point';
-  Mover.call(this, options);
+  Burner.Item.call(this, options);
 }
-Utils.extend(Point, Mover);
+Utils.extend(Point, Burner.Item);
 
 /**
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.width = 5] Width.
- * @param {number} [opt_options.height = 5] Height.
- * @param {number} [opt_options.opacity = 0.25] Opacity.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
- * @param {number} [opt_options.zIndex = 1] zIndex.
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -2473,16 +2620,14 @@ Point.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
-  this.width = typeof options.width === 'undefined' ? 10 : options.width;
-  this.height = typeof options.height === 'undefined' ? 10 : options.height;
-  this.opacity = typeof options.opacity === 'undefined' ? 1 : options.opacity;
-  this.isStatic = options.isStatic === false ? false : options.isStatic || true;
-  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
   this.color = options.color || [200, 200, 200];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [60, 60, 60];
+
+  // Points are static
+  this.isStatic = true;
 };
 
 exports.Point = Point;
@@ -2491,16 +2636,16 @@ exports.Point = Point;
  * Creates a new Particle.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Particle(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Particle';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Particle, Agent);
+Utils.extend(Particle, Mover);
 
 /**
  * Initializes an instance.
@@ -2624,16 +2769,16 @@ exports.Particle = Particle;
  * Creates a new ParticleSystem.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function ParticleSystem(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'ParticleSystem';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(ParticleSystem, Agent);
+Utils.extend(ParticleSystem, Mover);
 
 /**
  * Initializes an instance.
@@ -2715,7 +2860,7 @@ ParticleSystem.prototype.init = function(opt_options) {
 
     if (this.clock % this.burstRate === 0) {
 
-      location = this.getLocation(); // use the particle system's location
+      location = this.location; // use the particle system's location
       offset = new Burner.Vector(1, 1); // get the emit radius
       offset.normalize();
       offset.mult(this.emitRadius); // expand emit radius in a random direction
@@ -2765,16 +2910,16 @@ exports.ParticleSystem = ParticleSystem;
  * by gravity or friction.
  *
  * @constructor
- * @extends Burner.Item
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Oscillator(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Oscillator';
-  Burner.Item.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Oscillator, Burner.Item);
+Utils.extend(Oscillator, Mover);
 
 /**
  * Initializes an instance.
@@ -2785,7 +2930,7 @@ Utils.extend(Oscillator, Burner.Item);
  *    angle if pointToDirection = true.
  * @param {Object} [opt_options.amplitude = {x: world width, y: world height}] Sets amplitude, the distance from the object's
  *    initial location (center of the motion) to either extreme.
- * @param {Object} [opt_options.acceleration = {x: 0, y: 0}] The object's acceleration. Oscillators have a
+ * @param {Object} [opt_options.acceleration = {x: 0.01, y: 0}] The object's acceleration. Oscillators have a
  *    constant acceleration.
  * @param {Object} [opt_options.aVelocity = new Vector()] Angular velocity.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
@@ -2842,7 +2987,7 @@ Oscillator.prototype.init = function(opt_options) {
  * Updates the oscillator's properties.
  */
 Oscillator.prototype.step = function () {
-
+  // !! add parenting here
   var world = this.world, velDiff;
 
   if (this.beforeStep) {
@@ -2857,6 +3002,11 @@ Oscillator.prototype.step = function () {
       this.aVelocity.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
     } else {
       this.aVelocity.add(this.acceleration); // add acceleration
+    }
+
+    if (this.parent) { // parenting
+      this.initialLocation.x = this.parent.location.x;
+      this.initialLocation.y = this.parent.location.y;
     }
 
     this.location.x = this.initialLocation.x + Math.sin(this.aVelocity.x) * this.amplitude.x;
@@ -2893,19 +3043,19 @@ Oscillator.prototype.step = function () {
 exports.Oscillator = Oscillator;
 
 /**
- * Creates a new Liquid.
+ * Creates a new Dragger.
  *
  * @constructor
  * @extends Agent
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
-function Liquid(opt_options) {
+function Dragger(opt_options) {
   var options = opt_options || {};
-  options.name = options.name || 'Liquid';
+  options.name = options.name || 'Dragger';
   Agent.call(this, options);
 }
-Utils.extend(Liquid, Agent);
+Utils.extend(Dragger, Agent);
 
 /**
  * Initializes an instance.
@@ -2926,10 +3076,10 @@ Utils.extend(Liquid, Agent);
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  * @param {Array} [opt_options.boxShadowColor = 147, 199, 196] Box-shadow color.
  */
-Liquid.prototype.init = function(opt_options) {
+Dragger.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
-  Liquid._superClass.prototype.init.call(this, options);
+  Dragger._superClass.prototype.init.call(this, options);
 
   this.c = typeof options.c === 'undefined' ? 1 : options.c;
   this.mass = typeof options.mass === 'undefined' ? 50 : options.mass;
@@ -2937,7 +3087,7 @@ Liquid.prototype.init = function(opt_options) {
   this.width = typeof options.width === 'undefined' ? 100 : options.width;
   this.height = typeof options.height === 'undefined' ? 100 : options.height;
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
-  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 10 : options.zIndex;
   this.color = options.color || [105, 210, 231];
   this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
@@ -2946,25 +3096,47 @@ Liquid.prototype.init = function(opt_options) {
   this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 8 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [147, 199, 196];
 
+  this._force = new Burner.Vector();
+
   Burner.System.updateCache(this);
 };
 
-exports.Liquid = Liquid;
+/**
+ * Calculates a force to apply to simulate drag on an object.
+ *
+ * @param {Object} obj The target object.
+ * @returns {Object} A force to apply.
+ */
+Dragger.prototype.drag = function(obj) {
+
+  var speed = obj.velocity.mag(),
+    dragMagnitude = -1 * this.c * speed * speed; // drag magnitude
+
+  this._force.x = obj.velocity.x;
+  this._force.y = obj.velocity.y;
+
+  this._force.normalize(); // drag direction
+  this._force.mult(dragMagnitude);
+
+  return this._force;
+};
+
+exports.Dragger = Dragger;
 
 /**
  * Creates a new Attractor object.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Attractor(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Attractor';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Attractor, Agent);
+Utils.extend(Attractor, Mover);
 
 /**
  * Initializes an instance.
@@ -3009,22 +3181,47 @@ Attractor.prototype.init = function(opt_options) {
   Burner.System.updateCache(this);
 };
 
+/**
+ * Calculates a force to apply to simulate attraction/repulsion on an object.
+ *
+ * @param {Object} obj The target object.
+ * @returns {Object} A force to apply.
+ */
+Attractor.prototype.attract = function(obj) {
+
+  var force = Burner.Vector.VectorSub(this.location, obj.location),
+    distance, strength;
+
+  distance = force.mag();
+  distance = Utils.constrain(
+      distance,
+      obj.width * obj.height,
+      this.width * this.height); // min = the size of obj; max = the size of this attractor
+  force.normalize();
+
+  // strength is proportional to the mass of the objects and their proximity to each other
+  strength = (this.G * this.mass * obj.mass) / (distance * distance);
+  force.mult(strength);
+
+  return force;
+};
+
 exports.Attractor = Attractor;
 
 /**
  * Creates a new Repeller.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Repeller(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Repeller';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Repeller, Agent);
+Utils.extend(Repeller, Mover);
 
 /**
  * Initializes an instance.
@@ -3048,6 +3245,7 @@ Utils.extend(Repeller, Agent);
 Repeller.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
+
   Repeller._superClass.prototype.init.call(this, options);
 
   this.G = typeof options.G === 'undefined' ? -10 : options.G;
@@ -3068,10 +3266,44 @@ Repeller.prototype.init = function(opt_options) {
   Burner.System.updateCache(this);
 };
 
+/**
+ * Calculates a force to apply to simulate attraction/repulsion on an object.
+ * !! also used by Attractor; maybe should abstract out to an external force object
+ * @param {Object} obj The target object.
+ * @returns {Object} A force to apply.
+ */
+Repeller.prototype.attract = function(obj) {
+
+  var force = Burner.Vector.VectorSub(this.location, obj.location),
+    distance, strength;
+
+  distance = force.mag();
+  distance = Utils.constrain(
+      distance,
+      obj.width * obj.height,
+      this.width * this.height); // min = the size of obj; max = the size of this attractor
+  force.normalize();
+
+  // strength is proportional to the mass of the objects and their proximity to each other
+  strength = (this.G * this.mass * obj.mass) / (distance * distance);
+  force.mult(strength);
+
+  return force;
+};
+
 exports.Repeller = Repeller;
 
-var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {},
-    borderStyles = ['double', 'double', 'dotted', 'dashed'];
+/**
+ * Specific background and box-shadow colors have been added to config.js. When initialized,
+ * a new Stimulus item pulls colors from palettes based on these colors.
+ */
+var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {};
+
+/**
+ * By default, Stimulus items get a border style randomly selected
+ * from a predetermined list.
+ */
+var borderStyles = ['double', 'double', 'dotted', 'dashed'];
 
 for (i = 0, max = Config.defaultColorList.length; i < max; i++) {
   color = Config.defaultColorList[i];
@@ -3101,7 +3333,7 @@ for (i = 0, max = borderStyles.length; i < max; i++) {
  * Creates a new Stimulus.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} options A map of initial properties.
  */
@@ -3110,11 +3342,12 @@ function Stimulus(options) {
   if (!options || !options.type) {
     throw new Error('Stimulus: options.type is required.');
   }
-  options.name = options.type.substr(0, 1).toUpperCase() +
-      options.type.toLowerCase().substr(1, options.type.length);
-  Agent.call(this, options);
+  /*options.name = options.type.substr(0, 1).toUpperCase() +
+      options.type.toLowerCase().substr(1, options.type.length);*/
+  options.name = options.name || options.type;
+  Mover.call(this, options);
 }
-Utils.extend(Stimulus, Agent);
+Utils.extend(Stimulus, Mover);
 
 /**
  * Initializes an instance.
@@ -3125,36 +3358,42 @@ Utils.extend(Stimulus, Agent);
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
- * @param {number} [opt_options.zIndex = 1] The object's zIndex.
- * @param {Array} [opt_options.color = 255, 200, 0] Color.
+ * @param {Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
+ * @param {Array} [opt_options.borderColor = 220, 220, 220] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- * @param {Array} [opt_options.boxShadowColor = 255, 200, 0] Box-shadow color.
+ * @param {Array} [opt_options.boxShadowColor = 200, 200, 200] Box-shadow color.
  */
 Stimulus.prototype.init = function(opt_options) {
 
   var options = opt_options || {}, name = this.name.toLowerCase();
   Stimulus._superClass.prototype.init.call(this, options);
 
-  this.mass = typeof options.mass === 'undefined' ? 50 : options.mass ;
+  this.mass = typeof options.mass === 'undefined' ? 50 : options.mass;
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
   this.width = typeof options.width === 'undefined' ? 50 : options.width;
   this.height = typeof options.height === 'undefined' ? 50 : options.height;
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
-  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
-  this.color = options.color || palettes[name].getColor();
+
+  // color may not be pre-defined
+  this.color = options.color || palettes[this.type] ? palettes[this.type].getColor() : [255, 255, 255];
+
   this.borderWidth = typeof options.borderWidth === 'undefined' ?
       this.width / Utils.getRandomNumber(2, 8) : options.borderWidth;
   this.borderStyle = typeof options.borderStyle === 'undefined' ?
       borderPalette.getBorder() : options.borderStyle;
-  this.borderColor = typeof options.borderColor === 'undefined' ? palettes[name].getColor() : options.borderColor;
+
+  // borderColor may not be pre-defined
+  this.borderColor = options.borderColor || palettes[this.type] ? palettes[this.type].getColor() : [220, 220, 220];
+
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ?
       this.width / Utils.getRandomNumber(2, 8) : options.boxShadowSpread;
-  this.boxShadowColor = typeof options.boxShadowColor === 'undefined' ? boxShadowColors[name] : options.boxShadowColor;
+
+  // boxShadowColor may not be pre-defined
+  this.boxShadowColor = options.boxShadowColor || boxShadowColors[this.type] ? boxShadowColors[this.type] : [200, 200, 200];
 
   Burner.System.updateCache(this);
 };
