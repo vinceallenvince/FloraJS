@@ -63,11 +63,12 @@ Sensor.prototype.init = function(opt_options) {
   this.activationLocation = new Burner.Vector();
   this._force = new Burner.Vector(); // used as a cache Vector
 
-  this.showRange = !!options.showRange;
-  if (this.showRange) {
+  this.displayRange = !!options.displayRange;
+  if (this.displayRange) {
     this.createRangeDisplay();
   }
 
+  this.displayConnector = !!options.displayConnector;
 };
 
 /**
@@ -91,6 +92,15 @@ Sensor.prototype.step = function() {
           this.activationLocation.y = this.parent.location.y;
         }
         this.activated = true; // set activation
+        this.activatedColor = this.target.color;
+
+        if (this.displayConnector && !this.connector) {
+          this.connector = Burner.System.add('Connector', {
+            parentA: this,
+            parentB: this.target
+          });
+        }
+
         check = true;
       }
     }
@@ -103,6 +113,10 @@ Sensor.prototype.step = function() {
     this.color = 'transparent';
     this.activationLocation.x = null;
     this.activationLocation.y = null;
+    if (this.connector) {
+      Burner.System.destroyItem(this.connector);
+      this.connector = null;
+    }
   } else {
     this.color = this.activatedColor;
   }
@@ -281,16 +295,16 @@ Sensor.prototype.getBehavior = function() {
         desiredVelocity.limit(this.maxSteeringForce * 0.05);
 
         // add motor speed
-        this.dir.x = this.velocity.x;
-        this.dir.y = this.velocity.y;
-        this.dir.normalize();
+        this.motorDir.x = this.velocity.x;
+        this.motorDir.y = this.velocity.y;
+        this.motorDir.normalize();
         if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
-          this.dir.mult(-this.motorSpeed);
+          this.motorDir.mult(-this.motorSpeed);
         } else {
-          this.dir.mult(this.motorSpeed);
+          this.motorDir.mult(this.motorSpeed);
         }
 
-        desiredVelocity.add(this.dir);
+        desiredVelocity.add(this.motorDir);
 
         return desiredVelocity;
 

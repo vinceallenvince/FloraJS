@@ -36,7 +36,7 @@ RangeDisplay.prototype.init = function(options) {
   this.zIndex = options.zIndex || 10;
 
   this.borderStyle = typeof options.borderStyle === 'undefined' ? 'dashed' : options.borderStyle;
-  this.borderColor = typeof options.borderColor === 'undefined' ? [150, 150, 150] : options.borderColor;
+  this.borderDefaultColor = typeof options.borderDefaultColor === 'undefined' ? [150, 150, 150] : options.borderDefaultColor;
 
   /**
    * RangeDisplays have no height or color and rely on the associated DOM element's
@@ -46,8 +46,12 @@ RangeDisplay.prototype.init = function(options) {
   this.borderRadius = 100;
   this.width = this.sensor.sensitivity;
   this.height = this.sensor.sensitivity;
-  this.opacity = 0.5;
+  this.minOpacity = 0.3;
+  this.maxOpacity = 0.6;
+  this.opacity = this.minOpacity;
   this.color = 'transparent';
+  this.maxAngularVelocity = 1;
+  this.minAngularVelocity = 0;
 };
 
 /**
@@ -55,4 +59,17 @@ RangeDisplay.prototype.init = function(options) {
  */
 RangeDisplay.prototype.step = function() {
   this.location = this.sensor.location;
+
+  var angularVelocity = Flora.Utils.map(this.sensor.parent.velocity.mag(),
+      this.sensor.parent.minSpeed, this.sensor.parent.maxSpeed,
+      this.maxAngularVelocity, this.minAngularVelocity);
+
+  this.angle += angularVelocity;
+  if (this.sensor.activated) {
+    this.opacity = this.maxOpacity;
+    this.borderColor = this.sensor.target.color;
+  } else {
+    this.opacity = this.minOpacity;
+    this.borderColor = this.borderDefaultColor;
+  }
 };
