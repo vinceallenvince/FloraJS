@@ -46,7 +46,7 @@ Sensor.prototype.init = function(opt_options) {
 
   this.type = options.type || '';
   this.behavior = options.behavior || function() {};
-  this.sensitivity = typeof options.sensitivity === 'undefined' ? 2 : options.sensitivity;
+  this.sensitivity = typeof options.sensitivity === 'undefined' ? 200 : options.sensitivity;
   this.width = typeof options.width === 'undefined' ? 7 : options.width;
   this.height = typeof options.height === 'undefined' ? 7 : options.height;
   this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 30 : options.offsetDistance;
@@ -62,6 +62,12 @@ Sensor.prototype.init = function(opt_options) {
 
   this.activationLocation = new Burner.Vector();
   this._force = new Burner.Vector(); // used as a cache Vector
+
+  this.showRange = !!options.showRange;
+  if (this.showRange) {
+    this.createRangeDisplay();
+  }
+
 };
 
 /**
@@ -78,7 +84,7 @@ Sensor.prototype.step = function() {
   if (Burner.System._caches[this.type]) {
     list = Burner.System._caches[this.type].list;
     for (i = 0, max = list.length; i < max; i++) { // heat
-      if (this.isInside(this, list[i], this.sensitivity)) {
+      if (this.sensorActive(list[i], this.sensitivity)) {
         this.target = list[i]; // target this stimulator
         if (!this.activationLocation.x && !this.activationLocation.y) {
           this.activationLocation.x = this.parent.location.x;
@@ -105,6 +111,16 @@ Sensor.prototype.step = function() {
   }
 };
 
+/**
+ * Creates a RangeDisplay object.
+ * @return {Object} A RangeDisplay object.
+ */
+Sensor.prototype.createRangeDisplay = function() {
+  return Burner.System.add('RangeDisplay', {
+    sensor: this
+  });
+};
+
 Sensor.prototype.getBehavior = function() {
 
   switch (this.behavior) {
@@ -126,11 +142,11 @@ Sensor.prototype.getBehavior = function() {
         return desiredVelocity;
       }
 
-    case 'DISLIKES':
+    case 'COWARD':
       return function(sensor, target) {
 
         /**
-         * DISLIKES
+         * COWARD
          * Steer away from target at max speed.
          */
 
@@ -183,11 +199,11 @@ Sensor.prototype.getBehavior = function() {
 
       }
 
-    case 'COWARD':
+    case 'CURIOUS':
       return function(sensor, target) {
 
         /**
-         * COWARD
+         * CURIOUS
          * Steer and arrive at midpoint bw target location and agent location.
          * After arriving, reverse direction and accelerate to max speed.
          */
@@ -348,21 +364,19 @@ Sensor.prototype.getBehavior = function() {
 
 };
 
-
 /**
- * Checks if a sensor can detect a stimulator.
+ * Checks if a sensor can detect a stimulus object. Note: Assumes
+ * target is a circle.
  *
- * @param {Object} params The sensor.
- * @param {Object} container The stimulator.
- * @param {number} sensitivity The sensor's sensitivity.
+ * @param {Object} target The stimulator.
+ * @return {Boolean} true if sensor's range intersects target.
  */
-Sensor.prototype.isInside = function(item, container, sensitivity) {
+Sensor.prototype.sensorActive = function(target) {
 
-  if (item.location.x + item.width / 2 > container.location.x - container.width / 2 - (sensitivity * container.width) &&
-    item.location.x - item.width / 2 < container.location.x + container.width / 2 + (sensitivity * container.width) &&
-    item.location.y + item.height / 2 > container.location.y - container.height / 2 - (sensitivity * container.height) &&
-    item.location.y - item.height / 2 < container.location.y + container.height / 2 + (sensitivity * container.height)) {
-    return true;
-  }
-  return false;
+  // Two circles intersect if distance bw centers is less than the sum of the radii.
+  var distance = Burner.Vector.VectorDistance(this.location, target.location),
+      sensorRadius = this.sensitivity / 2,
+      targetRadius = (target.width / 2) + target.boxShadowSpread;
+
+  return distance < sensorRadius + targetRadius;
 };
