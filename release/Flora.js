@@ -1,4 +1,4 @@
-/*! Flora v3.0.0 - 2013-12-07 05:12:30 
+/*! Flora v3.0.0 - 2013-12-08 01:12:49 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -1118,6 +1118,8 @@ function InputMenu(opt_options) {
 
   var me = this, options = opt_options || {}, i, max, classNames;
 
+  this.name = 'InputMenu';
+
   // if a world is not passed, use the first world in the System
   this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';
@@ -2196,7 +2198,7 @@ Sensor.prototype.init = function(opt_options) {
 
   this.type = options.type || '';
   this.behavior = options.behavior || function() {};
-  this.sensitivity = typeof options.sensitivity === 'undefined' ? 2 : options.sensitivity;
+  this.sensitivity = typeof options.sensitivity === 'undefined' ? 200 : options.sensitivity;
   this.width = typeof options.width === 'undefined' ? 7 : options.width;
   this.height = typeof options.height === 'undefined' ? 7 : options.height;
   this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 30 : options.offsetDistance;
@@ -2212,6 +2214,13 @@ Sensor.prototype.init = function(opt_options) {
 
   this.activationLocation = new Burner.Vector();
   this._force = new Burner.Vector(); // used as a cache Vector
+
+  this.displayRange = !!options.displayRange;
+  if (this.displayRange) {
+    this.createRangeDisplay();
+  }
+
+  this.displayConnector = !!options.displayConnector;
 };
 
 /**
@@ -2228,13 +2237,22 @@ Sensor.prototype.step = function() {
   if (Burner.System._caches[this.type]) {
     list = Burner.System._caches[this.type].list;
     for (i = 0, max = list.length; i < max; i++) { // heat
-      if (this.isInside(this, list[i], this.sensitivity)) {
+      if (this.sensorActive(list[i], this.sensitivity)) {
         this.target = list[i]; // target this stimulator
         if (!this.activationLocation.x && !this.activationLocation.y) {
           this.activationLocation.x = this.parent.location.x;
           this.activationLocation.y = this.parent.location.y;
         }
         this.activated = true; // set activation
+        this.activatedColor = this.target.color;
+
+        if (this.displayConnector && !this.connector) {
+          this.connector = Burner.System.add('Connector', {
+            parentA: this,
+            parentB: this.target
+          });
+        }
+
         check = true;
       }
     }
@@ -2247,12 +2265,26 @@ Sensor.prototype.step = function() {
     this.color = 'transparent';
     this.activationLocation.x = null;
     this.activationLocation.y = null;
+    if (this.connector) {
+      Burner.System.destroyItem(this.connector);
+      this.connector = null;
+    }
   } else {
     this.color = this.activatedColor;
   }
   if (this.afterStep) {
     this.afterStep.apply(this);
   }
+};
+
+/**
+ * Creates a RangeDisplay object.
+ * @return {Object} A RangeDisplay object.
+ */
+Sensor.prototype.createRangeDisplay = function() {
+  return Burner.System.add('RangeDisplay', {
+    sensor: this
+  });
 };
 
 Sensor.prototype.getBehavior = function() {
@@ -2276,11 +2308,11 @@ Sensor.prototype.getBehavior = function() {
         return desiredVelocity;
       }
 
-    case 'DISLIKES':
+    case 'COWARD':
       return function(sensor, target) {
 
         /**
-         * DISLIKES
+         * COWARD
          * Steer away from target at max speed.
          */
 
@@ -2333,11 +2365,11 @@ Sensor.prototype.getBehavior = function() {
 
       }
 
-    case 'COWARD':
+    case 'CURIOUS':
       return function(sensor, target) {
 
         /**
-         * COWARD
+         * CURIOUS
          * Steer and arrive at midpoint bw target location and agent location.
          * After arriving, reverse direction and accelerate to max speed.
          */
@@ -2415,16 +2447,16 @@ Sensor.prototype.getBehavior = function() {
         desiredVelocity.limit(this.maxSteeringForce * 0.05);
 
         // add motor speed
-        this.dir.x = this.velocity.x;
-        this.dir.y = this.velocity.y;
-        this.dir.normalize();
+        this.motorDir.x = this.velocity.x;
+        this.motorDir.y = this.velocity.y;
+        this.motorDir.normalize();
         if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
-          this.dir.mult(-this.motorSpeed);
+          this.motorDir.mult(-this.motorSpeed);
         } else {
-          this.dir.mult(this.motorSpeed);
+          this.motorDir.mult(this.motorSpeed);
         }
 
-        desiredVelocity.add(this.dir);
+        desiredVelocity.add(this.motorDir);
 
         return desiredVelocity;
 
@@ -2498,23 +2530,21 @@ Sensor.prototype.getBehavior = function() {
 
 };
 
-
 /**
- * Checks if a sensor can detect a stimulator.
+ * Checks if a sensor can detect a stimulus object. Note: Assumes
+ * target is a circle.
  *
- * @param {Object} params The sensor.
- * @param {Object} container The stimulator.
- * @param {number} sensitivity The sensor's sensitivity.
+ * @param {Object} target The stimulator.
+ * @return {Boolean} true if sensor's range intersects target.
  */
-Sensor.prototype.isInside = function(item, container, sensitivity) {
+Sensor.prototype.sensorActive = function(target) {
 
-  if (item.location.x + item.width / 2 > container.location.x - container.width / 2 - (sensitivity * container.width) &&
-    item.location.x - item.width / 2 < container.location.x + container.width / 2 + (sensitivity * container.width) &&
-    item.location.y + item.height / 2 > container.location.y - container.height / 2 - (sensitivity * container.height) &&
-    item.location.y - item.height / 2 < container.location.y + container.height / 2 + (sensitivity * container.height)) {
-    return true;
-  }
-  return false;
+  // Two circles intersect if distance bw centers is less than the sum of the radii.
+  var distance = Burner.Vector.VectorDistance(this.location, target.location),
+      sensorRadius = this.sensitivity / 2,
+      targetRadius = (target.width / 2) + target.boxShadowSpread;
+
+  return distance < sensorRadius + targetRadius;
 };
 
 exports.Sensor = Sensor;
@@ -3548,5 +3578,82 @@ function FlowFieldMarker(options) {
 FlowFieldMarker.prototype.name = 'FlowFieldMarker';
 
 exports.FlowFieldMarker = FlowFieldMarker;
+
+/**
+ * Creates a new RangeDisplay.
+ *
+ * A RangeDisplay is parented to a sensor and displays the sensor's
+ * sensitivity range.
+ *
+ * @constructor
+ * @extends Burner.Item
+ * @param {Object} [opt_options=] A map of initial properties.
+ */
+function RangeDisplay(opt_options) {
+  var options = opt_options || {};
+  options.name = options.name || 'RangeDisplay';
+  Burner.Item.call(this, options);
+}
+Utils.extend(RangeDisplay, Burner.Item);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} options A map of initial properties.
+ * @param {Object} parentA The object that starts the connection.
+ * @param {Object} parentB The object that ends the connection.
+ * @param {number} [options.zIndex = 0] zIndex.
+ * @param {string} [options.borderStyle = 'dotted'] Border style.
+ * @param {Array} [options.borderColor = 150, 150, 150] Border color.
+ */
+RangeDisplay.prototype.init = function(options) {
+
+  if (!options || !options.sensor) {
+    throw new Error('RangeDisplay: a sensor is required.');
+  }
+  this.sensor = options.sensor;
+
+  this.zIndex = options.zIndex || 10;
+
+  this.borderStyle = typeof options.borderStyle === 'undefined' ? 'dashed' : options.borderStyle;
+  this.borderDefaultColor = typeof options.borderDefaultColor === 'undefined' ? [150, 150, 150] : options.borderDefaultColor;
+
+  /**
+   * RangeDisplays have no height or color and rely on the associated DOM element's
+   * CSS border to render their line.
+   */
+  this.borderWidth = 2;
+  this.borderRadius = 100;
+  this.width = this.sensor.sensitivity;
+  this.height = this.sensor.sensitivity;
+  this.minOpacity = 0.3;
+  this.maxOpacity = 0.6;
+  this.opacity = this.minOpacity;
+  this.color = 'transparent';
+  this.maxAngularVelocity = 1;
+  this.minAngularVelocity = 0;
+};
+
+/**
+ * Called every frame, step() updates the instance's properties.
+ */
+RangeDisplay.prototype.step = function() {
+  this.location = this.sensor.location;
+
+  var angularVelocity = Flora.Utils.map(this.sensor.parent.velocity.mag(),
+      this.sensor.parent.minSpeed, this.sensor.parent.maxSpeed,
+      this.maxAngularVelocity, this.minAngularVelocity);
+
+  this.angle += angularVelocity;
+  if (this.sensor.activated) {
+    this.opacity = this.maxOpacity;
+    this.borderColor = this.sensor.target.color;
+  } else {
+    this.opacity = this.minOpacity;
+    this.borderColor = this.borderDefaultColor;
+  }
+};
+
+exports.RangeDisplay = RangeDisplay;
 
 }(exports));

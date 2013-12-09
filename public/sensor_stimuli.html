@@ -65,14 +65,14 @@
           }
         });
 
-        this.add('Liquid', {
+        this.add('Dragger', {
           draggable: true,
           location: function () {
             return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
           }
         });
 
-        this.add('Liquid', {
+        this.add('Dragger', {
           draggable: true,
           location: function () {
             return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
@@ -83,13 +83,19 @@
           sensors: [
             this.add('Sensor', {
               type: 'heat',
-              behavior: 'COWARD'
+              behavior: 'COWARD',
+              displayRange: true,
+              displayConnector: true
             }),
            this.add('Sensor', {
               type: 'cold',
-              behavior: 'ACCELERATE'
+              behavior: 'ACCELERATE',
+              displayRange: true,
+              displayConnector: true
             })
           ],
+          width: 20,
+          height: 20,
           velocity: new Burner.Vector(1, 0.5),
           minSpeed: 1,
           mass: 10,

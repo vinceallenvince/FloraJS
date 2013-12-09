@@ -12,7 +12,7 @@
   <title>FloraJS | Simulate natural systems with JavaScript</title>
   <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Burner.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
@@ -25,15 +25,31 @@
 
       Burner.System.init(function() {
 
-        this.add('ParticleSystem', {
-          startColor: [255, 255, 255],
-          particleOptions: {
-            maxSpeed: 3
-          }
+        this.add('Agent', {
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          location: new Burner.Vector(world.width * 0.45, 20),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'EXPLORER'
+            })
+          ]
+        });
+
+        this.add('Stimulus', {
+          type: 'heat',
+          draggable: true
         });
 
         this.add('Caption', {
-          text: 'Simple',
+          text: 'Sensor: EXPLORER',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -44,7 +60,6 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
       }, world);
     </script>
   </body>

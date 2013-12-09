@@ -25,15 +25,16 @@
 
       Burner.System.init(function() {
 
-        this.add('ParticleSystem', {
-          startColor: [255, 255, 255],
-          particleOptions: {
-            maxSpeed: 3
-          }
+        this.add('Agent', {
+          followMouse: true
+        });
+
+        this.add('Dragger', {
+          draggable: true
         });
 
         this.add('Caption', {
-          text: 'Simple',
+          text: 'Liquid',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -44,7 +45,6 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
       }, world);
     </script>
   </body>

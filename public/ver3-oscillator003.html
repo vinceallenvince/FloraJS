@@ -18,22 +18,26 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
-
       Burner.System.init(function() {
 
-        this.add('ParticleSystem', {
-          startColor: [255, 255, 255],
-          particleOptions: {
-            maxSpeed: 3
-          }
+        var world = Burner.System.firstWorld();
+
+        var walker = this.add('Walker');
+
+        var agent = this.add('Agent', {
+          seekTarget: walker
+        });
+
+        this.add('Oscillator', {
+          parent: agent,
+          zIndex: 0,
+          amplitude: new Burner.Vector(30, 0),
+          acceleration: new Burner.Vector(0.05, 0),
+          aVelocity: new Burner.Vector(0, 0)
         });
 
         this.add('Caption', {
-          text: 'Simple',
+          text: 'Attractor',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -44,8 +48,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
-      }, world);
+      });
     </script>
   </body>
 </html>

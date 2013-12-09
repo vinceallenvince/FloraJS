@@ -1,0 +1,121 @@
+- Burner.Item
+    Items are Burner's root object and carry the necessary proprties to render an object:
+      world
+      name
+      id
+      el - the DOM element representing the Item; uses 'id' property as an id; uses 'name' property as a className
+      _force - a recyclable Vector
+      _camera - a recyclable Vector
+
+  - Flora.Point
+      Points are the most basic Flora item. They represent a fixed point in 2D space and are just an extension of Burner Item with isStatic set to true.
+
+  - Flora.Connector
+      Connectors render a straight line between two Flora items. The Connector carries a reference to the two items as parentA and parentB. If the parent items move, the Connector moves with them.
+
+      The folowing properties affect the connector's appearance:
+        zIndex
+        borderStyle
+        borderColor
+
+      Connectors override Burner.Item's step function with their own:
+        step() - calculates the distance and angle between the connector's parents.
+
+	- Flora.Mover
+  		Movers are the root object for any item that moves. They are not aware of other Movers or stimuli. They have no means of locomotion and change only due to external forces.
+
+      They carry properties that determine how they behave when moving:
+        pointToDirection
+        parent
+        pointToParentDirection
+        offsetDistance
+        offsetAngle
+
+      They carry a step function called in Burner's animation loop:
+        step() - overrides Burner.Item's step() function
+
+      They carry hooks to functions called before and after the internals of the step functions are executed:
+        beforeStep
+        afterStep
+
+      They also carry the following handlers:
+  		  drag and drop
+  		  drag
+        isInside
+
+          - Flora.Stimulus
+            A Stimulus object is a Mover that invokes a reaction by an Agent that carries a corresponding sensor. By default, the item is static. However, a Stimulus object can moved or be dragged.
+
+            Stimulus objects must specify a 'type' property.
+              type - Ex: 'heat', 'food', 'kryptonite'
+
+          - Flora.Sensor
+            A Sensor object is tuned to react to a specific Stimulus. If the sensor is activated, it invokes a reaction by the Agent that carries it.
+
+              Stimulus objects must specify a 'type' property that indicates the type of stimulator that can activate this sensor.
+                type - Ex: 'heat', 'food', 'kryptonite'
+
+              behavior - The agent carrying the sensor will invoke this behavior when the sensor is activated. There are 8 predefined behaviors.
+                aggressive, coward, dislikes, explorer, likes, loves, accelerate, decelerate
+
+              sensitivity - The higher the sensitivity, the farther away the sensor will activate when approaching a   stimulus object.
+
+          - Flora.Agent
+            Agents respond to forces like gravity, attraction, repulsion, etc. They can also chase after other Agents, organize with other Agents in a flocking behavior, and follow the mouse. They can also carry sensors tuned to specific stimuli and react with predefined or custom behaviors.
+
+          //
+
+          - Flora.Attractor
+            Attractors exert a gravitational on Movers. They extend Movers because they are not static and can take advantage of drag and drop.
+
+            On initialization, Attractors call the following Burner function to add themselves to the System cache. This allows for faster lookups inside Mover.step().
+              Burner.System.updateCache(this);
+
+            Attractors add a Gravitational constant as a 'G' property.
+              G - the higher the G, the stronger the attraction force
+
+          - Flora.Repeller
+            Repellers exert a gravitational on Movers. They extend Movers because they are not static and can take advantage of drag and drop.
+
+            On initialization, Repellers call the following Burner function to add themselves to the System cache. This allows for faster lookups inside Mover.step().
+              Burner.System.updateCache(this);
+
+            Repellers add a Gravitational constant as a 'G' property.
+              G - the higher the G, the stronger the repulsion force
+
+          - Flora.Dragger (was Liquid)
+            Draggers exert a drag force on Movers. They extend Movers because they are not static and can take advantage of drag and drop.
+
+            On initialization, Draggers call the following Burner function to add themselves to the System cache. This allows for faster lookups inside Mover.step().
+              Burner.System.updateCache(this);
+
+            Draggers add a drag coeffecient constant as a 'c' property. Note, you can pass a negative 'c' property to reverse the drag force and create an 'oil slick' effect.
+              c - the higher the 'c', the stronger the drag force
+
+          - Flora.Oscillator
+              Oscillators simulate wave patterns and move according to amplitude and angular velocity. Oscillators are not affected by gravity or friction. They extend Mover because its useful to parent them to other Movers.
+
+              The following properties affect how the oscillator moves:
+                initialLocation - the center of the oscillation
+                amplitude - the distance from the object's initial location (center of the motion) to either extreme
+                acceleration
+                aVelocity
+
+              They carry a step function that overrides Mover's step function:
+                step()
+
+              They carry properties that apply perlin noise to the angular velocity.
+                isPerlin
+                perlinSpeed
+                perlinTime
+                perlinAccelLow
+                perlinAccelHigh
+                perlinOffsetX
+                perlinOffsetY
+
+          - Flora.ParticleSystem
+
+          - Flora.Particle
+
+
+

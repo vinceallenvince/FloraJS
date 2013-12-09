@@ -34,9 +34,13 @@
           sensors: [
             this.add('Sensor', {
               type: 'heat',
-              behavior: 'COWARD'
+              behavior: 'COWARD',
+              displayRange: true,
+              displayConnector: true
             })
           ],
+          width: 20,
+          height: 20,
           velocity: new Burner.Vector(1, 0.5),
           maxSpeed: 5,
           motorSpeed: 10

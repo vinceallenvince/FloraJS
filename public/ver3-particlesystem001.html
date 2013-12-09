@@ -18,22 +18,12 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
-
       Burner.System.init(function() {
 
-        this.add('ParticleSystem', {
-          startColor: [255, 255, 255],
-          particleOptions: {
-            maxSpeed: 3
-          }
-        });
+        this.add('ParticleSystem');
 
         this.add('Caption', {
-          text: 'Simple',
+          text: 'ParticleSystem',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -44,8 +34,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
-      }, world);
+      });
     </script>
   </body>
 </html>

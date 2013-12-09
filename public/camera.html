@@ -12,7 +12,7 @@
   <title>FloraJS | Simulate natural systems with JavaScript</title>
   <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Burner.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
@@ -63,13 +63,13 @@
         }
       });
 
-      this.add('Liquid', {
+      this.add('Dragger', {
         location: function () {
           return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
         }
       });
 
-      this.add('Liquid', {
+      this.add('Dragger', {
         location: function () {
           return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
         }
@@ -81,13 +81,17 @@
           sensors: [
             this.add('Sensor', {
               type: 'heat',
-              behavior: 'COWARD'
+              behavior: 'COWARD',
+              displayConnector: true
             }),
            this.add('Sensor', {
               type: 'cold',
-              behavior: 'ACCELERATE'
+              behavior: 'ACCELERATE',
+              displayConnector: true
             })
           ],
+          width: 20,
+          height: 20,
           velocity: new Burner.Vector(Flora.Utils.getRandomNumber(-1, 1, true),
               Flora.Utils.getRandomNumber(-1, 1, true)),
           minSpeed: 1,
