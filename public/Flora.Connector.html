@@ -18,17 +18,25 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(0, 2),
-        c: 0
-      });
-
       Burner.System.init(function() {
 
-        this.add('ParticleSystem');
+        var world = Burner.System.firstWorld();
+
+        var pointA = this.add('Point', {
+          location: new Burner.Vector(world.width * 0.25, world.height * 0.25)
+        });
+
+        var pointB = this.add('Point', {
+          location: new Burner.Vector(world.width * 0.75, world.height * 0.75)
+        });
+
+        this.add('Connector', {
+          parentA: pointA,
+          parentB: pointB
+        });
 
         this.add('Caption', {
-          text: 'Simple',
+          text: 'Flora.Connector',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -39,8 +47,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
-      }, world);
+      });
     </script>
   </body>
 </html>

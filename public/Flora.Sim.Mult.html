@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Burner.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id="worldA"></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var palette = new Flora.ColorPalette();
+      palette.addColor({
+        min: 12,
+        max: 24,
+        startColor: [196, 213, 86],
+        endColor: [166, 183, 56]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [56, 139, 126],
+        endColor: [26, 109, 96]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [104, 233, 212],
+        endColor: [74, 203, 182]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [233, 158, 104],
+        endColor: [203, 128, 74]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [191, 75, 49],
+        endColor: [171, 55, 19]
+      });
+
+      var getRandomNumber = Flora.Utils.getRandomNumber;
+
+      var i, groupA = [], totalGroupA = 10, totalGroupB = 5;
+
+      var world = new Burner.World(document.getElementById("worldA"), {
+        boundToWindow: false,
+        width: 920,
+        height: 480,
+        borderColor: [60, 60, 60],
+        borderStyle: 'dotted',
+        borderWidth: 1,
+        gravity: new Burner.Vector(0, 0),
+        c: 0
+      });
+
+      /**
+       * groupA walks the environment; LIKES groupB
+       * groupB motors the environment; LIKES|CONSUMES groupA
+       *   - after consumption, creates groupC
+       */
+
+      Burner.System.init(function() {
+
+        for (i = 0; i < totalGroupA; i++) {
+          groupA.push(this.add('Walker', {
+            location: new Burner.Vector(world.width * 0.5, world.height / 2),
+            wrapWorldEdges: true,
+            maxSpeed: 1,
+            opacity: 0
+          }));
+        }
+
+        for (i = 0; i < groupA.length; i++) {
+          this.add('Agent', {
+            name: 'groupA',
+            location: new Burner.Vector(world.width * 0.5, world.height / 2),
+            color: palette.getColor(),
+            wrapWorldEdges: true,
+            seekTarget: groupA[i],
+            borderRadius: 100,
+            sensors: [
+              this.add('Sensor', {
+                type: 'groupB',
+                behavior: 'LIKES',
+                offsetDistance: 0,
+                displayRange: true,
+                sensitivity: 50
+              })
+            ]
+          });
+        }
+
+        for (i = 0; i < totalGroupB; i++) {
+
+          var loc = new Burner.Vector(world.width * 0.75, world.height / 2);
+          var offset = new Burner.Vector(1, 1);
+          offset.normalize();
+          offset.rotate(Flora.Utils.degreesToRadians(getRandomNumber(0, 359, true)));
+          offset.mult(30);
+          loc.add(offset);
+
+          groupA.push(this.add('Agent', {
+            name: 'groupB',
+            location: loc,
+            angle: getRandomNumber(0, 359, true),
+            wrapWorldEdges: true,
+            maxSpeed: 1,
+            motorSpeed: 2,
+            sensors: [
+              this.add('Sensor', {
+                type: 'groupA',
+                behavior: 'LIKES',
+                offsetDistance: 14,
+                displayRange: true,
+                sensitivity: 100
+              }),
+              this.add('Sensor', {
+                type: 'groupA',
+                behavior: 'CONSUME',
+                offsetDistance: 14,
+                displayRange: false,
+                sensitivity: 100
+              })
+            ]
+          }));
+        }
+
+
+
+        this.add('Caption', {
+          text: '',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+      }, world);
+    </script>
+  </body>
+</html>

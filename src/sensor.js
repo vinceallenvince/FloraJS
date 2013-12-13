@@ -86,6 +86,7 @@ Sensor.prototype.step = function() {
     list = Burner.System._caches[this.type].list;
     for (i = 0, max = list.length; i < max; i++) { // heat
       if (this.sensorActive(list[i], this.sensitivity)) {
+
         this.target = list[i]; // target this stimulator
         if (!this.activationLocation.x && !this.activationLocation.y) {
           this.activationLocation.x = this.parent.location.x;
@@ -99,6 +100,10 @@ Sensor.prototype.step = function() {
             parentA: this,
             parentB: this.target
           });
+        }
+
+        if (this.displayConnector && this.connector && this.connector.parentB !== this.target) {
+          this.connector.parentB = this.target
         }
 
         check = true;
@@ -137,7 +142,70 @@ Sensor.prototype.createRangeDisplay = function() {
 
 Sensor.prototype.getBehavior = function() {
 
+  var i, iMax, j, jMax;
+
   switch (this.behavior) {
+
+    case 'CONSUME':
+      return function(sensor, target) {
+
+        /**
+         * CONSUME
+         * If inside the target, target shrinks.
+         */
+         if (Flora.Utils.isInside(sensor.parent, target)) {
+            if (target.width > 2) {
+              target.width *= 0.95;
+              if (!sensor.parent[target.type + 'Level']) {
+                sensor.parent[target.type + 'Level'] = 0;
+              }
+              sensor.parent[target.type + 'Level'] += 1;
+            } else {
+              // check if target has sensors
+              for (i = target.sensors.length - 1; i >= 0; i--) {
+                if (target.sensors[i].displayRange) {
+                  var rangeDisplays = Burner.System.getAllItemsByName('RangeDisplay');
+                  for (j = rangeDisplays.length - 1; j >= 0; j--) {
+                    if (rangeDisplays[j].sensor.id === target.sensors[i].id) {
+                      Burner.System.destroyItem(rangeDisplays[j]);
+                    }
+                  }
+                }
+                Burner.System.destroyItem(target.sensors[i]);
+              }
+              Burner.System.destroyItem(target);
+              return;
+            }
+            if (target.height > 1) {
+              target.height *= 0.95;
+            }
+            if (target.borderWidth > 0) {
+              target.borderWidth *= 0.95;
+            }
+            if (target.boxShadowSpread > 0) {
+              target.boxShadowSpread *= 0.95;
+            }
+         }
+      }
+
+    case 'DESTROY':
+      return function(sensor, target) {
+
+        /**
+         * DESTROY
+         * If inside the target, ssytem destroys target.
+         */
+         if (Flora.Utils.isInside(sensor.parent, target)) {
+
+            Burner.System.add('ParticleSystem', {
+              lifespan: 20,
+              borderColor: target.borderColor,
+              startColor: target.color,
+              endColor: target.color
+            });
+            Burner.System.destroyItem(target);
+         }
+      }
 
     case 'LIKES':
       return function(sensor, target) {

@@ -1,4 +1,4 @@
-/*! Flora v3.0.0 - 2013-12-08 01:12:49 
+/*! Flora v3.0.0 - 2013-12-13 09:12:52 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -431,10 +431,10 @@ Utils.capitalizeFirstLetter = function(string) {
  */
 Utils.isInside = function(obj, container) {
   if (container) {
-    if (obj.location.x + obj.width/2 > container.location.x - container.width/2 &&
-      obj.location.x - obj.width/2 < container.location.x + container.width/2 &&
-      obj.location.y + obj.height/2 > container.location.y - container.height/2 &&
-      obj.location.y - obj.height/2 < container.location.y + container.height/2) {
+    if (obj.location.x + obj.width / 2 > container.location.x - container.width / 2 &&
+      obj.location.x - obj.width / 2 < container.location.x + container.width / 2 &&
+      obj.location.y + obj.height / 2 > container.location.y - container.height / 2 &&
+      obj.location.y - obj.height / 2 < container.location.y + container.height / 2) {
       return true;
     }
   }
@@ -1059,6 +1059,7 @@ function Caption(opt_options) {
     this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
         ', ' + this.borderColor[2] + ')';
   }
+  this.el.zIndex = 100;
   this.el.appendChild(document.createTextNode(this.text));
   if (document.getElementById('caption')) {
     document.getElementById('caption').parentNode.removeChild(document.getElementById('caption'));
@@ -1077,6 +1078,13 @@ Caption.prototype.reset = function () {};
  * A noop.
  */
 Caption.prototype.init = function () {};
+
+/**
+ * Updates the caption's text.
+ */
+Caption.prototype.update = function(text) {
+  this.el.textContent = text;
+};
 
 /**
  * Removes the caption's DOM element.
@@ -1227,10 +1235,7 @@ Utils.extend(Mover, Burner.Item);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.width = 10] Width
- * @param {number} [opt_options.height = 10] Height
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
- * @param {number} [opt_options.angle = 0] Angle
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
  * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
@@ -1241,12 +1246,7 @@ Utils.extend(Mover, Burner.Item);
  * @param {function} [opt_options.afterStep = null] A function to run after the step() function.
  */
 Mover.prototype.init = function(options) {
-
-  //this.width = typeof options.width === 'undefined' ? 20 : options.width;
-  //this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [255, 255, 255];
-  //this.motorSpeed = options.motorSpeed || 0;
-  //this.angle = options.angle || 0;
   this.pointToDirection = typeof options.pointToDirection === 'undefined' ? true : options.pointToDirection;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
@@ -1457,8 +1457,8 @@ Mover.prototype.step = function() {
       }
     }
 
-    if (this.applyForces) { // !! rename this
-      this.applyForces();
+    if (this.applyAdditionalForces) { // !! rename this
+      this.applyAdditionalForces();
     }
 
     // end apply forces
@@ -1517,130 +1517,6 @@ Mover.prototype.step = function() {
     this.afterStep.apply(this);
   }
 };
-
-/**
- * Calculates a steering force to apply to an object seeking another object.
- *
- * @param {Object} target The object to seek.
- * @returns {Object} The force to apply.
- * @private
- */
-/*Mover.prototype._seek = function(target) {
-
-  var world = this.world,
-    desiredVelocity = Burner.Vector.VectorSub(target.location, this.location),
-    distanceToTarget = desiredVelocity.mag();
-
-  desiredVelocity.normalize();
-
-  if (distanceToTarget < world.bounds[1] / 2) { // slow down to arrive at target
-    var m = Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
-    desiredVelocity.mult(m);
-  } else {
-    desiredVelocity.mult(this.maxSpeed);
-  }
-
-  desiredVelocity.sub(this.velocity);
-  desiredVelocity.limit(this.maxSteeringForce);
-
-  return desiredVelocity;
-};*/
-
-/**
- * Checks if object is within range of a world edge. If so, steers the object
- * in the opposite direction.
- * @private
- */
-/*Mover.prototype._checkAvoidEdges = function() {
-
-  var maxSpeed, desiredVelocity;
-
-  if (this.location.x < this.avoidWorldEdgesStrength) {
-    maxSpeed = this.maxSpeed;
-  } else if (this.location.x > this.world.bounds[1] - this.avoidWorldEdgesStrength) {
-    maxSpeed = -this.maxSpeed;
-  }
-  if (maxSpeed) {
-    desiredVelocity = new Burner.Vector(maxSpeed, this.velocity.y);
-    desiredVelocity.sub(this.velocity);
-    desiredVelocity.limit(this.maxSteeringForce);
-    this.applyForce(desiredVelocity);
-  }
-
-  if (this.location.y < this.avoidWorldEdgesStrength) {
-    maxSpeed = this.maxSpeed;
-  } else if (this.location.y > this.world.bounds[2] - this.avoidWorldEdgesStrength) {
-    maxSpeed = -this.maxSpeed;
-  }
-  if (maxSpeed) {
-    desiredVelocity = new Burner.Vector(this.velocity.x, maxSpeed);
-    desiredVelocity.sub(this.velocity);
-    desiredVelocity.limit(this.maxSteeringForce);
-    this.applyForce(desiredVelocity);
-  }
-};*/
-
-/**
- * Calculates a force to apply to simulate drag on an object.
- *
- * @param {Object} target The object that is applying the drag force.
- * @returns {Object} A force to apply.
- */
-/*Mover.prototype._drag = function(target) {
-
-  var speed = this.velocity.mag(),
-    dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
-    drag = Utils.clone(this.velocity);
-
-  drag.normalize(); // drag direction
-  drag.mult(dragMagnitude);
-
-  return drag;
-};*/
-
-/**
- * Calculates a force to apply to simulate attraction on an object.
- *
- * @param {Object} attractor The attracting object.
- * @returns {Object} A force to apply.
- */
-/*Mover.prototype._attract = function(attractor) {
-
-  var force = Burner.Vector.VectorSub(attractor.location, this.location),
-    distance, strength;
-
-  distance = force.mag();
-  distance = Utils.constrain(
-      distance,
-      this.width * this.height,
-      attractor.width * attractor.height); // min = the size of this mover; max = the size of the attractor
-  force.normalize();
-
-  // strength is proportional to the mass of the objects and their proximity to each other
-  strength = (attractor.G * attractor.mass * this.mass) / (distance * distance);
-  force.mult(strength);
-
-  return force;
-};*/
-
-/**
- * Determines if this object is inside another.
- *
- * @param {Object} container The containing object.
- * @returns {boolean} Returns true if the object is inside the container.
- */
-/*Mover.prototype.isInside = function(container) {
-
-  if (container) {
-    if (this.location.x + this.width / 2 > container.location.x - container.width / 2 &&
-      this.location.x - this.width / 2 < container.location.x + container.width / 2 &&
-      this.location.y + this.height / 2 > container.location.y - container.height / 2 &&
-      this.location.y - this.height / 2 < container.location.y + container.height / 2) {
-      return true;
-    }
-  }
-  return false;
-};*/
 
 exports.Mover = Mover;
 
@@ -1722,9 +1598,9 @@ Agent.prototype.init = function(opt_options) {
   this.separateSumForceVector = new Burner.Vector(); // used in Agent.separate()
   this.alignSumForceVector = new Burner.Vector(); // used in Agent.align()
   this.cohesionSumForceVector = new Burner.Vector(); // used in Agent.cohesion()
-  this.followTargetVector = new Burner.Vector(); // used in Agent.applyForces()
+  this.followTargetVector = new Burner.Vector(); // used in Agent.applyAdditionalForces()
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
-  this.motorDir = new Burner.Vector(); // used in Agent.applyForces()
+  this.motorDir = new Burner.Vector(); // used in Agent.applyAdditionalForces()
 
   Burner.System.updateCache(this);
 };
@@ -1734,7 +1610,7 @@ Agent.prototype.init = function(opt_options) {
  *
  * @returns {Object} This object's acceleration vector.
  */
-Agent.prototype.applyForces = function() {
+Agent.prototype.applyAdditionalForces = function() {
 
   var i, max, sensorActivated, sensor, r, theta, x, y;
   if (this.sensors.length > 0) { // Sensors
@@ -2072,14 +1948,14 @@ Utils.extend(Walker, Mover);
  * @param {number} [opt_options.height = 10] Height
  * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
  * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and isPerlin = true, object will avoid world edges.
- * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
+ * @param {number} [opt_options.perlinSpeed = 0.005] If perlin = true, perlinSpeed determines how fast the object location moves through the noise space.
  * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
- * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when isPerlin = true.
- * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when isPerlin = true.
+ * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when perlin = true.
+ * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when perlin = true.
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {boolean} [opt_options.random = false] Set to true for walker to move in a random direction.
- * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
+ * @param {number} [opt_options.randomRadius = 100] If random = true, walker will look for a new location each frame based on this radius.
  * @param {string|Array} [opt_options.color = 255, 150, 50] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
@@ -2120,7 +1996,7 @@ Walker.prototype.init = function(opt_options) {
  * If walker uses perlin noise, updates acceleration based on noise space. If walker
  * is a random walker, updates location based on random location.
  */
-Walker.prototype.applyForces = function() {
+Walker.prototype.applyAdditionalForces = function() {
 
   // walker use either perlin noise or random walk
   if (this.perlin) {
@@ -2238,6 +2114,7 @@ Sensor.prototype.step = function() {
     list = Burner.System._caches[this.type].list;
     for (i = 0, max = list.length; i < max; i++) { // heat
       if (this.sensorActive(list[i], this.sensitivity)) {
+
         this.target = list[i]; // target this stimulator
         if (!this.activationLocation.x && !this.activationLocation.y) {
           this.activationLocation.x = this.parent.location.x;
@@ -2251,6 +2128,10 @@ Sensor.prototype.step = function() {
             parentA: this,
             parentB: this.target
           });
+        }
+
+        if (this.displayConnector && this.connector && this.connector.parentB !== this.target) {
+          this.connector.parentB = this.target
         }
 
         check = true;
@@ -2289,7 +2170,70 @@ Sensor.prototype.createRangeDisplay = function() {
 
 Sensor.prototype.getBehavior = function() {
 
+  var i, iMax, j, jMax;
+
   switch (this.behavior) {
+
+    case 'CONSUME':
+      return function(sensor, target) {
+
+        /**
+         * CONSUME
+         * If inside the target, target shrinks.
+         */
+         if (Flora.Utils.isInside(sensor.parent, target)) {
+            if (target.width > 2) {
+              target.width *= 0.95;
+              if (!sensor.parent[target.type + 'Level']) {
+                sensor.parent[target.type + 'Level'] = 0;
+              }
+              sensor.parent[target.type + 'Level'] += 1;
+            } else {
+              // check if target has sensors
+              for (i = target.sensors.length - 1; i >= 0; i--) {
+                if (target.sensors[i].displayRange) {
+                  var rangeDisplays = Burner.System.getAllItemsByName('RangeDisplay');
+                  for (j = rangeDisplays.length - 1; j >= 0; j--) {
+                    if (rangeDisplays[j].sensor.id === target.sensors[i].id) {
+                      Burner.System.destroyItem(rangeDisplays[j]);
+                    }
+                  }
+                }
+                Burner.System.destroyItem(target.sensors[i]);
+              }
+              Burner.System.destroyItem(target);
+              return;
+            }
+            if (target.height > 1) {
+              target.height *= 0.95;
+            }
+            if (target.borderWidth > 0) {
+              target.borderWidth *= 0.95;
+            }
+            if (target.boxShadowSpread > 0) {
+              target.boxShadowSpread *= 0.95;
+            }
+         }
+      }
+
+    case 'DESTROY':
+      return function(sensor, target) {
+
+        /**
+         * DESTROY
+         * If inside the target, ssytem destroys target.
+         */
+         if (Flora.Utils.isInside(sensor.parent, target)) {
+
+            Burner.System.add('ParticleSystem', {
+              lifespan: 20,
+              borderColor: target.borderColor,
+              startColor: target.color,
+              endColor: target.color
+            });
+            Burner.System.destroyItem(target);
+         }
+      }
 
     case 'LIKES':
       return function(sensor, target) {
@@ -2707,17 +2651,17 @@ Particle.prototype.init = function(opt_options) {
   this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.lifespan = typeof options.lifespan === 'undefined' ? 50 : options.lifespan;
   this.life = options.life || 0;
-  this.fade = typeof options.fade === 'undefined' ? true : false;
-  this.shrink = typeof options.shrink === 'undefined' ? true : false;
+  this.fade = typeof options.fade === 'undefined' ? true : options.fade;
+  this.shrink = typeof options.shrink === 'undefined' ? true : options.shrink;
   this.checkWorldEdges = !!options.checkWorldEdges;
-  this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 4 : 0;
-  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : 0;
+  this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 4 : options.maxSpeed;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
   this.color = options.color || [200, 200, 200];
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : 0;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : 0;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : 0;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || 'transparent';
   if (!options.acceleration) {
     this.acceleration = new Burner.Vector(1, 1);
@@ -2733,46 +2677,9 @@ Particle.prototype.init = function(opt_options) {
 };
 
 /**
- * Calculates location via sum of acceleration + velocity.
- *
- * @returns {number} The total number of times step has been executed.
+ * Applies additional forces.
  */
-Particle.prototype.step = function() {
-
-  var friction;
-
-  // start apply forces
-
-  if (this.world.c) { // friction
-    friction = Utils.clone(this.velocity);
-    friction.mult(-1);
-    friction.normalize();
-    friction.mult(this.world.c);
-    this.applyForce(friction);
-  }
-  this.applyForce(this.world.gravity); // gravity
-
-    if (this.applyForces) { // !! rename this
-      this.applyForces();
-    }
-
-  if (this.checkEdges) {
-    this._checkWorldEdges();
-  }
-
-  // end apply forces
-
-  this.velocity.add(this.acceleration); // add acceleration
-
-  if (this.maxSpeed) {
-    this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
-  }
-
-  if (this.minSpeed) {
-    this.velocity.limit(null, this.minSpeed); // check if velocity < minSpeed
-  }
-
-  this.location.add(this.velocity); // add velocity
+Particle.prototype.applyAdditionalForces = function() {
 
   if (this.fade) {
     this.opacity = Utils.map(this.life, 0, this.lifespan, 1, 0);
@@ -2782,15 +2689,6 @@ Particle.prototype.step = function() {
     this.width = Utils.map(this.life, 0, this.lifespan, this.initWidth, 0);
     this.height = Utils.map(this.life, 0, this.lifespan, this.initHeight, 0);
   }
-
-  this.acceleration.mult(0);
-
-  if (this.life < this.lifespan) {
-    this.life += 1;
-  } else if (this.lifespan !== -1) {
-    Burner.System.destroyItem(this);
-  }
-
 };
 
 exports.Particle = Particle;
@@ -2819,16 +2717,16 @@ Utils.extend(ParticleSystem, Mover);
  * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, system is destroyed.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
+ * @param {number} [opt_options.borderWidth = 0] Border width.
+ * @param {string} [opt_options.borderStyle = 'none'] Border style.
+ * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
+ * @param {number} [opt_options.borderRadius = 0] Border radius.
  * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
  * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
  * @param {number} [opt_options.emitRadius = 3] The ParticleSystem adds this offset to the location of the Particles it creates.
  * @param {Array} [opt_options.startColor = 100, 20, 20] The starting color of the particle's palette range.
  * @param {Array} [opt_options.endColor = 255, 0, 0] The ending color of the particle's palette range.
  * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
- * @param {number} [opt_options.borderWidth = 0] Border width.
- * @param {string} [opt_options.borderStyle = 'none'] Border style.
- * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
- * @param {number} [opt_options.borderRadius = 0] Border radius.
  */
 ParticleSystem.prototype.init = function(opt_options) {
 
@@ -2837,31 +2735,33 @@ ParticleSystem.prototype.init = function(opt_options) {
 
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
   this.lifespan = typeof options.lifespan === 'undefined' ? -1: options.lifespan;
-  this.life = options.life || 0;
+  this.life = options.life || -1;
   this.width = options.width || 0;
   this.height = options.height || 0;
+  this.color = options.color || [255, 255, 255];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || 'transparent';
+  this.borderRadius = options.borderRadius || 0;
+
   this.burst = typeof options.burst === 'undefined' ? 1 : options.burst;
   this.burstRate = typeof options.burstRate === 'undefined' ? 4 : options.burstRate;
   this.emitRadius = typeof options.emitRadius === 'undefined' ? 3 : options.emitRadius;
-  this.startColor = options.startColor || [100, 20, 20];
+  this.startColor = options.startColor || [255, 255, 255];
   this.endColor = options.endColor || [255, 0, 0];
   this.particleOptions = options.particleOptions || {
     width : 15,
     height : 15,
     lifespan : 50,
     borderRadius : 100,
-    checkEdges : false,
+    checkWorldEdges : false,
     acceleration: null,
     velocity: null,
     location: null,
     maxSpeed: 3,
-    fade: true
+    fade: true,
+    shrink: true
   };
-  this.borderWidth = options.borderWidth || 0;
-  this.borderStyle = options.borderStyle || 'none';
-  this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius || 0;
-  this.clock = 0;
 
   if (this.particleOptions.acceleration) {
     this.initParticleAcceleration = new Burner.Vector(this.particleOptions.acceleration.x,
@@ -2875,6 +2775,8 @@ ParticleSystem.prototype.init = function(opt_options) {
     startColor: this.startColor,
     endColor: this.endColor
   });
+
+  this.clock = 0;
 
   this.beforeStep = function () {
 
@@ -2890,7 +2792,7 @@ ParticleSystem.prototype.init = function(opt_options) {
 
     if (this.clock % this.burstRate === 0) {
 
-      location = this.location; // use the particle system's location
+      location = this.location.clone(); // use the particle system's location
       offset = new Burner.Vector(1, 1); // get the emit radius
       offset.normalize();
       offset.mult(this.emitRadius); // expand emit radius in a random direction
@@ -2907,27 +2809,13 @@ ParticleSystem.prototype.init = function(opt_options) {
         if (initAcceleration) {
           this.particleOptions.acceleration = new Burner.Vector(initAcceleration.x, initAcceleration.y);
         }
-        this.particleOptions.location = ParticleSystem.getParticleLocation(location);
+        this.particleOptions.location = location;
 
         Burner.System.add('Particle', this.particleOptions);
       }
     }
     this.clock++;
   };
-};
-
-/**
- * Returns a self-executing function that is executed
- * when particle is initialized. The function retains a
- * reference to the particle system's location.
- *
- * @returns {Function} A function that self-executes and
- *    returns a reference to the particle system's location.
- */
-ParticleSystem.getParticleLocation = function(location) {
-  return (function() {
-    return new Burner.Vector(location.x, location.y);
-  })();
 };
 
 exports.ParticleSystem = ParticleSystem;
@@ -3644,7 +3532,6 @@ RangeDisplay.prototype.step = function() {
       this.sensor.parent.minSpeed, this.sensor.parent.maxSpeed,
       this.maxAngularVelocity, this.minAngularVelocity);
 
-  this.angle += angularVelocity;
   if (this.sensor.activated) {
     this.opacity = this.maxOpacity;
     this.borderColor = this.sensor.target.color;

@@ -23,16 +23,16 @@ Utils.extend(ParticleSystem, Mover);
  * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, system is destroyed.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
+ * @param {number} [opt_options.borderWidth = 0] Border width.
+ * @param {string} [opt_options.borderStyle = 'none'] Border style.
+ * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
+ * @param {number} [opt_options.borderRadius = 0] Border radius.
  * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
  * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
  * @param {number} [opt_options.emitRadius = 3] The ParticleSystem adds this offset to the location of the Particles it creates.
  * @param {Array} [opt_options.startColor = 100, 20, 20] The starting color of the particle's palette range.
  * @param {Array} [opt_options.endColor = 255, 0, 0] The ending color of the particle's palette range.
  * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
- * @param {number} [opt_options.borderWidth = 0] Border width.
- * @param {string} [opt_options.borderStyle = 'none'] Border style.
- * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
- * @param {number} [opt_options.borderRadius = 0] Border radius.
  */
 ParticleSystem.prototype.init = function(opt_options) {
 
@@ -41,31 +41,33 @@ ParticleSystem.prototype.init = function(opt_options) {
 
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
   this.lifespan = typeof options.lifespan === 'undefined' ? -1: options.lifespan;
-  this.life = options.life || 0;
+  this.life = options.life || -1;
   this.width = options.width || 0;
   this.height = options.height || 0;
+  this.color = options.color || [255, 255, 255];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || 'transparent';
+  this.borderRadius = options.borderRadius || 0;
+
   this.burst = typeof options.burst === 'undefined' ? 1 : options.burst;
   this.burstRate = typeof options.burstRate === 'undefined' ? 4 : options.burstRate;
   this.emitRadius = typeof options.emitRadius === 'undefined' ? 3 : options.emitRadius;
-  this.startColor = options.startColor || [100, 20, 20];
+  this.startColor = options.startColor || [255, 255, 255];
   this.endColor = options.endColor || [255, 0, 0];
   this.particleOptions = options.particleOptions || {
     width : 15,
     height : 15,
     lifespan : 50,
     borderRadius : 100,
-    checkEdges : false,
+    checkWorldEdges : false,
     acceleration: null,
     velocity: null,
     location: null,
     maxSpeed: 3,
-    fade: true
+    fade: true,
+    shrink: true
   };
-  this.borderWidth = options.borderWidth || 0;
-  this.borderStyle = options.borderStyle || 'none';
-  this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = options.borderRadius || 0;
-  this.clock = 0;
 
   if (this.particleOptions.acceleration) {
     this.initParticleAcceleration = new Burner.Vector(this.particleOptions.acceleration.x,
@@ -79,6 +81,8 @@ ParticleSystem.prototype.init = function(opt_options) {
     startColor: this.startColor,
     endColor: this.endColor
   });
+
+  this.clock = 0;
 
   this.beforeStep = function () {
 
@@ -94,7 +98,7 @@ ParticleSystem.prototype.init = function(opt_options) {
 
     if (this.clock % this.burstRate === 0) {
 
-      location = this.location; // use the particle system's location
+      location = this.location.clone(); // use the particle system's location
       offset = new Burner.Vector(1, 1); // get the emit radius
       offset.normalize();
       offset.mult(this.emitRadius); // expand emit radius in a random direction
@@ -111,25 +115,11 @@ ParticleSystem.prototype.init = function(opt_options) {
         if (initAcceleration) {
           this.particleOptions.acceleration = new Burner.Vector(initAcceleration.x, initAcceleration.y);
         }
-        this.particleOptions.location = ParticleSystem.getParticleLocation(location);
+        this.particleOptions.location = location;
 
         Burner.System.add('Particle', this.particleOptions);
       }
     }
     this.clock++;
   };
-};
-
-/**
- * Returns a self-executing function that is executed
- * when particle is initialized. The function retains a
- * reference to the particle system's location.
- *
- * @returns {Function} A function that self-executes and
- *    returns a reference to the particle system's location.
- */
-ParticleSystem.getParticleLocation = function(location) {
-  return (function() {
-    return new Burner.Vector(location.x, location.y);
-  })();
 };

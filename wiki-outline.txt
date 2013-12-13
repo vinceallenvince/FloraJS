@@ -1,5 +1,8 @@
+FloraJS is a library of classes and helpers for creating natural simulations in a web browser. Flora defines a natural simulation as a collection of autonomous agents whose boundaries of autonomy appear to be defined by natural forces. Using Flora's classes and associated DOM renderer called Burner, you can create a system of autonomous agents that appear to inhabit a natural environment.
+
+
 - Burner.Item
-    Items are Burner's root object and carry the necessary proprties to render an object:
+    Items are Burner's root object and carry the necessary properties to render an object:
       world
       name
       id
@@ -61,9 +64,31 @@
               sensitivity - The higher the sensitivity, the farther away the sensor will activate when approaching a   stimulus object.
 
           - Flora.Agent
-            Agents respond to forces like gravity, attraction, repulsion, etc. They can also chase after other Agents, organize with other Agents in a flocking behavior, and follow the mouse. They can also carry sensors tuned to specific stimuli and react with predefined or custom behaviors.
+            Agents respond to forces like gravity, attraction, repulsion, etc. They can also seek other items, organize with other Agents in a flocking behavior, and follow the mouse. They can also carry sensors tuned to specific stimuli and react with predefined or custom behaviors.
+
+            To make agents seek the mouse, simply set Agent.followMouse to true.
+              Agent.followMouse = true
+
+            To invoke an Agent's seek behavior, set Agent.seekTarget to another Flora item. When an Agent seeks another item, it tries to arrive at that item's location without over shooting it.
+              Agent.seekTarget = {Flora.Agent}
+
+            It's likely your Agents will need to organize or at least try to avoid each other. To invoke a flocking behavior, set Agent.flocking = true. For the flock to self-organize, set a seek target. Otherwise, leave it unset for the flock to simply try and avoid each other.
+              flocking - Set to true to invoke a flocking behavior.
+              desiredSeparation - The desired separation from other objects.
+              separateStrength - The force to apply to separating from other objects.
+              alignStrength - The force to apply to aligning with other objects.
+              cohesionStrength - The force to apply to uniting with other objects.
+
+            Use Agent.motorSpeed to give your agents a constant velocity as if they have a motor or propeller.
+              Agent.motorSpeed
+
+            To make an Agent follow a flow field, first create a FlowField and refer to it from Agent.flowField.
+              Agent.flowField
 
           //
+
+          - Flora.Walker
+            Walkers have no seeking, steering or directional behavior and just randomly explore their World. Use Walkers to create wandering objects or targets for Agents to seek. They are not affected by world properties like gravity or friction.
 
           - Flora.Attractor
             Attractors exert a gravitational on Movers. They extend Movers because they are not static and can take advantage of drag and drop.
@@ -114,8 +139,31 @@
                 perlinOffsetY
 
           - Flora.ParticleSystem
+              A Mover that creates particles during the animation loop. The default properties make the ParticleSystem's object invisibile. Other properties control how the ParticleSystem make Particles.
+                burst - The number of particles to create per burst.
+                burstRate - The number of frames between bursts. Lower values = more particles.
+                emitRadius - The ParticleSystem adds this offset to the location of the Particles it creates.
+                startColor - The starting color of the particle's palette range.
+                endColor - The ending color of the particle's palette range.
+
+              ParticleSystems also carry a map of options for Particles.
+                particleOptions = {
+                  width
+                  height
+                  lifespan
+                  borderRadius
+                  checkWorldEdges
+                  acceleration
+                  velocity
+                  location
+                  maxSpeed
+                  fade - set to true to make particle's opacity proportional to its lifespan
+                  shrink - set to true to make particle's size proportional to its lifespan
+                };
 
           - Flora.Particle
+              A Mover created from the ParticleSystem's step function. Particle's only difference from default Movers is their option to fade in opacity and size as they approach the limit of their lifespan.
 
-
+          - Flora.FlowField
+              A FlowField is a two-dimensional array of vectors used to influence Agents. Use FlowFields to create flocks of agents. When you create Agent flocks by setting Agent.flocking to true, the agents each iterate over all the other agents to compute the force to apply. FlowFields avoid this computational overhead by simply referencing the FlowField array.
 

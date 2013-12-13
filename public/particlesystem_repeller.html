@@ -25,13 +25,7 @@
 
       Burner.System.init(function() {
 
-        this.add('ParticleSystem', {
-          lifespan: -1,
-          startColor: [255, 255, 255],
-          particleOptions: {
-            maxSpeed: 3
-          }
-        });
+        this.add('ParticleSystem');
 
         this.add('Repeller', {
           draggable: true,

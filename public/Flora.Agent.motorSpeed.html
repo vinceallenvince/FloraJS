@@ -12,23 +12,46 @@
   <title>FloraJS | Simulate natural systems with JavaScript</title>
   <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Burner.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
+      var getRandomNumber = Flora.Utils.getRandomNumber;
+
       var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(0, 2),
+        gravity: new Burner.Vector(),
         c: 0
       });
 
+      var i, totalGroupA = 10,
+          totalGroupB = 5;
+
       Burner.System.init(function() {
 
-        this.add('ParticleSystem');
+        var walkerGroupA = this.add('Walker');
+
+        for (i = 0; i < totalGroupA; i ++) {
+          this.add('Agent', {
+            velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+            flocking: true,
+            seekTarget: walkerGroupA
+          });
+        }
+
+        var walkerGroupB = this.add('Walker');
+
+        for (i = 0; i < totalGroupB; i ++) {
+          this.add('Agent', {
+            velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+            flocking: true,
+            seekTarget: walkerGroupB
+          });
+        }
 
         this.add('Caption', {
-          text: 'Simple',
+          text: 'Flora.Agent: Flocking',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -39,7 +62,6 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
       }, world);
     </script>
   </body>

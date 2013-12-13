@@ -64,7 +64,6 @@ RangeDisplay.prototype.step = function() {
       this.sensor.parent.minSpeed, this.sensor.parent.maxSpeed,
       this.maxAngularVelocity, this.minAngularVelocity);
 
-  this.angle += angularVelocity;
   if (this.sensor.activated) {
     this.opacity = this.maxOpacity;
     this.borderColor = this.sensor.target.color;

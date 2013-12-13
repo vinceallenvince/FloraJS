@@ -77,9 +77,9 @@ Agent.prototype.init = function(opt_options) {
   this.separateSumForceVector = new Burner.Vector(); // used in Agent.separate()
   this.alignSumForceVector = new Burner.Vector(); // used in Agent.align()
   this.cohesionSumForceVector = new Burner.Vector(); // used in Agent.cohesion()
-  this.followTargetVector = new Burner.Vector(); // used in Agent.applyForces()
+  this.followTargetVector = new Burner.Vector(); // used in Agent.applyAdditionalForces()
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
-  this.motorDir = new Burner.Vector(); // used in Agent.applyForces()
+  this.motorDir = new Burner.Vector(); // used in Agent.applyAdditionalForces()
 
   Burner.System.updateCache(this);
 };
@@ -89,7 +89,7 @@ Agent.prototype.init = function(opt_options) {
  *
  * @returns {Object} This object's acceleration vector.
  */
-Agent.prototype.applyForces = function() {
+Agent.prototype.applyAdditionalForces = function() {
 
   var i, max, sensorActivated, sensor, r, theta, x, y;
   if (this.sensors.length > 0) { // Sensors

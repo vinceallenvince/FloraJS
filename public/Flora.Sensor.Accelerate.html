@@ -12,18 +12,44 @@
   <title>FloraJS | Simulate natural systems with JavaScript</title>
   <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Burner.js" type="text/javascript" charset="utf-8"></script>
   <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0
+      });
+
       Burner.System.init(function() {
 
-        this.add('Point');
+        this.add('Agent', {
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          location: new Burner.Vector(world.width * 0.4, 0),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'ACCELERATE'
+            })
+          ]
+        }, world);
+
+        this.add('Stimulus', {
+          type: 'heat',
+          draggable: true
+        });
 
         this.add('Caption', {
-          text: 'Point',
+          text: 'Flora.Sensor: ACCELERATE',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -34,7 +60,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-      });
+      }, world);
     </script>
   </body>
 </html>
