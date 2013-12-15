@@ -1,4 +1,4 @@
-/*! Flora v3.0.0 - 2013-12-13 09:12:52 
+/*! Flora v3.0.0 - 2013-12-13 10:12:14 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -2066,6 +2066,7 @@ Utils.extend(Sensor, Mover);
  * @param {number} [opt_options.borderWidth = 2] Border width.
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
+ * @param {Function} [opt_options.onConsume] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
  */
 Sensor.prototype.init = function(opt_options) {
 
@@ -2085,8 +2086,9 @@ Sensor.prototype.init = function(opt_options) {
   this.activatedColor = options.activatedColor || [255, 255, 255];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
-  this.borderStyle = 'solid';
-  this.borderColor = [255, 255, 255];
+  this.borderStyle = options.borderStyle || 'solid';
+  this.borderColor = options.borderColor || [255, 255, 255];
+  this.onConsume = options.onConsume || null;
 
   this.activationLocation = new Burner.Vector();
   this._force = new Burner.Vector(); // used as a cache Vector
@@ -2189,17 +2191,9 @@ Sensor.prototype.getBehavior = function() {
               }
               sensor.parent[target.type + 'Level'] += 1;
             } else {
-              // check if target has sensors
-              for (i = target.sensors.length - 1; i >= 0; i--) {
-                if (target.sensors[i].displayRange) {
-                  var rangeDisplays = Burner.System.getAllItemsByName('RangeDisplay');
-                  for (j = rangeDisplays.length - 1; j >= 0; j--) {
-                    if (rangeDisplays[j].sensor.id === target.sensors[i].id) {
-                      Burner.System.destroyItem(rangeDisplays[j]);
-                    }
-                  }
-                }
-                Burner.System.destroyItem(target.sensors[i]);
+              if (sensor.onConsume && !target.consumed) {
+                target.consumed = true;
+                sensor.onConsume.call(this, sensor, target);
               }
               Burner.System.destroyItem(target);
               return;
