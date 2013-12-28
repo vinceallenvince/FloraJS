@@ -1,4 +1,4 @@
-/*! Flora v3.0.0 - 2013-12-13 10:12:14 
+/*! Flora v3.0.0 - 2013-12-28 09:12:06 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -1518,6 +1518,40 @@ Mover.prototype.step = function() {
   }
 };
 
+/**
+ * Checks if object is within range of a world edge. If so, steers the object
+ * in the opposite direction.
+ * @private
+ */
+Mover.prototype._checkAvoidEdges = function() {
+
+  var maxSpeed, desiredVelocity;
+
+  if (this.location.x < this.avoidWorldEdgesStrength) {
+    maxSpeed = this.maxSpeed;
+  } else if (this.location.x > this.world.bounds[1] - this.avoidWorldEdgesStrength) {
+    maxSpeed = -this.maxSpeed;
+  }
+  if (maxSpeed) {
+    desiredVelocity = new Burner.Vector(maxSpeed, this.velocity.y);
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    this.applyForce(desiredVelocity);
+  }
+
+  if (this.location.y < this.avoidWorldEdgesStrength) {
+    maxSpeed = this.maxSpeed;
+  } else if (this.location.y > this.world.bounds[2] - this.avoidWorldEdgesStrength) {
+    maxSpeed = -this.maxSpeed;
+  }
+  if (maxSpeed) {
+    desiredVelocity = new Burner.Vector(this.velocity.x, maxSpeed);
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    this.applyForce(desiredVelocity);
+  }
+};
+
 exports.Mover = Mover;
 
 /**
@@ -1559,6 +1593,10 @@ Utils.extend(Agent, Mover);
  * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
  * @param {number} [opt_options.borderRadius = 0] Border radius.
  */
+ /*@param {boolean} [opt_options.avoidWorldEdges = false] If set to true, object steers away from
+ *    world boundaries.
+ * @param {number} [opt_options.avoidWorldEdgesStrength = 0] The distance threshold for object
+ *    start steering away from world boundaries.*/
 Agent.prototype.init = function(opt_options) {
 
   var i, max, options = opt_options || {};
@@ -1602,6 +1640,12 @@ Agent.prototype.init = function(opt_options) {
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
   this.motorDir = new Burner.Vector(); // used in Agent.applyAdditionalForces()
 
+  //
+  
+  /*this.avoidWorldEdges = !!options.avoidWorldEdges;
+  this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
+      50 : options.avoidWorldEdgesStrength;*/
+  
   Burner.System.updateCache(this);
 };
 
@@ -1698,6 +1742,10 @@ Agent.prototype.applyAdditionalForces = function() {
     this.flock(Burner.System.getAllItemsByName(this.name));
   }
 
+  if (this.avoidWorldEdges) {
+    this._checkAvoidEdges();
+  }
+  
   return this.acceleration;
 };
 
@@ -1961,10 +2009,6 @@ Utils.extend(Walker, Mover);
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
  * @param {string|Array} [opt_options.borderColor = 255, 255, 255] Border color.
  * @param {string} [opt_options.borderRadius = 100] Border radius.
- * @param {boolean} [opt_options.avoidWorldEdges = false] If set to true, object steers away from
- *    world boundaries.
- * @param {number} [opt_options.avoidWorldEdgesStrength = 0] The distance threshold for object
- *    start steering away from world boundaries.
  */
 Walker.prototype.init = function(opt_options) {
 
@@ -1987,9 +2031,8 @@ Walker.prototype.init = function(opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  this.avoidWorldEdges = !!options.avoidWorldEdges;
-  this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
-      50 : options.avoidWorldEdgesStrength;
+  
+  this._randomVector = new Burner.Vector();
 };
 
 /**
@@ -2013,15 +2056,14 @@ Walker.prototype.applyAdditionalForces = function() {
       this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
     }
 
-  } else if (this.random) {
-    this.seekTarget = { // find a random point and steer toward it
-      location: Burner.Vector.VectorAdd(this.location, new Burner.Vector(Utils.getRandomNumber(-this.randomRadius, this.randomRadius), Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
-    };
-    this.applyForce(this._seek(this.seekTarget));
-  }
-
-  if (this.avoidWorldEdges) {
-    this._checkAvoidEdges();
+  } else {
+    // point to a random angle and move toward it
+    this._randomVector.x = 1;
+    this._randomVector.y = 1;
+    this._randomVector.normalize();
+    this._randomVector.rotate(Utils.degreesToRadians(Utils.getRandomNumber(0, 359)));
+    this._randomVector.mult(this.maxSpeed);
+    this.applyForce(this._randomVector);
   }
 };
 
@@ -2133,7 +2175,7 @@ Sensor.prototype.step = function() {
         }
 
         if (this.displayConnector && this.connector && this.connector.parentB !== this.target) {
-          this.connector.parentB = this.target
+          this.connector.parentB = this.target;
         }
 
         check = true;
@@ -2208,7 +2250,7 @@ Sensor.prototype.getBehavior = function() {
               target.boxShadowSpread *= 0.95;
             }
          }
-      }
+      };
 
     case 'DESTROY':
       return function(sensor, target) {
@@ -2227,7 +2269,7 @@ Sensor.prototype.getBehavior = function() {
             });
             Burner.System.destroyItem(target);
          }
-      }
+      };
 
     case 'LIKES':
       return function(sensor, target) {
@@ -2244,7 +2286,7 @@ Sensor.prototype.getBehavior = function() {
         desiredVelocity.limit(this.maxSteeringForce);
 
         return desiredVelocity;
-      }
+      };
 
     case 'COWARD':
       return function(sensor, target) {
@@ -2264,7 +2306,7 @@ Sensor.prototype.getBehavior = function() {
         desiredVelocity.limit(this.maxSteeringForce);
 
         return desiredVelocity;
-      }
+      };
 
     case 'AGGRESSIVE':
       return function(sensor, target) {
@@ -2301,7 +2343,7 @@ Sensor.prototype.getBehavior = function() {
 
         return desiredVelocity;
 
-      }
+      };
 
     case 'CURIOUS':
       return function(sensor, target) {
@@ -2353,7 +2395,7 @@ Sensor.prototype.getBehavior = function() {
         desiredVelocity.limit(this.maxSteeringForce);
 
         return desiredVelocity;
-      }
+      };
 
     case 'EXPLORER':
       return function(sensor, target) {
@@ -2398,7 +2440,7 @@ Sensor.prototype.getBehavior = function() {
 
         return desiredVelocity;
 
-      }
+      };
 
     case 'LOVES':
       return function(sensor, target) {
@@ -2437,7 +2479,7 @@ Sensor.prototype.getBehavior = function() {
         this.acceleration.x = 0;
         this.acceleration.y = 0;
 
-      }
+      };
 
     case 'ACCELERATE':
       return function(sensor, target) {
@@ -2450,7 +2492,7 @@ Sensor.prototype.getBehavior = function() {
         this._force.x = this.velocity.x;
         this._force.y = this.velocity.y;
         return this._force.mult(0.25);
-      }
+      };
 
     case 'DECELERATE':
       return function(sensor, target) {
@@ -2463,7 +2505,7 @@ Sensor.prototype.getBehavior = function() {
         this._force.x = this.velocity.x;
         this._force.y = this.velocity.y;
         return this._force.mult(-0.25);
-      }
+      };
   }
 
 };

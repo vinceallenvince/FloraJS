@@ -38,6 +38,10 @@ Utils.extend(Agent, Mover);
  * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
  * @param {number} [opt_options.borderRadius = 0] Border radius.
  */
+ /*@param {boolean} [opt_options.avoidWorldEdges = false] If set to true, object steers away from
+ *    world boundaries.
+ * @param {number} [opt_options.avoidWorldEdgesStrength = 0] The distance threshold for object
+ *    start steering away from world boundaries.*/
 Agent.prototype.init = function(opt_options) {
 
   var i, max, options = opt_options || {};
@@ -81,6 +85,12 @@ Agent.prototype.init = function(opt_options) {
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
   this.motorDir = new Burner.Vector(); // used in Agent.applyAdditionalForces()
 
+  //
+  
+  /*this.avoidWorldEdges = !!options.avoidWorldEdges;
+  this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
+      50 : options.avoidWorldEdgesStrength;*/
+  
   Burner.System.updateCache(this);
 };
 
@@ -177,6 +187,10 @@ Agent.prototype.applyAdditionalForces = function() {
     this.flock(Burner.System.getAllItemsByName(this.name));
   }
 
+  if (this.avoidWorldEdges) {
+    this._checkAvoidEdges();
+  }
+  
   return this.acceleration;
 };
 

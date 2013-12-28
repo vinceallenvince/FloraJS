@@ -18,40 +18,37 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var getRandomNumber = Flora.Utils.getRandomNumber;
-
       var world = new Burner.World(document.body, {
         gravity: new Burner.Vector(),
         c: 0
       });
-
-      var i, totalGroupA = 10,
-          totalGroupB = 5;
-
       Burner.System.init(function() {
 
-        var walkerGroupA = this.add('Walker');
+        this.add('Agent', {
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          location: new Burner.Vector(world.width * 0.5, 0),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'ACCELERATE'
+            })
+          ]
+        }, world);
 
-        for (i = 0; i < totalGroupA; i ++) {
-          this.add('Agent', {
-            velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
-            flocking: true,
-            seekTarget: walkerGroupA
-          });
-        }
-
-        var walkerGroupB = this.add('Walker');
-
-        for (i = 0; i < totalGroupB; i ++) {
-          this.add('Agent', {
-            velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
-            flocking: true,
-            seekTarget: walkerGroupB
-          });
-        }
-
+        this.add('Stimulus', {
+          type: 'heat',
+          draggable: true
+        });
+          
         this.add('Caption', {
-          text: 'Flora.Agent: Flocking',
+          text: 'Flora.Agent: motorSpeed',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

@@ -300,3 +300,37 @@ Mover.prototype.step = function() {
     this.afterStep.apply(this);
   }
 };
+
+/**
+ * Checks if object is within range of a world edge. If so, steers the object
+ * in the opposite direction.
+ * @private
+ */
+Mover.prototype._checkAvoidEdges = function() {
+
+  var maxSpeed, desiredVelocity;
+
+  if (this.location.x < this.avoidWorldEdgesStrength) {
+    maxSpeed = this.maxSpeed;
+  } else if (this.location.x > this.world.bounds[1] - this.avoidWorldEdgesStrength) {
+    maxSpeed = -this.maxSpeed;
+  }
+  if (maxSpeed) {
+    desiredVelocity = new Burner.Vector(maxSpeed, this.velocity.y);
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    this.applyForce(desiredVelocity);
+  }
+
+  if (this.location.y < this.avoidWorldEdgesStrength) {
+    maxSpeed = this.maxSpeed;
+  } else if (this.location.y > this.world.bounds[2] - this.avoidWorldEdgesStrength) {
+    maxSpeed = -this.maxSpeed;
+  }
+  if (maxSpeed) {
+    desiredVelocity = new Burner.Vector(this.velocity.x, maxSpeed);
+    desiredVelocity.sub(this.velocity);
+    desiredVelocity.limit(this.maxSteeringForce);
+    this.applyForce(desiredVelocity);
+  }
+};
