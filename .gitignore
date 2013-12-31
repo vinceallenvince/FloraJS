@@ -1,6 +1,7 @@
 #### FOLDERS ####
 node_modules
 reports
+doc
 
 #### FILES ####
 *.DS_Store
