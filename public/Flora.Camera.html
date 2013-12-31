@@ -63,40 +63,96 @@
         }
       });
 
-      this.add('Liquid', {
+      this.add('Dragger', {
         location: function () {
           return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
         }
       });
 
-      this.add('Liquid', {
+      this.add('Dragger', {
         location: function () {
           return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
         }
       });
 
       for (var i = 0; i < 5; i ++) {
+        
+        var controlCamera = !i;
 
-        this.add('Agent', {
-          sensors: [
-            this.add('Sensor', {
-              type: 'heat',
-              behavior: 'COWARD'
-            }),
-           this.add('Sensor', {
-              type: 'cold',
-              behavior: 'ACCELERATE'
-            })
-          ],
-          velocity: new Burner.Vector(Flora.Utils.getRandomNumber(-1, 1, true),
-              Flora.Utils.getRandomNumber(-1, 1, true)),
-          minSpeed: 1,
-          mass: 10,
-          motorSpeed: 4,
-          wrapWorldEdges: true,
-          controlCamera: !i,
-          color: !i ? [255, 100, 0] : [197, 177, 115]
-        });
+          var loc = new Burner.Vector(world.width * 0.5, world.height * 0.5);
+          var offset = new Burner.Vector(1, 1);
+          offset.normalize();
+          offset.rotate(Flora.Utils.degreesToRadians(Flora.Utils.getRandomNumber(0, 359, true)));
+          offset.mult(30);
+          loc.add(offset);
+
+          var angle = Flora.Utils.getRandomNumber(0, 359, true);
+          var acceleration = new Burner.Vector(1, 0);
+          acceleration.rotate(Flora.Utils.degreesToRadians(angle));
+          acceleration.normalize();
+          acceleration.mult(20);
+        
+          // create FISH
+          var fish = this.add('Agent', {
+            name: 'fish',
+            width: 16,
+            height: 16,
+            color: controlCamera ? [255, 255, 255] : [255, 100, 0],
+            location: loc,
+            angle: angle,
+            controlCamera: controlCamera,
+            eyeRotation: 0,
+            borderWidth: 2,
+            borderStyle: 'solid',
+            borderColor: controlCamera ? [255, 100, 0] : [197, 177, 115],
+            acceleration: acceleration,
+            motorSpeed: 4,
+            wrapWorldEdges: true,
+            maxSpeed: 2,
+            createFlag: 0,
+            beforeStep: function() {
+              /*if (Flora.Utils.getRandomNumber(1, 100) === 1) {
+                var a = new Burner.Vector(1, 0);
+                a.rotate(Flora.Utils.degreesToRadians(this.angle));
+                a.normalize();
+                a.mult(20);
+                this.acceleration.add(a);
+              }*/
+
+              var eye = this.eye;
+
+              if (eye) {
+                eye.style.webkitTransform = 'rotate(' + this.eyeRotation + 'deg)';
+                this.eyeRotation += Flora.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 3, 30);
+              }
+            },
+            sensors: [
+              this.add('Sensor', {
+                type: 'heat',
+                behavior: 'EXPLORER',
+                displayConnector: true
+              }),
+              this.add('Sensor', {
+                type: 'cold',
+                behavior: 'ACCELERATE',
+                displayConnector: true
+              })
+            ]
+          });
+        
+          var eye = document.createElement('div');
+          eye.id = 'eye-' + fish.id;
+          eye.className = 'eye';
+          eye.style.position = 'absolute';
+          eye.style.top = '5px';
+          eye.style.left = '2px';
+          eye.style.width = '8px';
+          eye.style.height = '2px';
+          eye.style.background = controlCamera ? 'rgb(200, 200, 200)' : 'rgb(255, 255, 255)';
+          eye.style.opacity = 1;
+          fish.el.appendChild(eye);
+          fish.eye = eye;
+            
       }
 
       //

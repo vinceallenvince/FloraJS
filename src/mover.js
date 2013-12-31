@@ -18,11 +18,7 @@ Utils.extend(Mover, Burner.Item);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.width = 10] Width
- * @param {number} [opt_options.height = 10] Height
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
- * @param {number} [opt_options.motorSpeed = 2] Motor speed
- * @param {number} [opt_options.angle = 0] Angle
  * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
  * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
  * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
@@ -33,12 +29,7 @@ Utils.extend(Mover, Burner.Item);
  * @param {function} [opt_options.afterStep = null] A function to run after the step() function.
  */
 Mover.prototype.init = function(options) {
-
-  this.width = typeof options.width === 'undefined' ? 20 : options.width;
-  this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [255, 255, 255];
-  this.motorSpeed = options.motorSpeed || 0;
-  this.angle = options.angle || 0;
   this.pointToDirection = typeof options.pointToDirection === 'undefined' ? true : options.pointToDirection;
   this.draggable = !!options.draggable;
   this.parent = options.parent || null;
@@ -204,6 +195,10 @@ Mover.prototype.step = function() {
 
   var friction, r, theta, x, y;
 
+  var i, max, attractors = Burner.System._caches.Attractor,
+      repellers = Burner.System._caches.Repeller,
+      draggers = Burner.System._caches.Dragger;
+
   if (this.beforeStep) {
     this.beforeStep.apply(this);
   }
@@ -221,8 +216,32 @@ Mover.prototype.step = function() {
     }
     this.applyForce(this.world.gravity); // gravity
 
-    if (this.applyForces) { // !! rename this
-      this.applyForces();
+    if (attractors && attractors.list.length > 0) { // attractor
+      for (i = 0, max = attractors.list.length; i < max; i += 1) {
+        if (this.id !== attractors.list[i].id) {
+          this.applyForce(attractors.list[i].attract(this));
+        }
+      }
+    }
+
+    if (repellers && repellers.list.length > 0) { // repeller
+      for (i = 0, max = repellers.list.length; i < max; i += 1) {
+        if (this.id !== repellers.list[i].id) {
+          this.applyForce(repellers.list[i].attract(this));
+        }
+      }
+    }
+
+    if (draggers && draggers.list.length > 0) { // liquid
+      for (i = 0, max = draggers.list.length; i < max; i += 1) {
+        if (this.id !== draggers.list[i].id && Utils.isInside(this, draggers.list[i])) {
+          this.applyForce(draggers.list[i].drag(this));
+        }
+      }
+    }
+
+    if (this.applyAdditionalForces) { // !! rename this
+      this.applyAdditionalForces();
     }
 
     // end apply forces
@@ -283,34 +302,6 @@ Mover.prototype.step = function() {
 };
 
 /**
- * Calculates a steering force to apply to an object seeking another object.
- *
- * @param {Object} target The object to seek.
- * @returns {Object} The force to apply.
- * @private
- */
-Mover.prototype._seek = function(target) {
-
-  var world = this.world,
-    desiredVelocity = Burner.Vector.VectorSub(target.location, this.location),
-    distanceToTarget = desiredVelocity.mag();
-
-  desiredVelocity.normalize();
-
-  if (distanceToTarget < world.bounds[1] / 2) { // slow down to arrive at target
-    var m = Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
-    desiredVelocity.mult(m);
-  } else {
-    desiredVelocity.mult(this.maxSpeed);
-  }
-
-  desiredVelocity.sub(this.velocity);
-  desiredVelocity.limit(this.maxSteeringForce);
-
-  return desiredVelocity;
-};
-
-/**
  * Checks if object is within range of a world edge. If so, steers the object
  * in the opposite direction.
  * @private
@@ -342,61 +333,4 @@ Mover.prototype._checkAvoidEdges = function() {
     desiredVelocity.limit(this.maxSteeringForce);
     this.applyForce(desiredVelocity);
   }
-};
-
-/**
- * Calculates a force to apply to simulate drag on an object.
- *
- * @param {Object} target The object that is applying the drag force.
- * @returns {Object} A force to apply.
- */
-Mover.prototype.drag = function(target) {
-
-  var speed = this.velocity.mag(),
-    dragMagnitude = -1 * target.c * speed * speed, // drag magnitude
-    drag = Utils.clone(this.velocity);
-
-  drag.normalize(); // drag direction
-  drag.mult(dragMagnitude);
-
-  return drag;
-};
-
-/**
- * Calculates a force to apply to simulate attraction on an object.
- *
- * @param {Object} attractor The attracting object.
- * @returns {Object} A force to apply.
- */
-Mover.prototype.attract = function(attractor) {
-
-  var force = Burner.Vector.VectorSub(attractor.location, this.location),
-    distance, strength;
-
-  distance = force.mag();
-  distance = Utils.constrain(distance, this.width * this.height, attractor.width * attractor.height); // min = scale/8 (totally arbitrary); max = scale; the size of the attractor
-  force.normalize();
-  strength = (attractor.G * attractor.mass * this.mass) / (distance * distance);
-  force.mult(strength);
-
-  return force;
-};
-
-/**
- * Determines if this object is inside another.
- *
- * @param {Object} container The containing object.
- * @returns {boolean} Returns true if the object is inside the container.
- */
-Mover.prototype.isInside = function(container) {
-
-  if (container) {
-    if (this.location.x + this.width / 2 > container.location.x - container.width / 2 &&
-      this.location.x - this.width / 2 < container.location.x + container.width / 2 &&
-      this.location.y + this.height / 2 > container.location.y - container.height / 2 &&
-      this.location.y - this.height / 2 < container.location.y + container.height / 2) {
-      return true;
-    }
-  }
-  return false;
 };

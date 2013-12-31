@@ -18,28 +18,56 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
+      var getRandomNumber = Flora.Utils.getRandomNumber;
+
       var world = new Burner.World(document.body, {
         gravity: new Burner.Vector(),
         c: 0
       });
 
+      var i, totalGroupA = 10,
+          totalGroupB = 5;
+
       Burner.System.init(function() {
 
-        var getRandomNumber = Flora.Utils.getRandomNumber,
-            stimuli = ['Cold', 'Food', 'Heat', 'Light', 'Oxygen'];
+        var walkerA = this.add('Walker');
 
-        for (var i = 0, max = stimuli.length; i < max; i++) {
-          this.add('Stimulus', {
-            type: stimuli[i],
-            draggable: true,
-            location: function () {
-              return new Burner.Vector(getRandomNumber(0, this.world.width), getRandomNumber(0, this.world.height));
-            }
-          });
-        }
+        this.add('Agent', {
+          velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+          seekTarget: walkerA
+        });
+
+        var walkerB = this.add('Walker');
+
+        this.add('Agent', {
+          width: 15,
+          height: 15,
+          velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+          seekTarget: walkerB
+        });
+
+
+        var walkerC = this.add('Walker');
+
+        var agentA = this.add('Agent', {
+          width: 20,
+          height: 20,
+          color: [255, 100, 0],
+          velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+          seekTarget: walkerC
+        });
+
+        var agentB = this.add('Agent', {
+          width: 20,
+          height: 20,
+          color: [0, 100, 255],
+          velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+          seekTarget: agentA
+        });
+
 
         this.add('Caption', {
-          text: 'Stimulus',
+          text: 'Flora.Agent.SeekTarget',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -50,7 +78,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-      });
+      }, world);
     </script>
   </body>
 </html>

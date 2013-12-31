@@ -3,16 +3,16 @@
  * Creates a new Particle.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Particle(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Particle';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Particle, Agent);
+Utils.extend(Particle, Mover);
 
 /**
  * Initializes an instance.
@@ -44,17 +44,17 @@ Particle.prototype.init = function(opt_options) {
   this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.lifespan = typeof options.lifespan === 'undefined' ? 50 : options.lifespan;
   this.life = options.life || 0;
-  this.fade = typeof options.fade === 'undefined' ? true : false;
-  this.shrink = typeof options.shrink === 'undefined' ? true : false;
+  this.fade = typeof options.fade === 'undefined' ? true : options.fade;
+  this.shrink = typeof options.shrink === 'undefined' ? true : options.shrink;
   this.checkWorldEdges = !!options.checkWorldEdges;
-  this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 4 : 0;
-  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : 0;
+  this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 4 : options.maxSpeed;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
   this.color = options.color || [200, 200, 200];
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : 0;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || 'transparent';
-  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : 0;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : 0;
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || 'transparent';
   if (!options.acceleration) {
     this.acceleration = new Burner.Vector(1, 1);
@@ -70,46 +70,9 @@ Particle.prototype.init = function(opt_options) {
 };
 
 /**
- * Calculates location via sum of acceleration + velocity.
- *
- * @returns {number} The total number of times step has been executed.
+ * Applies additional forces.
  */
-Particle.prototype.step = function() {
-
-  var friction;
-
-  // start apply forces
-
-  if (this.world.c) { // friction
-    friction = Utils.clone(this.velocity);
-    friction.mult(-1);
-    friction.normalize();
-    friction.mult(this.world.c);
-    this.applyForce(friction);
-  }
-  this.applyForce(this.world.gravity); // gravity
-
-    if (this.applyForces) { // !! rename this
-      this.applyForces();
-    }
-
-  if (this.checkEdges) {
-    this._checkWorldEdges();
-  }
-
-  // end apply forces
-
-  this.velocity.add(this.acceleration); // add acceleration
-
-  if (this.maxSpeed) {
-    this.velocity.limit(this.maxSpeed); // check if velocity > maxSpeed
-  }
-
-  if (this.minSpeed) {
-    this.velocity.limit(null, this.minSpeed); // check if velocity < minSpeed
-  }
-
-  this.location.add(this.velocity); // add velocity
+Particle.prototype.applyAdditionalForces = function() {
 
   if (this.fade) {
     this.opacity = Utils.map(this.life, 0, this.lifespan, 1, 0);
@@ -119,13 +82,4 @@ Particle.prototype.step = function() {
     this.width = Utils.map(this.life, 0, this.lifespan, this.initWidth, 0);
     this.height = Utils.map(this.life, 0, this.lifespan, this.initHeight, 0);
   }
-
-  this.acceleration.mult(0);
-
-  if (this.life < this.lifespan) {
-    this.life += 1;
-  } else if (this.lifespan !== -1) {
-    Burner.System.destroyItem(this);
-  }
-
 };

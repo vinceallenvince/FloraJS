@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      var palette = new Flora.ColorPalette();
+      palette.addColor({
+        min: 12,
+        max: 24,
+        startColor: [196, 213, 86],
+        endColor: [166, 183, 56]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [56, 139, 126],
+        endColor: [26, 109, 96]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [104, 233, 212],
+        endColor: [74, 203, 182]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [233, 158, 104],
+        endColor: [203, 128, 74]
+      }).addColor({
+        min: 12,
+        max: 24,
+        startColor: [191, 75, 49],
+        endColor: [171, 55, 19]
+      });
+
+      Burner.System.init(function() {
+
+        var world = Burner.System.firstWorld();
+
+        var maxOscillators = 56;
+        var minSize = 1;
+
+        for (var i = 0; i < maxOscillators; i++) {
+
+          var amp = new Burner.Vector(1, 1);
+          amp.normalize();
+          amp.rotate(Flora.Utils.degreesToRadians(i * 10));
+          amp.mult(i * 5);
+
+          var scale = Flora.Utils.map(i, 0, maxOscillators, 1, 100);
+
+          this.add('Oscillator', {
+            width: minSize * scale,
+            height: minSize * scale,
+            opacity: Flora.Utils.map(i, 0, maxOscillators, 1, .5),
+            color: palette.getColor(),
+            borderWidth: 3,
+            borderColor: palette.getColor(),
+            amplitude: amp,
+            acceleration: new Burner.Vector(Flora.Utils.map(i, 0, maxOscillators, 0, 0.05),
+              Flora.Utils.map(i, 0, maxOscillators, 0, 0.025)),
+            aVelocity: new Burner.Vector(Flora.Utils.map(i, 0, maxOscillators, 0, 1),
+                Flora.Utils.map(i, 0, maxOscillators, 0, 1))
+          });
+
+        }
+
+        this.add('Caption', {
+          text: 'Flora.Oscillator',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+      });
+    </script>
+  </body>
+</html>

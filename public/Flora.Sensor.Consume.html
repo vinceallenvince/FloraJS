@@ -18,12 +18,47 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0
+      });
+
       Burner.System.init(function() {
 
-        this.add('Walker');
+        this.add('Agent', {
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 5,
+          width: 20,
+          height: 20,
+          location: new Burner.Vector(world.width * 0.4, 0),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'LIKES'
+            }),
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'CONSUME',
+              onConsume: function(sensor, target) {
+                console.log('I\'m full!');
+              }
+            })            
+          ]
+        }, world);
+
+        this.add('Stimulus', {
+          type: 'heat',
+          draggable: true
+        });
 
         this.add('Caption', {
-          text: 'Walker',
+          text: 'Flora.Sensor.Consume',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -34,7 +69,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-      });
+      }, world);
     </script>
   </body>
 </html>

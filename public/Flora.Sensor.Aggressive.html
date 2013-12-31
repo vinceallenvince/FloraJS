@@ -25,10 +25,31 @@
 
       Burner.System.init(function() {
 
-        this.add('Particle');
+        this.add('Agent', {
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          location: new Burner.Vector(world.width * 0.4, 20),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'AGGRESSIVE'
+            })
+          ]
+        });
+
+        this.add('Stimulus', {
+          type: 'heat',
+          draggable: true
+        });
 
         this.add('Caption', {
-          text: 'Simple',
+          text: 'Flora.Sensor.Aggressive',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -39,8 +60,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
-    }, world);
+      }, world);
     </script>
   </body>
 </html>

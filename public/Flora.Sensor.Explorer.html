@@ -25,27 +25,31 @@
 
       Burner.System.init(function() {
 
+        this.add('Agent', {
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          location: new Burner.Vector(world.width * 0.45, 20),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'EXPLORER'
+            })
+          ]
+        });
+
         this.add('Stimulus', {
           type: 'heat',
           draggable: true
         });
 
-        this.add('Agent', {
-          sensors: [
-            this.add('Sensor', {
-              type: 'heat',
-              behavior: 'COWARD'
-            })
-          ],
-          velocity: new Burner.Vector(1, 0.5),
-          maxSpeed: 5,
-          motorSpeed: 10
-        });
-
-        //
-
         this.add('Caption', {
-          text: 'Sensor + Stimulus: Drag the Heat into the Agent\'s path',
+          text: 'Flora.Sensor.Explorer',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

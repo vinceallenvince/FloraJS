@@ -19,18 +19,16 @@
     <script type="text/javascript" charset="utf-8">
 
       var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
+        gravity: new Burner.Vector(0, -1),
         c: 0
       });
-
+      
       Burner.System.init(function() {
 
-        this.add('Agent', {
-          seekTarget: this.add('Walker')
-        });
+        this.add('Mover');
 
         this.add('Caption', {
-          text: 'Agent seeks Walker',
+          text: 'Flora.WorldProperties',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

@@ -16,34 +16,32 @@
   <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
-  <script type="text/javascript" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
 
-    var world = new Burner.World(document.body, {
-      gravity: new Burner.Vector(),
-      c: 0
-    });
+      Burner.System.init(function() {
 
-    Burner.System.init(function() {
+        var world = Burner.System.firstWorld();
 
-      var walkerA = this.add('Point'),
-          walkerB = this.add('Walker', {width: 50, height: 50}),
-          walkerC = this.add('Walker', {width: 50, height: 50});
+        this.add('Repeller', {
+          location: new Burner.Vector(world.width * 0.75, world.height * 0.75),
+          draggable: true
+        });
 
-      this.add('Connector', {
-        parentA: walkerA,
-        parentB: walkerB
+        this.add('Mover');
+
+        this.add('Caption', {
+          text: 'Flora.Repeller',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
       });
-
-      this.add('Connector', {
-        parentA: walkerB,
-        parentB: walkerC
-      });
-
-      this.add('Connector', {
-        parentA: walkerC,
-        parentB: walkerA
-      });
-    }, world);
-  </script>
-</body>
+    </script>
+  </body>
 </html>

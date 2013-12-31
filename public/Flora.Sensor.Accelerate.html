@@ -26,15 +26,30 @@
       Burner.System.init(function() {
 
         this.add('Agent', {
-          followMouse: true
-        });
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          location: new Burner.Vector(world.width * 0.4, 0),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'ACCELERATE'
+            })
+          ]
+        }, world);
 
-        this.add('Liquid', {
+        this.add('Stimulus', {
+          type: 'heat',
           draggable: true
         });
 
         this.add('Caption', {
-          text: 'Liquid',
+          text: 'Flora.Sensor.Accelerate',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

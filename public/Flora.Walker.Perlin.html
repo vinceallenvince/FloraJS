@@ -18,37 +18,16 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
-
       Burner.System.init(function() {
 
-        this.add('ParticleSystem', {
-          lifespan: -1,
-          startColor: [255, 255, 255],
-          particleOptions: {
-            maxSpeed: 3
-          }
-        });
-
-        this.add('Attractor', {
-          draggable: true,
-          location: function () {
-            return new Burner.Vector(this.world.width / 2 - 120, this.world.height / 2 - 120);
-          }
-        });
-
-        this.add('Attractor', {
-          draggable: true,
-          location: function () {
-            return new Burner.Vector(this.world.width / 2 + 120,this.world.height / 2 + 120);
-          }
+        this.add('Walker', {
+          perlinSpeed: 0.007,
+          perlinAccelLow: -0.055,
+          perlinAccelHigh: 0.055
         });
 
         this.add('Caption', {
-          text: 'Particle System and Attractors: drag attactors to affect particle system',
+          text: 'Flora.Walker.Perlin',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -59,8 +38,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
-      }, world);
+      });
     </script>
   </body>
 </html>

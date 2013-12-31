@@ -18,19 +18,12 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
-
       Burner.System.init(function() {
 
-        this.add('Agent', {
-          followMouse: true
-        });
+        this.add('Mover');
 
         this.add('Caption', {
-          text: 'Agent follows mouse',
+          text: 'Flora.Mover',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -41,7 +34,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-      }, world);
+      });
     </script>
   </body>
 </html>
