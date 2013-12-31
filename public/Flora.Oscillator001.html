@@ -20,10 +20,17 @@
 
       Burner.System.init(function() {
 
-        this.add('ParticleSystem');
+        var world = Burner.System.firstWorld();
+
+        this.add('Oscillator', {
+          initialLocation: new Burner.Vector(world.width / 2, world.height / 2),
+          amplitude: new Burner.Vector(100, 100),
+          acceleration: new Burner.Vector(0.05, 0.05),
+          aVelocity: new Burner.Vector(0.9, 0)
+        });
 
         this.add('Caption', {
-          text: 'ParticleSystem',
+          text: 'Attractor',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

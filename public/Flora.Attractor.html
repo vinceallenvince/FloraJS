@@ -16,29 +16,21 @@
   <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
-    <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
-
-      var world = new Burner.World(document.getElementById('worldA'), {
-        boundToWindow: false,
-        width: 320,
-        height: 480,
-        color: [60, 60, 60],
-        gravity: new Burner.Vector(0, 0),
-        c: 0
-      });
 
       Burner.System.init(function() {
 
-        this.add('ParticleSystem', {
-          startColor: [255, 255, 255],
-          particleOptions: {
-            maxSpeed: 3
-          }
+        var world = Burner.System.firstWorld();
+
+        this.add('Attractor', {
+          location: new Burner.Vector(world.width * 0.35, world.height * 0.25),
+          draggable: true
         });
 
+        this.add('Mover');
+
         this.add('Caption', {
-          text: 'DOM world',
+          text: 'Flora.Attractor',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -49,8 +41,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
-      }, world);
+      });
     </script>
   </body>
 </html>

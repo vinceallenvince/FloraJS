@@ -18,17 +18,19 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(0, 2),
-        c: 0
-      });
-
       Burner.System.init(function() {
 
-        this.add('ParticleSystem');
+        var world = Burner.System.firstWorld();
+
+        this.add('Dragger', {
+          location: new Burner.Vector(world.width * 0.5, world.height * 0.75),
+          draggable: true
+        });
+
+        this.add('Mover');
 
         this.add('Caption', {
-          text: 'Simple',
+          text: 'Flora.Dragger',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
@@ -39,8 +41,7 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-
-      }, world);
+      });
     </script>
   </body>
 </html>
