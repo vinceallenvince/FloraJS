@@ -1,4 +1,4 @@
-/*! Flora v3.0.0 - 2013-12-28 09:12:06 
+/*! Flora v2.2.1 - 2013-12-31 05:12:18 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -2002,8 +2002,6 @@ Utils.extend(Walker, Mover);
  * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when perlin = true.
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
- * @param {boolean} [opt_options.random = false] Set to true for walker to move in a random direction.
- * @param {number} [opt_options.randomRadius = 100] If random = true, walker will look for a new location each frame based on this radius.
  * @param {string|Array} [opt_options.color = 255, 150, 50] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
@@ -2024,8 +2022,6 @@ Walker.prototype.init = function(opt_options) {
   this.perlinAccelHigh = typeof options.perlinAccelHigh === 'undefined' ? 0.075 : options.perlinAccelHigh;
   this.offsetX = typeof options.offsetX === 'undefined' ? Math.random() * 10000 : options.offsetX;
   this.offsetY = typeof options.offsetY === 'undefined' ? Math.random() * 10000 : options.offsetY;
-  this.random = !!options.random;
-  this.randomRadius = typeof options.randomRadius === 'undefined' ? 100 : options.randomRadius;
   this.color = options.color || [255, 150, 50];
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
