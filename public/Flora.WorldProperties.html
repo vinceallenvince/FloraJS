@@ -19,23 +19,16 @@
     <script type="text/javascript" charset="utf-8">
 
       var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
+        gravity: new Burner.Vector(0, -1),
         c: 0
       });
-
+      
       Burner.System.init(function() {
 
-        var walker = this.add('Walker');
-
-        for (var i = 0; i < 20; i++) {
-          this.add('Agent', {
-            seekTarget: walker,
-            flocking: true
-          });
-        }
+        this.add('Mover');
 
         this.add('Caption', {
-          text: 'Agents flock to walker',
+          text: 'Flora.WorldProperties',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

@@ -24,18 +24,16 @@
       });
 
       Burner.System.init(function() {
-
-        for (var i = 0; i < 10; i++) {
+        
+        for (var i = 0; i < 20; i++) {
           this.add('Agent', {
             followMouse: true,
-            flocking: true,
-            width: 20,
-            height: 15
+            flocking: true
           });
         }
 
         this.add('Caption', {
-          text: 'Agents flock to mouse',
+          text: 'Flora.Agent.FlockToMouse',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
