@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      var getRandomNumber = Flora.Utils.getRandomNumber;
+
+      Burner.System.init(function() {
+
+        var world = Burner.System.firstWorld();
+
+        this.add('Stimulus', {
+          type: 'heat',
+          location: new Burner.Vector(getRandomNumber(0, world.width), getRandomNumber(0, world.height))
+        });
+
+        this.add('Stimulus', {
+          type: 'cold',
+          location: new Burner.Vector(getRandomNumber(0, world.width * 0.25), getRandomNumber(0, world.height))
+        });
+
+        this.add('Stimulus', {
+          type: 'food',
+          location: new Burner.Vector(getRandomNumber(world.width * 0.75, world.width), getRandomNumber(0, world.height))
+        });
+
+        this.add('Stimulus', {
+          type: 'light',
+          location: new Burner.Vector(getRandomNumber(0, world.width), getRandomNumber(0, world.height * 0.25))
+        });
+
+        this.add('Stimulus', {
+          type: 'oxygen',
+          location: new Burner.Vector(getRandomNumber(0, world.width), getRandomNumber(world.height * 0.75, world.height))
+        });
+
+        this.add('Caption', {
+          text: 'Flora.Stimulus',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+      });
+    </script>
+  </body>
+</html>

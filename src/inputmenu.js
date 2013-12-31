@@ -21,6 +21,8 @@ function InputMenu(opt_options) {
 
   var me = this, options = opt_options || {}, i, max, classNames;
 
+  this.name = 'InputMenu';
+
   // if a world is not passed, use the first world in the System
   this.world = options.world || Burner.System.firstWorld();
   this.position = options.position || 'top left';

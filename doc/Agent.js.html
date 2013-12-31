@@ -58,19 +58,24 @@ Utils.extend(Agent, Mover);
  * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
  * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
  * @param {Array} [opt_options.sensors = ] A list of sensors attached to this object.
+ * @param {number} [opt_options.motorSpeed = 2] Motor speed
  * @param {Array} [opt_options.color = 197, 177, 115] Color.
  * @param {number} [opt_options.borderWidth = 0] Border width.
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
  * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
  * @param {number} [opt_options.borderRadius = 0] Border radius.
  */
+ /*@param {boolean} [opt_options.avoidWorldEdges = false] If set to true, object steers away from
+ *    world boundaries.
+ * @param {number} [opt_options.avoidWorldEdgesStrength = 0] The distance threshold for object
+ *    start steering away from world boundaries.*/
 Agent.prototype.init = function(opt_options) {
 
-  var options = opt_options || {};
+  var i, max, options = opt_options || {};
   Agent._superClass.prototype.init.call(this, options);
 
   this.followMouse = !!options.followMouse;
-  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 10 : options.maxSteeringForce;
+  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 5 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;
   this.flocking = !!options.flocking;
   this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
@@ -79,6 +84,18 @@ Agent.prototype.init = function(opt_options) {
   this.cohesionStrength = typeof options.cohesionStrength === 'undefined' ? 0.1 : options.cohesionStrength;
   this.flowField = options.flowField || null;
   this.sensors = options.sensors || [];
+  for (i = 0, max = this.sensors.length; i &lt; max; i++) {
+    this.sensors[i].parent = this;
+  }
+
+  this.motorSpeed = options.motorSpeed || 0;
+  if (!this.velocity.mag()) {
+    this.velocity.x = 1; // angle = 0;
+    this.velocity.y = 0;
+    this.velocity.normalize();
+    this.velocity.rotate(Flora.Utils.degreesToRadians(this.angle));
+    this.velocity.mult(this.motorSpeed);
+  }
 
   this.color = options.color || [197, 177, 115];
   this.borderWidth = options.borderWidth || 0;
@@ -91,8 +108,17 @@ Agent.prototype.init = function(opt_options) {
   this.separateSumForceVector = new Burner.Vector(); // used in Agent.separate()
   this.alignSumForceVector = new Burner.Vector(); // used in Agent.align()
   this.cohesionSumForceVector = new Burner.Vector(); // used in Agent.cohesion()
-  this.followTargetVector = new Burner.Vector(); // used in Agent.applyForces()
+  this.followTargetVector = new Burner.Vector(); // used in Agent.applyAdditionalForces()
   this.followDesiredVelocity = new Burner.Vector(); // used in Agent.follow()
+  this.motorDir = new Burner.Vector(); // used in Agent.applyAdditionalForces()
+
+  //
+  
+  /*this.avoidWorldEdges = !!options.avoidWorldEdges;
+  this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
+      50 : options.avoidWorldEdgesStrength;*/
+  
+  Burner.System.updateCache(this);
 };
 
 /**
@@ -100,38 +126,9 @@ Agent.prototype.init = function(opt_options) {
  *
  * @returns {Object} This object's acceleration vector.
  */
-Agent.prototype.applyForces = function() {
+Agent.prototype.applyAdditionalForces = function() {
 
-  var i, max, sensorActivated, dir, sensor, r, theta, x, y,
-      liquids = Burner.System._caches.Liquid,
-      attractors = Burner.System._caches.Attractor,
-      repellers = Burner.System._caches.Repeller,
-      heat = Burner.System._caches.Heat;
-
-  if (liquids && liquids.list.length > 0) { // liquid
-    for (i = 0, max = liquids.list.length; i &lt; max; i += 1) {
-      if (this.id !== liquids.list[i].id && Utils.isInside(this, liquids.list[i])) {
-        this.applyForce(this.drag(liquids.list[i]));
-      }
-    }
-  }
-
-  if (attractors && attractors.list.length > 0) { // attractor
-    for (i = 0, max = attractors.list.length; i &lt; max; i += 1) {
-      if (this.id !== attractors.list[i].id) {
-        this.applyForce(this.attract(attractors.list[i]));
-      }
-    }
-  }
-
-  if (repellers && repellers.list.length > 0) { // repeller
-    for (i = 0, max = repellers.list.length; i &lt; max; i += 1) {
-      if (this.id !== repellers.list[i].id) {
-        this.applyForce(this.attract(repellers.list[i]));
-      }
-    }
-  }
-
+  var i, max, sensorActivated, sensor, r, theta, x, y;
   if (this.sensors.length > 0) { // Sensors
     for (i = 0, max = this.sensors.length; i &lt; max; i += 1) {
 
@@ -151,7 +148,11 @@ Agent.prototype.applyForces = function() {
       }
 
       if (sensor.activated) {
-        this.applyForce(sensor.getActivationForce(this));
+        if (typeof sensor.behavior === 'function') {
+          this.applyForce(sensor.behavior.call(this, sensor, sensor.target));
+        } else {
+          this.applyForce(sensor.getBehavior().call(this, sensor, sensor.target));
+        }
         sensorActivated = true;
       }
 
@@ -163,14 +164,15 @@ Agent.prototype.applyForces = function() {
    * apply a force in the direction of the current velocity.
    */
   if (!sensorActivated && this.motorSpeed) {
-    dir = Utils.clone(this.velocity);
-    dir.normalize();
+    this.motorDir.x = this.velocity.x;
+    this.motorDir.y = this.velocity.y;
+    this.motorDir.normalize();
     if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
-      dir.mult(-this.motorSpeed);
+      this.motorDir.mult(-this.motorSpeed);
     } else {
-      dir.mult(this.motorSpeed);
+      this.motorDir.mult(this.motorSpeed);
     }
-    this.applyForce(dir); // constantly applies a force
+    this.applyForce(this.motorDir); // constantly applies a force
   }
 
   if (this.followMouse && !Burner.System.supportedFeatures.touch) { // follow mouse
@@ -209,10 +211,42 @@ Agent.prototype.applyForces = function() {
   }
 
   if (this.flocking) {
-    this.flock(Burner.System.getAllItemsByName('Agent'));
+    this.flock(Burner.System.getAllItemsByName(this.name));
   }
 
+  if (this.avoidWorldEdges) {
+    this._checkAvoidEdges();
+  }
+  
   return this.acceleration;
+};
+
+/**
+ * Calculates a steering force to apply to an object seeking another object.
+ *
+ * @param {Object} target The object to seek.
+ * @returns {Object} The force to apply.
+ * @private
+ */
+Agent.prototype._seek = function(target) {
+
+  var world = this.world,
+    desiredVelocity = Burner.Vector.VectorSub(target.location, this.location),
+    distanceToTarget = desiredVelocity.mag();
+
+  desiredVelocity.normalize();
+
+  if (distanceToTarget &lt; world.bounds[1] / 2) { // slow down to arrive at target
+    var m = Utils.map(distanceToTarget, 0, world.bounds[1] / 2, 0, this.maxSpeed);
+    desiredVelocity.mult(m);
+  } else {
+    desiredVelocity.mult(this.maxSpeed);
+  }
+
+  desiredVelocity.sub(this.velocity);
+  desiredVelocity.limit(this.maxSteeringForce);
+
+  return desiredVelocity;
 };
 
 /**
@@ -415,13 +449,13 @@ Agent.prototype.getVelocity = function (type) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="BorderPalette.html">BorderPalette</a></li><li><a href="Caption.html">Caption</a></li><li><a href="ColorPalette.html">ColorPalette</a></li><li><a href="ColorTable.html">ColorTable</a></li><li><a href="Connector.html">Connector</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Liquid.html">Liquid</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="Config.html">Config</a></li><li><a href="Interface.html">Interface</a></li><li><a href="SimplexNoise.html">SimplexNoise</a></li><li><a href="Utils.html">Utils</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="BorderPalette.html">BorderPalette</a></li><li><a href="Caption.html">Caption</a></li><li><a href="ColorPalette.html">ColorPalette</a></li><li><a href="ColorTable.html">ColorTable</a></li><li><a href="Connector.html">Connector</a></li><li><a href="Dragger.html">Dragger</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Liquid.html">Liquid</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="RangeDisplay.html">RangeDisplay</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="Config.html">Config</a></li><li><a href="Interface.html">Interface</a></li><li><a href="SimplexNoise.html">SimplexNoise</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#borderStyles">borderStyles</a></li><li><a href="global.html#i">i</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Wed Sep 11 2013 17:16:15 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Dec 31 2013 17:13:28 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

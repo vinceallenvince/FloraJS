@@ -76,8 +76,8 @@ module.exports = function(grunt) {
       target: {
         src: ['src/Config.js', 'src/Interface.js', 'src/Utils.js', 'src/SimplexNoise.js', 'src/BorderPalette.js', 'src/ColorPalette.js',
             'src/ColorTable.js', 'src/Caption.js', 'src/InputMenu.js', 'src/Mover.js', 'src/Agent.js', 'src/Walker.js', 'src/Sensor.js',
-            'src/Connector.js', 'src/Point.js', 'src/Particle.js', 'src/ParticleSystem.js', 'src/Oscillator.js', 'src/Liquid.js',
-            'src/Attractor.js', 'src/Repeller.js', 'src/Stimulus.js', 'src/FlowField.js', 'src/FlowFieldMarker.js'],
+            'src/Connector.js', 'src/Point.js', 'src/Particle.js', 'src/ParticleSystem.js', 'src/Oscillator.js', 'src/Dragger.js',
+            'src/Attractor.js', 'src/Repeller.js', 'src/Stimulus.js', 'src/FlowField.js', 'src/FlowFieldMarker.js', 'src/RangeDisplay.js'],
         dest: 'release/' + latest + '.js'
       }
     },
@@ -93,8 +93,8 @@ module.exports = function(grunt) {
       target: {
         src: ['src/Config.js', 'src/Interface.js', 'src/Utils.js', 'src/SimplexNoise.js', 'src/BorderPalette.js', 'src/ColorPalette.js',
             'src/ColorTable.js', 'src/Caption.js', 'src/InputMenu.js', 'src/Mover.js', 'src/Agent.js', 'src/Walker.js', 'src/Sensor.js',
-            'src/Connector.js', 'src/Point.js', 'src/Particle.js', 'src/ParticleSystem.js', 'src/Oscillator.js', 'src/Liquid.js',
-            'src/Attractor.js', 'src/Repeller.js', 'src/Stimulus.js', 'src/FlowField.js', 'src/FlowFieldMarker.js'],
+            'src/Connector.js', 'src/Point.js', 'src/Particle.js', 'src/ParticleSystem.js', 'src/Oscillator.js', 'src/Dragger.js',
+            'src/Attractor.js', 'src/Repeller.js', 'src/Stimulus.js', 'src/FlowField.js', 'src/FlowFieldMarker.js', 'src/RangeDisplay.js'],
         dest: 'release/' + latest + '.min.js'
       }
     },

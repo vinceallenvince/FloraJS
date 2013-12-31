@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(0, 0),
+        c: 0
+      });
+
+      function createWolf(x, y) {
+        Burner.System.add('Agent', {
+          name: 'wolf',
+          color: [255, 100, 0],
+          width: 20,
+          height: 20,
+          maxSpeed: 10,
+          wrapWorldEdges: true,
+          motorSpeed: 4,
+          location: new Burner.Vector(x, y),
+          velocity: new Burner.Vector(Flora.Utils.getRandomNumber(0, 2, true),
+              Flora.Utils.getRandomNumber(0, 2, true)),
+          flocking: true,
+          sensors: [
+            Burner.System.add('Sensor', {
+              type: 'sheep',
+              sensitivity: 200,
+              displayRange: false,
+              behavior: 'AGGRESSIVE'
+            })
+          ],
+          beforeStep: function() {
+
+            var sheep = Burner.System._caches.sheep.list;
+
+            for (var i = sheep.length - 1; i >= 0; i--) {
+              if (Flora.Utils.isInside(this, sheep[i])) {
+                createWolf(sheep[i].location.x, sheep[i].location.y);
+                //!! need to check to destroy range display
+                Burner.System.destroyItem(sheep[i].sensors[0]);
+                Burner.System.destroyItem(sheep[i]);
+              }
+            }
+          }
+        });
+      }
+
+      Burner.System.init(function() {
+
+        for (var i = 0; i < 30; i++) {
+          this.add('Agent', {
+            name: 'sheep',
+            width: 20,
+            height: 20,
+            maxSpeed: 4,
+            wrapWorldEdges: true,
+            location: new Burner.Vector(world.width / 4, world.height / 2),
+            velocity: new Burner.Vector(Flora.Utils.getRandomNumber(0, 2, true),
+                Flora.Utils.getRandomNumber(0, 2, true)),
+            flocking: true,
+            sensors: [
+              this.add('Sensor', {
+                type: 'wolf',
+                sensitivity: 300,
+                behavior: 'COWARD'
+              })
+            ]
+          });
+        }
+
+        for (var i = 0; i < 1; i++) {
+          createWolf(world.width / 2, world.height / 2);
+        }
+
+        this.add('Caption', {
+          text: 'Sheep vs. Wolves',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+      }, world);
+    </script>
+  </body>
+</html>

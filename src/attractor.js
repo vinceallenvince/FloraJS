@@ -3,16 +3,16 @@
  * Creates a new Attractor object.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Attractor(opt_options) {
   var options = opt_options || {};
   options.name = options.name || 'Attractor';
-  Agent.call(this, options);
+  Mover.call(this, options);
 }
-Utils.extend(Attractor, Agent);
+Utils.extend(Attractor, Mover);
 
 /**
  * Initializes an instance.
@@ -55,4 +55,29 @@ Attractor.prototype.init = function(opt_options) {
   this.boxShadowColor = options.boxShadowColor || [64, 129, 0];
 
   Burner.System.updateCache(this);
+};
+
+/**
+ * Calculates a force to apply to simulate attraction/repulsion on an object.
+ *
+ * @param {Object} obj The target object.
+ * @returns {Object} A force to apply.
+ */
+Attractor.prototype.attract = function(obj) {
+
+  var force = Burner.Vector.VectorSub(this.location, obj.location),
+    distance, strength;
+
+  distance = force.mag();
+  distance = Utils.constrain(
+      distance,
+      obj.width * obj.height,
+      this.width * this.height); // min = the size of obj; max = the size of this attractor
+  force.normalize();
+
+  // strength is proportional to the mass of the objects and their proximity to each other
+  strength = (this.G * this.mass * obj.mass) / (distance * distance);
+  force.mult(strength);
+
+  return force;
 };

@@ -447,6 +447,146 @@ Burner.System.init(function() {
 
 <p>http://www.florajs.com/examples/camera.html</p>
 
+<h4>Your own worlds</h4>
+
+<p>Burner allows you to define worlds using any DOM element. This is useful if you want your world to live alongside other DOM elements or simply do not want the entire body defined as a world.</p>
+
+<p>To define a world, just create the DOM element you want to represent the world and reference it when calling new Burner.World().</p>
+
+<p><code></code>`html
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&#39;content-type&#39; content=&#39;text/html; charset=UTF-8&#39; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link rel=&#39;stylesheet&#39; href=&#39;css/Burner.min.css&#39; type=&#39;text/css&#39; charset=&#39;utf-8&#39; /&gt;
+    &lt;link rel=&#39;stylesheet&#39; href=&#39;css/Flora.min.css&#39; type=&#39;text/css&#39; charset=&#39;utf-8&#39; /&gt;
+    &lt;script src=&#39;scripts/Burner.min.js&#39; type=&#39;text/javascript&#39; charset=&#39;utf-8&#39;&gt;&lt;/script&gt;
+    &lt;script src=&#39;scripts/Flora.min.js&#39; type=&#39;text/javascript&#39; charset=&#39;utf-8&#39;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&#39;worldA&#39;&gt;&lt;/div&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;</p>
+
+<pre><code>  var world = new Burner.World(document.getElementById(&#39;worldA&#39;), {
+    boundToWindow: false,
+    width: 320,
+    height: 480,
+    color: [60, 60, 60],
+    gravity: new Burner.Vector(0, 0),
+    c: 0
+  });
+
+  Burner.System.init(function() {
+    this.add(&#39;Agent&#39;);
+  });
+&lt;/script&gt;</code></pre>
+
+<p>  &lt;/body&gt;
+&lt;/html&gt;
+<code></code>`</p>
+
+<p>http://www.florajs.com/examples/dom_world.html</p>
+
+<p>Notice we passed &#39;boundToWindow: false&#39; as an option. This means if we resize the browser, it has no effect on the world. If we passed &#39;true&#39;, the world would resize with the browser. This is useful if you want to layer worlds that span the full width and height of the browser.</p>
+
+<h4>Multiple worlds</h4>
+
+<p>Burner also supports multiple worlds. First, define your worlds. Next, pass them in an array as the second argument to Burner.System.init(). Here&#39;s an example.</p>
+
+<p><code></code>`html
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&#39;content-type&#39; content=&#39;text/html; charset=UTF-8&#39; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link rel=&#39;stylesheet&#39; href=&#39;css/Burner.min.css&#39; type=&#39;text/css&#39; charset=&#39;utf-8&#39; /&gt;
+    &lt;link rel=&#39;stylesheet&#39; href=&#39;css/Flora.min.css&#39; type=&#39;text/css&#39; charset=&#39;utf-8&#39; /&gt;
+    &lt;script src=&#39;scripts/Burner.min.js&#39; type=&#39;text/javascript&#39; charset=&#39;utf-8&#39;&gt;&lt;/script&gt;
+    &lt;script src=&#39;scripts/Flora.min.js&#39; type=&#39;text/javascript&#39; charset=&#39;utf-8&#39;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&#39;worldA&#39;&gt;&lt;/div&gt;
+    &lt;div id=&#39;worldB&#39;&gt;&lt;/div&gt;
+    &lt;div id=&#39;worldC&#39;&gt;&lt;/div&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;</p>
+
+<pre><code>  var worldA = new Burner.World(document.getElementById(&#39;worldA&#39;), {
+    boundToWindow: false,
+    width: 320,
+    height: 480,
+    color: [60, 60, 60],
+    gravity: new Burner.Vector(),
+    c: 0,
+    location: new Burner.Vector(160, 240)
+  });
+
+  var worldB = new Burner.World(document.getElementById(&#39;worldB&#39;), {
+    boundToWindow: false,
+    width: 320,
+    height: 480,
+    color: [60, 60, 60],
+    gravity: new Burner.Vector(),
+    c: 0,
+    location: new Burner.Vector(490, 240)
+  });
+
+  var worldC = new Burner.World(document.getElementById(&#39;worldC&#39;), {
+    boundToWindow: false,
+    width: 320,
+    height: 480,
+    color: [60, 60, 60],
+    gravity: new Burner.Vector(),
+    c: 0,
+    location: new Burner.Vector(820, 240)
+  });
+
+  Burner.System.init(function() {
+
+    this.add(&#39;ParticleSystem&#39;, {
+      startColor: [255, 255, 255],
+      particleOptions: {
+        maxSpeed: 3
+      }
+    }, worldA);
+
+    for (var i = 0; i &lt; 10; i++) {
+      this.add(&#39;Walker&#39;, null, worldB);
+    }
+
+    for (var i = 0; i &lt; 10; i++) {
+      var size = Burner.System.getRandomNumber(5, 30);
+      this.add(&#39;Agent&#39;, {
+        width: size,
+        height: size,
+        mass: size,
+        followMouse: true,
+        flocking: true
+      }, worldC);
+    }
+
+    this.add(&#39;Caption&#39;, {
+      text: &#39;Muliple Worlds&#39;,
+      opacity: 0.4,
+      borderColor: &#39;transparent&#39;,
+      position: &#39;top center&#39;
+    });
+
+    this.add(&#39;InputMenu&#39;, {
+      opacity: 0.4,
+      borderColor: &#39;transparent&#39;,
+      position: &#39;bottom center&#39;
+    });
+
+  }, [worldA, worldB, worldC]);
+&lt;/script&gt;</code></pre>
+
+<p>  &lt;/body&gt;
+&lt;/html&gt;
+<code></code>`</p>
+
+<p>http://www.florajs.com/examples/multiple_worlds.html</p>
+
 <h4>DOM Renderer</h4>
 
 <p>If you want to drop the Flora classes and use your own, use &lt;a href=&#39;http://github.com/foldi/Burner&#39;&gt;Burner&lt;/a&gt; to render your system.</p>
@@ -497,13 +637,13 @@ ln -s ../../post-commit .git/hooks/post-commit</p></article>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="BorderPalette.html">BorderPalette</a></li><li><a href="Caption.html">Caption</a></li><li><a href="ColorPalette.html">ColorPalette</a></li><li><a href="ColorTable.html">ColorTable</a></li><li><a href="Connector.html">Connector</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Liquid.html">Liquid</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="Config.html">Config</a></li><li><a href="Interface.html">Interface</a></li><li><a href="SimplexNoise.html">SimplexNoise</a></li><li><a href="Utils.html">Utils</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="BorderPalette.html">BorderPalette</a></li><li><a href="Caption.html">Caption</a></li><li><a href="ColorPalette.html">ColorPalette</a></li><li><a href="ColorTable.html">ColorTable</a></li><li><a href="Connector.html">Connector</a></li><li><a href="Dragger.html">Dragger</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Liquid.html">Liquid</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="RangeDisplay.html">RangeDisplay</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="Config.html">Config</a></li><li><a href="Interface.html">Interface</a></li><li><a href="SimplexNoise.html">SimplexNoise</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#borderStyles">borderStyles</a></li><li><a href="global.html#i">i</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Wed Sep 11 2013 17:16:15 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Dec 31 2013 17:13:28 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -48,6 +48,10 @@
     
     <div class="description">
         Creates a new Connector.
+
+Connectors render a straight line between two Flora items. The Connector carries
+a reference to the two items as parentA and parentB. If the parent items move,
+the Connector moves with them.
     </div>
     
 
@@ -140,7 +144,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="connector.js.html">connector.js</a>, <a href="connector.js.html#line9">line 9</a>
+        <a href="connector.js.html">connector.js</a>, <a href="connector.js.html#line13">line 13</a>
     </li></ul></dd>
     
     
@@ -184,6 +188,65 @@
     
     
     
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="borderWidth"><span class="type-signature"></span>borderWidth<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Connectors have no height or color and rely on the associated DOM element's
+CSS border to render their line.
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="connector.js.html">connector.js</a>, <a href="connector.js.html#line47">line 47</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
     
     
     
@@ -343,45 +406,6 @@
 	
         <tr>
             
-                <td class="name"><code>options.opacity</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-                <td class="default">
-                
-                    1
-                
-                </td>
-            
-            
-            <td class="description last">Opacity.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
                 <td class="name"><code>options.zIndex</code></td>
             
             
@@ -415,45 +439,6 @@
             
             
             <td class="description last">zIndex.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>options.borderWidth</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-                <td class="default">
-                
-                    1
-                
-                </td>
-            
-            
-            <td class="description last">Border width.</td>
         </tr>
 	
 	
@@ -562,7 +547,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="connector.js.html">connector.js</a>, <a href="connector.js.html#line28">line 28</a>
+        <a href="connector.js.html">connector.js</a>, <a href="connector.js.html#line30">line 30</a>
     </li></ul></dd>
     
     
@@ -631,7 +616,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="connector.js.html">connector.js</a>, <a href="connector.js.html#line52">line 52</a>
+        <a href="connector.js.html">connector.js</a>, <a href="connector.js.html#line56">line 56</a>
     </li></ul></dd>
     
     
@@ -672,13 +657,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="BorderPalette.html">BorderPalette</a></li><li><a href="Caption.html">Caption</a></li><li><a href="ColorPalette.html">ColorPalette</a></li><li><a href="ColorTable.html">ColorTable</a></li><li><a href="Connector.html">Connector</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Liquid.html">Liquid</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="Config.html">Config</a></li><li><a href="Interface.html">Interface</a></li><li><a href="SimplexNoise.html">SimplexNoise</a></li><li><a href="Utils.html">Utils</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="BorderPalette.html">BorderPalette</a></li><li><a href="Caption.html">Caption</a></li><li><a href="ColorPalette.html">ColorPalette</a></li><li><a href="ColorTable.html">ColorTable</a></li><li><a href="Connector.html">Connector</a></li><li><a href="Dragger.html">Dragger</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Liquid.html">Liquid</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="RangeDisplay.html">RangeDisplay</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="Config.html">Config</a></li><li><a href="Interface.html">Interface</a></li><li><a href="SimplexNoise.html">SimplexNoise</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#borderStyles">borderStyles</a></li><li><a href="global.html#i">i</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Wed Sep 11 2013 17:16:16 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Tue Dec 31 2013 17:13:29 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

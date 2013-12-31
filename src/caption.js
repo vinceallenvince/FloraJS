@@ -55,6 +55,7 @@ function Caption(opt_options) {
     this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
         ', ' + this.borderColor[2] + ')';
   }
+  this.el.zIndex = 100;
   this.el.appendChild(document.createTextNode(this.text));
   if (document.getElementById('caption')) {
     document.getElementById('caption').parentNode.removeChild(document.getElementById('caption'));
@@ -73,6 +74,13 @@ Caption.prototype.reset = function () {};
  * A noop.
  */
 Caption.prototype.init = function () {};
+
+/**
+ * Updates the caption's text.
+ */
+Caption.prototype.update = function(text) {
+  this.el.textContent = text;
+};
 
 /**
  * Removes the caption's DOM element.

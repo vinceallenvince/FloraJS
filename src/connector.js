@@ -2,6 +2,10 @@
 /**
  * Creates a new Connector.
  *
+ * Connectors render a straight line between two Flora items. The Connector carries
+ * a reference to the two items as parentA and parentB. If the parent items move,
+ * the Connector moves with them.
+ *
  * @constructor
  * @extends Burner.Item
  * @param {Object} [opt_options=] A map of initial properties.
@@ -19,9 +23,7 @@ Utils.extend(Connector, Burner.Item);
  * @param {Object} options A map of initial properties.
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
- * @param {number} [options.opacity = 1] Opacity.
  * @param {number} [options.zIndex = 0] zIndex.
- * @param {number} [options.borderWidth = 1] Border width.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
  * @param {Array} [options.borderColor = 150, 150, 150] Border color.
  */
@@ -33,15 +35,17 @@ Connector.prototype.init = function(options) {
   this.parentA = options.parentA;
   this.parentB = options.parentB;
 
-  this.opacity = typeof options.opacity === 'undefined' ? 1 : options.opacity;
   this.zIndex = options.zIndex || 0;
 
-  this.borderWidth = 1;
-  this.borderRadius = 0;
-  this.borderStyle = 'dotted';
+  this.borderStyle = typeof options.borderStyle === 'undefined' ? 'dotted' : options.borderStyle;
   this.borderColor = typeof options.borderColor === 'undefined' ? [150, 150, 150] : options.borderColor;
 
-  this.width = 0;
+  /**
+   * Connectors have no height or color and rely on the associated DOM element's
+   * CSS border to render their line.
+   */
+  this.borderWidth = 1;
+  this.borderRadius = 0;
   this.height = 0;
   this.color = 'transparent';
 };

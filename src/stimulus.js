@@ -1,7 +1,16 @@
 /*global Burner */
 
-var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {},
-    borderStyles = ['double', 'double', 'dotted', 'dashed'];
+/**
+ * Specific background and box-shadow colors have been added to config.js. When initialized,
+ * a new Stimulus item pulls colors from palettes based on these colors.
+ */
+var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {};
+
+/**
+ * By default, Stimulus items get a border style randomly selected
+ * from a predetermined list.
+ */
+var borderStyles = ['double', 'double', 'dotted', 'dashed'];
 
 for (i = 0, max = Config.defaultColorList.length; i < max; i++) {
   color = Config.defaultColorList[i];
@@ -31,7 +40,7 @@ for (i = 0, max = borderStyles.length; i < max; i++) {
  * Creates a new Stimulus.
  *
  * @constructor
- * @extends Agent
+ * @extends Mover
  *
  * @param {Object} options A map of initial properties.
  */
@@ -40,11 +49,12 @@ function Stimulus(options) {
   if (!options || !options.type) {
     throw new Error('Stimulus: options.type is required.');
   }
-  options.name = options.type.substr(0, 1).toUpperCase() +
-      options.type.toLowerCase().substr(1, options.type.length);
-  Agent.call(this, options);
+  /*options.name = options.type.substr(0, 1).toUpperCase() +
+      options.type.toLowerCase().substr(1, options.type.length);*/
+  options.name = options.name || options.type;
+  Mover.call(this, options);
 }
-Utils.extend(Stimulus, Agent);
+Utils.extend(Stimulus, Mover);
 
 /**
  * Initializes an instance.
@@ -55,36 +65,42 @@ Utils.extend(Stimulus, Agent);
  * @param {number} [opt_options.width = 50] Width.
  * @param {number} [opt_options.height = 50] Height.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
- * @param {number} [opt_options.zIndex = 1] The object's zIndex.
- * @param {Array} [opt_options.color = 255, 200, 0] Color.
+ * @param {Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
+ * @param {Array} [opt_options.borderColor = 220, 220, 220] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- * @param {Array} [opt_options.boxShadowColor = 255, 200, 0] Box-shadow color.
+ * @param {Array} [opt_options.boxShadowColor = 200, 200, 200] Box-shadow color.
  */
 Stimulus.prototype.init = function(opt_options) {
 
   var options = opt_options || {}, name = this.name.toLowerCase();
   Stimulus._superClass.prototype.init.call(this, options);
 
-  this.mass = typeof options.mass === 'undefined' ? 50 : options.mass ;
+  this.mass = typeof options.mass === 'undefined' ? 50 : options.mass;
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
   this.width = typeof options.width === 'undefined' ? 50 : options.width;
   this.height = typeof options.height === 'undefined' ? 50 : options.height;
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
-  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
-  this.color = options.color || palettes[name].getColor();
+
+  // color may not be pre-defined
+  this.color = options.color || palettes[this.type] ? palettes[this.type].getColor() : [255, 255, 255];
+
   this.borderWidth = typeof options.borderWidth === 'undefined' ?
       this.width / Utils.getRandomNumber(2, 8) : options.borderWidth;
   this.borderStyle = typeof options.borderStyle === 'undefined' ?
       borderPalette.getBorder() : options.borderStyle;
-  this.borderColor = typeof options.borderColor === 'undefined' ? palettes[name].getColor() : options.borderColor;
+
+  // borderColor may not be pre-defined
+  this.borderColor = options.borderColor || palettes[this.type] ? palettes[this.type].getColor() : [220, 220, 220];
+
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ?
       this.width / Utils.getRandomNumber(2, 8) : options.boxShadowSpread;
-  this.boxShadowColor = typeof options.boxShadowColor === 'undefined' ? boxShadowColors[name] : options.boxShadowColor;
+
+  // boxShadowColor may not be pre-defined
+  this.boxShadowColor = options.boxShadowColor || boxShadowColors[this.type] ? boxShadowColors[this.type] : [200, 200, 200];
 
   Burner.System.updateCache(this);
 };

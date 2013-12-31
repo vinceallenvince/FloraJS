@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      var getRandomNumber = Flora.Utils.getRandomNumber;
+
+      var world = new Burner.World(document.body, {
+        gravity: new Burner.Vector(),
+        c: 0,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: [100, 100, 100]
+      });
+
+      Burner.System.init(function() {
+
+        this.add('Agent', {
+          controlCamera: true,
+          angle: getRandomNumber(0, 360),
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          wrapWorldEdges: true,
+          location: new Burner.Vector(world.width * 0.5, world.height * 0.5),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 100,
+              behavior: 'EXPLORER'
+            }),
+            this.add('Sensor', {
+              type: 'cold',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 150,
+              behavior: 'CURIOUS'
+            }),
+            this.add('Sensor', {
+              type: 'food',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 250,
+              behavior: 'ACCELERATE'
+            }),
+            this.add('Sensor', {
+              type: 'light',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 80,
+              behavior: 'DECELERATE'
+            }),
+            this.add('Sensor', {
+              type: 'oxygen',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 50,
+              behavior: 'COWARD'
+            })
+          ]
+        }, world);
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'heat',
+            location: new Burner.Vector(getRandomNumber(0, world.width), getRandomNumber(0, world.height))
+          });
+        }
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'cold',
+            location: new Burner.Vector(getRandomNumber(0, world.width * 0.25), getRandomNumber(0, world.height))
+          });
+        }
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'food',
+            location: new Burner.Vector(getRandomNumber(world.width * 0.75, world.width), getRandomNumber(0, world.height))
+          });
+        }
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'light',
+            location: new Burner.Vector(getRandomNumber(0, world.width), getRandomNumber(0, world.height * 0.25))
+          });
+        }
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'oxygen',
+            location: new Burner.Vector(getRandomNumber(0, world.width), getRandomNumber(world.height * 0.75, world.height))
+          });
+        }
+
+        this.add('Caption', {
+          text: 'Flora.Sim.MultipleStimuli',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+      }, world);
+    </script>
+  </body>
+</html>

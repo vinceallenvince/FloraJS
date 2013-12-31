@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+  <script type="text/javascript" charset="utf-8">
+
+    var world = new Burner.World(document.body, {
+      gravity: new Burner.Vector(),
+      c: 0,
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderColor: [100, 100, 100]
+    });
+
+    Burner.System.init(function() {
+
+      this.add('Stimulus', {
+        type: 'heat',
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.25, this.world.height * 0.15);
+        }
+      });
+
+      this.add('Stimulus', {
+        type: 'heat',
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.15);
+        }
+      });
+
+      this.add('Stimulus', {
+        type: 'heat',
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.85);
+        }
+      });
+
+      this.add('Stimulus', {
+        type: 'heat',
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.15, this.world.height * 0.75);
+        }
+      });
+
+      this.add('Stimulus', {
+        type: 'cold',
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.5, this.world.height * 0.5);
+        }
+      });
+
+      this.add('Dragger', {
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
+        }
+      });
+
+      this.add('Dragger', {
+        location: function () {
+          return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
+        }
+      });
+
+      for (var i = 0; i < 5; i ++) {
+        
+        var controlCamera = !i;
+
+          var loc = new Burner.Vector(world.width * 0.5, world.height * 0.5);
+          var offset = new Burner.Vector(1, 1);
+          offset.normalize();
+          offset.rotate(Flora.Utils.degreesToRadians(Flora.Utils.getRandomNumber(0, 359, true)));
+          offset.mult(30);
+          loc.add(offset);
+
+          var angle = Flora.Utils.getRandomNumber(0, 359, true);
+          var acceleration = new Burner.Vector(1, 0);
+          acceleration.rotate(Flora.Utils.degreesToRadians(angle));
+          acceleration.normalize();
+          acceleration.mult(20);
+        
+          // create FISH
+          var fish = this.add('Agent', {
+            name: 'fish',
+            width: 16,
+            height: 16,
+            color: controlCamera ? [255, 255, 255] : [255, 100, 0],
+            location: loc,
+            angle: angle,
+            controlCamera: controlCamera,
+            eyeRotation: 0,
+            borderWidth: 2,
+            borderStyle: 'solid',
+            borderColor: controlCamera ? [255, 100, 0] : [197, 177, 115],
+            acceleration: acceleration,
+            motorSpeed: 4,
+            wrapWorldEdges: true,
+            maxSpeed: 2,
+            createFlag: 0,
+            beforeStep: function() {
+              /*if (Flora.Utils.getRandomNumber(1, 100) === 1) {
+                var a = new Burner.Vector(1, 0);
+                a.rotate(Flora.Utils.degreesToRadians(this.angle));
+                a.normalize();
+                a.mult(20);
+                this.acceleration.add(a);
+              }*/
+
+              var eye = this.eye;
+
+              if (eye) {
+                eye.style.webkitTransform = 'rotate(' + this.eyeRotation + 'deg)';
+                this.eyeRotation += Flora.Utils.map(this.velocity.mag(), this.minSpeed, this.maxSpeed, 3, 30);
+              }
+            },
+            sensors: [
+              this.add('Sensor', {
+                type: 'heat',
+                behavior: 'EXPLORER',
+                displayConnector: true
+              }),
+              this.add('Sensor', {
+                type: 'cold',
+                behavior: 'ACCELERATE',
+                displayConnector: true
+              })
+            ]
+          });
+        
+          var eye = document.createElement('div');
+          eye.id = 'eye-' + fish.id;
+          eye.className = 'eye';
+          eye.style.position = 'absolute';
+          eye.style.top = '5px';
+          eye.style.left = '2px';
+          eye.style.width = '8px';
+          eye.style.height = '2px';
+          eye.style.background = controlCamera ? 'rgb(200, 200, 200)' : 'rgb(255, 255, 255)';
+          eye.style.opacity = 1;
+          fish.el.appendChild(eye);
+          fish.eye = eye;
+            
+      }
+
+      //
+
+      this.add('Caption', {
+        text: 'Agent controls camera',
+        opacity: 0.4,
+        borderColor: 'transparent',
+        position: 'top center'
+      });
+
+      this.add('InputMenu', {
+        opacity: 0.4,
+        borderColor: 'transparent',
+        position: 'bottom center'
+      });
+    }, world);
+  </script>
+</body>
+</html>

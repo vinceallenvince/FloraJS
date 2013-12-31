@@ -240,10 +240,10 @@ Utils.capitalizeFirstLetter = function(string) {
  */
 Utils.isInside = function(obj, container) {
   if (container) {
-    if (obj.location.x + obj.width/2 > container.location.x - container.width/2 &&
-      obj.location.x - obj.width/2 < container.location.x + container.width/2 &&
-      obj.location.y + obj.height/2 > container.location.y - container.height/2 &&
-      obj.location.y - obj.height/2 < container.location.y + container.height/2) {
+    if (obj.location.x + obj.width / 2 > container.location.x - container.width / 2 &&
+      obj.location.x - obj.width / 2 < container.location.x + container.width / 2 &&
+      obj.location.y + obj.height / 2 > container.location.y - container.height / 2 &&
+      obj.location.y - obj.height / 2 < container.location.y + container.height / 2) {
       return true;
     }
   }

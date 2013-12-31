@@ -25,23 +25,17 @@ Utils.extend(Walker, Mover);
  * @param {number} [opt_options.height = 10] Height
  * @param {boolean} [opt_options.isPerlin = true] If set to true, object will use Perlin Noise to calculate its location.
  * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and isPerlin = true, object will avoid world edges.
- * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
+ * @param {number} [opt_options.perlinSpeed = 0.005] If perlin = true, perlinSpeed determines how fast the object location moves through the noise space.
  * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
- * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when isPerlin = true.
- * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when isPerlin = true.
+ * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when perlin = true.
+ * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when perlin = true.
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
- * @param {boolean} [opt_options.random = false] Set to true for walker to move in a random direction.
- * @param {number} [opt_options.randomRadius = 100] If isRandom = true, walker will look for a new location each frame based on this radius.
  * @param {string|Array} [opt_options.color = 255, 150, 50] Color.
  * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
  * @param {string|Array} [opt_options.borderColor = 255, 255, 255] Border color.
  * @param {string} [opt_options.borderRadius = 100] Border radius.
- * @param {boolean} [opt_options.avoidWorldEdges = false] If set to true, object steers away from
- *    world boundaries.
- * @param {number} [opt_options.avoidWorldEdgesStrength = 0] The distance threshold for object
- *    start steering away from world boundaries.
  */
 Walker.prototype.init = function(opt_options) {
 
@@ -57,23 +51,20 @@ Walker.prototype.init = function(opt_options) {
   this.perlinAccelHigh = typeof options.perlinAccelHigh === 'undefined' ? 0.075 : options.perlinAccelHigh;
   this.offsetX = typeof options.offsetX === 'undefined' ? Math.random() * 10000 : options.offsetX;
   this.offsetY = typeof options.offsetY === 'undefined' ? Math.random() * 10000 : options.offsetY;
-  this.random = !!options.random;
-  this.randomRadius = typeof options.randomRadius === 'undefined' ? 100 : options.randomRadius;
   this.color = options.color || [255, 150, 50];
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  this.avoidWorldEdges = !!options.avoidWorldEdges;
-  this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
-      50 : options.avoidWorldEdgesStrength;
+  
+  this._randomVector = new Burner.Vector();
 };
 
 /**
  * If walker uses perlin noise, updates acceleration based on noise space. If walker
  * is a random walker, updates location based on random location.
  */
-Walker.prototype.applyForces = function() {
+Walker.prototype.applyAdditionalForces = function() {
 
   // walker use either perlin noise or random walk
   if (this.perlin) {
@@ -90,14 +81,13 @@ Walker.prototype.applyForces = function() {
       this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.offsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
     }
 
-  } else if (this.random) {
-    this.seekTarget = { // find a random point and steer toward it
-      location: Burner.Vector.VectorAdd(this.location, new Burner.Vector(Utils.getRandomNumber(-this.randomRadius, this.randomRadius), Utils.getRandomNumber(-this.randomRadius, this.randomRadius)))
-    };
-    this.applyForce(this._seek(this.seekTarget));
-  }
-
-  if (this.avoidWorldEdges) {
-    this._checkAvoidEdges();
+  } else {
+    // point to a random angle and move toward it
+    this._randomVector.x = 1;
+    this._randomVector.y = 1;
+    this._randomVector.normalize();
+    this._randomVector.rotate(Utils.degreesToRadians(Utils.getRandomNumber(0, 359)));
+    this._randomVector.mult(this.maxSpeed);
+    this.applyForce(this._randomVector);
   }
 };
