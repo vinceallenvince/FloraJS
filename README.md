@@ -610,6 +610,12 @@ Next, run grunt.
 grunt
 ```
 
+To generate docs, run:
+
+```
+grunt doc
+```
+
 A pre-commit hook is defined in /pre-commit that runs jshint. To use the hook, run the following:
 
 ```
