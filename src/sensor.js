@@ -39,6 +39,7 @@ Utils.extend(Sensor, Mover);
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
  * @param {Function} [opt_options.onConsume] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
+ * @param {Function} [opt_options.onDestroy] If sensor.behavior == 'DESTROY', sensor calls this function when destroyed.
  */
 Sensor.prototype.init = function(opt_options) {
 
@@ -199,6 +200,10 @@ Sensor.prototype.getBehavior = function() {
               endColor: target.color
             });
             Burner.System.destroyItem(target);
+
+            if (sensor.onDestroy) {
+              sensor.onDestroy.call(this, sensor, target);
+            }
          }
       };
 

@@ -1,8 +1,8 @@
-/*! Flora v2.2.2 - 2014-05-21 07:05:55 
- *  Vince Allen 
- *  Brooklyn, NY 
- *  vince@vinceallen.com 
- *  @vinceallenvince 
+/*! Flora v2.2.3 - 2014-05-21 07:05:10
+ *  Vince Allen
+ *  Brooklyn, NY
+ *  vince@vinceallen.com
+ *  @vinceallenvince
  *  License: MIT */
 
 var Flora = {}, exports = Flora;
@@ -1641,11 +1641,11 @@ Agent.prototype.init = function(opt_options) {
   this.motorDir = new Burner.Vector(); // used in Agent.applyAdditionalForces()
 
   //
-  
+
   /*this.avoidWorldEdges = !!options.avoidWorldEdges;
   this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
       50 : options.avoidWorldEdgesStrength;*/
-  
+
   Burner.System.updateCache(this);
 };
 
@@ -1745,7 +1745,7 @@ Agent.prototype.applyAdditionalForces = function() {
   if (this.avoidWorldEdges) {
     this._checkAvoidEdges();
   }
-  
+
   return this.acceleration;
 };
 
@@ -2027,7 +2027,7 @@ Walker.prototype.init = function(opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  
+
   this._randomVector = new Burner.Vector();
 };
 
@@ -2105,6 +2105,7 @@ Utils.extend(Sensor, Mover);
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
  * @param {Function} [opt_options.onConsume] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
+ * @param {Function} [opt_options.onDestroy] If sensor.behavior == 'DESTROY', sensor calls this function when destroyed.
  */
 Sensor.prototype.init = function(opt_options) {
 
@@ -2265,6 +2266,10 @@ Sensor.prototype.getBehavior = function() {
               endColor: target.color
             });
             Burner.System.destroyItem(target);
+
+            if (sensor.onDestroy) {
+              sensor.onDestroy.call(this, sensor, target);
+            }
          }
       };
 
@@ -2297,7 +2302,7 @@ Sensor.prototype.getBehavior = function() {
         var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
 
         // reverse the force
-        desiredVelocity.mult(-1);
+        desiredVelocity.mult(-0.0075);
 
         // limit to the maxSteeringForce
         desiredVelocity.limit(this.maxSteeringForce);

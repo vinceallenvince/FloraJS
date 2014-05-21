@@ -18,6 +18,8 @@
   <body>
     <script type="text/javascript" charset="utf-8">
 
+      var rand = Flora.Utils.getRandomNumber;
+
       var world = new Burner.World(document.body, {
         gravity: new Burner.Vector(),
         c: 0
@@ -44,7 +46,19 @@
               type: 'heat',
               displayRange: true,
               displayConnector: true,
-              behavior: 'DESTROY'
+              behavior: 'DESTROY',
+              onDestroy: function() {
+                Burner.System.add('Stimulus', {
+                  type: 'heat',
+                  location: new Burner.Vector(rand(0, world.width), rand(0, world.height)),
+                  scale: 0,
+                  beforeStep: function() {
+                    if (this.scale < 1) {
+                      this.scale += 0.025;
+                    }
+                  }
+                });
+              }
             })
           ]
         });
