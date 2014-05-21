@@ -236,7 +236,7 @@ Sensor.prototype.getBehavior = function() {
         var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
 
         // reverse the force
-        desiredVelocity.mult(-1);
+        desiredVelocity.mult(-0.0075);
 
         // limit to the maxSteeringForce
         desiredVelocity.limit(this.maxSteeringForce);
