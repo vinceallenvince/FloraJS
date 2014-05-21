@@ -192,6 +192,7 @@ Sensor.prototype.getBehavior = function() {
          if (Flora.Utils.isInside(sensor.parent, target)) {
 
             Burner.System.add('ParticleSystem', {
+              location: new Burner.Vector(target.location.x, target.location.y),
               lifespan: 20,
               borderColor: target.borderColor,
               startColor: target.color,
