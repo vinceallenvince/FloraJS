@@ -1,8 +1,8 @@
-/*! Flora v2.2.3 - 2014-05-21 07:05:10
- *  Vince Allen
- *  Brooklyn, NY
- *  vince@vinceallen.com
- *  @vinceallenvince
+/*! Flora v2.2.6 - 2014-05-24 04:05:23 
+ *  Vince Allen 
+ *  Brooklyn, NY 
+ *  vince@vinceallen.com 
+ *  @vinceallenvince 
  *  License: MIT */
 
 var Flora = {}, exports = Flora;
@@ -1641,11 +1641,11 @@ Agent.prototype.init = function(opt_options) {
   this.motorDir = new Burner.Vector(); // used in Agent.applyAdditionalForces()
 
   //
-
+  
   /*this.avoidWorldEdges = !!options.avoidWorldEdges;
   this.avoidWorldEdgesStrength = typeof options.avoidWorldEdgesStrength === 'undefined' ?
       50 : options.avoidWorldEdgesStrength;*/
-
+  
   Burner.System.updateCache(this);
 };
 
@@ -1745,7 +1745,7 @@ Agent.prototype.applyAdditionalForces = function() {
   if (this.avoidWorldEdges) {
     this._checkAvoidEdges();
   }
-
+  
   return this.acceleration;
 };
 
@@ -2027,7 +2027,7 @@ Walker.prototype.init = function(opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-
+  
   this._randomVector = new Burner.Vector();
 };
 
@@ -2090,8 +2090,8 @@ Utils.extend(Sensor, Mover);
  *
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
- * @param {string} [opt_options.behavior = 'LOVE'] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
- * @param {number} [opt_options.sensitivity = 2] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
+ * @param {string} [opt_options.behavior = ''] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
+ * @param {number} [opt_options.sensitivity = 200] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
  * @param {number} [opt_options.width = 5] Width.
  * @param {number} [opt_options.height = 5] Height.
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the sensor's parent.
@@ -2134,7 +2134,7 @@ Sensor.prototype.init = function(opt_options) {
 
   this.displayRange = !!options.displayRange;
   if (this.displayRange) {
-    this.createRangeDisplay();
+    this.rangeDisplay = this.createRangeDisplay();
   }
 
   this.displayConnector = !!options.displayConnector;
@@ -2469,18 +2469,11 @@ Sensor.prototype.getBehavior = function() {
           desiredVelocity.mult(m);
 
           var steer = Burner.Vector.VectorSub(desiredVelocity, this.velocity);
-          steer.limit(this.maxSteeringForce);
+          steer.limit(this.maxSteeringForce * 0.25);
           return steer;
-
         }
 
         this.angle = Flora.Utils.radiansToDegrees(Math.atan2(desiredVelocity.y, desiredVelocity.x));
-
-        this.velocity.x = 0;
-        this.velocity.y = 0;
-        this.acceleration.x = 0;
-        this.acceleration.y = 0;
-
       };
 
     case 'ACCELERATE':
