@@ -90,7 +90,8 @@ module.exports = function(grunt) {
     },
     exec: {
       test: 'npm test',
-      testcoverage: 'browserify -t coverify test/*.js | testling | coverify'
+      testcoverage: 'browserify -t coverify test/*.js | testling | coverify',
+      browserify: 'browserify main.js --standalone Flora -o ' + devRelease
     },
     watch: {
       files: ['src/*.js'],
@@ -125,8 +126,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-browserify');
 
-  grunt.registerTask('default', ['cssmin', 'browserify', 'copy:publicJS', 'copy:publicCSS']);
-  grunt.registerTask('release', ['csslint', 'jshint', 'cssmin', 'browserify', 'uglify', 'copy:publicJS', 'copy:publicCSS', 'jsdoc', 'plato']);
+  grunt.registerTask('default', ['cssmin', 'exec:browserify', 'copy:publicJS', 'copy:publicCSS']);
+  grunt.registerTask('release', ['csslint', 'jshint', 'cssmin', 'exec:browserify', 'uglify', 'copy:publicJS', 'copy:publicCSS', 'jsdoc', 'plato']);
   grunt.registerTask('test', ['exec:test']);
   grunt.registerTask('testcoverage', ['exec:testcoverage']);
   grunt.registerTask('report', ['plato']);

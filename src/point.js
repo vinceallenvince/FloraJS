@@ -1,4 +1,7 @@
 /*global Burner */
+
+var Burner = require('Burner');
+
 /**
  * Creates a new Point.
  *
@@ -10,11 +13,65 @@
  * @param {Object} [opt_options=] A map of initial properties.
  */
 function Point(opt_options) {
+  Burner.Item.call(this);
   var options = opt_options || {};
-  options.name = options.name || 'Point';
-  Burner.Item.call(this, options);
+  this.name = options.name || 'Point';
+  this.colorMode = options.colorMode || 'rgb';
+  this.color = options.color || [200, 200, 200];
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
+  this.borderStyle = options.borderStyle || 'solid';
+  this.borderColor = options.borderColor || [60, 60, 60];
+
+  // Points are static
+  this.isStatic = true;
 }
-Utils.extend(Point, Burner.Item);
+Burner.Utils.extend(Point, Burner.Item);
+
+Point.prototype.step = function() {};
+
+/**
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof Point
+ */
+Point.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    color0: this.color[0],
+    color1: this.color[1],
+    color2: this.color[2],
+    colorMode: this.colorMode,
+    borderRadius: this.borderRadius,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor0: this.borderColor[0],
+    borderColor1: this.borderColor[1],
+    borderColor2: this.borderColor[2]
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof Point
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+Point.prototype.getCSSText = function(props) {
+  return Burner.Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
+      props.width + 'px; height: ' + props.height + 'px; background-color: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
+      props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
+      props.borderRadius + '%;';
+};
 
 /**
  * Initializes an instance.
@@ -26,7 +83,7 @@ Utils.extend(Point, Burner.Item);
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
  */
-Point.prototype.init = function(opt_options) {
+/*Point.prototype.init = function(opt_options) {
 
   var options = opt_options || {};
 
@@ -38,4 +95,6 @@ Point.prototype.init = function(opt_options) {
 
   // Points are static
   this.isStatic = true;
-};
+};*/
+
+module.exports.Point = Point;

@@ -1,0 +1,28 @@
+language: node_js
+node_js:
+- '0.10'
+env:
+  global:
+  - GH_REF: github.com/vinceallenvince/Burner.git
+  - secure: "jiBAkOWvD9bqD0gUAaI8Nn8qXEC+PIGu0Qr2mvIuZgLRoqFuubgsnA9yW7CEepdbBRtK3LDr56zW454g1/LW/dkuU2AizqsFNkCCUtC4vc17dErcL1EiDlyenApkbhsWtP0CZoVL0yTRtm6ekihU2qqM+QZq79VuPVMNkQX81lo="
+before_install:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- npm install -g grunt-cli
+after_success: grunt release
+before_deploy: "echo 'ready?'"
+deploy:
+  provider: releases
+  api_key:
+    secure: ZK09+RCsV8kVvCbmiEH5SlsjjweAkdOsDghn93xaDYdg/AAeuQYULgvgPX8ypujeRmTsr+dvEJo7MW2pTQuaPAEJe3a0ENwb+NgpzTBSXHvkL2qFumQgyHEJWO40sD6uGwFbEHuGsxcgtRMWapUfbh9Pa/Fc2OSLZnw7klHemDA=
+  file:
+  - release/Burner.min.js
+  - release/Burner.min.css
+  skip_cleanup: true
+  on:
+    repo: vinceallenvince/Burner
+    tags: true
+    all_branches: true
+after_deploy:
+- "echo 'done!'"
+- ./deploy-gh-pages.sh
