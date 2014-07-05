@@ -1,28 +1,24 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Flora=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // Flora classes
 var Flora = {
-  Point: _dereq_('./src/Point').Point
+  System: _dereq_('Burner').System,
+  Vector: _dereq_('Burner').Vector
 };
 
-var Burner = _dereq_('Burner');
+Flora.System.Classes = {
+  Point: _dereq_('./src/Point').Point,
+  Connector: _dereq_('./src/Connector').Connector
+};
+
+/*var Burner = require('Burner');
 Burner.System.Classes = Flora;
-window.Burner = Burner;
+window.Burner = Burner;*/
 
 //
 
 module.exports = Flora;
 
-},{"./src/Point":3,"Burner":2}],2:[function(_dereq_,module,exports){
-(function (global){
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Burner=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-module.exports = {
-  Item: _dereq_('./src/Item').Item,
-  System: _dereq_('./src/System').System,
-  Utils: _dereq_('./src/Utils').Utils,
-  Vector: _dereq_('./src/Vector').Vector,
-  World: _dereq_('./src/World').World
-};
-},{"./src/Item":2,"./src/System":4,"./src/Utils":5,"./src/Vector":6,"./src/World":7}],2:[function(_dereq_,module,exports){
+},{"./src/Connector":9,"./src/Point":10,"Burner":8}],2:[function(_dereq_,module,exports){
 /*global document */
 
 var Vector = _dereq_('./Vector').Vector;
@@ -723,10 +719,6 @@ System._stepForward = function() {
   }
 };
 
-System._resetSystem = function() {
-
-};
-
 /**
  * Saves the mouse/touch location relative to the browser window.
  *
@@ -975,6 +967,61 @@ Utils.addEvent = function(target, eventType, handler) {
   } else if (target.attachEvent) { // IE
     target.attachEvent('on' + eventType, handler);
   }
+};
+
+/**
+ * Converts degrees to radians.
+ *
+ * @function degreesToRadians
+ * @memberof Utils
+ * @param {number} degrees The degrees value to be converted.
+ * @returns {number} A number in radians.
+ */
+Utils.degreesToRadians = function(degrees) {
+  if (typeof degrees !== 'undefined') {
+    return 2 * Math.PI * (degrees/360);
+  } else {
+    if (typeof console !== 'undefined') {
+      throw new Error('Error: Utils.degreesToRadians is missing degrees param.');
+    }
+  }
+};
+
+/**
+ * Converts radians to degrees.
+ *
+ * @function radiansToDegrees
+ * @memberof Utils
+ * @param {number} radians The radians value to be converted.
+ * @returns {number} A number in degrees.
+ */
+Utils.radiansToDegrees = function(radians) {
+  if (typeof radians !== 'undefined') {
+    return radians * (180/Math.PI);
+  } else {
+    if (typeof console !== 'undefined') {
+      throw new Error('Error: Utils.radiansToDegrees is missing radians param.');
+    }
+  }
+};
+
+/**
+ * Constrain a value within a range.
+ *
+ * @function constrain
+ * @memberof Utils
+ * @param {number} val The value to constrain.
+ * @param {number} low The lower bound of the range.
+ * @param {number} high The upper bound of the range.
+ * @returns {number} A number.
+ */
+Utils.constrain = function(val, low, high) {
+  if (val > high) {
+    return high;
+  } else if (val < low) {
+    return low;
+  }
+  return val;
 };
 
 module.exports.Utils = Utils;
@@ -1285,71 +1332,6 @@ World.prototype.init = function(opt_options) {
 };
 
 /**
- * Creates a new World.
- *
- * @param {Object} el The DOM element representing the world.
- * @param {Object} [opt_options=] A map of initial properties.
- * @constructor
- */
-/*function _World(el, opt_options) {
-
-  if (!el || typeof el !== 'object') {
-    throw new Error('World: A valid DOM object is required for the new World "el" property.');
-  }
-
-  var options = opt_options || {},
-      viewportSize = exports.System.getWindowSize();
-
-  this.el = el;
-  this.name = 'World';
-  this.el.className = this.name.toLowerCase();
-  this.id = this.name + exports.System.getNewId();
-  this.width = options.width || 0;
-  this.height = options.height || 0;
-  this.autoWidth = !!options.autoWidth;
-  this.autoHeight = !!options.autoHeight;
-  this.angle = 0;
-  this.color = options.color || 'transparent';
-  this.colorMode = options.colorMode || 'rgb';
-  this.visibility = options.visibility || 'visible';
-  this.opacity = options.opacity || 1;
-  this.borderWidth = options.borderWidth || 0;
-  this.borderStyle = options.borderStyle || 'none';
-  this.borderColor = options.borderColor || 'transparent';
-  this.boxShadowOffset = options.boxShadowOffset || new exports.Vector();
-  this.boxShadowBlur = options.boxShadowBlur || 0;
-  this.boxShadowSpread = options.boxShadowSpread || 0;
-  this.boxShadowColor = options.boxShadowColor || 'transparent';
-  this.gravity = options.gravity || new exports.Vector(0, 1);
-  this.c = options.c || 0.1;
-  this.boundToWindow = options.boundToWindow === false ? false : true;
-  this.location = options.location || new exports.Vector(viewportSize.width / 2, viewportSize.height / 2);
-  this.initLocation = new exports.Vector(this.location.x, this.location.y);
-  this.position = options.position || 'absolute';
-  this.paddingTop = options.paddingTop || 0;
-  this.paddingRight = options.paddingRight || 0;
-  this.paddingBottom = options.paddingBottom || 0;
-  this.paddingLeft = options.paddingLeft || 0;
-  this.marginTop = options.marginTop || 0;
-
-  this.pauseStep = false;
-  this.pauseDraw = false;
-
-  this._setBounds();
-
-  this._pool = []; // object pool
-
-
-  this.world = {};
-
-  this.draw();
-
-
-  this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
-  this.drawState = 0;
-}*/
-
-/**
  * Adds an item to the world's view.
  * @param {Object} item An instance of item.
  */
@@ -1363,32 +1345,164 @@ World.prototype.add = function(item) {
 World.prototype.step = function() {};
 
 /**
- * Updates the corresponding DOM element's style property.
- * If world is static, we want to draw with passed properties first,
- * then clear the style, then do nothing. If world is not static, we
- * want to update it every frame.
+ * A noop.
  */
-World.prototype.draw = function() {
-
-  /*if (this.drawState === 2 && this.isStatic) {
-    return;
-  } else if (!this.drawState || !this.isStatic) {
-    exports.System._draw(this);
-  } else if (this.drawState === 1) {
-    this.el.style.cssText = '';
-  }
-  this.drawState++;*/
-};
+World.prototype.draw = function() {};
 
 module.exports.World = World;
-},{"./Item":2,"./Utils":5,"./Vector":6}]},{},[1])
-(1)
-});
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],3:[function(_dereq_,module,exports){
-/*global Burner */
+},{"./Item":2,"./Utils":5,"./Vector":6}],8:[function(_dereq_,module,exports){
+module.exports = {
+  Item: _dereq_('./Item').Item,
+  System: _dereq_('./System').System,
+  Utils: _dereq_('./Utils').Utils,
+  Vector: _dereq_('./Vector').Vector,
+  World: _dereq_('./World').World
+};
+},{"./Item":2,"./System":4,"./Utils":5,"./Vector":6,"./World":7}],9:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
 
-var Burner = _dereq_('Burner');
+/**
+ * Creates a new Connector.
+ *
+ * Connectors render a straight line between two Flora items. The Connector carries
+ * a reference to the two items as parentA and parentB. If the parent items move,
+ * the Connector moves with them.
+ *
+ * @constructor
+ * @extends Item
+ * @param {Object} options A map of initial properties.
+ * @param {Object} parentA The object that starts the connection.
+ * @param {Object} parentB The object that ends the connection.
+ * @param {string} [opt_options.name = 'Point'] Name.
+ * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
+ * @param {number} [options.zIndex = 0] zIndex.
+ * @param {string} [options.borderStyle = 'dotted'] Border style.
+ * @param {Array} [options.borderColor = 150, 150, 150] Border color.
+ */
+function Connector(options) {
+  Item.call(this);
+
+  if (!options || !options.parentA || !options.parentB) {
+    throw new Error('Connector: both parentA and parentB are required.');
+  }
+  this.parentA = options.parentA;
+  this.parentB = options.parentB;
+
+  this.name = options.name || 'Connector';
+  this.colorMode = options.colorMode || 'rgb';
+  this.zIndex = options.zIndex || 0;
+  this.borderStyle = options.borderStyle || 'dotted';
+  this.borderColor = options.borderColor || [150, 150, 150];
+
+  /**
+   * Connectors have no height or color and rely on the associated DOM element's
+   * CSS border to render their line.
+   */
+  this.borderWidth = 1;
+  this.borderRadius = 0;
+  this.height = 0;
+  this.color = 'transparent';
+
+}
+Utils.extend(Connector, Item);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} options A map of initial properties.
+ * @param {Object} parentA The object that starts the connection.
+ * @param {Object} parentB The object that ends the connection.
+ * @param {number} [options.zIndex = 0] zIndex.
+ * @param {string} [options.borderStyle = 'dotted'] Border style.
+ * @param {Array} [options.borderColor = 150, 150, 150] Border color.
+ */
+/*Connector.prototype._init = function(options) {
+
+  if (!options || !options.parentA || !options.parentB) {
+    throw new Error('Connector: both parentA and parentB are required.');
+  }
+  this.parentA = options.parentA;
+  this.parentB = options.parentB;
+
+  this.zIndex = options.zIndex || 0;
+
+  this.borderStyle = typeof options.borderStyle === 'undefined' ? 'dotted' : options.borderStyle;
+  this.borderColor = typeof options.borderColor === 'undefined' ? [150, 150, 150] : options.borderColor;
+
+
+  this.borderWidth = 1;
+  this.borderRadius = 0;
+  this.height = 0;
+  this.color = 'transparent';
+};*/
+
+/**
+ * Called every frame, step() updates the instance's properties.
+ */
+Connector.prototype.step = function() {
+
+  var a = this.parentA.location,
+      b = this.parentB.location;
+
+  this.width = Math.floor(Vector.VectorSub(this.parentA.location,
+      this.parentB.location).mag());
+
+  this.location = Vector.VectorAdd(this.parentA.location,
+      this.parentB.location).div(2); // midpoint = (v1 + v2)/2
+
+  this.angle = Utils.radiansToDegrees(Math.atan2(b.y - a.y, b.x - a.x) );
+};
+
+/**
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof Connector
+ */
+Connector.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    color0: this.color[0],
+    color1: this.color[1],
+    color2: this.color[2],
+    colorMode: this.colorMode,
+    borderRadius: this.borderRadius,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor0: this.borderColor[0],
+    borderColor1: this.borderColor[1],
+    borderColor2: this.borderColor[2]
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof Connector
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+Connector.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
+      props.width + 'px; height: ' + props.height + 'px; background-color: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
+      props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
+      props.borderRadius + '%;';
+};
+
+module.exports.Connector = Connector;
+
+},{"Burner":8}],10:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    Utils = _dereq_('Burner').Utils;
 
 /**
  * Creates a new Point.
@@ -1399,9 +1513,16 @@ var Burner = _dereq_('Burner');
  * @constructor
  * @extends Burner.Item
  * @param {Object} [opt_options=] A map of initial properties.
+ * @param {string} [opt_options.name = 'Point'] Name.
+ * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
+ * @param {Array} [opt_options.color = 200, 200, 200] Color.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.borderWidth = 2] Border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
  */
 function Point(opt_options) {
-  Burner.Item.call(this);
+  Item.call(this);
   var options = opt_options || {};
   this.name = options.name || 'Point';
   this.colorMode = options.colorMode || 'rgb';
@@ -1414,7 +1535,7 @@ function Point(opt_options) {
   // Points are static
   this.isStatic = true;
 }
-Burner.Utils.extend(Point, Burner.Item);
+Utils.extend(Point, Item);
 
 Point.prototype.step = function() {};
 
@@ -1454,7 +1575,7 @@ Point.prototype.draw = function() {
  * @returns {string} A string representing cssText.
  */
 Point.prototype.getCSSText = function(props) {
-  return Burner.Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
@@ -1487,6 +1608,6 @@ Point.prototype.getCSSText = function(props) {
 
 module.exports.Point = Point;
 
-},{"Burner":2}]},{},[1])
+},{"Burner":8}]},{},[1])
 (1)
 });

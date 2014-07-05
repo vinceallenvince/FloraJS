@@ -1,6 +1,5 @@
-/*global Burner */
-
-var Burner = require('Burner');
+var Item = require('Burner').Item,
+    Utils = require('Burner').Utils;
 
 /**
  * Creates a new Point.
@@ -11,9 +10,16 @@ var Burner = require('Burner');
  * @constructor
  * @extends Burner.Item
  * @param {Object} [opt_options=] A map of initial properties.
+ * @param {string} [opt_options.name = 'Point'] Name.
+ * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
+ * @param {Array} [opt_options.color = 200, 200, 200] Color.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.borderWidth = 2] Border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
  */
 function Point(opt_options) {
-  Burner.Item.call(this);
+  Item.call(this);
   var options = opt_options || {};
   this.name = options.name || 'Point';
   this.colorMode = options.colorMode || 'rgb';
@@ -26,7 +32,7 @@ function Point(opt_options) {
   // Points are static
   this.isStatic = true;
 }
-Burner.Utils.extend(Point, Burner.Item);
+Utils.extend(Point, Item);
 
 Point.prototype.step = function() {};
 
@@ -66,7 +72,7 @@ Point.prototype.draw = function() {
  * @returns {string} A string representing cssText.
  */
 Point.prototype.getCSSText = function(props) {
-  return Burner.Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
