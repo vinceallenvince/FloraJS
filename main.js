@@ -9,13 +9,8 @@ Flora.System.Classes = {
   Attractor: require('./src/Attractor').Attractor,
   Connector: require('./src/Connector').Connector,
   Mover: require('./src/Mover').Mover,
-  Point: require('./src/Point').Point
+  Point: require('./src/Point').Point,
+  Repeller: require('./src/Repeller').Repeller
 };
-
-/*var Burner = require('Burner');
-Burner.System.Classes = Flora;
-window.Burner = Burner;*/
-
-//
 
 module.exports = Flora;

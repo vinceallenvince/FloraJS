@@ -10,18 +10,12 @@ Flora.System.Classes = {
   Attractor: _dereq_('./src/Attractor').Attractor,
   Connector: _dereq_('./src/Connector').Connector,
   Mover: _dereq_('./src/Mover').Mover,
-  Point: _dereq_('./src/Point').Point
+  Point: _dereq_('./src/Point').Point,
+  Repeller: _dereq_('./src/Repeller').Repeller
 };
 
-/*var Burner = require('Burner');
-Burner.System.Classes = Flora;
-window.Burner = Burner;*/
-
-//
-
 module.exports = Flora;
-
-},{"./src/Attractor":9,"./src/Connector":10,"./src/Mover":11,"./src/Point":12,"Burner":8}],2:[function(_dereq_,module,exports){
+},{"./src/Attractor":9,"./src/Connector":10,"./src/Mover":11,"./src/Point":12,"./src/Repeller":13,"Burner":8}],2:[function(_dereq_,module,exports){
 /*global document */
 
 var Vector = _dereq_('./Vector').Vector;
@@ -1917,7 +1911,7 @@ Mover.mouseout = function() {
 
 Mover.prototype.step = function() {
 
-  var x = this.location.x,
+  var i, max, x = this.location.x,
       y = this.location.y;
 
   this.beforeStep.call(this);
@@ -1940,10 +1934,17 @@ Mover.prototype.step = function() {
 
   // attractors
   var attractors = System.getAllItemsByName('Attractor');
-  for (var i = 0, max = attractors.length; i < max; i += 1) {
+  for (i = 0, max = attractors.length; i < max; i += 1) {
     if (this.id !== attractors[i].id) {
-      //console.log(attractors[i]);
       this.applyForce(attractors[i].attract(this));
+    }
+  }
+
+  // repellers
+  var repellers = System.getAllItemsByName('Repeller');
+  for (i = 0, max = repellers.length; i < max; i += 1) {
+    if (this.id !== repellers[i].id) {
+      this.applyForce(repellers[i].attract(this));
     }
   }
 
@@ -2159,6 +2160,46 @@ Point.prototype.getCSSText = function(props) {
 
 module.exports.Point = Point;
 
-},{"Burner":8}]},{},[1])
+},{"Burner":8}],13:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    Attractor = _dereq_('./Attractor').Attractor,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new Repeller object.
+ *
+ * @constructor
+ * @extends Mover
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.G = 10] Universal Gravitational Constant.
+ * @param {Array} [opt_options.color = 92, 187, 0] Color.
+ * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
+ * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
+ */
+function Repeller(opt_options) {
+  Attractor.call(this);
+  var options = opt_options || {};
+  this.name = options.name || 'Repeller';
+  this.G = typeof options.G === 'undefined' ? -10 : options.G;
+  this.color = options.color || [250, 105, 0];
+  this.borderColor = options.borderColor || [224, 228, 204];
+  this.boxShadowColor = options.boxShadowColor || [250, 105, 0];
+}
+Utils.extend(Repeller, Attractor);
+
+/**
+ * Initializes Repeller.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
+ */
+Repeller.prototype.init = function(world, opt_options) {
+  Repeller._superClass.init.call(this, world, opt_options);
+};
+
+module.exports.Repeller = Repeller;
+
+},{"./Attractor":9,"Burner":8}]},{},[1])
 (1)
 });

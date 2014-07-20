@@ -1,6 +1,7 @@
 var Burner = require('Burner'),
     test = require('tape'),
     Attractor = require('../src/Attractor').Attractor,
+    Repeller = require('../src/Repeller').Repeller,
     Mover, obj;
 
 var evts = {};
@@ -542,7 +543,28 @@ test('step() should decrement life.', function(t) {
 
 test('step() should call afterStep().', function(t) {
 
-  window.requestAnimationFrame = function() {};
+  beforeTest();
+
+  var obj, val = 100;
+
+  Burner.System.Classes = {
+    Mover: Mover
+  };
+
+  Burner.System.setup(function() { // add your new object to the system
+    this.add('World');
+    obj = this.add('Mover', {
+      afterStep: function() {val = 30;}
+    });
+
+  });
+
+  obj.step();
+  t.equal(val, 30, 'step() calls afterStep().');
+  t.end();
+});
+
+test('should apply forces from Attractors, Repellers and Draggers.', function(t) {
 
   beforeTest();
 
@@ -550,21 +572,26 @@ test('step() should call afterStep().', function(t) {
 
   Burner.System.Classes = {
     Mover: Mover,
-    Attractor: Attractor
+    Attractor: Attractor,
+    Repeller: Repeller
   };
 
   Burner.System.setup(function() { // add your new object to the system
     this.add('World');
+    this.add('Mover');
     this.add('Attractor');
     this.add('Attractor');
-    obj = this.add('Mover', {
-      afterStep: function() {val = 30;}
-    });
-
+    this.add('Repeller');
+    this.add('Repeller');
   });
-  Burner.System.loop();
-      //obj.step();
-    t.equal(val, 30, 'step() calls afterStep().');
+
+  Burner.System._stepForward();
+
+  var attractors = Burner.System.getAllItemsByName('Attractor');
+  t.equal(attractors.length, 2, 'should apply forces from attractors.');
+
+  var repellers = Burner.System.getAllItemsByName('Repeller');
+  t.equal(repellers.length, 2, 'should apply forces from repellers.');
 
   t.end();
 });

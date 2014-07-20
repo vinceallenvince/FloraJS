@@ -1,30 +1,30 @@
 var Burner = require('Burner'),
     test = require('tape'),
-    Attractor, obj;
+    Repeller, obj;
 
 function beforeTest() {
   Burner.System.setupFunc = function() {};
   Burner.System._resetSystem();
 }
 
-test('load Attractor.', function(t) {
-  Attractor = require('../src/Attractor').Attractor;
-  t.ok(Attractor, 'object loaded');
+test('load Repeller.', function(t) {
+  Repeller = require('../src/Repeller').Repeller;
+  t.ok(Repeller, 'object loaded');
   t.end();
 });
 
-test('new Attractor() should have default properties.', function(t) {
+test('new Repeller() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Attractor();
-  t.equal(obj.name, 'Attractor', 'name.');
-  t.equal(obj.G, 10, 'default gravitational constant.');
+  obj = new Repeller();
+  t.equal(obj.name, 'Repeller', 'name.');
+  t.equal(obj.G, -10, 'default gravitational constant.');
   t.equal(obj.mass, 1000, 'default mass.');
   t.equal(obj.isStatic, true, 'default isStatic');
   t.equal(obj.width, 100, 'default width.');
   t.equal(obj.height, 100, 'default height.');
-  t.assert(obj.color[0] === 92 && obj.color[1] === 187 && obj.color[2] === 0, 'default color.');
+  t.assert(obj.color[0] === 250 && obj.color[1] === 105 && obj.color[2] === 0, 'default color.');
   t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
   t.equal(obj.borderStyle, 'double', 'default borderStyle.');
   t.assert(obj.borderColor[0] === 224 && obj.borderColor[1] === 228 && obj.borderColor[2] === 204, 'default borderColor.');
@@ -33,18 +33,18 @@ test('new Attractor() should have default properties.', function(t) {
   t.equal(obj.boxShadowOffsetY, 0, 'default boxShadowOffsetY.');
   t.equal(obj.boxShadowBlur, 0, 'default boxShadowBlur.');
   t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
-  t.assert(obj.boxShadowColor[0] === 64 && obj.boxShadowColor[1] === 129 && obj.boxShadowColor[2] === 0, 'default boxShadowColor.');
+  t.assert(obj.boxShadowColor[0] === 250 && obj.boxShadowColor[1] === 105 && obj.boxShadowColor[2] === 0, 'default boxShadowColor.');
   t.equal(obj.opacity, 0.75, 'default opacity.');
   t.equal(obj.zIndex, 1, 'default zIndex.');
 
   t.end();
 });
 
-test('new Attractor() should have custom properties.', function(t) {
+test('new Repeller() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Attractor({
+  obj = new Repeller({
     G: 20,
     mass: 3000,
     isStatic: false,
@@ -91,16 +91,16 @@ test('draw() should assign a css test string to the style property.', function(t
   var obj;
 
   Burner.System.Classes = {
-    Attractor: Attractor
+    Repeller: Repeller
   };
 
   Burner.System.setup(function() {
     this.add('World');
-    obj = this.add('Attractor'); // add your new object to the system
+    obj = this.add('Repeller'); // add your new object to the system
     obj.draw();
     t.equal(obj.el.style.width, '100px', 'el.style width.');
     t.equal(obj.el.style.height, '100px', 'el.style height.');
-    t.equal(obj.el.style.backgroundColor, 'rgb(92, 187, 0)', 'el.style backgroundColor');
+    t.equal(obj.el.style.backgroundColor, 'rgb(250, 105, 0)', 'el.style backgroundColor');
     t.equal(obj.el.style.borderTopWidth, '25px', 'el.style border top width');
     t.equal(obj.el.style.borderRightWidth, '25px', 'el.style border right width');
     t.equal(obj.el.style.borderBottomWidth, '25px', 'el.style border bottom width');
@@ -117,7 +117,7 @@ test('draw() should assign a css test string to the style property.', function(t
     t.equal(obj.el.style.borderTopRightRadius, '100% 100%', 'el.style border top right radius');
     t.equal(obj.el.style.borderBottomRightRadius, '100% 100%', 'el.style border bottom right radius');
     t.equal(obj.el.style.borderBottomLeftRadius, '100% 100%', 'el.style border bottom left radius');
-    t.equal(obj.el.style.boxShadow, 'rgb(64, 129, 0) 0px 0px 0px 25px', 'el.style boxShadow');
+    t.equal(obj.el.style.boxShadow, 'rgb(250, 105, 0) 0px 0px 0px 25px', 'el.style boxShadow');
     t.equal(obj.el.style.opacity, '0.75', 'el.style opacity');
     t.equal(obj.el.style.zIndex, '1', 'el.style zIndex');
   });
@@ -132,22 +132,22 @@ test('attract() should return an attraction force.', function(t) {
   var obj;
 
   Burner.System.Classes = {
-    Attractor: Attractor
+    Repeller: Repeller
   };
 
   Burner.System.setup(function() { // add your new object to the system
     this.add('World');
-    obj = this.add('Attractor', {
+    obj = this.add('Repeller', {
       location: new Burner.Vector(100, 100)
     });
     var item = this.add('Item', {
       location: new Burner.Vector(10, 10)
     });
-    this.add('Attractor');
+    this.add('Repeller');
     var force = obj.attract(item);
 
-    t.equal(parseFloat(force.x.toPrecision(3)), 4.36, 'attract() returns force.x.');
-    t.equal(parseFloat(force.y.toPrecision(3)), 4.36, 'attract() returns force.y.');
+    t.equal(parseFloat(force.x.toPrecision(3)), -4.36, 'attract() returns force.x.');
+    t.equal(parseFloat(force.y.toPrecision(3)), -4.36, 'attract() returns force.y.');
 
   });
 

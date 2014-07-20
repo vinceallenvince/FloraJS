@@ -181,7 +181,7 @@ Mover.mouseout = function() {
 
 Mover.prototype.step = function() {
 
-  var x = this.location.x,
+  var i, max, x = this.location.x,
       y = this.location.y;
 
   this.beforeStep.call(this);
@@ -204,9 +204,17 @@ Mover.prototype.step = function() {
 
   // attractors
   var attractors = System.getAllItemsByName('Attractor');
-  for (var i = 0, max = attractors.length; i < max; i += 1) {
+  for (i = 0, max = attractors.length; i < max; i += 1) {
     if (this.id !== attractors[i].id) {
       this.applyForce(attractors[i].attract(this));
+    }
+  }
+
+  // repellers
+  var repellers = System.getAllItemsByName('Repeller');
+  for (i = 0, max = repellers.length; i < max; i += 1) {
+    if (this.id !== repellers[i].id) {
+      this.applyForce(repellers[i].attract(this));
     }
   }
 

@@ -58,8 +58,6 @@ Attractor.prototype.init = function(world, opt_options) {
   Attractor._superClass.init.call(this, world, opt_options);
 };
 
-Attractor.prototype.hello = function() {};
-
 /**
  * Calculates a force to apply to simulate attraction/repulsion on an object.
  *
