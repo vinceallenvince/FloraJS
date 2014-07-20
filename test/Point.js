@@ -13,7 +13,7 @@ test('load Point.', function(t) {
   t.end();
 });
 
-test('new Item() should have default properties.', function(t) {
+test('new Point() should have default properties.', function(t) {
 
   beforeTest();
 
@@ -29,7 +29,7 @@ test('new Item() should have default properties.', function(t) {
   t.end();
 });
 
-test('new Item() should accept custom properties.', function(t) {
+test('new Point() should accept custom properties.', function(t) {
 
   beforeTest();
 
@@ -65,6 +65,7 @@ test('draw() should assign a css test string to the style property.', function(t
   };
 
   Burner.System.setup(function() {
+    this.add('World');
     obj = this.add('Point'); // add your new object to the system
     obj.draw();
     t.equal(obj.el.style.width, '10px', 'el.style width.');

@@ -1,12 +1,15 @@
 // Flora classes
 var Flora = {
   System: require('Burner').System,
-  Vector: require('Burner').Vector
+  Vector: require('Burner').Vector,
+  World: require('Burner').World
 };
 
 Flora.System.Classes = {
-  Point: require('./src/Point').Point,
-  Connector: require('./src/Connector').Connector
+  Attractor: require('./src/Attractor').Attractor,
+  Connector: require('./src/Connector').Connector,
+  Mover: require('./src/Mover').Mover,
+  Point: require('./src/Point').Point
 };
 
 /*var Burner = require('Burner');

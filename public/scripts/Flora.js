@@ -2,12 +2,15 @@
 // Flora classes
 var Flora = {
   System: _dereq_('Burner').System,
-  Vector: _dereq_('Burner').Vector
+  Vector: _dereq_('Burner').Vector,
+  World: _dereq_('Burner').World
 };
 
 Flora.System.Classes = {
-  Point: _dereq_('./src/Point').Point,
-  Connector: _dereq_('./src/Connector').Connector
+  Attractor: _dereq_('./src/Attractor').Attractor,
+  Connector: _dereq_('./src/Connector').Connector,
+  Mover: _dereq_('./src/Mover').Mover,
+  Point: _dereq_('./src/Point').Point
 };
 
 /*var Burner = require('Burner');
@@ -18,7 +21,7 @@ window.Burner = Burner;*/
 
 module.exports = Flora;
 
-},{"./src/Connector":9,"./src/Point":10,"Burner":8}],2:[function(_dereq_,module,exports){
+},{"./src/Attractor":9,"./src/Connector":10,"./src/Mover":11,"./src/Point":12,"Burner":8}],2:[function(_dereq_,module,exports){
 /*global document */
 
 var Vector = _dereq_('./Vector').Vector;
@@ -70,6 +73,8 @@ Item._stylePosition =
  * @param {number} [opt_options.maxSpeed = 10] maxSpeed.
  * @param {number} [opt_options.minSpeed = 0] minSpeed.
  * @param {bounciness} [opt_options.bounciness = 0] bounciness.
+ * @param {number} [opt_options.life = 0] life.
+ * @param {number} [opt_options.lifespan = -1] lifespan.
  * @param {boolean} [opt_options.checkWorldEdges = true] Set to true to check for world boundary collisions.
  * @param {boolean} [opt_options.wrapWorldEdges = false] Set to true to check for world boundary collisions and position item at the opposing boundary.
  * @param {Function} [opt_options.beforeStep = 0] This function will be called at the beginning of the item's step() function.
@@ -124,14 +129,23 @@ Item.prototype.init = function(world, opt_options) {
   this.bounciness = typeof this.bounciness !== 'undefined' ? this.bounciness :
       options.bounciness || 0.5;
 
+  this.life = typeof this.life !== 'undefined' ? this.life :
+      options.life || 0;
+
+  this.lifespan = typeof this.lifespan !== 'undefined' ? this.lifespan :
+      options.lifespan || -1;
+
   this.checkWorldEdges = typeof this.checkWorldEdges !== 'undefined' ? this.checkWorldEdges :
       typeof options.checkWorldEdges === 'undefined' ? true : options.checkWorldEdges;
 
   this.wrapWorldEdges = typeof this.wrapWorldEdges !== 'undefined' ? this.wrapWorldEdges :
-      options.wrapWorldEdges || false;
+      !!options.wrapWorldEdges;
 
   this.beforeStep = typeof this.beforeStep !== 'undefined' ? this.beforeStep :
       options.beforeStep || function() {};
+
+  this.controlCamera = typeof this.controlCamera !== 'undefined' ? this.controlCamera :
+      !!options.controlCamera;
 
   this._force = this._force || new Vector();
 
@@ -152,6 +166,10 @@ Item.prototype.init = function(world, opt_options) {
  * @memberof Item
  */
 Item.prototype.step = function() {
+
+  var x = this.location.x,
+      y = this.location.y;
+
   this.beforeStep.call(this);
   this.applyForce(this.world.gravity);
   this.applyForce(this.world.wind);
@@ -162,6 +180,9 @@ Item.prototype.step = function() {
     this._checkWorldEdges();
   } else if (this.wrapWorldEdges) {
     this._wrapWorldEdges();
+  }
+  if (this.controlCamera) { // need the corrected velocity which is the difference bw old/new location
+    this._checkCameraEdges(x, y, this.location.x, this.location.y);
   }
   this.acceleration.mult(0);
 };
@@ -231,17 +252,25 @@ Item.prototype._wrapWorldEdges = function() {
       width = this.width * this.scale,
       height = this.height * this.scale;
 
-  if (location.x + width / 2 > worldRight) {
-    location.x = width / 2;
-  } else if (location.x < width / 2) {
-    location.x = worldRight - width / 2;
+  if (location.x - width / 2 > worldRight) {
+    location.x = -width / 2;
+  } else if (location.x < -width / 2) {
+    location.x = worldRight + width / 2;
   }
 
-  if (location.y + height / 2 > worldBottom) {
-    location.y = height / 2;
-  } else if (location.y < height / 2) {
-    location.y = worldBottom - height / 2;
+  if (location.y - height / 2 > worldBottom) {
+    location.y = -height / 2;
+  } else if (location.y < -height / 2) {
+    location.y = worldBottom + height / 2;
   }
+};
+
+/**
+ * Moves the world in the opposite direction of the Camera's controlObj.
+ */
+Item.prototype._checkCameraEdges = function(lastX, lastY, x, y) {
+  this.world._camera.x = lastX - x;
+  this.world._camera.y = lastY - y;
 };
 
 /**
@@ -524,27 +553,11 @@ System._statsDisplay = null;
   * Call to execute any setup code before starting the animation loop.
   * @function setup
   * @param  {Object} opt_func   A function to run before the function exits.
-  * @param  {Object|Array} opt_worlds A instance or array of instances of World.
   * @memberof System
   */
-System.setup = function(opt_func, opt_worlds) {
+System.setup = function(opt_func) {
 
-  var worlds = opt_worlds || new World(document.body),
-      func = opt_func || function() {}, i, l, max;
-
-  if (Object.prototype.toString.call(worlds) === '[object Array]') {
-    l = worlds.length;
-    for (i = 0, max = l; i < max; i++) {
-      System._addWorld(worlds[i]);
-    }
-  } else {
-    System._addWorld(worlds);
-  }
-
-  l = System._records.length;
-  for (i = 0, max = l; i < max; i++) {
-    System._records[i].init();
-  }
+  var func = opt_func || function() {}, i, l, max;
 
   document.body.onorientationchange = System.updateOrientation;
 
@@ -593,16 +606,17 @@ System._addWorld = function(world) {
  * Adds instances of class to _records and calls init on them.
  * @function add
  * @memberof System
- * @param {string} klass The name of the class to add.
+ * @param {string} [opt_klass = 'Item'] The name of the class to add.
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string=} [opt_world = System._records[0]] An instance of World to contain the item.
  * @returns {Object} An instance of the added item.
  */
-System.add = function(klass, opt_options, opt_world) {
+System.add = function(opt_klass, opt_options, opt_world) {
 
-  var records = this._records,
+  var klass = opt_klass || 'Item',
       options = opt_options || {},
-      world = opt_world || System._records[0];
+      world = opt_world || System._records[0],
+      records = this._records;
 
   options.name = klass;
 
@@ -610,7 +624,9 @@ System.add = function(klass, opt_options, opt_world) {
   if (System._pool.length) {
     records[records.length] = System._cleanObj(System._pool.splice(0, 1)[0]);
   } else {
-    if (System.Classes[klass]) {
+    if (klass.toLowerCase() === 'world') {
+      records.push(new World(options));
+    } else if (System.Classes[klass]) {
       records.push(new System.Classes[klass](options));
     } else {
       records.push(new Item());
@@ -676,6 +692,13 @@ System.loop = function() {
 
   for (i = len - 1; i >= 0; i -= 1) {
     if (records[i].step && !records[i].world.pauseStep) {
+
+      if (records[i].life < records[i].lifespan) {
+        records[i].life += 1;
+      } else if (records[i].lifespan !== -1) {
+        System.remove(records[i]);
+        continue;
+      }
       records[i].step();
     }
   }
@@ -915,6 +938,7 @@ Utils.extend = function(subClass, superClass) {
   F.prototype = superClass.prototype;
   subClass.prototype = new F;
   subClass.prototype.constructor = subClass;
+  subClass._superClass = superClass.prototype;
 };
 
 /**
@@ -1022,6 +1046,34 @@ Utils.constrain = function(val, low, high) {
     return low;
   }
   return val;
+};
+
+/**
+ * Determines if one object is inside another.
+ *
+ * @function isInside
+ * @memberof Utils
+ * @param {Object} obj The object.
+ * @param {Object} container The containing object.
+ * @returns {boolean} Returns true if the object is inside the container.
+ */
+Utils.isInside = function(obj, container) {
+  if (!obj || !container) {
+    throw new Error('isInside() requires both an object and a container.');
+  }
+
+  obj.width = obj.width || 0;
+  obj.height = obj.height || 0;
+  container.width = container.width || 0;
+  container.height = container.height || 0;
+
+  if (obj.location.x + obj.width / 2 > container.location.x - container.width / 2 &&
+    obj.location.x - obj.width / 2 < container.location.x + container.width / 2 &&
+    obj.location.y + obj.height / 2 > container.location.y - container.height / 2 &&
+    obj.location.y - obj.height / 2 < container.location.y + container.height / 2) {
+    return true;
+  }
+  return false;
 };
 
 module.exports.Utils = Utils;
@@ -1284,27 +1336,24 @@ var Vector = _dereq_('./Vector').Vector,
 /**
  * Creates a new World.
  *
- * @param {Object} el The DOM element representing the world.
  * @param {Object} [opt_options=] A map of initial properties.
  * @constructor
  */
-function World(el, opt_options) {
+function World(opt_options) {
 
-  if (!el || typeof el !== 'object') {
-    throw new Error('World: A valid DOM object is required for the new World "el" property.');
-  }
+  Item.call(this);
 
   var options = opt_options || {};
 
-  this.el = el;
+  this.el = options.el || document.body;
   this.name = 'World';
+
   /**
    * Worlds do not have worlds. However, assigning an
    * object literal makes for less conditions in the
    * update loop.
    */
   this.world = {};
-  Item.call(this);
 }
 Utils.extend(World, Item);
 
@@ -1318,17 +1367,25 @@ Utils.extend(World, Item);
  * @param {number} [opt_options.height = this.el.scrollHeight] Height.
  *
  */
-World.prototype.init = function(opt_options) {
+World.prototype.init = function(world, opt_options) {
+
+  World._superClass.init.call(this, this.world, opt_options);
 
   var options = opt_options || {};
 
+  this.color = options.color || [0, 0, 0];
   this.width = options.width || this.el.scrollWidth;
   this.height = options.height || this.el.scrollHeight;
+  this.location = options.location || new Vector(document.body.scrollWidth / 2, document.body.scrollHeight / 2);
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || [0, 0, 0];
   this.gravity = options.gravity || new Vector(0, 1);
   this.c = options.c || 0.1;
   this.pauseStep = !!options.pauseStep;
   this.pauseDraw = !!options.pauseDraw;
   this.el.className = this.name.toLowerCase();
+  this._camera = this._camera || new Vector();
 };
 
 /**
@@ -1340,14 +1397,50 @@ World.prototype.add = function(item) {
 };
 
 /**
- * A noop.
+ * Applies forces to world.
+ * @function step
+ * @memberof World
  */
-World.prototype.step = function() {};
+World.prototype.step = function() {
+  this.location.add(this._camera);
+};
 
 /**
- * A noop.
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof World
  */
-World.prototype.draw = function() {};
+World.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    color0: this.color[0],
+    color1: this.color[1],
+    color2: this.color[2],
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor1: this.borderColor[0],
+    borderColor2: this.borderColor[1],
+    borderColor3: this.borderColor[2]
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof World
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+World.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: rgb(' + props.color0 + ', ' + props.color1 + ', ' + props.color2 + '); border: ' + props.borderWidth + 'px ' + props.borderStyle + ' rgb(' + props.borderColor1 + ', ' + props.borderColor2 + ', ' + props.borderColor3 + ')';
+};
 
 module.exports.World = World;
 },{"./Item":2,"./Utils":5,"./Vector":6}],8:[function(_dereq_,module,exports){
@@ -1359,6 +1452,146 @@ module.exports = {
   World: _dereq_('./World').World
 };
 },{"./Item":2,"./System":4,"./Utils":5,"./Vector":6,"./World":7}],9:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    Mover = _dereq_('./Mover').Mover,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new Attractor object.
+ *
+ * @constructor
+ * @extends Mover
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.G = 10] Universal Gravitational Constant.
+ * @param {number} [opt_options.mass = 1000] Mass. Increase for a greater gravitational effect.
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
+ * @param {number} [opt_options.width = 100] Width.
+ * @param {number} [opt_options.height = 100] Height.
+ * @param {Array} [opt_options.color = 92, 187, 0] Color.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {string} [opt_options.borderStyle = 'double'] Border style.
+ * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 8] Box-shadow spread.
+ * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
+ * @param {number} [opt_options.opacity = 0.75] The object's opacity.
+ * @param {number} [opt_options.zIndex = 1] The object's zIndex.
+ */
+function Attractor(opt_options) {
+  Mover.call(this);
+  var options = opt_options || {};
+  this.name = options.name || 'Attractor';
+  this.G = typeof options.G === 'undefined' ? 10 : options.G;
+  this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.width = typeof options.width === 'undefined' ? 100 : options.width;
+  this.height = typeof options.height === 'undefined' ? 100 : options.height;
+  this.color = options.color || [92, 187, 0];
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
+  this.borderStyle = options.borderStyle || 'double';
+  this.borderColor = options.borderColor || [224, 228, 204];
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowOffsetX = options.boxShadowOffsetX || 0;
+  this.boxShadowOffsetY = options.boxShadowOffsetY || 0;
+  this.boxShadowBlur = options.boxShadowBlur || 0;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
+  this.boxShadowColor = options.boxShadowColor || [64, 129, 0];
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
+}
+Utils.extend(Attractor, Mover);
+
+/**
+ * Initializes Attractor.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
+ */
+Attractor.prototype.init = function(world, opt_options) {
+  Attractor._superClass.init.call(this, world, opt_options);
+};
+
+/**
+ * Calculates a force to apply to simulate attraction/repulsion on an object.
+ *
+ * @param {Object} obj The target object.
+ * @returns {Object} A force to apply.
+ */
+Attractor.prototype.attract = function(obj) {
+
+  var force = Vector.VectorSub(this.location, obj.location);
+
+  var distance = Utils.constrain(
+      force.mag(),
+      obj.width * obj.height,
+      this.width * this.height); // min = the size of obj; max = the size of this attractor
+
+  force.normalize();
+
+  // strength is proportional to the mass of the objects and their proximity to each other
+  var strength = (this.G * this.mass * obj.mass) / (distance * distance);
+  force.mult(strength);
+
+  return force;
+};
+
+/**
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof Attractor
+ */
+Attractor.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    color0: this.color[0],
+    color1: this.color[1],
+    color2: this.color[2],
+    colorMode: this.colorMode,
+    borderRadius: this.borderRadius,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor0: this.borderColor[0],
+    borderColor1: this.borderColor[1],
+    borderColor2: this.borderColor[2],
+    boxShadowOffsetX: this.boxShadowOffsetX,
+    boxShadowOffsetY: this.boxShadowOffsetY,
+    boxShadowBlur: this.boxShadowBlur,
+    boxShadowSpread: this.boxShadowSpread,
+    boxShadowColor0: this.boxShadowColor[0],
+    boxShadowColor1: this.boxShadowColor[1],
+    boxShadowColor2: this.boxShadowColor[2],
+    opacity: this.opacity,
+    zIndex: this.zIndex
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof Attractor
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+Attractor.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
+      props.width + 'px; height: ' + props.height + 'px; background-color: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
+      props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
+      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+};
+
+module.exports.Attractor = Attractor;
+
+
+},{"./Mover":11,"Burner":8}],10:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils,
     Vector = _dereq_('Burner').Vector;
@@ -1500,7 +1733,325 @@ Connector.prototype.getCSSText = function(props) {
 
 module.exports.Connector = Connector;
 
-},{"Burner":8}],10:[function(_dereq_,module,exports){
+},{"Burner":8}],11:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    System = _dereq_('Burner').System,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new Mover.
+ *
+ * Points are the most basic Flora item. They represent a fixed point in
+ * 2D space and are just an extension of Burner Item with isStatic set to true.
+ *
+ * @constructor
+ * @extends Burner.Item
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {string} [opt_options.name = 'Mover'] Name.
+ * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
+ * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.borderWidth = 2] Border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
+ * @param {boolean} [opt_options.pointToDirection = true] If true, object will point in the direction it's moving.
+ * @param {boolean} [opt_options.draggable = false] If true, object can move via drag and drop.
+ * @param {Object} [opt_options.parent = null] A parent object. If set, object will be fixed to the parent relative to an offset distance.
+ * @param {boolean} [opt_options.pointToParentDirection = true] If true, object points in the direction of the parent's velocity.
+ * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the object's parent.
+ * @param {number} [opt_options.offsetAngle = 0] The rotation around the center of the object's parent.
+ * @param {function} [opt_options.afterStep = null] A function to run after the step() function.
+ * @param {function} [opt_options.isStatic = false] Set to true to prevent object from moving.
+ * @param {Object} [opt_options.parent = null] Attach to another Flora object.
+ */
+function Mover(opt_options) {
+  Item.call(this);
+  var options = opt_options || {};
+  this.name = options.name || 'Mover';
+  this.colorMode = options.colorMode || 'rgb';
+  this.color = options.color || [255, 255, 255];
+  this.borderRadius = options.borderRadius || 0;
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || [0, 0, 0];
+  this.pointToDirection = typeof options.pointToDirection === 'undefined' ? true : options.pointToDirection;
+  this.draggable = !!options.draggable;
+  this.parent = options.parent || null;
+  this.pointToParentDirection = typeof options.pointToParentDirection === 'undefined' ? true : options.pointToParentDirection;
+  this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 0 : options.offsetDistance;
+  this.offsetAngle = options.offsetAngle || 0;
+  this.afterStep = options.afterStep || null;
+  this.isStatic = !!options.isStatic;
+
+  //
+
+  this.isMouseOut = false;
+  this.isPressed = false;
+  this.mouseOutInterval = false;
+  this._friction = new Vector();
+
+}
+Utils.extend(Mover, Item);
+
+/**
+ * Initializes Mover.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} opt_options A map of initial properties.
+ */
+Mover.prototype.init = function(world, opt_options) {
+  Mover._superClass.init.call(this, world, opt_options);
+
+  var me = this;
+
+  if (this.draggable) {
+
+    Utils.addEvent(this.el, 'mouseover', (function() {
+      return function(e) {
+        Mover.mouseover.call(me, e);
+      };
+    }()));
+
+    Utils.addEvent(this.el, 'mousedown', (function() {
+      return function(e) {
+        Mover.mousedown.call(me, e);
+      };
+    }()));
+
+    Utils.addEvent(this.el, 'mousemove', (function() {
+      return function(e) {
+        Mover.mousemove.call(me, e);
+      };
+    }()));
+
+    Utils.addEvent(this.el, 'mouseup', (function() {
+      return function(e) {
+        Mover.mouseup.call(me, e);
+      };
+    }()));
+
+    Utils.addEvent(this.el, 'mouseout', (function() {
+      return function(e) {
+        Mover.mouseout.call(me, e);
+      };
+    }()));
+  }
+};
+
+/**
+ * Handles mouseup events.
+ */
+Mover.mouseover = function() {
+  this.isMouseOut = false;
+  clearInterval(this.mouseOutInterval);
+};
+
+/**
+ * Handles mousedown events.
+ */
+Mover.mousedown = function() {
+  this.isPressed = true;
+  this.isMouseOut = false;
+};
+
+/**
+ * Handles mousemove events.
+ * @param  {Object} e An event object.
+ */
+Mover.mousemove = function(e) {
+
+  var x, y;
+
+  if (this.isPressed) {
+
+    this.isMouseOut = false;
+
+    if (e.pageX && e.pageY) {
+      x = e.pageX - this.world.el.offsetLeft;
+      y = e.pageY - this.world.el.offsetTop;
+    } else if (e.clientX && e.clientY) {
+      x = e.clientX - this.world.el.offsetLeft;
+      y = e.clientY - this.world.el.offsetTop;
+    }
+
+    if (x & y) {
+      this.location = new Vector(x, y);
+    }
+
+    this._checkWorldEdges();
+  }
+
+};
+
+/**
+ * Handles mouseup events.
+ */
+Mover.mouseup = function() {
+  this.isPressed = false;
+  // TODO: add mouse to obj acceleration
+};
+
+/**
+ * Handles mouse out events.
+ */
+Mover.mouseout = function() {
+
+  var x, y, me = this, mouse = System.mouse;
+
+  if (this.isPressed) {
+
+    this.isMouseOut = true;
+
+    this.mouseOutInterval = setInterval(function () { // if mouse is too fast for block update, update via an interval until it catches up
+
+      if (me.isPressed && me.isMouseOut) {
+
+        x = mouse.location.x - me.world.el.offsetLeft;
+        y = mouse.location.y - me.world.el.offsetTop;
+
+        me.location = new Vector(x, y);
+      }
+    }, 16);
+  }
+};
+
+Mover.prototype.step = function() {
+
+  var x = this.location.x,
+      y = this.location.y;
+
+  this.beforeStep.call(this);
+
+  if (this.isStatic || this.isPressed) {
+    return;
+  }
+
+  // start apply forces
+
+  if (this.world.c) { // friction
+    this._friction.x = this.velocity.x;
+    this._friction.y = this.velocity.y;
+    this._friction.mult(-1);
+    this._friction.normalize();
+    this._friction.mult(this.world.c);
+    this.applyForce(this._friction);
+  }
+  this.applyForce(this.world.gravity); // gravity
+
+  // attractors
+  var attractors = System.getAllItemsByName('Attractor');
+  for (var i = 0, max = attractors.length; i < max; i += 1) {
+    if (this.id !== attractors[i].id) {
+      //console.log(attractors[i]);
+      this.applyForce(attractors[i].attract(this));
+    }
+  }
+
+  this.velocity.add(this.acceleration); // add acceleration
+
+  this.velocity.limit(this.maxSpeed, this.minSpeed);
+
+  this.location.add(this.velocity); // add velocity
+
+  if (this.pointToDirection) { // object rotates toward direction
+    if (this.velocity.mag() > 0.1) {
+      this.angle = Utils.radiansToDegrees(Math.atan2(this.velocity.y, this.velocity.x));
+    }
+  }
+
+  if (this.wrapWorldEdges) {
+    this._wrapWorldEdges();
+  } else if (this.checkWorldEdges) {
+    this._checkWorldEdges();
+  }
+
+  if (this.controlCamera) {
+    this._checkCameraEdges(x, y, this.location.x, this.location.y);
+  }
+
+  if (this.parent) { // parenting
+
+    if (this.offsetDistance) {
+
+      r = this.offsetDistance; // use angle to calculate x, y
+      theta = Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
+      x = r * Math.cos(theta);
+      y = r * Math.sin(theta);
+
+      this.location.x = this.parent.location.x;
+      this.location.y = this.parent.location.y;
+      this.location.add(new Vector(x, y)); // position the child
+
+      if (this.pointToParentDirection) {
+        this.angle = Utils.radiansToDegrees(Math.atan2(this.parent.velocity.y, this.parent.velocity.x));
+      }
+
+    } else {
+      this.location.x = this.parent.location.x;
+      this.location.y = this.parent.location.y;
+    }
+  }
+
+  this.acceleration.mult(0);
+
+  if (this.life < this.lifespan) {
+    this.life += 1;
+  } else if (this.lifespan !== -1) {
+    System.remove(this);
+  }
+
+  if (this.afterStep) {
+    this.afterStep.call(this);
+  }
+};
+
+/**
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof Mover
+ */
+Mover.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    color0: this.color[0],
+    color1: this.color[1],
+    color2: this.color[2],
+    colorMode: this.colorMode,
+    borderRadius: this.borderRadius,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor0: this.borderColor[0],
+    borderColor1: this.borderColor[1],
+    borderColor2: this.borderColor[2]
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof Mover
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+Mover.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
+      props.width + 'px; height: ' + props.height + 'px; background-color: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
+      props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
+      props.borderRadius + '%;';
+};
+
+module.exports.Mover = Mover;
+
+
+},{"Burner":8}],12:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils;
 
