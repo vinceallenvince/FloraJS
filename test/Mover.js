@@ -2,6 +2,7 @@ var Burner = require('Burner'),
     test = require('tape'),
     Attractor = require('../src/Attractor').Attractor,
     Repeller = require('../src/Repeller').Repeller,
+    Dragger = require('../src/Dragger').Dragger,
     Mover, obj;
 
 var evts = {};
@@ -573,7 +574,8 @@ test('should apply forces from Attractors, Repellers and Draggers.', function(t)
   Burner.System.Classes = {
     Mover: Mover,
     Attractor: Attractor,
-    Repeller: Repeller
+    Repeller: Repeller,
+    Dragger: Dragger
   };
 
   Burner.System.setup(function() { // add your new object to the system
@@ -583,6 +585,8 @@ test('should apply forces from Attractors, Repellers and Draggers.', function(t)
     this.add('Attractor');
     this.add('Repeller');
     this.add('Repeller');
+    this.add('Dragger');
+    this.add('Dragger');
   });
 
   Burner.System._stepForward();
@@ -592,6 +596,9 @@ test('should apply forces from Attractors, Repellers and Draggers.', function(t)
 
   var repellers = Burner.System.getAllItemsByName('Repeller');
   t.equal(repellers.length, 2, 'should apply forces from repellers.');
+
+  var draggers = Burner.System.getAllItemsByName('Dragger');
+  t.equal(draggers.length, 2, 'should apply forces from draggers.');
 
   t.end();
 });

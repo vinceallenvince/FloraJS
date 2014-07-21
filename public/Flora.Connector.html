@@ -10,9 +10,7 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <!--<link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />-->
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <!--<script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>-->
   <script src="scripts/Flora.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
@@ -20,7 +18,7 @@
 
       Flora.System.setup(function() {
 
-        var world = Flora.System.firstWorld();
+        var world = this.add('World');
 
         var pointA = this.add('Point', {
           location: new Flora.Vector(world.width * 0.25, world.height * 0.25)

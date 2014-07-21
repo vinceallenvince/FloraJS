@@ -218,6 +218,14 @@ Mover.prototype.step = function() {
     }
   }
 
+  // draggers
+  var draggers = System.getAllItemsByName('Dragger');
+  for (i = 0, max = draggers.length; i < max; i += 1) {
+    if (this.id !== draggers[i].id && Utils.isInside(this, draggers[i])) {
+      this.applyForce(draggers[i].drag(this));
+    }
+  }
+
   this.velocity.add(this.acceleration); // add acceleration
 
   this.velocity.limit(this.maxSpeed, this.minSpeed);
