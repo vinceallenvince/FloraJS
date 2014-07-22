@@ -15,7 +15,6 @@ var Item = require('Burner').Item,
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
  * @param {string} [opt_options.name = 'Point'] Name.
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
  * @param {number} [options.zIndex = 0] zIndex.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
  * @param {Array} [options.borderColor = 150, 150, 150] Border color.
@@ -30,7 +29,7 @@ function Connector(options) {
   this.parentB = options.parentB;
 
   this.name = options.name || 'Connector';
-  this.colorMode = options.colorMode || 'rgb';
+  // this.colorMode = options.colorMode || 'rgb';
   this.zIndex = options.zIndex || 0;
   this.borderStyle = options.borderStyle || 'dotted';
   this.borderColor = options.borderColor || [150, 150, 150];

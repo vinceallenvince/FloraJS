@@ -22,7 +22,6 @@ test('new Connector() should have default properties.', function(t) {
     parentB: {}
   });
   t.equal(obj.name, 'Connector', 'name.');
-  t.equal(obj.colorMode, 'rgb', 'colorMode.');
   t.equal(obj.zIndex, 0, 'zIndex.');
   t.equal(obj.borderStyle, 'dotted', 'borderStyle.');
   t.assert(obj.borderColor[0] === 150 && obj.borderColor[1] === 150 && obj.borderColor[2] === 150, 'borderColor.');

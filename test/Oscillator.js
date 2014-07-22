@@ -1,6 +1,7 @@
 var Burner = require('Burner'),
     Vector = Burner.Vector,
     test = require('tape'),
+    SimplexNoise = require('../src/SimplexNoise').SimplexNoise,
     Oscillator, obj;
 
 function beforeTest() {
@@ -19,6 +20,7 @@ test('new Oscillator() should have default properties.', function(t) {
   beforeTest();
 
   obj = new Oscillator();
+
   t.equal(obj.name, 'Oscillator', 'name.');
   t.assert(obj.initialLocation.x === 0 && obj.initialLocation.y === 0, 'default initialLocation.');
   t.assert(obj.lastLocation.x === 0 && obj.lastLocation.y === 0, true, 'default lastLocation.');
@@ -75,7 +77,9 @@ test('new Oscillator() should have custom properties.', function(t) {
     boxShadowOffsetY: 10,
     boxShadowBlur: 4,
     boxShadowSpread: 10,
-    boxShadowColor: [10, 30, 80]
+    boxShadowColor: [10, 30, 80],
+    opacity: 0.5,
+    zIndex: 200
   });
 
   t.equal(obj.acceleration instanceof Vector, true, 'custom acceleration.');
@@ -100,6 +104,8 @@ test('new Oscillator() should have custom properties.', function(t) {
   t.equal(obj.boxShadowBlur, 4, 'custom boxShadowBlur.');
   t.equal(obj.boxShadowSpread, 10, 'custom boxShadowSpread.');
   t.assert(obj.boxShadowColor[0] === 10 && obj.boxShadowColor[1] === 30 && obj.boxShadowColor[2] === 80, 'custom boxShadowColor.');
+  t.equal(obj.opacity, 0.5, 'custom opacity.');
+  t.equal(obj.zIndex, 200, 'custom zIndex.');
 
   t.end();
 });
@@ -121,29 +127,148 @@ test('draw() should assign a css test string to the style property.', function(t
 
   Burner.System._stepForward();
 
-    t.equal(obj.el.style.width, '20px', 'el.style width.');
-    t.equal(obj.el.style.height, '20px', 'el.style height.');
-    t.equal(obj.el.style.backgroundColor, 'rgb(200, 100, 0)', 'el.style backgroundColor');
-    t.equal(obj.el.style.borderTopWidth, '0px', 'el.style border top width');
-    t.equal(obj.el.style.borderRightWidth, '0px', 'el.style border right width');
-    t.equal(obj.el.style.borderBottomWidth, '0px', 'el.style border bottom width');
-    t.equal(obj.el.style.borderLeftWidth, '0px', 'el.style border left width');
-    t.equal(obj.el.style.borderTopStyle, 'solid', 'el.style border top style');
-    t.equal(obj.el.style.borderRightStyle, 'solid', 'el.style border right style');
-    t.equal(obj.el.style.borderBottomStyle, 'solid', 'el.style border bottom style');
-    t.equal(obj.el.style.borderLeftStyle, 'solid', 'el.style border left style');
-    t.equal(obj.el.style.borderTopColor, 'rgb(255, 150, 50)', 'el.style border top color');
-    t.equal(obj.el.style.borderRightColor, 'rgb(255, 150, 50)', 'el.style border right color');
-    t.equal(obj.el.style.borderBottomColor, 'rgb(255, 150, 50)', 'el.style border bottom color');
-    t.equal(obj.el.style.borderLeftColor, 'rgb(255, 150, 50)', 'el.style border left color');
-    t.equal(obj.el.style.borderTopLeftRadius, '100% 100%', 'el.style border top left radius');
-    t.equal(obj.el.style.borderTopRightRadius, '100% 100%', 'el.style border top right radius');
-    t.equal(obj.el.style.borderBottomRightRadius, '100% 100%', 'el.style border bottom right radius');
-    t.equal(obj.el.style.borderBottomLeftRadius, '100% 100%', 'el.style border bottom left radius');
-    t.equal(obj.el.style.boxShadow, 'rgb(200, 100, 0) 0px 0px 0px 0px', 'el.style boxShadow');
-    t.equal(obj.el.style.opacity, '0.75', 'el.style opacity');
-    t.equal(obj.el.style.zIndex, '1', 'el.style zIndex');
+  t.equal(obj.el.style.width, '20px', 'el.style width.');
+  t.equal(obj.el.style.height, '20px', 'el.style height.');
+  t.equal(obj.el.style.backgroundColor, 'rgb(200, 100, 0)', 'el.style backgroundColor');
+  t.equal(obj.el.style.borderTopWidth, '0px', 'el.style border top width');
+  t.equal(obj.el.style.borderRightWidth, '0px', 'el.style border right width');
+  t.equal(obj.el.style.borderBottomWidth, '0px', 'el.style border bottom width');
+  t.equal(obj.el.style.borderLeftWidth, '0px', 'el.style border left width');
+  t.equal(obj.el.style.borderTopStyle, 'solid', 'el.style border top style');
+  t.equal(obj.el.style.borderRightStyle, 'solid', 'el.style border right style');
+  t.equal(obj.el.style.borderBottomStyle, 'solid', 'el.style border bottom style');
+  t.equal(obj.el.style.borderLeftStyle, 'solid', 'el.style border left style');
+  t.equal(obj.el.style.borderTopColor, 'rgb(255, 150, 50)', 'el.style border top color');
+  t.equal(obj.el.style.borderRightColor, 'rgb(255, 150, 50)', 'el.style border right color');
+  t.equal(obj.el.style.borderBottomColor, 'rgb(255, 150, 50)', 'el.style border bottom color');
+  t.equal(obj.el.style.borderLeftColor, 'rgb(255, 150, 50)', 'el.style border left color');
+  t.equal(obj.el.style.borderTopLeftRadius, '100% 100%', 'el.style border top left radius');
+  t.equal(obj.el.style.borderTopRightRadius, '100% 100%', 'el.style border top right radius');
+  t.equal(obj.el.style.borderBottomRightRadius, '100% 100%', 'el.style border bottom right radius');
+  t.equal(obj.el.style.borderBottomLeftRadius, '100% 100%', 'el.style border bottom left radius');
+  t.equal(obj.el.style.boxShadow, 'rgb(200, 100, 0) 0px 0px 0px 0px', 'el.style boxShadow');
+  t.equal(obj.el.style.opacity, '0.75', 'el.style opacity');
+  t.equal(obj.el.style.zIndex, '1', 'el.style zIndex');
+
   t.end();
 
+});
+
+test('step() should update oscillator location.', function(t) {
+
+  beforeTest();
+
+  var obj;
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      width: 400,
+      height: 300
+    });
+    obj = this.add('Oscillator', {
+      isStatic: true,
+      isPressed: false,
+      initialLocation: new Burner.Vector(100, 100)
+    });
+  });
+
+  Burner.System._stepForward();
+
+  t.equal(parseFloat(obj.location.x.toFixed(2)), 100, 'obj.location.x equals initialLocation.x if isStatic = true.');
+  t.equal(parseFloat(obj.location.y.toFixed(2)), 100, 'obj.location.y equals initialLocation.y if isStatic = true.');
+
+  //
+
+  beforeTest();
+
+  var obj;
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      width: 400,
+      height: 300
+    });
+    obj = this.add('Oscillator', {
+      initialLocation: new Burner.Vector(100, 100),
+      pointToDirection: true,
+      life: 99,
+      lifespan: 100
+    });
+  });
+
+  Burner.System._stepForward();
+
+  t.equal(parseFloat(obj.location.x.toFixed(2)), 101.8, 'obj.location.x updated.');
+  t.equal(parseFloat(obj.location.y.toFixed(2)), 100, 'obj.location.y updated.');
+  t.equal(parseFloat(obj.aVelocity.x.toFixed(2)), 0.01, 'obj.aVelocity.x updated.');
+  t.equal(parseFloat(obj.aVelocity.y.toFixed(2)), 0, 'obj.aVelocity.y updated.');
+  t.equal(parseFloat(obj.angle.toFixed(2)), 44.49, 'obj.angle updated.');
+  t.equal(obj.life, 100, 'obj.life should increment.');
+
+  Burner.System._stepForward();
+
+  t.equal(Burner.System._records.length, 1, 'If life > lifespan, step() should remove the object.');
+
+  //
+
+  beforeTest();
+
+  var obj, parent;
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      width: 400,
+      height: 300
+    });
+    parent = this.add('Item', {
+      location: new Burner.Vector(50, 50)
+    });
+    obj = this.add('Oscillator', {
+      parent: parent
+    });
+  });
+
+  Burner.System._stepForward();
+
+  t.equal(parseFloat(obj.location.x.toFixed(2)), 51.8, 'obj.location.x is relative to parent location.x.');
+  t.equal(parseFloat(obj.location.y.toFixed(2)), 50, 'obj.location.y is relative to parent location.y.');
+
+  //
+
+  t.end();
 
 });
+
+test('step() should update oscillator location.', function(t) {
+
+  beforeTest();
+
+  SimplexNoise.config({
+    random: function() {
+      return 0.1;
+    }
+  });
+
+  var obj;
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      width: 400,
+      height: 300
+    });
+    obj = this.add('Oscillator', {
+      isPerlin: true,
+      perlinOffsetX: 10000,
+      perlinOffsetY: 10000
+    });
+  });
+
+  Burner.System._stepForward();
+
+  t.equal(parseFloat(obj.location.x.toFixed(2)), 194.54, 'obj.location.x updated via perlin noise.');
+  t.equal(parseFloat(obj.location.y.toFixed(2)), 153.94, 'obj.location.y updated via perlin noise.');
+
+  t.end();
+
+});
+

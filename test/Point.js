@@ -19,7 +19,6 @@ test('new Point() should have default properties.', function(t) {
 
   obj = new Point();
   t.equal(obj.name, 'Point', 'name.');
-  t.equal(obj.colorMode, 'rgb', 'name.');
   t.assert(obj.color[0] === 200 && obj.color[1] === 200 && obj.color[2] === 200, 'color.');
   t.equal(obj.borderRadius, 100, 'borderRadius.');
   t.equal(obj.borderWidth, 2, 'borderWidth.');
@@ -35,7 +34,6 @@ test('new Point() should accept custom properties.', function(t) {
 
   obj = new Point({
     name: 'hello',
-    colorMode: 'hsb',
     color: [10, 10, 10],
     borderRadius: 10,
     borderWidth: 1,
@@ -44,7 +42,6 @@ test('new Point() should accept custom properties.', function(t) {
     isStatic: false
   });
   t.equal(obj.name, 'hello', 'name.');
-  t.equal(obj.colorMode, 'hsb', 'name.');
   t.assert(obj.color[0] === 10 && obj.color[1] === 10 && obj.color[2] === 10, 'color.');
   t.equal(obj.borderRadius, 10, 'borderRadius.');
   t.equal(obj.borderWidth, 1, 'borderWidth.');

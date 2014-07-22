@@ -1,5 +1,7 @@
 var Item = require('Burner').Item,
     Mover = require('./Mover').Mover,
+    SimplexNoise = require('./SimplexNoise').SimplexNoise,
+    System = require('Burner').System,
     Utils = require('Burner').Utils,
     Vector = require('Burner').Vector;
 
@@ -69,6 +71,8 @@ function Oscillator(opt_options) {
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
+  this.parent = options.parent || null;
+  this.pointToDirection = !!options.pointToDirection;
 
   this.initialLocation = new Vector();
   this.lastLocation = new Vector();
@@ -86,10 +90,12 @@ Oscillator.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.initialLocation = options.initialLocation ||
-    new Vector(this.world.width / 2, this.world.width / 2);
   this.amplitude = options.amplitude || new Vector(this.world.width / 2 - this.width,
       this.world.height / 2 - this.height);
+  this.initialLocation = options.initialLocation ||
+    new Vector(this.world.width / 2, this.world.height / 2);
+  this.location.x = this.initialLocation.x;
+  this.location.y = this.initialLocation.y;
 };
 
 
@@ -98,17 +104,16 @@ Oscillator.prototype.init = function(world, opt_options) {
  */
 Oscillator.prototype.step = function () {
 
-
   this.beforeStep.call(this);
 
-  if (this.isStatic || this.isPressed) {
+  if (this.isStatic) {
     return;
   }
 
   if (this.isPerlin) {
     this.perlinTime += this.perlinSpeed;
-    this.aVelocity.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
-    this.aVelocity.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+    this.aVelocity.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+    this.aVelocity.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
   } else {
     this.aVelocity.add(this.acceleration); // add acceleration
   }
@@ -122,7 +127,7 @@ Oscillator.prototype.step = function () {
   this.location.y = this.initialLocation.y + Math.sin(this.aVelocity.y) * this.amplitude.y;
 
   if (this.pointToDirection) { // object rotates toward direction
-      velDiff = Burner.Vector.VectorSub(this.location, this.lastLocation);
+      velDiff = Vector.VectorSub(this.location, this.lastLocation);
       this.angle = Utils.radiansToDegrees(Math.atan2(velDiff.y, velDiff.x));
   }
 
@@ -132,13 +137,10 @@ Oscillator.prototype.step = function () {
     System.remove(this);
   }
 
-  if (this.afterStep) {
-    this.afterStep.call(this);
-  }
+  this.afterStep.call(this);
 
   this.lastLocation.x = this.location.x;
   this.lastLocation.y = this.location.y;
-
 };
 
 /**

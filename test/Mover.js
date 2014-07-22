@@ -28,7 +28,6 @@ test('new Mover() should have default properties.', function(t) {
 
   obj = new Mover();
   t.equal(obj.name, 'Mover', 'name.');
-  t.equal(obj.colorMode, 'rgb', 'colorMode.');
   t.assert(obj.color[0] === 255 && obj.color[1] === 255 && obj.color[2] === 255, 'color.');
   t.equal(obj.borderRadius, 0, 'borderRadius.');
   t.equal(obj.borderWidth, 0, 'borderWidth.');
@@ -53,7 +52,6 @@ test('new Mover() should accept custom properties.', function(t) {
 
   obj = new Mover({
     name: 'hello',
-    colorMode: 'hsb',
     color: [10, 10, 10],
     borderRadius: 50,
     borderWidth: 10,
@@ -532,7 +530,7 @@ test('step() should decrement life.', function(t) {
     obj.step();
     obj.step();
     obj.step();
-    t.equal(obj.life, 100, 'obj.life should decrement.');
+    t.equal(obj.life, 100, 'obj.life should increment.');
 
     obj.step();
     t.equal(Burner.System._records.length, 1, 'If life > lifespan, step() should remove the object.');

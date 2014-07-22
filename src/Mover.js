@@ -13,7 +13,6 @@ var Item = require('Burner').Item,
  * @extends Burner.Item
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.name = 'Mover'] Name.
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -33,7 +32,6 @@ function Mover(opt_options) {
   Item.call(this);
   var options = opt_options || {};
   this.name = options.name || 'Mover';
-  this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || [255, 255, 255];
   this.borderRadius = options.borderRadius || 0;
   this.borderWidth = options.borderWidth || 0;

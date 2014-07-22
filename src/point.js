@@ -11,7 +11,6 @@ var Item = require('Burner').Item,
  * @extends Burner.Item
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.name = 'Point'] Name.
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -22,7 +21,7 @@ function Point(opt_options) {
   Item.call(this);
   var options = opt_options || {};
   this.name = options.name || 'Point';
-  this.colorMode = options.colorMode || 'rgb';
+  // this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || [200, 200, 200];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
@@ -78,29 +77,5 @@ Point.prototype.getCSSText = function(props) {
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
       props.borderRadius + '%;';
 };
-
-/**
- * Initializes an instance.
- *
- * @param {Object} [opt_options=] A map of initial properties.
- * @param {Array} [opt_options.color = 200, 200, 200] Color.
- * @param {number} [opt_options.borderRadius = 100] Border radius.
- * @param {number} [opt_options.borderWidth = 2] Border width.
- * @param {string} [opt_options.borderStyle = 'solid'] Border style.
- * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
- */
-/*Point.prototype.init = function(opt_options) {
-
-  var options = opt_options || {};
-
-  this.color = options.color || [200, 200, 200];
-  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
-  this.borderStyle = options.borderStyle || 'solid';
-  this.borderColor = options.borderColor || [60, 60, 60];
-
-  // Points are static
-  this.isStatic = true;
-};*/
 
 module.exports.Point = Point;
