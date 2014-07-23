@@ -10,27 +10,24 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
-      
-      Burner.System.init(function() {
-
-        this.add('Walker', {
-          perlin: false,
-          maxSpeed: 2
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector()
         });
 
-        this.add('Caption', {
+        for (var i = 0; i < 60; i++) {
+          this.add('Walker', {
+            perlin: false
+          });
+        }
+
+        /*this.add('Caption', {
           text: 'Flora.Walker.Random',
           opacity: 0.4,
           borderColor: 'transparent',
@@ -41,8 +38,9 @@
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'bottom center'
-        });
-      }, world);
+        });*/
+      });
+      Flora.System.loop();
     </script>
   </body>
 </html>

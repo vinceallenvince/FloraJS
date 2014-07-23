@@ -1,23 +1,27 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Flora=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // Flora classes
 var Flora = {
+  ColorPalette: _dereq_('./src/ColorPalette').ColorPalette,
   System: _dereq_('Burner').System,
+  Utils: _dereq_('Burner').Utils,
   Vector: _dereq_('Burner').Vector,
   World: _dereq_('Burner').World
 };
 
 Flora.System.Classes = {
   Attractor: _dereq_('./src/Attractor').Attractor,
+  BorderPalette: _dereq_('./src/BorderPalette').BorderPalette,
   Connector: _dereq_('./src/Connector').Connector,
   Dragger: _dereq_('./src/Dragger').Dragger,
   Mover: _dereq_('./src/Mover').Mover,
   Oscillator: _dereq_('./src/Oscillator').Oscillator,
   Point: _dereq_('./src/Point').Point,
-  Repeller: _dereq_('./src/Repeller').Repeller
+  Repeller: _dereq_('./src/Repeller').Repeller,
+  Walker: _dereq_('./src/Walker').Walker
 };
 
 module.exports = Flora;
-},{"./src/Attractor":9,"./src/Connector":10,"./src/Dragger":11,"./src/Mover":12,"./src/Oscillator":13,"./src/Point":14,"./src/Repeller":15,"Burner":8}],2:[function(_dereq_,module,exports){
+},{"./src/Attractor":9,"./src/BorderPalette":10,"./src/ColorPalette":11,"./src/Connector":12,"./src/Dragger":13,"./src/Mover":14,"./src/Oscillator":15,"./src/Point":16,"./src/Repeller":17,"./src/Walker":19,"Burner":8}],2:[function(_dereq_,module,exports){
 /*global document */
 
 var Vector = _dereq_('./Vector').Vector;
@@ -61,6 +65,7 @@ Item._stylePosition =
  * @param {number} [opt_options.height = 10] Height.
  * @param {number} [opt_options.scale = 1] Scale.
  * @param {number} [opt_options.angle = 0] Angle.
+ * @param {Array} [opt_options.colorMode = 'rgb'] Color mode. Possible values are 'rgb' and 'hsl'.
  * @param {Array} [opt_options.color = 0, 0, 0] Color.
  * @param {number} [opt_options.mass = 10] mass.
  * @param {Function|Object} [opt_options.acceleration = new Vector()] acceleration.
@@ -73,7 +78,8 @@ Item._stylePosition =
  * @param {number} [opt_options.lifespan = -1] lifespan.
  * @param {boolean} [opt_options.checkWorldEdges = true] Set to true to check for world boundary collisions.
  * @param {boolean} [opt_options.wrapWorldEdges = false] Set to true to check for world boundary collisions and position item at the opposing boundary.
- * @param {Function} [opt_options.beforeStep = 0] This function will be called at the beginning of the item's step() function.
+ * @param {Function} [opt_options.beforeStep = function() {}] This function will be called at the beginning of the item's step() function.
+ * @param {Function} [opt_options.afterStep = function() {}] This function will be called at the end of the item's step() function.
  * @param {string} [opt_options.name = 'Item'] The item's name. Typically this is the item's class name.
  */
 Item.prototype.init = function(world, opt_options) {
@@ -101,8 +107,17 @@ Item.prototype.init = function(world, opt_options) {
   this.angle = typeof this.angle !== 'undefined' ? this.angle :
       options.angle || 0;
 
+  this.colorMode = typeof this.colorMode !== 'undefined' ? this.colorMode :
+      options.colorMode || 'rgb';
+
   this.color = typeof this.color !== 'undefined' ? this.color :
       options.color || [0, 0, 0];
+
+  this.opacity = typeof this.opacity !== 'undefined' ? this.opacity :
+      options.opacity || 1;
+
+  this.zIndex = typeof this.zIndex !== 'undefined' ? this.zIndex :
+      options.zIndex || 0;
 
   this.mass = typeof this.mass !== 'undefined' ? this.mass :
       typeof options.mass === 'undefined' ? 10 : options.mass;
@@ -139,6 +154,9 @@ Item.prototype.init = function(world, opt_options) {
 
   this.beforeStep = typeof this.beforeStep !== 'undefined' ? this.beforeStep :
       options.beforeStep || function() {};
+
+  this.afterStep = typeof this.afterStep !== 'undefined' ? this.afterStep :
+      options.afterStep || function() {};
 
   this.controlCamera = typeof this.controlCamera !== 'undefined' ? this.controlCamera :
       !!options.controlCamera;
@@ -181,6 +199,7 @@ Item.prototype.step = function() {
     this._checkCameraEdges(x, y, this.location.x, this.location.y);
   }
   this.acceleration.mult(0);
+  this.afterStep.call(this);
 };
 
 /**
@@ -282,9 +301,12 @@ Item.prototype.draw = function() {
     scale: this.scale || 1,
     width: this.width,
     height: this.height,
+    colorMode: this.colorMode,
     color0: this.color[0],
     color1: this.color[1],
-    color2: this.color[2]
+    color2: this.color[2],
+    opacity: this.opacity,
+    zIndex: this.zIndex
   });
   this.el.style.cssText = cssText;
 };
@@ -298,7 +320,7 @@ Item.prototype.draw = function() {
  * @returns {string} A string representing cssText.
  */
 Item.prototype.getCSSText = function(props) {
-  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: rgb(' + props.color0 + ', ' + props.color1 + ', ' + props.color2 + ')';
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: ' + props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
 };
 
 module.exports.Item = Item;
@@ -610,11 +632,9 @@ System._addWorld = function(world) {
 System.add = function(opt_klass, opt_options, opt_world) {
 
   var klass = opt_klass || 'Item',
-      options = opt_options || {},
+      options = opt_options || null,
       world = opt_world || System._records[0],
       records = this._records;
-
-  options.name = klass;
 
   // recycle object if one is available
   if (System._pool.length) {
@@ -1586,8 +1606,241 @@ Attractor.prototype.getCSSText = function(props) {
 
 module.exports.Attractor = Attractor;
 
+},{"./Mover":14,"Burner":8}],10:[function(_dereq_,module,exports){
+var Utils = _dereq_('Burner').Utils;
+/**
+ * Creates a new BorderPalette object.
+ *
+ * Use this class to create a palette of border styles.
+ *
+ * @param {string|number} [opt_id=] An optional id. If an id is not passed, a default id is created.
+ * @constructor
+ */
+function BorderPalette(opt_id) {
 
-},{"./Mover":12,"Burner":8}],10:[function(_dereq_,module,exports){
+  /**
+   * Holds a list of border styles.
+   * @private
+   */
+  this._borders = [];
+
+  this.id = opt_id || BorderPalette._idCount;
+  BorderPalette._idCount++; // increment id
+}
+
+/**
+ * Increments as each BorderPalette is created.
+ * @type number
+ * @default 0
+ * @private
+ */
+BorderPalette._idCount = 0;
+
+BorderPalette.prototype.name = 'BorderPalette';
+
+/**
+ * Adds a random number of the passed border style to the 'borders' array.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.min {number} The minimum number of styles to add.
+ *    options.max {number} The maximum number of styles to add.
+ *    options.style {string} The border style.
+ */
+BorderPalette.prototype.addBorder = function(options) {
+
+  if (!options.min || !options.max || !options.style) {
+    throw new Error('BorderPalette.addBorder requires min, max and style paramaters.');
+  }
+
+  for (var i = 0, ln = Utils.getRandomNumber(options.min, options.max); i < ln; i++) {
+    this._borders.push(options.style);
+  }
+
+  return this;
+};
+
+/**
+ * @returns A style randomly selected from the 'borders' property.
+ * @throws {Error} If the 'borders' property is empty.
+ */
+BorderPalette.prototype.getBorder = function() {
+
+  if (this._borders.length > 0) {
+    return this._borders[Utils.getRandomNumber(0, this._borders.length - 1)];
+  }
+
+  throw new Error('BorderPalette.getBorder: You must add borders via addBorder() before using getBorder().');
+};
+
+module.exports.BorderPalette = BorderPalette;
+
+
+},{"Burner":8}],11:[function(_dereq_,module,exports){
+var Utils = _dereq_('Burner').Utils;
+/**
+ * Creates a new ColorPalette object.
+ *
+ * Use this class to create a palette of colors randomly selected
+ * from a range created with initial start and end colors. You
+ * can also generate gradients that smoothly interpolate from
+ * start and end colors.
+ *
+ * @param {string|number} [opt_id=] An optional id. If an id is not passed, a default id is created.
+ * @constructor
+ */
+function ColorPalette(opt_id) {
+
+  /**
+   * Holds a list of arrays representing 3-digit color values
+   * smoothly interpolated between start and end colors.
+   * @private
+   */
+  this._gradients = [];
+
+  /**
+   * Holds a list of arrays representing 3-digit color values
+   * randomly selected from start and end colors.
+   * @private
+   */
+  this._colors = [];
+
+  this.id = opt_id || ColorPalette._idCount;
+  ColorPalette._idCount++; // increment id
+}
+
+/**
+ * Increments as each ColorPalette is created.
+ * @type number
+ * @default 0
+ * @private
+ */
+ColorPalette._idCount = 0;
+
+ColorPalette.prototype.name = 'ColorPalette';
+
+/**
+ * Creates a color range of 255 colors from the passed start and end colors.
+ * Adds a random selection of these colors to the color property of
+ * the color palette.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.min {number} The minimum number of colors to add.
+ *    options.max {number} The maximum number of color to add.
+ *    options.startColor {Array} The beginning color of the color range.
+ *    options.endColor {Array} The end color of the color range.
+ */
+ColorPalette.prototype.addColor = function(options) {
+
+  if (!options.min || !options.max || !options.startColor || !options.endColor) {
+    throw new Error('ColorPalette.addColor must pass min, max, startColor and endColor options.');
+  }
+
+  var i, ln, colors;
+
+  ln = Utils.getRandomNumber(options.min, options.max);
+  colors = ColorPalette._createColorRange(options.startColor, options.endColor, 255);
+
+  for (i = 0; i < ln; i++) {
+    this._colors.push(colors[Utils.getRandomNumber(0, colors.length - 1)]);
+  }
+
+  return this;
+};
+
+/**
+ * Creates an array of RGB color values interpolated between
+ * a passed startColor and endColor.
+ *
+ * @param {Array} startColor The beginning of the color array.
+ * @param {Array} startColor The end of the color array.
+ * @param {number} totalColors The total numnber of colors to create.
+ * @returns {Array} An array of color values.
+ */
+ColorPalette._createColorRange = function(startColor, endColor, totalColors) {
+
+  var i, colors = [],
+      startRed = startColor[0],
+      startGreen = startColor[1],
+      startBlue = startColor[2],
+      endRed = endColor[0],
+      endGreen = endColor[1],
+      endBlue = endColor[2],
+      diffRed, diffGreen, diffBlue,
+      newRed, newGreen, newBlue;
+
+  diffRed = endRed - startRed;
+  diffGreen = endGreen - startGreen;
+  diffBlue = endBlue - startBlue;
+
+  for (i = 0; i < totalColors; i++) {
+    newRed = parseInt(diffRed * i/totalColors, 10) + startRed;
+    newGreen = parseInt(diffGreen * i/totalColors, 10) + startGreen;
+    newBlue = parseInt(diffBlue * i/totalColors, 10) + startBlue;
+    colors.push([newRed, newGreen, newBlue]);
+  }
+  return colors;
+};
+
+/**
+ * @returns An array representing a randomly selected color
+ *    from the colors property.
+ * @throws {Error} If the colors property is empty.
+ */
+ColorPalette.prototype.getColor = function() {
+
+  if (this._colors.length > 0) {
+    return this._colors[Utils.getRandomNumber(0, this._colors.length - 1)];
+  } else {
+    throw new Error('ColorPalette.getColor: You must add colors via addColor() before using getColor().');
+  }
+};
+
+// TODO: add the following
+
+/**
+ * Adds color arrays representing a color range to the gradients property.
+ *
+ * @param {Object} options A set of required options
+ *    that includes:
+ *    options.startColor {Array} The beginning color of the color range.
+ *    options.endColor {Array} The end color of the color range.
+ *    options.totalColors {number} The total number of colors in the gradient.
+ * @private
+ */
+/*ColorPalette.prototype.createGradient = function(options) {
+
+  if (!options.startColor || !options.endColor || !options.totalColors) {
+    throw new Error('ColorPalette.addColor must pass startColor, endColor and totalColors options.');
+  }
+  this.startColor = options.startColor;
+  this.endColor = options.endColor;
+  this.totalColors = options.totalColors || 255;
+  this._gradients.push(ColorPalette._createColorRange(this.startColor, this.endColor, this.totalColors));
+};*/
+
+/**
+ * Renders a strip of colors representing the color range
+ * in the colors property.
+ *
+ * @param {Object} parent A DOM object to contain the color strip.
+ */
+/*ColorPalette.prototype.createSampleStrip = function(parent) {
+
+  var i, max, div;
+
+  for (i = 0, max = this._colors.length; i < max; i++) {
+    div = document.createElement('div');
+    div.className = 'color-sample-strip';
+    div.style.background = 'rgb(' + this._colors[i].toString() + ')';
+    parent.appendChild(div);
+  }
+};*/
+
+module.exports.ColorPalette = ColorPalette;
+
+},{"Burner":8}],12:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils,
     Vector = _dereq_('Burner').Vector;
@@ -1605,7 +1858,6 @@ var Item = _dereq_('Burner').Item,
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
  * @param {string} [opt_options.name = 'Point'] Name.
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
  * @param {number} [options.zIndex = 0] zIndex.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
  * @param {Array} [options.borderColor = 150, 150, 150] Border color.
@@ -1620,7 +1872,7 @@ function Connector(options) {
   this.parentB = options.parentB;
 
   this.name = options.name || 'Connector';
-  this.colorMode = options.colorMode || 'rgb';
+  // this.colorMode = options.colorMode || 'rgb';
   this.zIndex = options.zIndex || 0;
   this.borderStyle = options.borderStyle || 'dotted';
   this.borderColor = options.borderColor || [150, 150, 150];
@@ -1729,7 +1981,7 @@ Connector.prototype.getCSSText = function(props) {
 
 module.exports.Connector = Connector;
 
-},{"Burner":8}],11:[function(_dereq_,module,exports){
+},{"Burner":8}],13:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Attractor = _dereq_('./Attractor').Attractor,
     Utils = _dereq_('Burner').Utils,
@@ -1812,7 +2064,7 @@ Dragger.prototype.drag = function(obj) {
 
 module.exports.Dragger = Dragger;
 
-},{"./Attractor":9,"Burner":8}],12:[function(_dereq_,module,exports){
+},{"./Attractor":9,"Burner":8}],14:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     System = _dereq_('Burner').System,
     Utils = _dereq_('Burner').Utils,
@@ -1828,7 +2080,6 @@ var Item = _dereq_('Burner').Item,
  * @extends Burner.Item
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.name = 'Mover'] Name.
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -1848,7 +2099,6 @@ function Mover(opt_options) {
   Item.call(this);
   var options = opt_options || {};
   this.name = options.name || 'Mover';
-  this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || [255, 255, 255];
   this.borderRadius = options.borderRadius || 0;
   this.borderWidth = options.borderWidth || 0;
@@ -2041,6 +2291,10 @@ Mover.prototype.step = function() {
     }
   }
 
+  if (this.applyAdditionalForces) {
+    this.applyAdditionalForces.call(this);
+  }
+
   this.velocity.add(this.acceleration); // add acceleration
 
   this.velocity.limit(this.maxSpeed, this.minSpeed);
@@ -2112,10 +2366,12 @@ Mover.prototype.draw = function() {
     scale: this.scale || 1,
     width: this.width,
     height: this.height,
+    colorMode: this.colorMode,
     color0: this.color[0],
     color1: this.color[1],
     color2: this.color[2],
-    colorMode: this.colorMode,
+    opacity: this.opacity,
+    zIndex: this.zIndex,
     borderRadius: this.borderRadius,
     borderWidth: this.borderWidth,
     borderStyle: this.borderStyle,
@@ -2137,7 +2393,7 @@ Mover.prototype.draw = function() {
 Mover.prototype.getCSSText = function(props) {
   return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
-      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +');  opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
       props.borderRadius + '%;';
 };
@@ -2145,9 +2401,11 @@ Mover.prototype.getCSSText = function(props) {
 module.exports.Mover = Mover;
 
 
-},{"Burner":8}],13:[function(_dereq_,module,exports){
+},{"Burner":8}],15:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
+    SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
+    System = _dereq_('Burner').System,
     Utils = _dereq_('Burner').Utils,
     Vector = _dereq_('Burner').Vector;
 
@@ -2215,6 +2473,10 @@ function Oscillator(opt_options) {
   this.boxShadowBlur = options.boxShadowBlur || 0;
   this.boxShadowSpread = options.boxShadowSpread || 0;
   this.boxShadowColor = options.boxShadowColor || [200, 100, 0];
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
+  this.parent = options.parent || null;
+  this.pointToDirection = !!options.pointToDirection;
 
   this.initialLocation = new Vector();
   this.lastLocation = new Vector();
@@ -2232,10 +2494,12 @@ Oscillator.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.initialLocation = options.initialLocation ||
-    new Vector(this.world.width / 2, this.world.width / 2);
   this.amplitude = options.amplitude || new Vector(this.world.width / 2 - this.width,
       this.world.height / 2 - this.height);
+  this.initialLocation = options.initialLocation ||
+    new Vector(this.world.width / 2, this.world.height / 2);
+  this.location.x = this.initialLocation.x;
+  this.location.y = this.initialLocation.y;
 };
 
 
@@ -2244,17 +2508,16 @@ Oscillator.prototype.init = function(world, opt_options) {
  */
 Oscillator.prototype.step = function () {
 
-
   this.beforeStep.call(this);
 
-  if (this.isStatic || this.isPressed) {
+  if (this.isStatic) {
     return;
   }
 
   if (this.isPerlin) {
     this.perlinTime += this.perlinSpeed;
-    this.aVelocity.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
-    this.aVelocity.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY, 0.1), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+    this.aVelocity.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+    this.aVelocity.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
   } else {
     this.aVelocity.add(this.acceleration); // add acceleration
   }
@@ -2268,7 +2531,7 @@ Oscillator.prototype.step = function () {
   this.location.y = this.initialLocation.y + Math.sin(this.aVelocity.y) * this.amplitude.y;
 
   if (this.pointToDirection) { // object rotates toward direction
-      velDiff = Burner.Vector.VectorSub(this.location, this.lastLocation);
+      velDiff = Vector.VectorSub(this.location, this.lastLocation);
       this.angle = Utils.radiansToDegrees(Math.atan2(velDiff.y, velDiff.x));
   }
 
@@ -2278,13 +2541,10 @@ Oscillator.prototype.step = function () {
     System.remove(this);
   }
 
-  if (this.afterStep) {
-    this.afterStep.call(this);
-  }
+  this.afterStep.call(this);
 
   this.lastLocation.x = this.location.x;
   this.lastLocation.y = this.location.y;
-
 };
 
 /**
@@ -2342,7 +2602,7 @@ Oscillator.prototype.getCSSText = function(props) {
 
 module.exports.Oscillator = Oscillator;
 
-},{"./Mover":12,"Burner":8}],14:[function(_dereq_,module,exports){
+},{"./Mover":14,"./SimplexNoise":18,"Burner":8}],16:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils;
 
@@ -2356,7 +2616,6 @@ var Item = _dereq_('Burner').Item,
  * @extends Burner.Item
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.name = 'Point'] Name.
- * @param {string} [opt_options.colorMode = 'rgb'] Color mode. Valid values are 'rgb', 'hsl'.
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -2367,7 +2626,7 @@ function Point(opt_options) {
   Item.call(this);
   var options = opt_options || {};
   this.name = options.name || 'Point';
-  this.colorMode = options.colorMode || 'rgb';
+  // this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || [200, 200, 200];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
@@ -2424,33 +2683,9 @@ Point.prototype.getCSSText = function(props) {
       props.borderRadius + '%;';
 };
 
-/**
- * Initializes an instance.
- *
- * @param {Object} [opt_options=] A map of initial properties.
- * @param {Array} [opt_options.color = 200, 200, 200] Color.
- * @param {number} [opt_options.borderRadius = 100] Border radius.
- * @param {number} [opt_options.borderWidth = 2] Border width.
- * @param {string} [opt_options.borderStyle = 'solid'] Border style.
- * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
- */
-/*Point.prototype.init = function(opt_options) {
-
-  var options = opt_options || {};
-
-  this.color = options.color || [200, 200, 200];
-  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
-  this.borderStyle = options.borderStyle || 'solid';
-  this.borderColor = options.borderColor || [60, 60, 60];
-
-  // Points are static
-  this.isStatic = true;
-};*/
-
 module.exports.Point = Point;
 
-},{"Burner":8}],15:[function(_dereq_,module,exports){
+},{"Burner":8}],17:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Attractor = _dereq_('./Attractor').Attractor,
     Utils = _dereq_('Burner').Utils,
@@ -2513,6 +2748,343 @@ Repeller.prototype.init = function(world, opt_options) {
 
 module.exports.Repeller = Repeller;
 
-},{"./Attractor":9,"Burner":8}]},{},[1])
+},{"./Attractor":9,"Burner":8}],18:[function(_dereq_,module,exports){
+/*jshint bitwise:false */
+/**
+* https://gist.github.com/304522
+* Ported from Stefan Gustavson's java implementation
+* http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
+* Read Stefan's excellent paper for details on how this code works.
+*
+* @author Sean McCullough banksean@gmail.com
+*
+* You can pass in a random number generator object if you like.
+* It is assumed to have a random() method.
+*/
+
+/**
+ * @namespace
+ */
+
+var SimplexNoise = {};
+
+SimplexNoise.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
+SimplexNoise.p = [];
+SimplexNoise.perm = [];
+// A lookup table to traverse the simplex around a given point in 4D.
+// Details can be found where this table is used, in the 4D noise method.
+SimplexNoise.simplex = [
+  [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0],
+  [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0],
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
+  [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0],
+  [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0],
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
+  [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0],
+  [2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
+
+SimplexNoise.config = function(r) {
+
+  var i, p = SimplexNoise.p, perm = SimplexNoise.perm;
+
+  if (typeof r === 'undefined') {
+    r = Math;
+  }
+
+  for (i = 0; i < 256; i += 1) {
+    SimplexNoise.p[i] = Math.floor(r.random() * 256);
+  }
+  // To remove the need for index wrapping, double the permutation table length
+  for(i = 0; i < 512; i += 1) {
+    perm[i] = p[i & 255];
+  }
+};
+
+SimplexNoise.noise = function(xin, yin) {
+
+  var grad3 = SimplexNoise.grad3;
+  var p = SimplexNoise.p;
+  var perm = SimplexNoise.perm;
+  var simplex = SimplexNoise.simplex;
+
+  if (!p.length) {
+    SimplexNoise.config();
+  }
+
+  var n0, n1, n2; // Noise contributions from the three corners
+
+  // Skew the input space to determine which simplex cell we're in
+  var F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
+  var s = (xin + yin) * F2; // Hairy factor for 2D
+  var i = Math.floor(xin + s);
+  var j = Math.floor(yin + s);
+  var G2 = (3.0 -Math.sqrt(3.0)) / 6.0;
+  var t = (i + j) * G2;
+  var X0 = i - t; // Unskew the cell origin back to (x,y) space
+  var Y0 = j - t;
+  var x0 = xin - X0; // The x,y distances from the cell origin
+  var y0 = yin - Y0;
+
+  // For the 2D case, the simplex shape is an equilateral triangle.
+  // Determine which simplex we are in.
+  var i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
+  if (x0 > y0) { i1 = 1; j1 = 0; } // lower triangle, XY order: (0,0)->(1,0)->(1,1)
+  else { i1 = 0; j1 = 1; }      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
+  // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
+  // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
+  // c = (3-sqrt(3))/6
+  var x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
+  var y1 = y0 - j1 + G2;
+  var x2 = x0 - 1.0 + 2.0 * G2; // Offsets for last corner in (x,y) unskewed coords
+  var y2 = y0 - 1.0 + 2.0 * G2;
+
+  // Work out the hashed gradient indices of the three simplex corners
+  var ii = i & 255;
+  var jj = j & 255;
+  var gi0 = this.perm[ii + this.perm[jj]] % 12;
+  var gi1 = this.perm[ii + i1 + this.perm[jj + j1]] % 12;
+  var gi2 = this.perm[ii + 1 + this.perm[jj + 1]] % 12;
+
+  // Calculate the contribution from the three corners
+  var t0 = 0.5 - x0 * x0 - y0 * y0;
+  if (t0 < 0) {
+    n0 = 0.0;
+  } else {
+    t0 *= t0;
+    n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient
+  }
+  var t1 = 0.5 - x1 * x1 - y1 * y1;
+  if (t1 < 0) {
+    n1 = 0.0;
+  } else {
+    t1 *= t1;
+    n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1);
+  }
+  var t2 = 0.5 - x2 * x2 - y2 * y2;
+  if (t2 < 0) {
+    n2 = 0.0;
+  } else {
+    t2 *= t2;
+    n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2);
+  }
+  // Add contributions from each corner to get the final noise value.
+  // The result is scaled to return values in the interval [-1,1].
+  return 70.0 * (n0 + n1 + n2);
+
+};
+
+SimplexNoise.dot = function(g, x, y) {
+  return g[0] * x + g[1] * y;
+};
+
+/*var SimplexNoise = (function (r) {
+
+  if (typeof r === 'undefined') {
+    r = Math;
+  }
+  var i;
+  var grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
+  var p = [];
+  for (i = 0; i < 256; i += 1) {
+    p[i] = Math.floor(r.random()*256);
+  }
+  // To remove the need for index wrapping, double the permutation table length
+  var perm = [];
+  for(i = 0; i < 512; i += 1) {
+    perm[i] = p[i & 255];
+  }
+
+  // A lookup table to traverse the simplex around a given point in 4D.
+  // Details can be found where this table is used, in the 4D noise method.
+  var simplex = [
+  [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0],
+  [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0],
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
+  [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0],
+  [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0],
+  [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
+  [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0],
+  [2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
+
+  return {
+    grad3: grad3,
+    p: p,
+    perm: perm,
+    simplex: simplex,
+    dot: function(g, x, y) {
+      return g[0] * x + g[1] * y;
+    },
+    noise: function(xin, yin) {
+      var n0, n1, n2; // Noise contributions from the three corners
+      // Skew the input space to determine which simplex cell we're in
+      var F2 = 0.5*(Math.sqrt(3.0)-1.0);
+      var s = (xin+yin)*F2; // Hairy factor for 2D
+      var i = Math.floor(xin+s);
+      var j = Math.floor(yin+s);
+      var G2 = (3.0-Math.sqrt(3.0))/6.0;
+      var t = (i+j)*G2;
+      var X0 = i-t; // Unskew the cell origin back to (x,y) space
+      var Y0 = j-t;
+      var x0 = xin-X0; // The x,y distances from the cell origin
+      var y0 = yin-Y0;
+      // For the 2D case, the simplex shape is an equilateral triangle.
+      // Determine which simplex we are in.
+      var i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
+      if(x0>y0) {i1=1; j1=0;} // lower triangle, XY order: (0,0)->(1,0)->(1,1)
+      else {i1=0; j1=1;}      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
+      // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
+      // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
+      // c = (3-sqrt(3))/6
+      var x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
+      var y1 = y0 - j1 + G2;
+      var x2 = x0 - 1.0 + 2.0 * G2; // Offsets for last corner in (x,y) unskewed coords
+      var y2 = y0 - 1.0 + 2.0 * G2;
+      // Work out the hashed gradient indices of the three simplex corners
+      var ii = i & 255;
+      var jj = j & 255;
+      var gi0 = this.perm[ii+this.perm[jj]] % 12;
+      var gi1 = this.perm[ii+i1+this.perm[jj+j1]] % 12;
+      var gi2 = this.perm[ii+1+this.perm[jj+1]] % 12;
+      // Calculate the contribution from the three corners
+      var t0 = 0.5 - x0*x0-y0*y0;
+      if (t0 < 0) {
+        n0 = 0.0;
+      } else {
+        t0 *= t0;
+        n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient
+      }
+      var t1 = 0.5 - x1*x1-y1*y1;
+      if (t1 < 0) {
+        n1 = 0.0;
+      } else {
+        t1 *= t1;
+        n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1);
+      }
+      var t2 = 0.5 - x2*x2-y2*y2;
+      if (t2 < 0) {
+        n2 = 0.0;
+      } else {
+        t2 *= t2;
+        n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2);
+      }
+      // Add contributions from each corner to get the final noise value.
+      // The result is scaled to return values in the interval [-1,1].
+      return 70.0 * (n0 + n1 + n2);
+    }
+  };
+
+}());*/
+
+module.exports.SimplexNoise = SimplexNoise;
+
+},{}],19:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    Mover = _dereq_('./Mover').Mover,
+    SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new Walker.
+ *
+ * Walkers have no seeking, steering or directional behavior and just randomly
+ * explore their World. Use Walkers to create wandering objects or targets
+ * for Agents to seek. They are not affected by gravity or friction.
+ *
+ * @constructor
+ * @extends Mover
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {string} [opt_options.name = 'Walker'] Name
+ * @param {number} [opt_options.width = 10] Width
+ * @param {number} [opt_options.height = 10] Height
+ * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and perlin = true, object will avoid world edges.
+ * @param {number} [opt_options.maxSpeed = 1] maxSpeed.
+ * @param {boolean} [opt_options.perlin = true] If set to true, object will use Perlin Noise to calculate its location.
+ * @param {number} [opt_options.perlinSpeed = 0.005] If perlin = true, perlinSpeed determines how fast the object location moves through the noise space.
+ * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
+ * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when perlin = true.
+ * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when perlin = true.
+ * @param {number} [opt_options.perlinOffsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
+ * @param {number} [opt_options.perlinOffsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
+ * @param {string|Array} [opt_options.color = 255, 150, 50] Color.
+ * @param {string|number} [opt_options.borderWidth = '1em'] Border width.
+ * @param {string} [opt_options.borderStyle = 'double'] Border style.
+ * @param {string|Array} [opt_options.borderColor = 255, 255, 255] Border color.
+ * @param {string} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.opacity = 0.75] The object's opacity.
+ * @param {number} [opt_options.zIndex = 1] The object's zIndex.
+ */
+function Walker(opt_options) {
+  Mover.call(this);
+  var options = opt_options || {};
+  this.name = options.name || 'Walker';
+  this.width = typeof options.width === 'undefined' ? 10 : options.width;
+  this.height = typeof options.height === 'undefined' ? 10 : options.height;
+  this.remainsOnScreen = !!options.remainsOnScreen;
+  this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 1 : options.maxSpeed;
+  this.perlin = typeof options.perlin === 'undefined' ? true : options.perlin;
+  this.perlinSpeed = typeof options.perlinSpeed === 'undefined' ? 0.005 : options.perlinSpeed;
+  this.perlinTime = options.perlinTime || 0;
+  this.perlinAccelLow = typeof options.perlinAccelLow === 'undefined' ? -0.075 : options.perlinAccelLow;
+  this.perlinAccelHigh = typeof options.perlinAccelHigh === 'undefined' ? 0.075 : options.perlinAccelHigh;
+  this.perlinOffsetX = typeof options.perlinOffsetX === 'undefined' ? Math.random() * 10000 : options.perlinOffsetX;
+  this.perlinOffsetY = typeof options.perlinOffsetY === 'undefined' ? Math.random() * 10000 : options.perlinOffsetY;
+  this.color = options.color || [255, 150, 50];
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? 0 : options.borderWidth;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || [255, 255, 255];
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.opacity = typeof options.opacity === 'undefined' ? 1 : options.opacity;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 0 : options.zIndex;
+
+  this._randomVector = new Vector();
+}
+Utils.extend(Walker, Mover);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+
+ */
+Walker.prototype.init = function(world, opt_options) {
+  Walker._superClass.init.call(this, world, opt_options);
+};
+
+/**
+ * If walker uses perlin noise, updates acceleration based on noise space. If walker
+ * is a random walker, updates location based on random location.
+ */
+Walker.prototype.applyAdditionalForces = function() {
+
+  // walker use either perlin noise or random walk
+  if (this.perlin) {
+
+    this.perlinTime += this.perlinSpeed;
+
+    if (this.remainsOnScreen) {
+      this.acceleration = new Vector();
+      this.velocity = new Vector();
+      this.location.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0), -1, 1, 0, this.world.width);
+      this.location.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY), -1, 1, 0, this.world.height);
+    } else {
+      this.acceleration.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+    }
+    return;
+  }
+
+  // point to a random angle and move toward it
+  this._randomVector.x = 1;
+  this._randomVector.y = 1;
+  this._randomVector.normalize();
+  this._randomVector.rotate(Utils.degreesToRadians(Utils.getRandomNumber(0, 359)));
+  this._randomVector.mult(this.maxSpeed);
+  this.applyForce(this._randomVector);
+};
+
+module.exports.Walker = Walker;
+
+},{"./Mover":14,"./SimplexNoise":18,"Burner":8}]},{},[1])
 (1)
 });

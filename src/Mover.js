@@ -224,6 +224,10 @@ Mover.prototype.step = function() {
     }
   }
 
+  if (this.applyAdditionalForces) {
+    this.applyAdditionalForces.call(this);
+  }
+
   this.velocity.add(this.acceleration); // add acceleration
 
   this.velocity.limit(this.maxSpeed, this.minSpeed);
@@ -295,10 +299,12 @@ Mover.prototype.draw = function() {
     scale: this.scale || 1,
     width: this.width,
     height: this.height,
+    colorMode: this.colorMode,
     color0: this.color[0],
     color1: this.color[1],
     color2: this.color[2],
-    colorMode: this.colorMode,
+    opacity: this.opacity,
+    zIndex: this.zIndex,
     borderRadius: this.borderRadius,
     borderWidth: this.borderWidth,
     borderStyle: this.borderStyle,
@@ -320,7 +326,7 @@ Mover.prototype.draw = function() {
 Mover.prototype.getCSSText = function(props) {
   return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
-      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +');  opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
       props.borderRadius + '%;';
 };

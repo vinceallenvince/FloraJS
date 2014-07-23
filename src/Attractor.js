@@ -135,4 +135,3 @@ Attractor.prototype.getCSSText = function(props) {
 };
 
 module.exports.Attractor = Attractor;
-
