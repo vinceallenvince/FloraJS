@@ -43,16 +43,7 @@ function Mover(opt_options) {
   this.pointToParentDirection = typeof options.pointToParentDirection === 'undefined' ? true : options.pointToParentDirection;
   this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 0 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
-  this.afterStep = options.afterStep || null;
   this.isStatic = !!options.isStatic;
-
-  //
-
-  this.isMouseOut = false;
-  this.isPressed = false;
-  this.mouseOutInterval = false;
-  this._friction = new Vector();
-
 }
 Utils.extend(Mover, Item);
 
@@ -65,6 +56,11 @@ Mover.prototype.init = function(world, opt_options) {
   Mover._superClass.init.call(this, world, opt_options);
 
   var me = this;
+
+  this.isMouseOut = false;
+  this.isPressed = false;
+  this.mouseOutInterval = false;
+  this._friction = new Vector();
 
   if (this.draggable) {
 
@@ -279,11 +275,10 @@ Mover.prototype.step = function() {
     this.life += 1;
   } else if (this.lifespan !== -1) {
     System.remove(this);
+    return;
   }
 
-  if (this.afterStep) {
-    this.afterStep.call(this);
-  }
+  this.afterStep.call(this);
 };
 
 /**

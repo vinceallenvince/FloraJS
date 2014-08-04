@@ -55,24 +55,14 @@ test('SimplexNoise config() should populate SimplexNoise.p.', function(t) {
 
 test('SimplexNoise noise() should return a number bw -1 and 1.', function(t) {
 
-  var perlinNoise = 0;
+  var perlinTime, mult = 10;
 
-  for (var i = 0; i < 10000; i++) {
-    SimplexNoise.noise(perlinNoise, -perlinNoise);
-    perlinNoise++;
+  for (var i = 0; i < 10; i++) {
+    perlinTime = i * 10;
+    t.assert(SimplexNoise.noise(-perlinTime, perlinTime) >= -1 && SimplexNoise.noise(perlinTime, -perlinTime) <= 1, 'returns number bw -1 and 1.');
+    t.assert(SimplexNoise.noise(perlinTime, 0) >= -1 && SimplexNoise.noise(-perlinTime, 0) <= 1, 'returns number bw -1 and 1.');
+    t.assert(SimplexNoise.noise(0, perlinTime) >= -1 && SimplexNoise.noise(0, -perlinTime) <= 1, 'returns number bw -1 and 1.');
   }
-
-  t.assert(SimplexNoise.noise(perlinNoise, -perlinNoise) >= -1 && SimplexNoise.noise(perlinNoise, -perlinNoise) <= 1, 'returns number bw -1 and 1.');
-
-  perlinNoise = 0;
-
-  for (var i = 0; i < 10000; i++) {
-    SimplexNoise.noise(-perlinNoise, perlinNoise);
-    perlinNoise++;
-  }
-
-  t.assert(SimplexNoise.noise(-perlinNoise, perlinNoise) >= -1 && SimplexNoise.noise(-perlinNoise, perlinNoise) <= 1, 'returns number bw -1 and 1.');
-
 
   t.end();
 });

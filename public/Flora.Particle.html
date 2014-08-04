@@ -17,18 +17,11 @@
     <script type="text/javascript" charset="utf-8">
 
       Flora.System.setup(function() {
-
-        var world = this.add('World', {
-          gravity: new Flora.Vector()
-        });
-
-        this.add('Agent', {
-          followMouse: true,
-          flocking: true
-        });
+        this.add('World');
+        this.add('Particle');
 
         /*this.add('Caption', {
-          text: 'Flora.Agent.FlockToMouse',
+          text: 'Flora.Point',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

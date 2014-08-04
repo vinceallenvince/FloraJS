@@ -9,19 +9,23 @@ var Flora = {
 };
 
 Flora.System.Classes = {
+  Agent: _dereq_('./src/Agent').Agent,
   Attractor: _dereq_('./src/Attractor').Attractor,
   BorderPalette: _dereq_('./src/BorderPalette').BorderPalette,
   Connector: _dereq_('./src/Connector').Connector,
   Dragger: _dereq_('./src/Dragger').Dragger,
   Mover: _dereq_('./src/Mover').Mover,
   Oscillator: _dereq_('./src/Oscillator').Oscillator,
+  Particle: _dereq_('./src/Particle').Particle,
+  ParticleSystem: _dereq_('./src/ParticleSystem').ParticleSystem,
   Point: _dereq_('./src/Point').Point,
   Repeller: _dereq_('./src/Repeller').Repeller,
+  Stimulus: _dereq_('./src/Stimulus').Stimulus,
   Walker: _dereq_('./src/Walker').Walker
 };
 
 module.exports = Flora;
-},{"./src/Attractor":9,"./src/BorderPalette":10,"./src/ColorPalette":11,"./src/Connector":12,"./src/Dragger":13,"./src/Mover":14,"./src/Oscillator":15,"./src/Point":16,"./src/Repeller":17,"./src/Walker":19,"Burner":8}],2:[function(_dereq_,module,exports){
+},{"./src/Agent":9,"./src/Attractor":10,"./src/BorderPalette":11,"./src/ColorPalette":12,"./src/Connector":13,"./src/Dragger":14,"./src/Mover":15,"./src/Oscillator":16,"./src/Particle":17,"./src/ParticleSystem":18,"./src/Point":19,"./src/Repeller":20,"./src/Stimulus":22,"./src/Walker":23,"Burner":8}],2:[function(_dereq_,module,exports){
 /*global document */
 
 var Vector = _dereq_('./Vector').Vector;
@@ -112,6 +116,33 @@ Item.prototype.init = function(world, opt_options) {
 
   this.color = typeof this.color !== 'undefined' ? this.color :
       options.color || [0, 0, 0];
+
+  this.borderWidth = typeof this.borderWidth !== 'undefined' ? this.borderWidth :
+      options.borderWidth || 0;
+
+  this.borderStyle = typeof this.borderStyle !== 'undefined' ? this.borderStyle :
+      options.borderStyle || 'none';
+
+  this.borderColor = typeof this.borderColor !== 'undefined' ? this.borderColor :
+      options.borderColor || [255, 255, 255];
+
+  this.borderRadius = typeof this.borderRadius !== 'undefined' ? this.borderRadius :
+      options.borderRadius || 0;
+
+  this.boxShadowOffsetX = typeof this.boxShadowOffsetX !== 'undefined' ? this.boxShadowOffsetX :
+      options.boxShadowOffsetX || 0;
+
+  this.boxShadowOffsetY = typeof this.boxShadowOffsetY !== 'undefined' ? this.boxShadowOffsetY :
+      options.boxShadowOffsetY || 0;
+
+  this.boxShadowBlur = typeof this.boxShadowBlur !== 'undefined' ? this.boxShadowBlur :
+      options.boxShadowBlur || 0;
+
+  this.boxShadowSpread = typeof this.boxShadowSpread !== 'undefined' ? this.boxShadowSpread :
+      options.boxShadowSpread || 0;
+
+  this.boxShadowColor = typeof this.boxShadowColor !== 'undefined' ? this.boxShadowColor :
+      options.boxShadowColor || [255, 255, 255];
 
   this.opacity = typeof this.opacity !== 'undefined' ? this.opacity :
       options.opacity || 1;
@@ -1468,6 +1499,363 @@ module.exports = {
   World: _dereq_('./World').World
 };
 },{"./Item":2,"./System":4,"./Utils":5,"./Vector":6,"./World":7}],9:[function(_dereq_,module,exports){
+var Mover = _dereq_('./Mover').Mover,
+    Utils = _dereq_('Burner').Utils,
+    System = _dereq_('Burner').System,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new Agent.
+ *
+ * Agents are basic Flora elements that respond to forces like gravity, attraction,
+ * repulsion, etc. They can also chase after other Agents, organize with other Agents
+ * in a flocking behavior, and steer away from obstacles. They can also follow the mouse.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
+ * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
+ * @param {Object} [opt_options.seekTarget = null] An object to seek.
+ * @param {boolean} [opt_options.flocking = false] Set to true to apply flocking forces to this object.
+ * @param {number} [opt_options.desiredSeparation = Twice the object's default width] Sets the desired separation from other objects when flocking = true.
+ * @param {number} [opt_options.separateStrength = 1] The strength of the force to apply to separating when flocking = true.
+ * @param {number} [opt_options.alignStrength = 1] The strength of the force to apply to aligning when flocking = true.
+ * @param {number} [opt_options.cohesionStrength = 1] The strength of the force to apply to cohesion when flocking = true.
+ * @param {Object} [opt_options.flowField = null] If a flow field is set, object will use it to apply a force.
+ * @param {Array} [opt_options.sensors = ] A list of sensors attached to this object.
+ * @param {number} [opt_options.motorSpeed = 2] Motor speed
+ * @param {Array} [opt_options.color = 197, 177, 115] Color.
+ * @param {number} [opt_options.borderWidth = 0] Border width.
+ * @param {string} [opt_options.borderStyle = 'none'] Border style.
+ * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
+ * @param {number} [opt_options.borderRadius = 0] Border radius.
+ *
+ * @constructor
+ * @extends Mover
+ */
+function Agent(opt_options) {
+  Mover.call(this);
+  var options = opt_options || {};
+  this.name = options.name || 'Agent';
+
+  this.followMouse = !!options.followMouse;
+  this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 5 : options.maxSteeringForce;
+  this.seekTarget = options.seekTarget || null;
+  this.flocking = !!options.flocking;
+  this.separateStrength = typeof options.separateStrength === 'undefined' ? 0.3 : options.separateStrength;
+  this.alignStrength = typeof options.alignStrength === 'undefined' ? 0.2 : options.alignStrength;
+  this.cohesionStrength = typeof options.cohesionStrength === 'undefined' ? 0.1 : options.cohesionStrength;
+  this.flowField = options.flowField || null;
+
+  this.sensors = options.sensors || [];
+  this.motorSpeed = options.motorSpeed || 0;
+
+  this.color = options.color || [197, 177, 115];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || [255, 255, 255];
+  this.borderRadius = options.borderRadius || 0;
+}
+Utils.extend(Agent, Mover);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ */
+Agent.prototype.init = function(world, opt_options) {
+  Agent._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  this.separateSumForceVector = new Vector(); // used in Agent.separate()
+  this.alignSumForceVector = new Vector(); // used in Agent.align()
+  this.cohesionSumForceVector = new Vector(); // used in Agent.cohesion()
+  this.followTargetVector = new Vector(); // used in Agent.applyAdditionalForces()
+  this.followDesiredVelocity = new Vector(); // used in Agent.follow()
+  this.motorDir = new Vector(); // used in Agent.applyAdditionalForces()
+
+  for (i = 0, max = this.sensors.length; i < max; i++) {
+    this.sensors[i].parent = this;
+  }
+
+  this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
+
+  this.borderRadius = options.borderRadius || this.sensors.length ? 100 : 0;
+
+  if (!this.velocity.mag()) {
+    this.velocity.x = 1; // angle = 0;
+    this.velocity.y = 0;
+    this.velocity.normalize();
+    this.velocity.rotate(Utils.degreesToRadians(this.angle));
+    this.velocity.mult(this.motorSpeed);
+  }
+};
+
+/**
+ * Applies Agent-specific forces.
+ *
+ * @returns {Object} This object's acceleration vector.
+ */
+Agent.prototype.applyAdditionalForces = function() {
+
+  var i, max, sensorActivated, sensor, r, theta, x, y;
+
+  /*if (this.sensors.length > 0) { // Sensors
+    for (i = 0, max = this.sensors.length; i < max; i += 1) {
+
+      sensor = this.sensors[i];
+
+      r = sensor.offsetDistance; // use angle to calculate x, y
+      theta = Utils.degreesToRadians(this.angle + sensor.offsetAngle);
+      x = r * Math.cos(theta);
+      y = r * Math.sin(theta);
+
+      sensor.location.x = this.location.x;
+      sensor.location.y = this.location.y;
+      sensor.location.add(new Vector(x, y)); // position the sensor
+
+      if (i) {
+        sensor.borderStyle = 'none';
+      }
+
+      if (sensor.activated) {
+        if (typeof sensor.behavior === 'function') {
+          this.applyForce(sensor.behavior.call(this, sensor, sensor.target));
+        } else {
+          this.applyForce(sensor.getBehavior().call(this, sensor, sensor.target));
+        }
+        sensorActivated = true;
+      }
+
+    }
+  }*/
+
+  /**
+   * If no sensors were activated and this.motorSpeed != 0,
+   * apply a force in the direction of the current velocity.
+   */
+  if (!sensorActivated && this.motorSpeed) {
+    this.motorDir.x = this.velocity.x;
+    this.motorDir.y = this.velocity.y;
+    this.motorDir.normalize();
+    if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
+      this.motorDir.mult(-this.motorSpeed);
+    } else {
+      this.motorDir.mult(this.motorSpeed);
+    }
+    this.applyForce(this.motorDir); // constantly applies a force
+  }
+
+  // TODO: cache a vector for new location
+  if (this.followMouse) { // follow mouse
+    var t = {
+      location: new Vector(System.mouse.location.x,
+          System.mouse.location.y)
+    };
+    this.applyForce(this._seek(t));
+  }
+
+  if (this.seekTarget) { // seek target
+    this.applyForce(this._seek(this.seekTarget));
+  }
+
+  /*if (this.flowField) { // follow flow field
+    var res = this.flowField.resolution,
+      col = Math.floor(this.location.x/res),
+      row = Math.floor(this.location.y/res),
+      loc, target;
+
+    if (this.flowField.field[col]) {
+      loc = this.flowField.field[col][row];
+      if (loc) { // sometimes loc is not available for edge cases
+        this.followTargetVector.x = loc.x;
+        this.followTargetVector.y = loc.y;
+      } else {
+        this.followTargetVector.x = this.location.x;
+        this.followTargetVector.y = this.location.y;
+      }
+      target = {
+        location: this.followTargetVector
+      };
+      this.applyForce(this.follow(target));
+    }
+
+  }*/
+
+  if (this.flocking) {
+    this._flock(System.getAllItemsByName(this.name));
+  }
+
+  return this.acceleration;
+};
+
+/**
+ * Calculates a steering force to apply to an object seeking another object.
+ *
+ * @param {Object} target The object to seek.
+ * @returns {Object} The force to apply.
+ * @private
+ */
+Agent.prototype._seek = function(target) {
+
+  var world = this.world,
+    desiredVelocity = Vector.VectorSub(target.location, this.location),
+    distanceToTarget = desiredVelocity.mag();
+
+  desiredVelocity.normalize();
+
+  if (distanceToTarget < world.width / 2) { // slow down to arrive at target
+    var m = Utils.map(distanceToTarget, 0, world.width / 2, 0, this.maxSpeed);
+    desiredVelocity.mult(m);
+  } else {
+    desiredVelocity.mult(this.maxSpeed);
+  }
+
+  desiredVelocity.sub(this.velocity);
+  desiredVelocity.limit(this.maxSteeringForce);
+
+  return desiredVelocity;
+};
+
+/**
+ * Bundles flocking behaviors (separate, align, cohesion) into one call.
+ *
+ * @returns {Object} This object's acceleration vector.
+ */
+Agent.prototype._flock = function(items) {
+  this.applyForce(this._separate(items).mult(this.separateStrength));
+  this.applyForce(this._align(items).mult(this.alignStrength));
+  this.applyForce(this._cohesion(items).mult(this.cohesionStrength));
+  return this.acceleration;
+};
+
+/**
+ * Loops through a passed items array and calculates a force to apply
+ * to avoid all items.
+ *
+ * @param {array} items An array of Flora items.
+ * @returns {Object} A force to apply.
+ */
+Agent.prototype._separate = function(items) {
+
+  var i, max, item, diff, d,
+  sum, count = 0, steer;
+
+  this.separateSumForceVector.x = 0;
+  this.separateSumForceVector.y = 0;
+  sum = this.separateSumForceVector;
+
+  for (i = 0, max = items.length; i < max; i += 1) {
+    item = items[i];
+    if (this.id !== item.id) {
+
+      d = this.location.distance(item.location);
+
+      if ((d > 0) && (d < this.desiredSeparation)) {
+        diff = Vector.VectorSub(this.location, item.location);
+        diff.normalize();
+        diff.div(d);
+        sum.add(diff);
+        count += 1;
+      }
+    }
+  }
+  if (count > 0) {
+    sum.div(count);
+    sum.normalize();
+    sum.mult(this.maxSpeed);
+    sum.sub(this.velocity);
+    sum.limit(this.maxSteeringForce);
+    return sum;
+  }
+  return new Vector(); // TODO: do we need this?
+};
+
+/**
+ * Loops through a passed items array and calculates a force to apply
+ * to align with all items.
+ *
+ * @param {array} items An array of Flora items.
+ * @returns {Object} A force to apply.
+ */
+Agent.prototype._align = function(items) {
+
+  var i, max, item, d,
+    neighbordist = this.width * 2,
+    sum, count = 0, steer;
+
+  this.alignSumForceVector.x = 0;
+  this.alignSumForceVector.y = 0;
+  sum = this.alignSumForceVector;
+
+  for (i = 0, max = items.length; i < max; i += 1) {
+    item = items[i];
+    d = this.location.distance(item.location);
+
+    if ((d > 0) && (d < neighbordist)) {
+      if (this.id !== item.id) {
+        sum.add(item.velocity);
+        count += 1;
+      }
+    }
+  }
+
+  if (count > 0) {
+    sum.div(count);
+    sum.normalize();
+    sum.mult(this.maxSpeed);
+    sum.sub(this.velocity);
+    sum.limit(this.maxSteeringForce);
+    return sum;
+  }
+  return new Vector();
+};
+
+/**
+ * Loops through a passed items array and calculates a force to apply
+ * to stay close to all items.
+ *
+ * @param {array} items An array of Flora items.
+ * @returns {Object} A force to apply.
+ */
+Agent.prototype._cohesion = function(items) {
+
+  var i, max, item, d,
+    neighbordist = 10,
+    sum, count = 0, desiredVelocity, steer;
+
+  this.cohesionSumForceVector.x = 0;
+  this.cohesionSumForceVector.y = 0;
+  sum = this.cohesionSumForceVector;
+
+  for (i = 0, max = items.length; i < max; i += 1) {
+    item = items[i];
+    d = this.location.distance(item.location);
+
+    if ((d > 0) && (d < neighbordist)) {
+      if (this.id !== item.id) {
+        sum.add(item.location);
+        count += 1;
+      }
+    }
+  }
+
+  if (count > 0) {
+    sum.div(count);
+    sum.sub(this.location);
+    sum.normalize();
+    sum.mult(this.maxSpeed);
+    sum.sub(this.velocity);
+    sum.limit(this.maxSteeringForce);
+    return sum;
+  }
+  return new Vector();
+};
+
+module.exports.Agent = Agent;
+
+
+},{"./Mover":15,"Burner":8}],10:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('Burner').Utils,
@@ -1486,11 +1874,9 @@ var Item = _dereq_('Burner').Item,
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {Array} [opt_options.color = 92, 187, 0] Color.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
  * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
- * @param {number} [opt_options.boxShadowSpread = this.width / 8] Box-shadow spread.
  * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
@@ -1505,14 +1891,9 @@ function Attractor(opt_options) {
   this.width = typeof options.width === 'undefined' ? 100 : options.width;
   this.height = typeof options.height === 'undefined' ? 100 : options.height;
   this.color = options.color || [92, 187, 0];
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  this.boxShadowOffsetX = options.boxShadowOffsetX || 0;
-  this.boxShadowOffsetY = options.boxShadowOffsetY || 0;
-  this.boxShadowBlur = options.boxShadowBlur || 0;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [64, 129, 0];
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
@@ -1523,9 +1904,14 @@ Utils.extend(Attractor, Mover);
  * Initializes Attractor.
  * @param  {Object} world       An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  */
 Attractor.prototype.init = function(world, opt_options) {
   Attractor._superClass.init.call(this, world, opt_options);
+  var options = opt_options || {};
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
 };
 
 /**
@@ -1606,7 +1992,7 @@ Attractor.prototype.getCSSText = function(props) {
 
 module.exports.Attractor = Attractor;
 
-},{"./Mover":14,"Burner":8}],10:[function(_dereq_,module,exports){
+},{"./Mover":15,"Burner":8}],11:[function(_dereq_,module,exports){
 var Utils = _dereq_('Burner').Utils;
 /**
  * Creates a new BorderPalette object.
@@ -1676,7 +2062,7 @@ BorderPalette.prototype.getBorder = function() {
 module.exports.BorderPalette = BorderPalette;
 
 
-},{"Burner":8}],11:[function(_dereq_,module,exports){
+},{"Burner":8}],12:[function(_dereq_,module,exports){
 var Utils = _dereq_('Burner').Utils;
 /**
  * Creates a new ColorPalette object.
@@ -1840,7 +2226,7 @@ ColorPalette.prototype.getColor = function() {
 
 module.exports.ColorPalette = ColorPalette;
 
-},{"Burner":8}],12:[function(_dereq_,module,exports){
+},{"Burner":8}],13:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils,
     Vector = _dereq_('Burner').Vector;
@@ -1981,7 +2367,7 @@ Connector.prototype.getCSSText = function(props) {
 
 module.exports.Connector = Connector;
 
-},{"Burner":8}],13:[function(_dereq_,module,exports){
+},{"Burner":8}],14:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Attractor = _dereq_('./Attractor').Attractor,
     Utils = _dereq_('Burner').Utils,
@@ -2000,11 +2386,9 @@ var Item = _dereq_('Burner').Item,
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {Array} [opt_options.color = 92, 187, 0] Color.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
  * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
- * @param {number} [opt_options.boxShadowSpread = this.width / 8] Box-shadow spread.
  * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
@@ -2019,14 +2403,12 @@ function Dragger(opt_options) {
   this.width = typeof options.width === 'undefined' ? 100 : options.width;
   this.height = typeof options.height === 'undefined' ? 100 : options.height;
   this.color = options.color || [105, 210, 231];
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [167, 219, 216];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  this.boxShadowOffsetX = options.boxShadowOffsetX || 0;
+  /*this.boxShadowOffsetX = options.boxShadowOffsetX || 0;
   this.boxShadowOffsetY = options.boxShadowOffsetY || 0;
-  this.boxShadowBlur = options.boxShadowBlur || 0;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
+  this.boxShadowBlur = options.boxShadowBlur || 0;*/
   this.boxShadowColor = options.boxShadowColor || [147, 199, 196];
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
@@ -2037,9 +2419,14 @@ Utils.extend(Dragger, Attractor);
  * Initializes Dragger.
  * @param  {Object} world       An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  */
 Dragger.prototype.init = function(world, opt_options) {
   Dragger._superClass.init.call(this, world, opt_options);
+  var options = opt_options || {};
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
 };
 
 /**
@@ -2064,7 +2451,7 @@ Dragger.prototype.drag = function(obj) {
 
 module.exports.Dragger = Dragger;
 
-},{"./Attractor":9,"Burner":8}],14:[function(_dereq_,module,exports){
+},{"./Attractor":10,"Burner":8}],15:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     System = _dereq_('Burner').System,
     Utils = _dereq_('Burner').Utils,
@@ -2110,16 +2497,7 @@ function Mover(opt_options) {
   this.pointToParentDirection = typeof options.pointToParentDirection === 'undefined' ? true : options.pointToParentDirection;
   this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 0 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
-  this.afterStep = options.afterStep || null;
   this.isStatic = !!options.isStatic;
-
-  //
-
-  this.isMouseOut = false;
-  this.isPressed = false;
-  this.mouseOutInterval = false;
-  this._friction = new Vector();
-
 }
 Utils.extend(Mover, Item);
 
@@ -2132,6 +2510,11 @@ Mover.prototype.init = function(world, opt_options) {
   Mover._superClass.init.call(this, world, opt_options);
 
   var me = this;
+
+  this.isMouseOut = false;
+  this.isPressed = false;
+  this.mouseOutInterval = false;
+  this._friction = new Vector();
 
   if (this.draggable) {
 
@@ -2346,11 +2729,10 @@ Mover.prototype.step = function() {
     this.life += 1;
   } else if (this.lifespan !== -1) {
     System.remove(this);
+    return;
   }
 
-  if (this.afterStep) {
-    this.afterStep.call(this);
-  }
+  this.afterStep.call(this);
 };
 
 /**
@@ -2401,7 +2783,7 @@ Mover.prototype.getCSSText = function(props) {
 module.exports.Mover = Mover;
 
 
-},{"Burner":8}],15:[function(_dereq_,module,exports){
+},{"Burner":8}],16:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
@@ -2602,7 +2984,311 @@ Oscillator.prototype.getCSSText = function(props) {
 
 module.exports.Oscillator = Oscillator;
 
-},{"./Mover":14,"./SimplexNoise":18,"Burner":8}],16:[function(_dereq_,module,exports){
+},{"./Mover":15,"./SimplexNoise":21,"Burner":8}],17:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    Mover = _dereq_('./Mover').Mover,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new Particle object.
+ *
+ * @constructor
+ * @extends Mover
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.width = 20] Width
+ * @param {number} [opt_options.height = 20] Height
+ * @param {Array} [opt_options.color = [200, 200, 200]] Color.
+ * @param {number} [opt_options.borderRadius = 100] The particle's border radius.
+ * @param {number} [opt_options.lifespan = 50] The max life of the object. Set to -1 for infinite life.
+ * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
+ * @param {boolean} {opt_options.fade = true} If true, opacity decreases proportionally with life.
+ * @param {boolean} {opt_options.shrink = true} If true, width and height decrease proportionally with life.
+ * @param {boolean} [opt_options.checkWorldEdges = false] Set to true to check the object's location against the world's bounds.
+ * @param {number} [opt_options.maxSpeed = 4] Maximum speed.
+ * @param {number} [opt_options.zIndex = 1] The object's zIndex.
+ */
+function Particle(opt_options) {
+  Mover.call(this);
+  var options = opt_options || {};
+  this.name = options.name || 'Particle';
+  this.width = typeof options.width === 'undefined' ? 20 : options.width;
+  this.height = typeof options.height === 'undefined' ? 20 : options.height;
+  this.color = options.color || [200, 200, 200];
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.lifespan = typeof options.lifespan === 'undefined' ? 50 : options.lifespan;
+  this.life = options.life || 0;
+  this.fade = typeof options.fade === 'undefined' ? true : options.fade;
+  this.shrink = typeof options.shrink === 'undefined' ? true : options.shrink;
+  this.checkWorldEdges = !!options.checkWorldEdges;
+  this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 4 : options.maxSpeed;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
+}
+Utils.extend(Particle, Mover);
+
+/**
+ * Initializes Particle.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
+ */
+Particle.prototype.init = function(world, opt_options) {
+  Particle._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
+
+  if (!options.acceleration) {
+    this.acceleration = new Vector(1, 1);
+    this.acceleration.normalize();
+    this.acceleration.mult(this.maxSpeed ? this.maxSpeed : 3);
+    this.acceleration.rotate(Utils.getRandomNumber(0, Math.PI * 2, true));
+  }
+  if (!options.velocity) {
+    this.velocity = new Vector();
+  }
+  this.initWidth = this.width;
+  this.initHeight = this.height;
+};
+
+/**
+ * Applies additional forces.
+ */
+Particle.prototype.afterStep = function() {
+
+  if (this.fade) {
+    this.opacity = Utils.map(this.life, 0, this.lifespan, 1, 0);
+  }
+
+  if (this.shrink) {
+    this.width = Utils.map(this.life, 0, this.lifespan, this.initWidth, 0);
+    this.height = Utils.map(this.life, 0, this.lifespan, this.initHeight, 0);
+  }
+};
+
+/**
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof Particle
+ */
+Particle.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    color0: this.color[0],
+    color1: this.color[1],
+    color2: this.color[2],
+    colorMode: this.colorMode,
+    borderRadius: this.borderRadius,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor0: this.borderColor[0],
+    borderColor1: this.borderColor[1],
+    borderColor2: this.borderColor[2],
+    boxShadowOffsetX: this.boxShadowOffsetX,
+    boxShadowOffsetY: this.boxShadowOffsetY,
+    boxShadowBlur: this.boxShadowBlur,
+    boxShadowSpread: this.boxShadowSpread,
+    boxShadowColor0: this.boxShadowColor[0],
+    boxShadowColor1: this.boxShadowColor[1],
+    boxShadowColor2: this.boxShadowColor[2],
+    opacity: this.opacity,
+    zIndex: this.zIndex
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof Particle
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+Particle.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
+      props.width + 'px; height: ' + props.height + 'px; background-color: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
+      props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
+      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+};
+
+module.exports.Particle = Particle;
+
+
+},{"./Mover":15,"Burner":8}],18:[function(_dereq_,module,exports){
+var ColorPalette = _dereq_('./ColorPalette').ColorPalette,
+    Item = _dereq_('Burner').Item,
+    Mover = _dereq_('./Mover').Mover,
+    System = _dereq_('Burner').System,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new ParticleSystem.
+ *
+ * @constructor
+ * @extends Mover
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.width = 0] Width
+ * @param {number} [opt_options.height = 0] Height
+ * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
+ * @param {number} [opt_options.borderWidth = 0] Border width.
+ * @param {string} [opt_options.borderStyle = 'none'] Border style.
+ * @param {string|Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {number} [opt_options.borderRadius = 0] Border radius.
+ * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move.
+ * @param {number} [opt_options.lifespan = 1000] The max life of the system. Set to -1 for infinite life.
+ * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, system is destroyed.
+ * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
+ * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
+ * @param {number} [opt_options.emitRadius = 3] The ParticleSystem adds this offset to the location of the Particles it creates.
+ * @param {Array} [opt_options.startColor = [255, 255, 255]] The starting color of the particle's palette range.
+ * @param {Array} [opt_options.endColor = [255, 0, 0]] The ending color of the particle's palette range.
+ * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
+ */
+function ParticleSystem(opt_options) {
+  Mover.call(this);
+  var options = opt_options || {};
+  this.name = options.name || 'ParticleSystem';
+  this.width = options.width || 0;
+  this.height = options.height || 0;
+  this.color = options.color || [255, 255, 255];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || [255, 255, 255];
+  this.borderRadius = options.borderRadius || 0;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.lifespan = typeof options.lifespan === 'undefined' ? -1: options.lifespan;
+  this.life = typeof options.life === 'undefined' ? -1 : options.life;
+  this.burst = typeof options.burst === 'undefined' ? 1 : options.burst;
+  this.burstRate = typeof options.burstRate === 'undefined' ? 4 : options.burstRate;
+  this.emitRadius = typeof options.emitRadius === 'undefined' ? 3 : options.emitRadius;
+  this.startColor = options.startColor || [255, 255, 255];
+  this.endColor = options.endColor || [255, 0, 0];
+  this.particleOptions = options.particleOptions || {
+    width : 15,
+    height : 15,
+    lifespan : 50,
+    borderRadius : 100,
+    checkWorldEdges : false,
+    acceleration: null,
+    velocity: null,
+    location: null,
+    maxSpeed: 3,
+    fade: true,
+    shrink: true
+  };
+}
+Utils.extend(ParticleSystem, Mover);
+
+/**
+ * Initializes Particle.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
+ */
+ParticleSystem.prototype.init = function(world, opt_options) {
+  ParticleSystem._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  if (this.particleOptions.acceleration) {
+    this.initParticleAcceleration = new Vector(this.particleOptions.acceleration.x,
+      this.particleOptions.acceleration.y);
+  }
+
+  var pl = new ColorPalette();
+  pl.addColor({ // adds a random sampling of colors to palette
+    min: 12,
+    max: 24,
+    startColor: this.startColor,
+    endColor: this.endColor
+  });
+
+  this.clock = 0;
+
+  this.beforeStep = function () {
+
+    var location, offset,
+        initAcceleration = this.initParticleAcceleration;
+
+    if (this.life < this.lifespan) {
+      this.life += 1;
+    } else if (this.lifespan !== -1) {
+      System.remove(this);
+      return;
+    }
+
+    if (this.clock % this.burstRate === 0) {
+
+      location = new Vector(this.location.x, this.location.y); // use the particle system's location
+      offset = new Vector(1, 1); // get the emit radius
+      offset.normalize();
+      offset.mult(this.emitRadius); // expand emit radius in a random direction
+      offset.rotate(Utils.getRandomNumber(0, Math.PI * 2, true));
+      location.add(offset);
+
+      for (var i = 0; i < this.burst; i++) {
+        this.particleOptions.world = this.world;
+        this.particleOptions.life = 0;
+        this.particleOptions.color = pl.getColor();
+        this.particleOptions.borderStyle = 'solid';
+        this.particleOptions.borderColor = pl.getColor();
+        this.particleOptions.boxShadowColor = pl.getColor();
+        if (initAcceleration) {
+          this.particleOptions.acceleration = new Vector(initAcceleration.x, initAcceleration.y);
+        }
+        this.particleOptions.location = location;
+
+        System.add('Particle', this.particleOptions);
+      }
+    }
+    this.clock++;
+  };
+
+};
+
+/**
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof ParticleSystem
+ */
+ParticleSystem.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof ParticleSystem
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+ParticleSystem.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + ';';
+};
+
+
+module.exports.ParticleSystem = ParticleSystem;
+
+},{"./ColorPalette":12,"./Mover":15,"Burner":8}],19:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils;
 
@@ -2626,7 +3312,6 @@ function Point(opt_options) {
   Item.call(this);
   var options = opt_options || {};
   this.name = options.name || 'Point';
-  // this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || [200, 200, 200];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
@@ -2685,7 +3370,7 @@ Point.prototype.getCSSText = function(props) {
 
 module.exports.Point = Point;
 
-},{"Burner":8}],17:[function(_dereq_,module,exports){
+},{"Burner":8}],20:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Attractor = _dereq_('./Attractor').Attractor,
     Utils = _dereq_('Burner').Utils,
@@ -2704,11 +3389,9 @@ var Item = _dereq_('Burner').Item,
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {Array} [opt_options.color = 92, 187, 0] Color.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
  * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
- * @param {number} [opt_options.boxShadowSpread = this.width / 8] Box-shadow spread.
  * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
@@ -2723,14 +3406,9 @@ function Repeller(opt_options) {
   this.width = typeof options.width === 'undefined' ? 100 : options.width;
   this.height = typeof options.height === 'undefined' ? 100 : options.height;
   this.color = options.color || [250, 105, 0];
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  this.boxShadowOffsetX = options.boxShadowOffsetX || 0;
-  this.boxShadowOffsetY = options.boxShadowOffsetY || 0;
-  this.boxShadowBlur = options.boxShadowBlur || 0;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [250, 105, 0];
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
@@ -2741,14 +3419,19 @@ Utils.extend(Repeller, Attractor);
  * Initializes Repeller.
  * @param  {Object} world       An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  */
 Repeller.prototype.init = function(world, opt_options) {
   Repeller._superClass.init.call(this, world, opt_options);
+  var options = opt_options || {};
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
 };
 
 module.exports.Repeller = Repeller;
 
-},{"./Attractor":9,"Burner":8}],18:[function(_dereq_,module,exports){
+},{"./Attractor":10,"Burner":8}],21:[function(_dereq_,module,exports){
 /*jshint bitwise:false */
 /**
 * https://gist.github.com/304522
@@ -2977,9 +3660,119 @@ SimplexNoise.dot = function(g, x, y) {
 
 module.exports.SimplexNoise = SimplexNoise;
 
-},{}],19:[function(_dereq_,module,exports){
-var Item = _dereq_('Burner').Item,
+},{}],22:[function(_dereq_,module,exports){
+var BorderPalette = _dereq_('./BorderPalette').BorderPalette,
+    ColorPalette = _dereq_('./ColorPalette').ColorPalette,
+    config = _dereq_('./config').config,
     Mover = _dereq_('./Mover').Mover,
+    Utils = _dereq_('Burner').Utils;
+/**
+ * Specific background and box-shadow colors have been added to config.js. When initialized,
+ * a new Stimulus item pulls colors from palettes based on these colors.
+ */
+var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {};
+
+/**
+ * By default, Stimulus items get a border style randomly selected
+ * from a predetermined list.
+ */
+var borderStyles = ['double', 'double', 'dotted', 'dashed'];
+
+for (i = 0, max = config.defaultColorList.length; i < max; i++) {
+  color = config.defaultColorList[i];
+  pal = new ColorPalette();
+  pal.addColor({
+    min: 20,
+    max: 200,
+    startColor: color.startColor,
+    endColor: color.endColor
+  });
+  palettes[color.name] = pal;
+  borderColors[color.name] = color.borderColor;
+  boxShadowColors[color.name] = color.boxShadowColor;
+}
+
+borderPalette = new BorderPalette();
+for (i = 0, max = borderStyles.length; i < max; i++) {
+  border = borderStyles[i];
+  borderPalette.addBorder({
+    min: 2,
+    max: 10,
+    style: border
+  });
+}
+
+/**
+ * Creates a new Stimulus.
+ *
+ * @constructor
+ * @extends Mover
+ *
+ * @param {Object} opt_options A map of initial properties.
+ */
+function Stimulus(opt_options) {
+  Mover.call(this);
+  var options = opt_options || {};
+
+  if (!options.type || typeof options.type !== 'string') {
+    throw new Error('Stimulus requires "type" parameter as a string.');
+  }
+  this.type = options.type;
+
+  this.name = options.name || 'Stimulus';
+  this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
+  this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
+  this.width = typeof options.width !== 'undefined' ? options.width : 50;
+  this.height = typeof options.height !== 'undefined' ? options.height : 50;
+  this.opacity = typeof options.opacity !== 'undefined' ? options.opacity : 0.75;
+}
+Utils.extend(Stimulus, Mover);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [options=] A map of initial properties.
+ * @param {Array} [options.color = [255, 255, 255]] Color.
+ * @param {number} [options.borderWidth = this.width / getRandomNumber(2, 8)] Border width.
+ * @param {string} [options.borderStyle = 'double'] Border style.
+ * @param {Array} [options.borderColor = [220, 220, 220]] Border color.
+ * @param {number} [options.borderRadius = 100] Border radius.
+ * @param {number} [options.boxShadowSpread = this.width / getRandomNumber(2, 8)] Box-shadow spread.
+ * @param {Array} [options.boxShadowColor = [200, 200, 200]] Box-shadow color.
+ */
+Stimulus.prototype.init = function(world, options) {
+
+  Stimulus._superClass.init.call(this, world, options);
+
+  // name = this.name.toLowerCase();
+
+  this.color = options.color || (palettes[this.type] ?
+      palettes[this.type].getColor() : [255, 255, 255]);
+
+  this.borderColor = options.borderColor || (palettes[this.type] ?
+    palettes[this.type].getColor() : [220, 220, 220]);
+
+  this.boxShadowColor = options.boxShadowColor || (boxShadowColors[this.type] ?
+    boxShadowColors[this.type] : [200, 200, 200]);
+
+  this.borderWidth = typeof options.borderWidth !== 'undefined' ?
+      options.borderWidth : this.width / Utils.getRandomNumber(2, 8);
+
+  this.borderStyle = typeof options.borderStyle !== 'undefined' ?
+      options.borderStyle : borderPalette.getBorder();
+
+  this.borderRadius = typeof options.borderRadius !== 'undefined' ?
+      options.borderRadius : 100;
+
+  this.boxShadowSpread = typeof options.boxShadowSpread !== 'undefined' ?
+      options.boxShadowSpread : this.width / Utils.getRandomNumber(2, 8);
+
+};
+
+module.exports.Stimulus = Stimulus;
+
+},{"./BorderPalette":11,"./ColorPalette":12,"./Mover":15,"./config":24,"Burner":8}],23:[function(_dereq_,module,exports){
+var Mover = _dereq_('./Mover').Mover,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
     Utils = _dereq_('Burner').Utils,
     Vector = _dereq_('Burner').Vector;
@@ -3045,7 +3838,6 @@ Utils.extend(Walker, Mover);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
-
  */
 Walker.prototype.init = function(world, opt_options) {
   Walker._superClass.init.call(this, world, opt_options);
@@ -3085,6 +3877,68 @@ Walker.prototype.applyAdditionalForces = function() {
 
 module.exports.Walker = Walker;
 
-},{"./Mover":14,"./SimplexNoise":18,"Burner":8}]},{},[1])
+},{"./Mover":15,"./SimplexNoise":21,"Burner":8}],24:[function(_dereq_,module,exports){
+/**
+ * @namespace
+ */
+var config = {
+  borderStyles: [
+    'none',
+    'solid',
+    'dotted',
+    'dashed',
+    'double',
+    'inset',
+    'outset',
+    'groove',
+    'ridge'
+  ],
+  defaultColorList: [
+    {
+      name: 'cold',
+      startColor: [88, 129, 135],
+      endColor: [171, 244, 255],
+      boxShadowColor: [132, 192, 201]
+    },
+    {
+      name: 'food',
+      startColor: [186, 255, 130],
+      endColor: [84, 187, 0],
+      boxShadowColor: [57, 128, 0]
+    },
+    {
+      name: 'heat',
+      startColor: [255, 132, 86],
+      endColor: [175, 47, 0],
+      boxShadowColor: [255, 69, 0]
+    },
+    {
+      name: 'light',
+      startColor: [255, 255, 255],
+      endColor: [189, 148, 0],
+      boxShadowColor: [255, 200, 0]
+    },
+    {
+      name: 'oxygen',
+      startColor: [130, 136, 255],
+      endColor: [49, 56, 205],
+      boxShadowColor: [60, 64, 140]
+    }
+  ],
+  keyMap: {
+    pause: 80,
+    resetSystem: 82,
+    stats: 83
+  },
+  touchMap: {
+    stats: 2,
+    pause: 3,
+    reset: 4
+  }
+};
+
+module.exports.config = config;
+
+},{}]},{},[1])
 (1)
 });

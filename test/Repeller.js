@@ -5,6 +5,13 @@ var Burner = require('Burner'),
 function beforeTest() {
   Burner.System.setupFunc = function() {};
   Burner.System._resetSystem();
+  document.body.innerHTML = '';
+  var world = document.createElement('div');
+  world.id = 'world';
+  world.style.position = 'absolute';
+  world.style.top = '0';
+  world.style.left = '0';
+  document.body.appendChild(world);
 }
 
 test('load Repeller.', function(t) {
@@ -25,14 +32,9 @@ test('new Repeller() should have default properties.', function(t) {
   t.equal(obj.width, 100, 'default width.');
   t.equal(obj.height, 100, 'default height.');
   t.assert(obj.color[0] === 250 && obj.color[1] === 105 && obj.color[2] === 0, 'default color.');
-  t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
   t.equal(obj.borderStyle, 'double', 'default borderStyle.');
   t.assert(obj.borderColor[0] === 224 && obj.borderColor[1] === 228 && obj.borderColor[2] === 204, 'default borderColor.');
   t.equal(obj.borderRadius, 100, 'default borderRadius.');
-  t.equal(obj.boxShadowOffsetX, 0, 'default boxShadowOffsetX.');
-  t.equal(obj.boxShadowOffsetY, 0, 'default boxShadowOffsetY.');
-  t.equal(obj.boxShadowBlur, 0, 'default boxShadowBlur.');
-  t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
   t.assert(obj.boxShadowColor[0] === 250 && obj.boxShadowColor[1] === 105 && obj.boxShadowColor[2] === 0, 'default boxShadowColor.');
   t.equal(obj.opacity, 0.75, 'default opacity.');
   t.equal(obj.zIndex, 1, 'default zIndex.');
@@ -51,14 +53,9 @@ test('new Repeller() should have custom properties.', function(t) {
     width: 10,
     height: 10,
     color: [10, 20, 30],
-    borderWidth: 2,
     borderStyle: 'dotted',
     borderColor: [30, 20, 10],
     borderRadius: 20,
-    boxShadowOffsetX: 10,
-    boxShadowOffsetY: 20,
-    boxShadowBlur: 3,
-    boxShadowSpread: 10,
     boxShadowColor: [100, 110, 120],
     opacity: 0.25,
     zIndex: 20
@@ -69,18 +66,64 @@ test('new Repeller() should have custom properties.', function(t) {
   t.equal(obj.width, 10, 'custom width.');
   t.equal(obj.height, 10, 'custom height.');
   t.assert(obj.color[0] === 10 && obj.color[1] === 20 && obj.color[2] === 30, 'custom color.');
-  t.equal(obj.borderWidth, 2, 'custom borderWidth.');
   t.equal(obj.borderStyle, 'dotted', 'custom borderStyle.');
   t.assert(obj.borderColor[0] === 30 && obj.borderColor[1] === 20 && obj.borderColor[2] === 10, 'custom borderColor.');
   t.equal(obj.borderRadius, 20, 'custom borderRadius.');
-  t.equal(obj.boxShadowOffsetX, 10, 'custom boxShadowOffsetX.');
-  t.equal(obj.boxShadowOffsetY, 20, 'custom boxShadowOffsetY.');
-  t.equal(obj.boxShadowBlur, 3, 'custom boxShadowBlur.');
-  t.equal(obj.boxShadowSpread, 10, 'custom boxShadowSpread.');
   t.assert(obj.boxShadowColor[0] === 100 && obj.boxShadowColor[1] === 110 && obj.boxShadowColor[2] === 120, 'custom boxShadowColor.');
   t.equal(obj.opacity, 0.25, 'custom opacity.');
   t.equal(obj.zIndex, 20, 'custom zIndex.');
 
+  t.end();
+});
+
+test('init() should set additional properties.', function(t) {
+
+  beforeTest();
+
+  var obj;
+
+  Burner.System.Classes = {
+    Repeller: Repeller
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    obj = this.add('Repeller', {
+      borderWidth: 8,
+      boxShadowSpread: 16
+    }); // add your new object to the system
+    obj.draw();
+  });
+
+  t.equal(obj.borderWidth, 8, 'custom borderWidth.');
+  t.equal(obj.boxShadowSpread, 16, 'custom boxShadowSpread.');
+
+  //
+
+  beforeTest();
+
+  var obj;
+
+  Burner.System.Classes = {
+    Repeller: Repeller
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    obj = this.add('Repeller'); // add your new object to the system
+    obj.draw();
+  });
+
+  t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
+  t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
   t.end();
 });
 
@@ -95,7 +138,11 @@ test('draw() should assign a css test string to the style property.', function(t
   };
 
   Burner.System.setup(function() {
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Repeller'); // add your new object to the system
     obj.draw();
     t.equal(obj.el.style.width, '100px', 'el.style width.');
@@ -136,7 +183,11 @@ test('attract() should return an attraction force.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Repeller', {
       location: new Burner.Vector(100, 100)
     });

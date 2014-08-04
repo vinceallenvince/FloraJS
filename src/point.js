@@ -21,7 +21,6 @@ function Point(opt_options) {
   Item.call(this);
   var options = opt_options || {};
   this.name = options.name || 'Point';
-  // this.colorMode = options.colorMode || 'rgb';
   this.color = options.color || [200, 200, 200];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;

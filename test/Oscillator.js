@@ -7,6 +7,13 @@ var Burner = require('Burner'),
 function beforeTest() {
   Burner.System.setupFunc = function() {};
   Burner.System._resetSystem();
+  document.body.innerHTML = '';
+  var world = document.createElement('div');
+  world.id = 'world';
+  world.style.position = 'absolute';
+  world.style.top = '0';
+  world.style.left = '0';
+  document.body.appendChild(world);
 }
 
 test('load Oscillator.', function(t) {
@@ -121,7 +128,11 @@ test('draw() should assign a css test string to the style property.', function(t
   };
 
   Burner.System.setup(function() {
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Oscillator'); // add your new object to the system
   });
 
@@ -162,6 +173,7 @@ test('step() should update oscillator location.', function(t) {
 
   Burner.System.setup(function() {
     this.add('World', {
+      el: document.getElementById('world'),
       width: 400,
       height: 300
     });
@@ -185,6 +197,7 @@ test('step() should update oscillator location.', function(t) {
 
   Burner.System.setup(function() {
     this.add('World', {
+      el: document.getElementById('world'),
       width: 400,
       height: 300
     });
@@ -217,6 +230,7 @@ test('step() should update oscillator location.', function(t) {
 
   Burner.System.setup(function() {
     this.add('World', {
+      el: document.getElementById('world'),
       width: 400,
       height: 300
     });
@@ -253,6 +267,7 @@ test('step() should update oscillator location.', function(t) {
 
   Burner.System.setup(function() {
     this.add('World', {
+      el: document.getElementById('world'),
       width: 400,
       height: 300
     });

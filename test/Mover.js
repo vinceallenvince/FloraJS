@@ -14,6 +14,13 @@ Burner.Utils.addEvent = function(el, type, handler) {
 function beforeTest() {
   Burner.System.setupFunc = function() {};
   Burner.System._resetSystem();
+  document.body.innerHTML = '';
+  var world = document.createElement('div');
+  world.id = 'world';
+  world.style.position = 'absolute';
+  world.style.top = '0';
+  world.style.left = '0';
+  document.body.appendChild(world);
 }
 
 test('load Mover.', function(t) {
@@ -38,11 +45,6 @@ test('new Mover() should have default properties.', function(t) {
   t.equal(obj.parent, null, 'parent.');
   t.equal(obj.pointToParentDirection, true, 'pointToParentDirection.');
   t.equal(obj.offsetAngle, 0, 'offsetAngle.');
-  t.equal(obj.afterStep, null, 'afterStep.');
-  t.equal(obj.isMouseOut, false, 'isMouseOut.');
-  t.equal(obj.isPressed, false, 'isPressed.');
-  t.equal(obj.mouseOutInterval, false, 'mouseOutInterval.');
-  t.equal(obj._friction instanceof Burner.Vector, true, 'friction.');
   t.end();
 });
 
@@ -80,7 +82,6 @@ test('new Mover() should accept custom properties.', function(t) {
   t.equal(obj.offsetAngle, 10, 'offsetAngle.');
   t.assert(typeof obj.beforeStep, 'function', 'beforeStep.');
   t.assert(typeof obj.afterStep, 'function', 'afterStep.');
-  t.equal(obj.mouseOutInterval, false, 'mouseOutInterval.');
   t.end();
 });
 
@@ -95,29 +96,38 @@ test('draw() should assign a css test string to the style property.', function(t
   };
 
   Burner.System.setup(function() {
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover'); // add your new object to the system
     obj.draw();
-    t.equal(obj.el.style.width, '10px', 'el.style width.');
-    t.equal(obj.el.style.height, '10px', 'el.style height.');
-    t.equal(obj.el.style.backgroundColor, 'rgb(255, 255, 255)', 'el.style backgroundColor');
-    t.equal(obj.el.style.borderTopWidth, '0px', 'el.style border top width');
-    t.equal(obj.el.style.borderRightWidth, '0px', 'el.style border right width');
-    t.equal(obj.el.style.borderBottomWidth, '0px', 'el.style border bottom width');
-    t.equal(obj.el.style.borderLeftWidth, '0px', 'el.style border left width');
-    t.equal(obj.el.style.borderTopStyle, 'none', 'el.style border top style');
-    t.equal(obj.el.style.borderRightStyle, 'none', 'el.style border right style');
-    t.equal(obj.el.style.borderBottomStyle, 'none', 'el.style border bottom style');
-    t.equal(obj.el.style.borderLeftStyle, 'none', 'el.style border left style');
-    t.equal(obj.el.style.borderTopColor, 'rgb(0, 0, 0)', 'el.style border top color');
-    t.equal(obj.el.style.borderRightColor, 'rgb(0, 0, 0)', 'el.style border right color');
-    t.equal(obj.el.style.borderBottomColor, 'rgb(0, 0, 0)', 'el.style border bottom color');
-    t.equal(obj.el.style.borderLeftColor, 'rgb(0, 0, 0)', 'el.style border left color');
-    t.equal(obj.el.style.borderTopLeftRadius, '0% 0%', 'el.style border top left radius');
-    t.equal(obj.el.style.borderTopRightRadius, '0% 0%', 'el.style border top right radius');
-    t.equal(obj.el.style.borderBottomRightRadius, '0% 0%', 'el.style border bottom right radius');
-    t.equal(obj.el.style.borderBottomLeftRadius, '0% 0%', 'el.style border bottom left radius');
   });
+
+  t.equal(obj.el.style.width, '10px', 'el.style width.');
+  t.equal(obj.el.style.height, '10px', 'el.style height.');
+  t.equal(obj.el.style.backgroundColor, 'rgb(255, 255, 255)', 'el.style backgroundColor');
+  t.equal(obj.el.style.borderTopWidth, '0px', 'el.style border top width');
+  t.equal(obj.el.style.borderRightWidth, '0px', 'el.style border right width');
+  t.equal(obj.el.style.borderBottomWidth, '0px', 'el.style border bottom width');
+  t.equal(obj.el.style.borderLeftWidth, '0px', 'el.style border left width');
+  t.equal(obj.el.style.borderTopStyle, 'none', 'el.style border top style');
+  t.equal(obj.el.style.borderRightStyle, 'none', 'el.style border right style');
+  t.equal(obj.el.style.borderBottomStyle, 'none', 'el.style border bottom style');
+  t.equal(obj.el.style.borderLeftStyle, 'none', 'el.style border left style');
+  t.equal(obj.el.style.borderTopColor, 'rgb(0, 0, 0)', 'el.style border top color');
+  t.equal(obj.el.style.borderRightColor, 'rgb(0, 0, 0)', 'el.style border right color');
+  t.equal(obj.el.style.borderBottomColor, 'rgb(0, 0, 0)', 'el.style border bottom color');
+  t.equal(obj.el.style.borderLeftColor, 'rgb(0, 0, 0)', 'el.style border left color');
+  t.equal(obj.el.style.borderTopLeftRadius, '0% 0%', 'el.style border top left radius');
+  t.equal(obj.el.style.borderTopRightRadius, '0% 0%', 'el.style border top right radius');
+  t.equal(obj.el.style.borderBottomRightRadius, '0% 0%', 'el.style border bottom right radius');
+  t.equal(obj.el.style.borderBottomLeftRadius, '0% 0%', 'el.style border bottom left radius');
+  t.equal(obj.isMouseOut, false, 'isMouseOut.');
+  t.equal(obj.isPressed, false, 'isPressed.');
+  t.equal(obj.mouseOutInterval, false, 'mouseOutInterval.');
+  t.equal(obj._friction instanceof Burner.Vector, true, 'friction.');
 
   t.end();
 });
@@ -133,7 +143,11 @@ test('mouseover() should update properties.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       draggable: true
     });
@@ -158,7 +172,11 @@ test('mousedown() should update properties.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       draggable: true
     });
@@ -190,7 +208,11 @@ test('mousemove() should update properties.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       draggable: true
     });
@@ -231,7 +253,11 @@ test('mouseup() should update properties.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       draggable: true
     });
@@ -254,7 +280,11 @@ test('mouseout() should update properties on an interval.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       draggable: true
     });
@@ -285,7 +315,11 @@ test('step() should update location.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover');
 
     var y = obj.location.y;
@@ -308,7 +342,11 @@ test('step() should update location only if obj is not static.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       isStatic: true
     });
@@ -333,7 +371,11 @@ test('step() should update location only if obj is not pressed.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover');
 
     var y = obj.location.y;
@@ -358,6 +400,9 @@ test('step() should calculate new angle if pointToDirection = true.', function(t
 
   Burner.System.setup(function() { // add your new object to the system
     this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300,
       gravity: new Burner.Vector(0.3, 1)
     });
     obj = this.add('Mover');
@@ -380,7 +425,11 @@ test('checkWorldEdges() should restrict obj location to world boundaries.', func
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       checkWorldEdges: true,
       location: new Burner.Vector(-10, -10)
@@ -406,7 +455,11 @@ test('wrapWorldEdges() should calculate a new location.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       checkWorldEdges: false,
       wrapWorldEdges: true,
@@ -433,7 +486,11 @@ test('if obj.controlCamera = true, obj world should move in the opposite directi
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       controlCamera: true
     });
@@ -459,7 +516,11 @@ test('if obj has a parent and offsetDistance = 0, obj location should match pare
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     var parent = this.add('Mover', {
       location: new Burner.Vector(100, 100)
     });
@@ -489,7 +550,11 @@ test('if obj has a parent and offsetDistance/offsetAngle, obj location should ma
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     var parent = this.add('Mover', {
       location: new Burner.Vector(100, 100)
     });
@@ -521,7 +586,11 @@ test('step() should decrement life.', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       life: 97,
       lifespan: 100
@@ -551,7 +620,11 @@ test('step() should call afterStep().', function(t) {
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     obj = this.add('Mover', {
       afterStep: function() {val = 30;}
     });
@@ -577,7 +650,11 @@ test('should apply forces from Attractors, Repellers and Draggers.', function(t)
   };
 
   Burner.System.setup(function() { // add your new object to the system
-    this.add('World');
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
     this.add('Mover');
     this.add('Attractor');
     this.add('Attractor');

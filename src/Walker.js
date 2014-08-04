@@ -1,5 +1,4 @@
-var Item = require('Burner').Item,
-    Mover = require('./Mover').Mover,
+var Mover = require('./Mover').Mover,
     SimplexNoise = require('./SimplexNoise').SimplexNoise,
     Utils = require('Burner').Utils,
     Vector = require('Burner').Vector;
@@ -65,7 +64,6 @@ Utils.extend(Walker, Mover);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
-
  */
 Walker.prototype.init = function(world, opt_options) {
   Walker._superClass.init.call(this, world, opt_options);

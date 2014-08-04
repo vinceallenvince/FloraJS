@@ -10,22 +10,16 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+      Flora.System.setup(function() {
+        this.add('World');
 
-      Burner.System.init(function() {
-
-        this.add('Agent', {
+        /*this.add('Agent', {
           angle: 90,
           motorSpeed: 2,
           minSpeed: 1,
@@ -41,14 +35,14 @@
               behavior: 'ACCELERATE'
             })
           ]
-        }, world);
+        }, world);*/
 
         this.add('Stimulus', {
           type: 'heat',
           draggable: true
         });
 
-        this.add('Caption', {
+        /*this.add('Caption', {
           text: 'Flora.Sensor.Accelerate',
           opacity: 0.4,
           borderColor: 'transparent',
@@ -59,8 +53,9 @@
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'bottom center'
-        });
-      }, world);
+        });*/
+      });
+      Flora.System.loop();
     </script>
   </body>
 </html>
