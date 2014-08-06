@@ -20,12 +20,13 @@ Flora.System.Classes = {
   ParticleSystem: _dereq_('./src/ParticleSystem').ParticleSystem,
   Point: _dereq_('./src/Point').Point,
   Repeller: _dereq_('./src/Repeller').Repeller,
+  Sensor: _dereq_('./src/Sensor').Sensor,
   Stimulus: _dereq_('./src/Stimulus').Stimulus,
   Walker: _dereq_('./src/Walker').Walker
 };
 
 module.exports = Flora;
-},{"./src/Agent":9,"./src/Attractor":10,"./src/BorderPalette":11,"./src/ColorPalette":12,"./src/Connector":13,"./src/Dragger":14,"./src/Mover":15,"./src/Oscillator":16,"./src/Particle":17,"./src/ParticleSystem":18,"./src/Point":19,"./src/Repeller":20,"./src/Stimulus":22,"./src/Walker":23,"Burner":8}],2:[function(_dereq_,module,exports){
+},{"./src/Agent":9,"./src/Attractor":10,"./src/BorderPalette":11,"./src/ColorPalette":12,"./src/Connector":13,"./src/Dragger":14,"./src/Mover":15,"./src/Oscillator":16,"./src/Particle":17,"./src/ParticleSystem":18,"./src/Point":19,"./src/Repeller":20,"./src/Sensor":21,"./src/Stimulus":23,"./src/Walker":24,"Burner":8}],2:[function(_dereq_,module,exports){
 /*global document */
 
 var Vector = _dereq_('./Vector').Vector;
@@ -2984,7 +2985,7 @@ Oscillator.prototype.getCSSText = function(props) {
 
 module.exports.Oscillator = Oscillator;
 
-},{"./Mover":15,"./SimplexNoise":21,"Burner":8}],17:[function(_dereq_,module,exports){
+},{"./Mover":15,"./SimplexNoise":22,"Burner":8}],17:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('Burner').Utils,
@@ -3432,6 +3433,165 @@ Repeller.prototype.init = function(world, opt_options) {
 module.exports.Repeller = Repeller;
 
 },{"./Attractor":10,"Burner":8}],21:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    Mover = _dereq_('./Mover').Mover,
+    System = _dereq_('Burner').System,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new Sensor object.
+ *
+ * @constructor
+ * @extends Mover
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
+ * @param {string} [opt_options.behavior = ''] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
+ * @param {number} [opt_options.sensitivity = 200] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
+ * @param {number} [opt_options.width = 7] Width.
+ * @param {number} [opt_options.height = 7] Height.
+ * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the sensor's parent.
+ * @param {number} [opt_options.offsetAngle = 0] The angle of rotation around the vehicle carrying the sensor.
+ * @param {number} [opt_options.opacity = 0.75] Opacity.
+ * @param {Object} [opt_options.target = null] A stimulator.
+ * @param {boolean} [opt_options.activated = false] True if sensor is close enough to detect a stimulator.
+ * @param {Array} [opt_options.activatedColor = [255, 255, 255]] The color the sensor will display when activated.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.borderWidth = 2] Border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] Border style.
+ * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {Function} [opt_options.onConsume = null] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
+ */
+function Sensor(opt_options) {
+  Mover.call(this);
+  var options = opt_options || {};
+
+  this.name = options.name || 'Sensor';
+  this.type = options.type || '';
+  this.behavior = options.behavior || function() {};
+  this.sensitivity = typeof options.sensitivity !== 'undefined' ? options.sensitivity : 200;
+  this.width = typeof options.width !== 'undefined' ? options.width : 7;
+  this.height = typeof options.height !== 'undefined' ? options.height : 7;
+  this.offsetDistance = typeof options.offsetDistance !== 'undefined' ? options.offsetDistance : 30;
+  this.offsetAngle = options.offsetAngle || 0;
+  this.opacity = typeof options.opacity !== 'undefined' ? options.opacity : 0.75;
+  this.target = options.target || null;
+  this.activated = !!options.activated;
+  this.activatedColor = options.activatedColor || [255, 255, 255];
+  this.borderRadius = typeof options.borderRadius !== 'undefined' ? options.borderRadius : 100;
+  this.borderWidth = typeof options.borderWidth !== 'undefined' ? options.borderWidth : 2;
+  this.borderStyle = options.borderStyle || 'solid';
+  this.borderColor = options.borderColor || [255, 255, 255];
+  this.onConsume = options.onConsume || null;
+}
+Utils.extend(Sensor, Mover);
+
+/**
+ * Initializes Sensor.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
+ */
+Sensor.prototype.init = function(world, opt_options) {
+  Sensor._superClass.init.call(this, world, opt_options);
+  var options = opt_options || {};
+
+  this.displayRange = !!options.displayRange;
+  // TODO: enable
+  /*if (this.displayRange) {
+    this.rangeDisplay = this.createRangeDisplay();
+  }*/
+  this.displayConnector = !!options.displayConnector;
+
+  this.activationLocation = new Vector();
+  this._force = new Vector(); // used as a cache Vector
+
+};
+
+/**
+ * Called every frame, step() updates the instance's properties.
+ */
+Sensor.prototype.step = function() {
+
+  var check = false;
+
+  /**
+   * Check if any Simulus objects exist that match this sensor. If so,
+   * loop thru the list and check if sensor should activate.
+   */
+
+  var list = System.getAllItemsByName(this.type);
+  //console.log(this.type);
+//console.log(list.length);
+  for (var i = 0, max = list.length; i < max; i++) { // heat
+//console.log(i);
+    if (this.sensorActive(list[i], this.sensitivity)) {
+
+      this.target = list[i]; // target this stimulator
+      if (!this.activationLocation.x && !this.activationLocation.y) {
+        this.activationLocation.x = this.parent.location.x;
+        this.activationLocation.y = this.parent.location.y;
+      }
+      this.activated = true; // set activation
+      this.activatedColor = this.target.color;
+
+      if (this.displayConnector && !this.connector) {
+        this.connector = System.add('Connector', {
+          parentA: this,
+          parentB: this.target
+        });
+      }
+
+      if (this.displayConnector && this.connector && this.connector.parentB !== this.target) {
+        this.connector.parentB = this.target;
+      }
+
+      check = true;
+    }
+  }
+
+
+  if (!check) {
+    this.target = null;
+    this.activated = false;
+    this.state = null;
+    this.color = [255, 255, 255];
+    this.activationLocation.x = null;
+    this.activationLocation.y = null;
+    if (this.connector) {
+      System.remove(this.connector);
+      this.connector = null;
+    }
+  } else {
+    this.color = this.activatedColor;
+  }
+
+  this.afterStep.call(this);
+};
+
+/**
+ * Checks if a sensor can detect a stimulus object. Note: Assumes
+ * target is a circle.
+ *
+ * @param {Object} target The stimulator.
+ * @return {Boolean} true if sensor's range intersects target.
+ */
+Sensor.prototype.sensorActive = function(target) {
+console.log('sensorActive');
+console.log(target);
+  // Two circles intersect if distance bw centers is less than the sum of the radii.
+  var distance = Vector.VectorDistance(this.location, target.location),
+      sensorRadius = this.sensitivity / 2,
+      targetRadius = (target.width / 2) + target.boxShadowSpread;
+console.log(distance);
+  return distance < sensorRadius + targetRadius;
+};
+
+module.exports.Sensor = Sensor;
+
+},{"./Mover":15,"Burner":8}],22:[function(_dereq_,module,exports){
 /*jshint bitwise:false */
 /**
 * https://gist.github.com/304522
@@ -3660,47 +3820,12 @@ SimplexNoise.dot = function(g, x, y) {
 
 module.exports.SimplexNoise = SimplexNoise;
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 var BorderPalette = _dereq_('./BorderPalette').BorderPalette,
     ColorPalette = _dereq_('./ColorPalette').ColorPalette,
     config = _dereq_('./config').config,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('Burner').Utils;
-/**
- * Specific background and box-shadow colors have been added to config.js. When initialized,
- * a new Stimulus item pulls colors from palettes based on these colors.
- */
-var i, max, pal, color, palettes = {}, border, borderPalette, borderColors = {}, boxShadowColors = {};
-
-/**
- * By default, Stimulus items get a border style randomly selected
- * from a predetermined list.
- */
-var borderStyles = ['double', 'double', 'dotted', 'dashed'];
-
-for (i = 0, max = config.defaultColorList.length; i < max; i++) {
-  color = config.defaultColorList[i];
-  pal = new ColorPalette();
-  pal.addColor({
-    min: 20,
-    max: 200,
-    startColor: color.startColor,
-    endColor: color.endColor
-  });
-  palettes[color.name] = pal;
-  borderColors[color.name] = color.borderColor;
-  boxShadowColors[color.name] = color.boxShadowColor;
-}
-
-borderPalette = new BorderPalette();
-for (i = 0, max = borderStyles.length; i < max; i++) {
-  border = borderStyles[i];
-  borderPalette.addBorder({
-    min: 2,
-    max: 10,
-    style: border
-  });
-}
 
 /**
  * Creates a new Stimulus.
@@ -3718,8 +3843,7 @@ function Stimulus(opt_options) {
     throw new Error('Stimulus requires "type" parameter as a string.');
   }
   this.type = options.type;
-
-  this.name = options.name || 'Stimulus';
+  this.name = this.type;
   this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
   this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
   this.width = typeof options.width !== 'undefined' ? options.width : 50;
@@ -3727,6 +3851,47 @@ function Stimulus(opt_options) {
   this.opacity = typeof options.opacity !== 'undefined' ? options.opacity : 0.75;
 }
 Utils.extend(Stimulus, Mover);
+
+/**
+ * Specific background and box-shadow colors have been added to config.js. When initialized,
+ * a new Stimulus item pulls colors from palettes based on these colors.
+ */
+var i, max, pal, color, border;
+
+/**
+ * By default, Stimulus items get a border style randomly selected
+ * from a predetermined list.
+ * @static
+ * @type {Array}
+ */
+Stimulus.borderStyles = ['double', 'double', 'dotted', 'dashed'];
+Stimulus.palettes = {};
+Stimulus.borderColors = {};
+Stimulus.boxShadowColors = {};
+
+for (i = 0, max = config.defaultColorList.length; i < max; i++) {
+  color = config.defaultColorList[i];
+  pal = new ColorPalette();
+  pal.addColor({
+    min: 20,
+    max: 200,
+    startColor: color.startColor,
+    endColor: color.endColor
+  });
+  Stimulus.palettes[color.name] = pal;
+  Stimulus.borderColors[color.name] = color.borderColor;
+  Stimulus.boxShadowColors[color.name] = color.boxShadowColor;
+}
+
+Stimulus.borderPalette = new BorderPalette();
+for (i = 0, max = Stimulus.borderStyles.length; i < max; i++) {
+  border = Stimulus.borderStyles[i];
+  Stimulus.borderPalette.addBorder({
+    min: 2,
+    max: 10,
+    style: border
+  });
+}
 
 /**
  * Initializes an instance.
@@ -3744,22 +3909,20 @@ Stimulus.prototype.init = function(world, options) {
 
   Stimulus._superClass.init.call(this, world, options);
 
-  // name = this.name.toLowerCase();
+  this.color = options.color || (Stimulus.palettes[this.type] ?
+      Stimulus.palettes[this.type].getColor() : [255, 255, 255]);
 
-  this.color = options.color || (palettes[this.type] ?
-      palettes[this.type].getColor() : [255, 255, 255]);
+  this.borderColor = options.borderColor || (Stimulus.palettes[this.type] ?
+    Stimulus.palettes[this.type].getColor() : [220, 220, 220]);
 
-  this.borderColor = options.borderColor || (palettes[this.type] ?
-    palettes[this.type].getColor() : [220, 220, 220]);
-
-  this.boxShadowColor = options.boxShadowColor || (boxShadowColors[this.type] ?
-    boxShadowColors[this.type] : [200, 200, 200]);
+  this.boxShadowColor = options.boxShadowColor || (Stimulus.boxShadowColors[this.type] ?
+    Stimulus.boxShadowColors[this.type] : [200, 200, 200]);
 
   this.borderWidth = typeof options.borderWidth !== 'undefined' ?
       options.borderWidth : this.width / Utils.getRandomNumber(2, 8);
 
   this.borderStyle = typeof options.borderStyle !== 'undefined' ?
-      options.borderStyle : borderPalette.getBorder();
+      options.borderStyle : Stimulus.borderPalette.getBorder();
 
   this.borderRadius = typeof options.borderRadius !== 'undefined' ?
       options.borderRadius : 100;
@@ -3771,7 +3934,7 @@ Stimulus.prototype.init = function(world, options) {
 
 module.exports.Stimulus = Stimulus;
 
-},{"./BorderPalette":11,"./ColorPalette":12,"./Mover":15,"./config":24,"Burner":8}],23:[function(_dereq_,module,exports){
+},{"./BorderPalette":11,"./ColorPalette":12,"./Mover":15,"./config":25,"Burner":8}],24:[function(_dereq_,module,exports){
 var Mover = _dereq_('./Mover').Mover,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
     Utils = _dereq_('Burner').Utils,
@@ -3877,7 +4040,7 @@ Walker.prototype.applyAdditionalForces = function() {
 
 module.exports.Walker = Walker;
 
-},{"./Mover":15,"./SimplexNoise":21,"Burner":8}],24:[function(_dereq_,module,exports){
+},{"./Mover":15,"./SimplexNoise":22,"Burner":8}],25:[function(_dereq_,module,exports){
 /**
  * @namespace
  */

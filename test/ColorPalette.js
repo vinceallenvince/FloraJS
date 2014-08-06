@@ -2,6 +2,10 @@ var Burner = require('Burner'),
     test = require('tape'),
     ColorPalette, obj;
 
+function beforeTest() {
+  ColorPalette._idCount = 0;
+}
+
 test('load ColorPalette.', function(t) {
   ColorPalette = require('../src/ColorPalette').ColorPalette;
   t.ok(ColorPalette, 'object loaded');
@@ -9,12 +13,13 @@ test('load ColorPalette.', function(t) {
 });
 
 test('check static properties.', function(t) {
+  beforeTest();
   t.equal(ColorPalette._idCount, 0, '_idCount.');
   t.end();
 });
 
 test('new ColorPalette() should have default properties.', function(t) {
-
+  beforeTest();
   var idCount = ColorPalette._idCount;
 
   obj = new ColorPalette();
@@ -28,7 +33,7 @@ test('new ColorPalette() should have default properties.', function(t) {
 });
 
 test('addColor() should push color arrays on to a colors property.', function(t) {
-
+  beforeTest();
   obj = new ColorPalette();
 
   t.throws(function () {

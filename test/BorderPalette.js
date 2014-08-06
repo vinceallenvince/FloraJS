@@ -2,6 +2,10 @@ var Burner = require('Burner'),
     test = require('tape'),
     BorderPalette, obj;
 
+function beforeTest() {
+  BorderPalette._idCount = 0;
+}
+
 test('load BorderPalette.', function(t) {
   BorderPalette = require('../src/BorderPalette').BorderPalette;
   t.ok(BorderPalette, 'object loaded');
@@ -9,12 +13,13 @@ test('load BorderPalette.', function(t) {
 });
 
 test('check static properties.', function(t) {
+  beforeTest();
   t.equal(BorderPalette._idCount, 0, '_idCount.');
   t.end();
 });
 
 test('new BorderPalette() should have default properties.', function(t) {
-
+  beforeTest();
   var idCount = BorderPalette._idCount;
 
   obj = new BorderPalette();
@@ -27,7 +32,7 @@ test('new BorderPalette() should have default properties.', function(t) {
 });
 
 test('addColor() should push color arrays on to a colors property.', function(t) {
-
+  beforeTest();
   obj = new BorderPalette();
 
   t.throws(function () {

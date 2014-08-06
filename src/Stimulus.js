@@ -20,8 +20,7 @@ function Stimulus(opt_options) {
     throw new Error('Stimulus requires "type" parameter as a string.');
   }
   this.type = options.type;
-
-  this.name = options.name || 'Stimulus';
+  this.name = this.type;
   this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
   this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
   this.width = typeof options.width !== 'undefined' ? options.width : 50;
@@ -86,8 +85,6 @@ for (i = 0, max = Stimulus.borderStyles.length; i < max; i++) {
 Stimulus.prototype.init = function(world, options) {
 
   Stimulus._superClass.init.call(this, world, options);
-
-  // name = this.name.toLowerCase();
 
   this.color = options.color || (Stimulus.palettes[this.type] ?
       Stimulus.palettes[this.type].getColor() : [255, 255, 255]);

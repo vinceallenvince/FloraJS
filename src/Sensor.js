@@ -1,5 +1,6 @@
 var Item = require('Burner').Item,
     Mover = require('./Mover').Mover,
+    System = require('Burner').System,
     Utils = require('Burner').Utils,
     Vector = require('Burner').Vector;
 
@@ -62,7 +63,9 @@ Sensor.prototype.init = function(world, opt_options) {
   Sensor._superClass.init.call(this, world, opt_options);
   var options = opt_options || {};
 
+  this.parent = options.parent || null;
   this.displayRange = !!options.displayRange;
+  // TODO: enable
   /*if (this.displayRange) {
     this.rangeDisplay = this.createRangeDisplay();
   }*/
@@ -71,8 +74,83 @@ Sensor.prototype.init = function(world, opt_options) {
   this.activationLocation = new Vector();
   this._force = new Vector(); // used as a cache Vector
 
+};
+
+/**
+ * Called every frame, step() updates the instance's properties.
+ */
+Sensor.prototype.step = function() {
+
+  var check = false;
+
+  /**
+   * Check if any Simulus objects exist that match this sensor. If so,
+   * loop thru the list and check if sensor should activate.
+   */
+
+  var list = System.getAllItemsByName(this.type);
+
+  for (var i = 0, max = list.length; i < max; i++) { // heat
+
+    if (this._sensorActive(list[i], this.sensitivity)) {
+
+      this.target = list[i]; // target this stimulator
+      if (!this.activationLocation.x && !this.activationLocation.y) {
+        this.activationLocation.x = this.parent.location.x;
+        this.activationLocation.y = this.parent.location.y;
+      }
+      this.activated = true; // set activation
+      this.activatedColor = this.target.color;
+
+      if (this.displayConnector && !this.connector) {
+        this.connector = System.add('Connector', {
+          parentA: this,
+          parentB: this.target
+        });
+      }
+
+      if (this.displayConnector && this.connector && this.connector.parentB !== this.target) {
+        this.connector.parentB = this.target;
+      }
+
+      check = true;
+    }
+  }
 
 
+  if (!check) {
+    this.target = null;
+    this.activated = false;
+    this.state = null;
+    this.color = [255, 255, 255];
+    this.activationLocation.x = null;
+    this.activationLocation.y = null;
+    if (this.connector) {
+      System.remove(this.connector);
+      this.connector = null;
+    }
+  } else {
+    this.color = this.activatedColor;
+  }
+
+  this.afterStep.call(this);
+};
+
+/**
+ * Checks if a sensor can detect a stimulus object. Note: Assumes
+ * target is a circle.
+ *
+ * @param {Object} target The stimulator.
+ * @return {Boolean} true if sensor's range intersects target.
+ */
+Sensor.prototype._sensorActive = function(target) {
+
+  // Two circles intersect if distance bw centers is less than the sum of the radii.
+  var distance = Vector.VectorDistance(this.location, target.location),
+      sensorRadius = this.sensitivity / 2,
+      targetRadius = (target.width / 2) + target.boxShadowSpread;
+
+  return distance < sensorRadius + targetRadius;
 };
 
 module.exports.Sensor = Sensor;

@@ -37,7 +37,7 @@ test('new Stimulus() should have default properties.', function(t) {
     type: 'heat'
   });
   t.equal(obj.type, 'heat', 'type.');
-  t.equal(obj.name, 'Stimulus', 'name.');
+  t.equal(obj.name, 'heat', 'name.');
   t.equal(obj.width, 50, 'default width.');
   t.equal(obj.height, 50, 'default height.');
   t.equal(obj.mass, 50, 'default mass.');
@@ -67,7 +67,7 @@ test('new Stimulus() should have custom properties.', function(t) {
     opacity: 0.25
   });
   t.equal(obj.type, 'cold', 'type.');
-  t.equal(obj.name, 'hello', 'custom name.');
+  t.equal(obj.name, 'cold', 'name.');
   t.equal(obj.width, 30, 'custom width.');
   t.equal(obj.height, 30, 'custom height.');
   t.equal(obj.mass, 100, 'custom mass.');
@@ -206,8 +206,6 @@ test('init() should set additional properties.', function(t) {
 
   var objCustom;
 
-  Stimulus.borderStyles = ['double'];
-
   Burner.System.Classes = {
     Stimulus: Stimulus
   };
@@ -231,7 +229,7 @@ test('init() should set additional properties.', function(t) {
   });
 
   t.assert(objDefault.borderWidth >= objDefault.width / 8 && objDefault.borderWidth <= objDefault.width / 2, 'default borderWidth.');
-  t.assert(objDefault.borderStyle === 'double', 'default borderStyle.');
+  t.equal(typeof objDefault.borderStyle, 'string', 'default borderStyle.');
   t.equal(objDefault.borderRadius, 100, 'default borderRadius.');
   t.assert(objDefault.boxShadowSpread >= objDefault.width / 8 && objDefault.boxShadowSpread <= objDefault.width / 2, 'default boxShadowSpread.');
 

@@ -1,5 +1,7 @@
 var Burner = require('Burner'),
     test = require('tape'),
+    Agent = require('../src/Agent').Agent,
+    Stimulus = require('../src/Stimulus').Stimulus,
     Sensor, obj;
 
 function beforeTest() {
@@ -140,3 +142,144 @@ test('init() should set additional properties.', function(t) {
 
   t.end();
 });
+
+test('step() should set additional properties.', function(t) {
+
+  beforeTest();
+
+  var obj, sensor, heat, agent, val = 0;
+
+  Burner.System.Classes = {
+    Sensor: Sensor,
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(190, 140)
+    });
+    sensor = this.add('Sensor', {
+      parent: agent,
+      type: 'heat',
+      location: new Burner.Vector(200, 150),
+      afterStep: function() {
+        val = 100;
+      }
+    });
+    heat = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(210, 160)
+    });
+  });
+
+  Burner.System._stepForward();
+
+  t.equal(sensor.activationLocation.x, 190, 'updates activationLocation.x');
+  t.equal(sensor.activationLocation.y, 140, 'updates activationLocation.y');
+  t.equal(sensor.activated, true, 'sets activated = true.');
+  t.equal(sensor.activatedColor, heat.color, 'sets activatedColor = parent.activatedColor.');
+  t.equal(sensor.color, sensor.activatedColor, 'sets color = activatedColor.');
+  t.equal(val, 100, 'calls afterStep.');
+  //
+
+  beforeTest();
+
+  var obj, sensor, heat, agent, val = 0;
+
+  Burner.System.Classes = {
+    Sensor: Sensor,
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(190, 140)
+    });
+    sensor = this.add('Sensor', {
+      parent: agent,
+      type: 'heat',
+      location: new Burner.Vector(200, 150),
+      displayConnector: true
+    });
+    heat = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(210, 160)
+    });
+  });
+
+  Burner.System._stepForward();
+
+  t.equal(Burner.System._records.length, 5, 'displayConnector: true creates a connector.');
+  t.equal(sensor.connector.parentB, heat, 'sensor\'s connector parentB is the sensor\'s target.');
+
+  // move the stimulus so we can deactivate the sensor
+  heat.location.x = 0;
+  heat.location.y = 0;
+
+  Burner.System._stepForward();
+
+  t.equal(Burner.System._records.length, 4, 'the sensor was removed from System._records.');
+  t.equal(sensor.connector, null, 'sensor deactivated; connector = null.');
+  t.equal(sensor.target, null, 'sensor deactivated; target = null.');
+  t.equal(sensor.activated, false, 'sensor deactivated; activated = false.');
+  t.equal(sensor.state, null, 'sensor deactivated; state = null.');
+  t.assert(sensor.color[0] === 255 && sensor.color[1] === 255 && sensor.color[2] === 255, 'sensor deactivated; color = [255, 255, 255].');
+  t.equal(sensor.activationLocation.x, null, 'sensor deactivated; activationLocation.x = null.');
+  t.equal(sensor.activationLocation.y, null, 'sensor deactivated; activationLocation.y = null.');
+
+  t.end();
+});
+
+test('sensorActive() should check if sensor should be active.', function(t) {
+
+  beforeTest();
+
+  var obj, sensor, heat, agent, val = 0;
+
+  Burner.System.Classes = {
+    Sensor: Sensor,
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(190, 140)
+    });
+    sensor = this.add('Sensor', {
+      parent: agent,
+      type: 'heat',
+      location: new Burner.Vector(200, 150)
+    });
+    heat = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(210, 160)
+    });
+  });
+
+  t.equal(sensor._sensorActive(heat), true, 'sensor active.');
+
+  // move the stimulus so we can deactivate the sensor
+  heat.location.x = 0;
+  heat.location.y = 0;
+
+  t.equal(sensor._sensorActive(heat), false, 'sensor inactive.');
+
+  t.end();
+
+});
+
