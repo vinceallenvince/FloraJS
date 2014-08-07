@@ -73,10 +73,6 @@ Agent.prototype.init = function(world, opt_options) {
   this.followDesiredVelocity = new Vector(); // used in Agent.follow()
   this.motorDir = new Vector(); // used in Agent.applyAdditionalForces()
 
-  for (i = 0, max = this.sensors.length; i < max; i++) {
-    this.sensors[i].parent = this;
-  }
-
   this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
 
   this.borderRadius = options.borderRadius || this.sensors.length ? 100 : 0;
@@ -87,6 +83,10 @@ Agent.prototype.init = function(world, opt_options) {
     this.velocity.normalize();
     this.velocity.rotate(Utils.degreesToRadians(this.angle));
     this.velocity.mult(this.motorSpeed);
+  }
+
+  for (var i = 0, max = this.sensors.length; i < max; i++) {
+    this.sensors[i].parent = this;
   }
 };
 

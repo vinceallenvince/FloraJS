@@ -19,6 +19,7 @@ Flora.System.Classes = {
   Particle: _dereq_('./src/Particle').Particle,
   ParticleSystem: _dereq_('./src/ParticleSystem').ParticleSystem,
   Point: _dereq_('./src/Point').Point,
+  RangeDisplay: _dereq_('./src/RangeDisplay').RangeDisplay,
   Repeller: _dereq_('./src/Repeller').Repeller,
   Sensor: _dereq_('./src/Sensor').Sensor,
   Stimulus: _dereq_('./src/Stimulus').Stimulus,
@@ -26,7 +27,7 @@ Flora.System.Classes = {
 };
 
 module.exports = Flora;
-},{"./src/Agent":9,"./src/Attractor":10,"./src/BorderPalette":11,"./src/ColorPalette":12,"./src/Connector":13,"./src/Dragger":14,"./src/Mover":15,"./src/Oscillator":16,"./src/Particle":17,"./src/ParticleSystem":18,"./src/Point":19,"./src/Repeller":20,"./src/Sensor":21,"./src/Stimulus":23,"./src/Walker":24,"Burner":8}],2:[function(_dereq_,module,exports){
+},{"./src/Agent":9,"./src/Attractor":10,"./src/BorderPalette":11,"./src/ColorPalette":12,"./src/Connector":13,"./src/Dragger":14,"./src/Mover":15,"./src/Oscillator":16,"./src/Particle":17,"./src/ParticleSystem":18,"./src/Point":19,"./src/RangeDisplay":20,"./src/Repeller":21,"./src/Sensor":22,"./src/Stimulus":24,"./src/Walker":25,"Burner":8}],2:[function(_dereq_,module,exports){
 /*global document */
 
 var Vector = _dereq_('./Vector').Vector;
@@ -666,22 +667,23 @@ System.add = function(opt_klass, opt_options, opt_world) {
   var klass = opt_klass || 'Item',
       options = opt_options || null,
       world = opt_world || System._records[0],
-      records = this._records;
+      records = this._records, obj;
 
   // recycle object if one is available
   if (System._pool.length) {
-    records[records.length] = System._cleanObj(System._pool.splice(0, 1)[0]);
+    obj = System._cleanObj(System._pool.splice(0, 1)[0]);
   } else {
     if (klass.toLowerCase() === 'world') {
-      records.push(new World(options));
+      obj = new World(options);
     } else if (System.Classes[klass]) {
-      records.push(new System.Classes[klass](options));
+      obj = new System.Classes[klass](options);
     } else {
-      records.push(new Item());
+      obj = new Item();
     }
   }
-  records[records.length - 1].init(world, options);
-  return records[records.length - 1];
+  obj.init(world, options);
+  records.push(obj);
+  return obj;
 };
 
 /**
@@ -1575,10 +1577,6 @@ Agent.prototype.init = function(world, opt_options) {
   this.followDesiredVelocity = new Vector(); // used in Agent.follow()
   this.motorDir = new Vector(); // used in Agent.applyAdditionalForces()
 
-  for (i = 0, max = this.sensors.length; i < max; i++) {
-    this.sensors[i].parent = this;
-  }
-
   this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
 
   this.borderRadius = options.borderRadius || this.sensors.length ? 100 : 0;
@@ -1589,6 +1587,10 @@ Agent.prototype.init = function(world, opt_options) {
     this.velocity.normalize();
     this.velocity.rotate(Utils.degreesToRadians(this.angle));
     this.velocity.mult(this.motorSpeed);
+  }
+
+  for (var i = 0, max = this.sensors.length; i < max; i++) {
+    this.sensors[i].parent = this;
   }
 };
 
@@ -2985,7 +2987,7 @@ Oscillator.prototype.getCSSText = function(props) {
 
 module.exports.Oscillator = Oscillator;
 
-},{"./Mover":15,"./SimplexNoise":22,"Burner":8}],17:[function(_dereq_,module,exports){
+},{"./Mover":15,"./SimplexNoise":23,"Burner":8}],17:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('Burner').Utils,
@@ -3378,6 +3380,126 @@ var Item = _dereq_('Burner').Item,
     Vector = _dereq_('Burner').Vector;
 
 /**
+ * Creates a new RangeDisplay.
+ *
+ * A RangeDisplay is parented to a sensor and displays the sensor's
+ * sensitivity range.
+ *
+ * @constructor
+ * @extends Item
+ * @param {Object} [opt_options=] A map of initial properties.
+ */
+function RangeDisplay(opt_options) {
+  Item.call(this);
+  var options = opt_options || {};
+
+  if (!options || !options.sensor) {
+    throw new Error('RangeDisplay: a sensor is required.');
+  }
+  this.sensor = options.sensor;
+
+  this.name = options.name || 'RangeDisplay';
+  this.zIndex = options.zIndex || 10;
+  this.borderStyle = typeof options.borderStyle !== 'undefined' ?  options.borderStyle : 'dashed';
+  this.borderDefaultColor = typeof options.borderDefaultColor !== 'undefined' ? options.borderDefaultColor : [150, 150, 150];
+
+}
+Utils.extend(RangeDisplay, Item);
+
+/**
+ * Initializes RangeDisplay.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
+ */
+RangeDisplay.prototype.init = function(world, opt_options) {
+  RangeDisplay._superClass.init.call(this, world, opt_options);
+
+  /**
+   * RangeDisplays have no height or color and rely on the associated DOM element's
+   * CSS border to render their line.
+   */
+  this.borderWidth = 2;
+  this.borderRadius = 100;
+  this.width = this.sensor.sensitivity;
+  this.height = this.sensor.sensitivity;
+  this.minOpacity = 0.3;
+  this.maxOpacity = 0.6;
+  this.opacity = this.minOpacity;
+  this.maxAngularVelocity = 1;
+  this.minAngularVelocity = 0;
+};
+
+/**
+ * Called every frame, step() updates the instance's properties.
+ */
+RangeDisplay.prototype.step = function() {
+
+  this.location.x = this.sensor.location.x;
+  this.location.y = this.sensor.location.y;
+
+  // TODO: do we need angularVelocity?
+  /*var angularVelocity = Utils.map(this.sensor.parent.velocity.mag(),
+      this.sensor.parent.minSpeed, this.sensor.parent.maxSpeed,
+      this.maxAngularVelocity, this.minAngularVelocity);*/
+
+  if (this.sensor.activated) {
+    this.opacity = this.maxOpacity;
+    this.borderColor = this.sensor.target.color;
+  } else {
+    this.opacity = this.minOpacity;
+    this.borderColor = this.borderDefaultColor;
+  }
+};
+
+/**
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof RangeDisplay
+ */
+RangeDisplay.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    colorMode: this.colorMode,
+    borderRadius: this.borderRadius,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor0: this.borderColor[0],
+    borderColor1: this.borderColor[1],
+    borderColor2: this.borderColor[2]
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof RangeDisplay
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+RangeDisplay.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
+      props.width + 'px; height: ' + props.height + 'px; border: ' +
+      props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
+      props.borderRadius + '%;';
+};
+
+
+module.exports.RangeDisplay = RangeDisplay;
+
+},{"./Attractor":10,"Burner":8}],21:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    Attractor = _dereq_('./Attractor').Attractor,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
  * Creates a new Repeller object.
  *
  * @constructor
@@ -3432,9 +3554,10 @@ Repeller.prototype.init = function(world, opt_options) {
 
 module.exports.Repeller = Repeller;
 
-},{"./Attractor":10,"Burner":8}],21:[function(_dereq_,module,exports){
+},{"./Attractor":10,"Burner":8}],22:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
+    RangeDisplay = _dereq_('./RangeDisplay').RangeDisplay,
     System = _dereq_('Burner').System,
     Utils = _dereq_('Burner').Utils,
     Vector = _dereq_('Burner').Vector;
@@ -3498,11 +3621,13 @@ Sensor.prototype.init = function(world, opt_options) {
   Sensor._superClass.init.call(this, world, opt_options);
   var options = opt_options || {};
 
+  this.parent = options.parent || null;
   this.displayRange = !!options.displayRange;
-  // TODO: enable
-  /*if (this.displayRange) {
-    this.rangeDisplay = this.createRangeDisplay();
-  }*/
+  if (this.displayRange) {
+    this.rangeDisplay = System.add('RangeDisplay', {
+      sensor: this
+    });
+  }
   this.displayConnector = !!options.displayConnector;
 
   this.activationLocation = new Vector();
@@ -3515,6 +3640,29 @@ Sensor.prototype.init = function(world, opt_options) {
  */
 Sensor.prototype.step = function() {
 
+  if (this.parent) { // parenting
+
+    if (this.offsetDistance) {
+
+      r = this.offsetDistance; // use angle to calculate x, y
+      theta = Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
+      x = r * Math.cos(theta);
+      y = r * Math.sin(theta);
+
+      this.location.x = this.parent.location.x;
+      this.location.y = this.parent.location.y;
+      this.location.add(new Vector(x, y)); // position the child
+
+      if (this.pointToParentDirection) {
+        this.angle = Utils.radiansToDegrees(Math.atan2(this.parent.velocity.y, this.parent.velocity.x));
+      }
+
+    } else {
+      this.location.x = this.parent.location.x;
+      this.location.y = this.parent.location.y;
+    }
+  }
+
   var check = false;
 
   /**
@@ -3523,11 +3671,10 @@ Sensor.prototype.step = function() {
    */
 
   var list = System.getAllItemsByName(this.type);
-  //console.log(this.type);
-//console.log(list.length);
+
   for (var i = 0, max = list.length; i < max; i++) { // heat
-//console.log(i);
-    if (this.sensorActive(list[i], this.sensitivity)) {
+
+    if (this._sensorActive(list[i], this.sensitivity)) {
 
       this.target = list[i]; // target this stimulator
       if (!this.activationLocation.x && !this.activationLocation.y) {
@@ -3545,6 +3692,7 @@ Sensor.prototype.step = function() {
       }
 
       if (this.displayConnector && this.connector && this.connector.parentB !== this.target) {
+        this.connector.parentA = this;
         this.connector.parentB = this.target;
       }
 
@@ -3578,20 +3726,19 @@ Sensor.prototype.step = function() {
  * @param {Object} target The stimulator.
  * @return {Boolean} true if sensor's range intersects target.
  */
-Sensor.prototype.sensorActive = function(target) {
-console.log('sensorActive');
-console.log(target);
+Sensor.prototype._sensorActive = function(target) {
+
   // Two circles intersect if distance bw centers is less than the sum of the radii.
   var distance = Vector.VectorDistance(this.location, target.location),
       sensorRadius = this.sensitivity / 2,
       targetRadius = (target.width / 2) + target.boxShadowSpread;
-console.log(distance);
+
   return distance < sensorRadius + targetRadius;
 };
 
 module.exports.Sensor = Sensor;
 
-},{"./Mover":15,"Burner":8}],22:[function(_dereq_,module,exports){
+},{"./Mover":15,"./RangeDisplay":20,"Burner":8}],23:[function(_dereq_,module,exports){
 /*jshint bitwise:false */
 /**
 * https://gist.github.com/304522
@@ -3820,7 +3967,7 @@ SimplexNoise.dot = function(g, x, y) {
 
 module.exports.SimplexNoise = SimplexNoise;
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 var BorderPalette = _dereq_('./BorderPalette').BorderPalette,
     ColorPalette = _dereq_('./ColorPalette').ColorPalette,
     config = _dereq_('./config').config,
@@ -3934,7 +4081,7 @@ Stimulus.prototype.init = function(world, options) {
 
 module.exports.Stimulus = Stimulus;
 
-},{"./BorderPalette":11,"./ColorPalette":12,"./Mover":15,"./config":25,"Burner":8}],24:[function(_dereq_,module,exports){
+},{"./BorderPalette":11,"./ColorPalette":12,"./Mover":15,"./config":26,"Burner":8}],25:[function(_dereq_,module,exports){
 var Mover = _dereq_('./Mover').Mover,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
     Utils = _dereq_('Burner').Utils,
@@ -4040,7 +4187,7 @@ Walker.prototype.applyAdditionalForces = function() {
 
 module.exports.Walker = Walker;
 
-},{"./Mover":15,"./SimplexNoise":22,"Burner":8}],25:[function(_dereq_,module,exports){
+},{"./Mover":15,"./SimplexNoise":23,"Burner":8}],26:[function(_dereq_,module,exports){
 /**
  * @namespace
  */

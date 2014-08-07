@@ -17,16 +17,16 @@
     <script type="text/javascript" charset="utf-8">
 
       Flora.System.setup(function() {
-        this.add('World');
+        var world = this.add('World');
 
-        /*this.add('Agent', {
+        this.add('Agent', {
           angle: 90,
           motorSpeed: 2,
           minSpeed: 1,
           maxSpeed: 10,
           width: 20,
           height: 20,
-          location: new Burner.Vector(world.width * 0.4, 0),
+          location: new Flora.Vector(world.width * 0.4, 0),
           sensors: [
             this.add('Sensor', {
               type: 'heat',
@@ -35,7 +35,7 @@
               behavior: 'ACCELERATE'
             })
           ]
-        }, world);*/
+        });
 
         this.add('Stimulus', {
           type: 'heat',

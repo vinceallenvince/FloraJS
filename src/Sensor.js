@@ -1,5 +1,6 @@
 var Item = require('Burner').Item,
     Mover = require('./Mover').Mover,
+    RangeDisplay = require('./RangeDisplay').RangeDisplay,
     System = require('Burner').System,
     Utils = require('Burner').Utils,
     Vector = require('Burner').Vector;
@@ -65,10 +66,11 @@ Sensor.prototype.init = function(world, opt_options) {
 
   this.parent = options.parent || null;
   this.displayRange = !!options.displayRange;
-  // TODO: enable
-  /*if (this.displayRange) {
-    this.rangeDisplay = this.createRangeDisplay();
-  }*/
+  if (this.displayRange) {
+    this.rangeDisplay = System.add('RangeDisplay', {
+      sensor: this
+    });
+  }
   this.displayConnector = !!options.displayConnector;
 
   this.activationLocation = new Vector();
@@ -80,6 +82,29 @@ Sensor.prototype.init = function(world, opt_options) {
  * Called every frame, step() updates the instance's properties.
  */
 Sensor.prototype.step = function() {
+
+  if (this.parent) { // parenting
+
+    if (this.offsetDistance) {
+
+      r = this.offsetDistance; // use angle to calculate x, y
+      theta = Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
+      x = r * Math.cos(theta);
+      y = r * Math.sin(theta);
+
+      this.location.x = this.parent.location.x;
+      this.location.y = this.parent.location.y;
+      this.location.add(new Vector(x, y)); // position the child
+
+      if (this.pointToParentDirection) {
+        this.angle = Utils.radiansToDegrees(Math.atan2(this.parent.velocity.y, this.parent.velocity.x));
+      }
+
+    } else { // TODO: test this
+      this.location.x = this.parent.location.x;
+      this.location.y = this.parent.location.y;
+    }
+  }
 
   var check = false;
 
@@ -110,6 +135,7 @@ Sensor.prototype.step = function() {
       }
 
       if (this.displayConnector && this.connector && this.connector.parentB !== this.target) {
+        this.connector.parentA = this;
         this.connector.parentB = this.target;
       }
 
