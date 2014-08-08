@@ -24,7 +24,21 @@ test('new Dragger() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Dragger();
+  Burner.System.Classes = {
+    Dragger: Dragger
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Dragger();
+    obj.init(world);
+  });
+
   t.equal(obj.name, 'Dragger', 'name.');
   t.equal(obj.c, 1, 'default drag coefficient.');
   t.equal(obj.mass, 1000, 'default mass.');
@@ -32,9 +46,11 @@ test('new Dragger() should have default properties.', function(t) {
   t.equal(obj.width, 100, 'default width.');
   t.equal(obj.height, 100, 'default height.');
   t.assert(obj.color[0] === 105 && obj.color[1] === 210 && obj.color[2] === 231, 'default color.');
+  t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
   t.equal(obj.borderStyle, 'double', 'default borderStyle.');
   t.assert(obj.borderColor[0] === 167 && obj.borderColor[1] === 219 && obj.borderColor[2] === 216, 'default borderColor.');
   t.equal(obj.borderRadius, 100, 'default borderRadius.');
+  t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
   t.assert(obj.boxShadowColor[0] === 147 && obj.boxShadowColor[1] === 199 && obj.boxShadowColor[2] === 196, 'default boxShadowColor.');
   t.equal(obj.opacity, 0.75, 'default opacity.');
   t.equal(obj.zIndex, 1, 'default zIndex.');
@@ -46,84 +62,51 @@ test('new Dragger() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Dragger({
-    c: 20,
-    mass: 3000,
-    isStatic: false,
-    width: 10,
-    height: 10,
-    color: [10, 20, 30],
-    borderStyle: 'dotted',
-    borderColor: [30, 20, 10],
-    borderRadius: 20,
-    boxShadowColor: [100, 110, 120],
-    opacity: 0.25,
-    zIndex: 20
+  Burner.System.Classes = {
+    Dragger: Dragger
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Dragger();
+    obj.init(world, {
+      c: 20,
+      mass: 3000,
+      isStatic: false,
+      width: 10,
+      height: 10,
+      color: [10, 20, 30],
+      borderWidth: 8,
+      borderStyle: 'dotted',
+      borderColor: [30, 20, 10],
+      borderRadius: 20,
+      boxShadowSpread: 16,
+      boxShadowColor: [100, 110, 120],
+      opacity: 0.25,
+      zIndex: 20
+    });
   });
+
   t.equal(obj.c, 20, 'custom drag coefficient.');
   t.equal(obj.isStatic, false, 'custom isStatic');
   t.equal(obj.mass, 3000, 'custom mass.');
   t.equal(obj.width, 10, 'custom width.');
   t.equal(obj.height, 10, 'custom height.');
   t.assert(obj.color[0] === 10 && obj.color[1] === 20 && obj.color[2] === 30, 'custom color.');
+  t.equal(obj.borderWidth, 8, 'custom borderWidth.');
   t.equal(obj.borderStyle, 'dotted', 'custom borderStyle.');
   t.assert(obj.borderColor[0] === 30 && obj.borderColor[1] === 20 && obj.borderColor[2] === 10, 'custom borderColor.');
   t.equal(obj.borderRadius, 20, 'custom borderRadius.');
+  t.equal(obj.boxShadowSpread, 16, 'custom boxShadowSpread.');
   t.assert(obj.boxShadowColor[0] === 100 && obj.boxShadowColor[1] === 110 && obj.boxShadowColor[2] === 120, 'custom boxShadowColor.');
   t.equal(obj.opacity, 0.25, 'custom opacity.');
   t.equal(obj.zIndex, 20, 'custom zIndex.');
 
-  t.end();
-});
-
-test('init() should set additional properties.', function(t) {
-
-  beforeTest();
-
-  var obj;
-
-  Burner.System.Classes = {
-    Dragger: Dragger
-  };
-
-  Burner.System.setup(function() {
-    this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
-    obj = this.add('Dragger', {
-      borderWidth: 8,
-      boxShadowSpread: 16
-    }); // add your new object to the system
-    obj.draw();
-  });
-
-  t.equal(obj.borderWidth, 8, 'custom borderWidth.');
-  t.equal(obj.boxShadowSpread, 16, 'custom boxShadowSpread.');
-
-  //
-
-  beforeTest();
-
-  var obj;
-
-  Burner.System.Classes = {
-    Dragger: Dragger
-  };
-
-  Burner.System.setup(function() {
-    this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
-    obj = this.add('Dragger'); // add your new object to the system
-    obj.draw();
-  });
-
-  t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
-  t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
   t.end();
 });
 

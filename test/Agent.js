@@ -25,7 +25,21 @@ test('new Agent() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Agent();
+  Burner.System.Classes = {
+    Agent: Agent
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Agent();
+    obj.init(world);
+  });
+
   t.equal(obj.name, 'Agent', 'default name.');
   t.equal(obj.followMouse, false, 'default followMouse.');
   t.equal(obj.maxSteeringForce, 5, 'default maxSteeringForce.');
@@ -53,24 +67,37 @@ test('new Agent() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Agent({
-    name: 'hello',
-    followMouse: true,
-    maxSteeringForce: 10,
-    remainsOnScreen: true,
-    seekTarget: {'hello': 'hello'},
-    flocking: true,
-    separateStrength: 0.5,
-    alignStrength: 0.5,
-    cohesionStrength: 0.5,
-    flowField: {'hello': 'hello'},
-    sensors: [{}],
-    motorSpeed: 10,
-    color: [10, 20, 30],
-    borderWidth: 2,
-    borderStyle: 'dotted',
-    borderColor: [10, 20, 30],
-    borderRadius: 100
+  Burner.System.Classes = {
+    Agent: Agent
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Agent();
+    obj.init(world, {
+      name: 'hello',
+      followMouse: true,
+      maxSteeringForce: 10,
+      remainsOnScreen: true,
+      seekTarget: {'hello': 'hello'},
+      flocking: true,
+      separateStrength: 0.5,
+      alignStrength: 0.5,
+      cohesionStrength: 0.5,
+      flowField: {'hello': 'hello'},
+      sensors: [{}],
+      motorSpeed: 10,
+      color: [10, 20, 30],
+      borderWidth: 2,
+      borderStyle: 'dotted',
+      borderColor: [10, 20, 30],
+      borderRadius: 100
+    });
   });
 
   t.equal(obj.name, 'hello', 'custom name.');
@@ -93,6 +120,25 @@ test('new Agent() should have custom properties.', function(t) {
   t.equal(obj.borderColor[1], 20, 'custom borderColor g.');
   t.equal(obj.borderColor[2], 30, 'custom borderColor b.');
   t.equal(obj.borderRadius, 100, 'custom borderRadius.');
+
+  t.equal(obj.separateSumForceVector instanceof Burner.Vector, true, 'default separateSumForceVector.');
+  t.equal(obj.separateSumForceVector.x, 0, 'default separateSumForceVector.x');
+  t.equal(obj.separateSumForceVector.y, 0, 'default separateSumForceVector.y');
+  t.equal(obj.alignSumForceVector instanceof Burner.Vector, true, 'default alignSumForceVector.');
+  t.equal(obj.alignSumForceVector.x, 0, 'default alignSumForceVector.x');
+  t.equal(obj.alignSumForceVector.y, 0, 'default alignSumForceVector.y');
+  t.equal(obj.cohesionSumForceVector instanceof Burner.Vector, true, 'default cohesionSumForceVector.');
+  t.equal(obj.cohesionSumForceVector.x, 0, 'default cohesionSumForceVector.x');
+  t.equal(obj.cohesionSumForceVector.y, 0, 'default cohesionSumForceVector.y');
+  t.equal(obj.followTargetVector instanceof Burner.Vector, true, 'default followTargetVector.');
+  t.equal(obj.followTargetVector.x, 0, 'default followTargetVector.x');
+  t.equal(obj.followTargetVector.y, 0, 'default followTargetVector.y');
+  t.equal(obj.followDesiredVelocity instanceof Burner.Vector, true, 'default followDesiredVelocity.');
+  t.equal(obj.followDesiredVelocity.x, 0, 'default followDesiredVelocity.x');
+  t.equal(obj.followDesiredVelocity.y, 0, 'default followDesiredVelocity.y');
+  t.equal(obj.motorDir instanceof Burner.Vector, true, 'default motorDir.');
+  t.equal(obj.motorDir.x, 0, 'default motorDir.x');
+  t.equal(obj.motorDir.y, 0, 'default motorDir.y');
 
   t.end();
 });
@@ -125,24 +171,6 @@ test('step() should update location.', function(t) {
   t.equal(obj.desiredSeparation, obj.width * 2, 'obj width');
   t.equal(parseFloat(obj.velocity.x.toFixed(2)), 86.60, 'velocity.x');
   t.equal(parseFloat(obj.velocity.y.toFixed(2)), 50.00, 'velocity.y');
-  t.equal(obj.separateSumForceVector instanceof Burner.Vector, true, 'default separateSumForceVector.');
-  t.equal(obj.separateSumForceVector.x, 0, 'default separateSumForceVector.x');
-  t.equal(obj.separateSumForceVector.y, 0, 'default separateSumForceVector.y');
-  t.equal(obj.alignSumForceVector instanceof Burner.Vector, true, 'default alignSumForceVector.');
-  t.equal(obj.alignSumForceVector.x, 0, 'default alignSumForceVector.x');
-  t.equal(obj.alignSumForceVector.y, 0, 'default alignSumForceVector.y');
-  t.equal(obj.cohesionSumForceVector instanceof Burner.Vector, true, 'default cohesionSumForceVector.');
-  t.equal(obj.cohesionSumForceVector.x, 0, 'default cohesionSumForceVector.x');
-  t.equal(obj.cohesionSumForceVector.y, 0, 'default cohesionSumForceVector.y');
-  t.equal(obj.followTargetVector instanceof Burner.Vector, true, 'default followTargetVector.');
-  t.equal(obj.followTargetVector.x, 0, 'default followTargetVector.x');
-  t.equal(obj.followTargetVector.y, 0, 'default followTargetVector.y');
-  t.equal(obj.followDesiredVelocity instanceof Burner.Vector, true, 'default followDesiredVelocity.');
-  t.equal(obj.followDesiredVelocity.x, 0, 'default followDesiredVelocity.x');
-  t.equal(obj.followDesiredVelocity.y, 0, 'default followDesiredVelocity.y');
-  t.equal(obj.motorDir instanceof Burner.Vector, true, 'default motorDir.');
-  t.equal(obj.motorDir.x, 0, 'default motorDir.x');
-  t.equal(obj.motorDir.y, 0, 'default motorDir.y');
 
   //
 

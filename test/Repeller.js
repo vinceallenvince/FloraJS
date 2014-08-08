@@ -24,7 +24,21 @@ test('new Repeller() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Repeller();
+  Burner.System.Classes = {
+    Repeller: Repeller
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Repeller();
+    obj.init(world);
+  });
+
   t.equal(obj.name, 'Repeller', 'name.');
   t.equal(obj.G, -10, 'default gravitational constant.');
   t.equal(obj.mass, 1000, 'default mass.');
@@ -32,9 +46,11 @@ test('new Repeller() should have default properties.', function(t) {
   t.equal(obj.width, 100, 'default width.');
   t.equal(obj.height, 100, 'default height.');
   t.assert(obj.color[0] === 250 && obj.color[1] === 105 && obj.color[2] === 0, 'default color.');
+  t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
   t.equal(obj.borderStyle, 'double', 'default borderStyle.');
   t.assert(obj.borderColor[0] === 224 && obj.borderColor[1] === 228 && obj.borderColor[2] === 204, 'default borderColor.');
   t.equal(obj.borderRadius, 100, 'default borderRadius.');
+  t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
   t.assert(obj.boxShadowColor[0] === 250 && obj.boxShadowColor[1] === 105 && obj.boxShadowColor[2] === 0, 'default boxShadowColor.');
   t.equal(obj.opacity, 0.75, 'default opacity.');
   t.equal(obj.zIndex, 1, 'default zIndex.');
@@ -46,84 +62,51 @@ test('new Repeller() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Repeller({
-    G: 20,
-    mass: 3000,
-    isStatic: false,
-    width: 10,
-    height: 10,
-    color: [10, 20, 30],
-    borderStyle: 'dotted',
-    borderColor: [30, 20, 10],
-    borderRadius: 20,
-    boxShadowColor: [100, 110, 120],
-    opacity: 0.25,
-    zIndex: 20
+  Burner.System.Classes = {
+    Repeller: Repeller
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Repeller();
+    obj.init(world, {
+      G: 20,
+      mass: 3000,
+      isStatic: false,
+      width: 10,
+      height: 10,
+      color: [10, 20, 30],
+      borderWidth: 2,
+      borderStyle: 'dotted',
+      borderColor: [30, 20, 10],
+      borderRadius: 20,
+      boxShadowSpread: 2,
+      boxShadowColor: [100, 110, 120],
+      opacity: 0.25,
+      zIndex: 20
+    });
   });
+
   t.equal(obj.G, 20, 'custom gravitational constant.');
   t.equal(obj.isStatic, false, 'custom isStatic');
   t.equal(obj.mass, 3000, 'custom mass.');
   t.equal(obj.width, 10, 'custom width.');
   t.equal(obj.height, 10, 'custom height.');
   t.assert(obj.color[0] === 10 && obj.color[1] === 20 && obj.color[2] === 30, 'custom color.');
+  t.equal(obj.borderWidth, 2, 'custom borderWidth.');
   t.equal(obj.borderStyle, 'dotted', 'custom borderStyle.');
   t.assert(obj.borderColor[0] === 30 && obj.borderColor[1] === 20 && obj.borderColor[2] === 10, 'custom borderColor.');
   t.equal(obj.borderRadius, 20, 'custom borderRadius.');
+  t.equal(obj.boxShadowSpread, 2, 'custom boxShadowSpread.');
   t.assert(obj.boxShadowColor[0] === 100 && obj.boxShadowColor[1] === 110 && obj.boxShadowColor[2] === 120, 'custom boxShadowColor.');
   t.equal(obj.opacity, 0.25, 'custom opacity.');
   t.equal(obj.zIndex, 20, 'custom zIndex.');
 
-  t.end();
-});
-
-test('init() should set additional properties.', function(t) {
-
-  beforeTest();
-
-  var obj;
-
-  Burner.System.Classes = {
-    Repeller: Repeller
-  };
-
-  Burner.System.setup(function() {
-    this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
-    obj = this.add('Repeller', {
-      borderWidth: 8,
-      boxShadowSpread: 16
-    }); // add your new object to the system
-    obj.draw();
-  });
-
-  t.equal(obj.borderWidth, 8, 'custom borderWidth.');
-  t.equal(obj.boxShadowSpread, 16, 'custom boxShadowSpread.');
-
-  //
-
-  beforeTest();
-
-  var obj;
-
-  Burner.System.Classes = {
-    Repeller: Repeller
-  };
-
-  Burner.System.setup(function() {
-    this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
-    obj = this.add('Repeller'); // add your new object to the system
-    obj.draw();
-  });
-
-  t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
-  t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
   t.end();
 });
 

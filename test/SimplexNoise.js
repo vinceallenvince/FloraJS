@@ -58,7 +58,7 @@ test('SimplexNoise noise() should return a number bw -1 and 1.', function(t) {
   var perlinTime, mult = 10;
 
   for (var i = 0; i < 10; i++) {
-    perlinTime = i * 10;
+    perlinTime = i * 0.9;
     t.assert(SimplexNoise.noise(-perlinTime, perlinTime) >= -1 && SimplexNoise.noise(perlinTime, -perlinTime) <= 1, 'returns number bw -1 and 1.');
     t.assert(SimplexNoise.noise(perlinTime, 0) >= -1 && SimplexNoise.noise(-perlinTime, 0) <= 1, 'returns number bw -1 and 1.');
     t.assert(SimplexNoise.noise(0, perlinTime) >= -1 && SimplexNoise.noise(0, -perlinTime) <= 1, 'returns number bw -1 and 1.');

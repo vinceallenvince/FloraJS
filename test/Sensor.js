@@ -26,7 +26,21 @@ test('new Sensor() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Sensor();
+  Burner.System.Classes = {
+    Sensor: Sensor
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Sensor();
+    obj.init(world);
+  });
+
   t.equal(obj.name, 'Sensor', 'default name.');
   t.equal(obj.type, '', 'default type.');
   t.equal(typeof obj.behavior, 'function', 'default behavior.');
@@ -43,6 +57,8 @@ test('new Sensor() should have default properties.', function(t) {
   t.equal(obj.borderStyle, 'solid', 'default borderStyle.');
   t.assert(obj.borderColor[0] === 255 && obj.borderColor[1] === 255 && obj.borderColor[2] === 255, 'default borderColor.');
   t.equal(obj.onConsume, null, 'default onConsume.');
+  t.equal(obj.rangeDisplayBorderStyle, false, 'default rangeDisplayBorderStyle');
+  t.equal(obj.rangeDisplayBorderDefaultColor, false, 'default rangeDisplayBorderDefaultColor.');
 
   t.end();
 });
@@ -51,25 +67,42 @@ test('new Sensor() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Sensor({
-    name: 'hello',
-    type: 'heat',
-    behavior: function() {return 100;},
-    sensitivity: 100,
-    width: 17,
-    height: 17,
-    offsetDistance: 10,
-    offsetAngle: 30,
-    opacity: 0.5,
-    target: {x: 100},
-    activatedColor: [100, 110, 120],
-    borderRadius: 30,
-    borderWidth: 4,
-    borderStyle: 'double',
-    borderColor: [100, 110, 120],
-    onConsume: function() {return 100;}
+  Burner.System.Classes = {
+    Sensor: Sensor
+  };
 
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Sensor();
+    obj.init(world, {
+      name: 'hello',
+      type: 'heat',
+      behavior: function() {return 100;},
+      sensitivity: 100,
+      width: 17,
+      height: 17,
+      offsetDistance: 10,
+      offsetAngle: 30,
+      opacity: 0.5,
+      target: {x: 100},
+      activatedColor: [100, 110, 120],
+      borderRadius: 30,
+      borderWidth: 4,
+      borderStyle: 'double',
+      borderColor: [100, 110, 120],
+      onConsume: function() {return 100;},
+      displayRange: true,
+      displayConnector: true,
+      rangeDisplayBorderStyle: 'dotted',
+      rangeDisplayBorderDefaultColor: [200, 200, 200]
+    });
   });
+
   t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.type, 'heat', 'custom type');
   t.equal(obj.behavior(), 100, 'custom behavior.');
@@ -86,40 +119,14 @@ test('new Sensor() should have custom properties.', function(t) {
   t.assert(obj.borderColor[0] === 100 && obj.borderColor[1] === 110 && obj.borderColor[2] === 120, 'custom borderColor.');
   t.equal(obj.borderWidth, 4, 'custom borderWidth.');
   t.equal(obj.onConsume(), 100, 'custom onConsume.');
-
-  t.end();
-});
-
-test('init() should set additional properties.', function(t) {
-
-  beforeTest();
-
-  var obj;
-
-  Burner.System.Classes = {
-    Sensor: Sensor
-  };
-
-  Burner.System.setup(function() {
-    this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
-    obj = this.add('Sensor', {
-      displayRange: true,
-      displayConnector: true
-    });
-  });
-
   t.equal(obj.displayRange, true, 'custom displayRange.');
   t.equal(obj.displayConnector, true, 'custom displayConnector.');
+  t.equal(obj.rangeDisplayBorderStyle, 'dotted', 'default rangeDisplayBorderStyle');
+  t.assert(obj.rangeDisplayBorderDefaultColor[0] === 200 && obj.rangeDisplayBorderDefaultColor[1] === 200 && obj.rangeDisplayBorderDefaultColor[2] === 200, 'default rangeDisplayBorderDefaultColor.');
 
   //
 
   beforeTest();
-
-  var obj;
 
   Burner.System.Classes = {
     Sensor: Sensor
@@ -138,7 +145,42 @@ test('init() should set additional properties.', function(t) {
   t.equal(obj.displayConnector, false, 'default displayConnector.');
   t.equal(obj.activationLocation instanceof Burner.Vector, true, 'default activationLocation');
   t.equal(obj._force instanceof Burner.Vector, true, 'default _force');
-  //
+
+  t.end();
+});
+
+test('new Sensor() location should match parent location if offsetDistance = 0.', function(t) {
+
+  beforeTest();
+
+  var obj, sensor, agent
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    Sensor: Sensor
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(190, 140)
+    });
+    sensor = this.add('Sensor', {
+      parent: agent,
+      type: 'heat',
+      location: new Burner.Vector(200, 150),
+      offsetDistance: 0
+    });
+  });
+
+  sensor.step();
+
+  t.equal(sensor.location.x, sensor.parent.location.x, 'updates location.x');
+  t.equal(sensor.location.y, sensor.parent.location.y, 'updates location.y');
 
   t.end();
 });
@@ -150,6 +192,7 @@ test('step() should set additional properties.', function(t) {
   var obj, sensor, heat, agent, val = 0;
 
   Burner.System.Classes = {
+    Agent: Agent,
     Sensor: Sensor,
     Stimulus: Stimulus
   };
@@ -192,6 +235,7 @@ test('step() should set additional properties.', function(t) {
   var obj, sensor, heat, agent, val = 0;
 
   Burner.System.Classes = {
+    Agent: Agent,
     Sensor: Sensor,
     Stimulus: Stimulus
   };
@@ -247,6 +291,7 @@ test('sensorActive() should check if sensor should be active.', function(t) {
   var obj, sensor, heat, agent, val = 0;
 
   Burner.System.Classes = {
+    Agent: Agent,
     Sensor: Sensor,
     Stimulus: Stimulus
   };
@@ -278,6 +323,88 @@ test('sensorActive() should check if sensor should be active.', function(t) {
   heat.location.y = 0;
 
   t.equal(sensor._sensorActive(heat), false, 'sensor inactive.');
+
+  t.end();
+
+});
+
+test('getBehavior() updates objects in system based on behavior type.', function(t) {
+
+  beforeTest();
+
+  var obj, sensor, heat, agent, val = 0;
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    Sensor: Sensor,
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(190, 140),
+      sensors: [
+        this.add('Sensor', {
+          type: 'heat',
+          offsetDistance: 0
+        })
+      ]
+    });
+    heat = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(210, 160)
+    });
+  });
+
+  Burner.System._stepForward();
+
+  var sensor = agent.sensors[0];
+
+  sensor.behavior = 'LIKES';
+  var behavior = sensor.getBehavior();
+  var likes = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(likes.x.toFixed(2)) === 3.54 && parseFloat(likes.y.toFixed(2)) === 3.53, 'behavior = LIKES.');
+
+  sensor.behavior = 'COWARD';
+  var behavior = sensor.getBehavior();
+  var coward = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(coward.x.toFixed(2)) === -0.15 && parseFloat(coward.y.toFixed(2)) === -0.15, 'behavior = COWARD.');
+
+  heat.location.x = 200; // change location to get very close to stimulus
+  heat.location.y = 150;
+
+  sensor.behavior = 'AGGRESSIVE';
+  var behavior = sensor.getBehavior();
+  var aggressive = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(aggressive.x.toFixed(2)) === 1 && parseFloat(aggressive.y.toFixed(2)) === 0.89, 'behavior = AGGRESSIVE; very close.');
+
+  heat.location.x = 210; // change to initial location
+  heat.location.y = 160;
+
+  sensor.behavior = 'AGGRESSIVE';
+  var behavior = sensor.getBehavior();
+  var aggressive = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(aggressive.x.toFixed(2)) === 3.55 && parseFloat(aggressive.y.toFixed(2)) === 3.52, 'behavior = AGGRESSIVE.');
+
+  heat.location.x = 195; // change location to get very close to stimulus
+  heat.location.y = 145;
+
+  sensor.behavior = 'CURIOUS';
+  var behavior = sensor.getBehavior();
+  var curious = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(curious.x.toFixed(2)) === 0.25 && parseFloat(curious.y.toFixed(2)) === 0.15, 'behavior = CURIOUS.');
+
+  Burner.System._stepForward();
+
+  var curious = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(curious.x.toFixed(2)) === -3.64 && parseFloat(curious.y.toFixed(2)) === -3.43, 'behavior = CURIOUS.');
+
+  // TODO: EXPLORER
 
   t.end();
 

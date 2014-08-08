@@ -9,23 +9,9 @@ var BorderPalette = require('./BorderPalette').BorderPalette,
  *
  * @constructor
  * @extends Mover
- *
- * @param {Object} opt_options A map of initial properties.
  */
-function Stimulus(opt_options) {
+function Stimulus() {
   Mover.call(this);
-  var options = opt_options || {};
-
-  if (!options.type || typeof options.type !== 'string') {
-    throw new Error('Stimulus requires "type" parameter as a string.');
-  }
-  this.type = options.type;
-  this.name = this.type;
-  this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
-  this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
-  this.width = typeof options.width !== 'undefined' ? options.width : 50;
-  this.height = typeof options.height !== 'undefined' ? options.height : 50;
-  this.opacity = typeof options.opacity !== 'undefined' ? options.opacity : 0.75;
 }
 Utils.extend(Stimulus, Mover);
 
@@ -82,9 +68,23 @@ for (i = 0, max = Stimulus.borderStyles.length; i < max; i++) {
  * @param {number} [options.boxShadowSpread = this.width / getRandomNumber(2, 8)] Box-shadow spread.
  * @param {Array} [options.boxShadowColor = [200, 200, 200]] Box-shadow color.
  */
-Stimulus.prototype.init = function(world, options) {
+Stimulus.prototype.init = function(world, opt_options) {
 
-  Stimulus._superClass.init.call(this, world, options);
+  Stimulus._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  if (!options.type || typeof options.type !== 'string') {
+    throw new Error('Stimulus requires "type" parameter as a string.');
+  }
+
+  this.type = options.type;
+  this.name = this.type;
+  this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
+  this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
+  this.width = typeof options.width !== 'undefined' ? options.width : 50;
+  this.height = typeof options.height !== 'undefined' ? options.height : 50;
+  this.opacity = typeof options.opacity !== 'undefined' ? options.opacity : 0.75;
 
   this.color = options.color || (Stimulus.palettes[this.type] ?
       Stimulus.palettes[this.type].getColor() : [255, 255, 255]);

@@ -8,12 +8,22 @@ var Item = require('Burner').Item,
  *
  * @constructor
  * @extends Mover
- *
- * @param {Object} [opt_options=] A map of initial properties.
+ */
+function Particle(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Particle, Mover);
+
+/**
+ * Initializes Particle.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 20] Width
  * @param {number} [opt_options.height = 20] Height
  * @param {Array} [opt_options.color = [200, 200, 200]] Color.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {number} [opt_options.borderRadius = 100] The particle's border radius.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  * @param {number} [opt_options.lifespan = 50] The max life of the object. Set to -1 for infinite life.
  * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
  * @param {boolean} {opt_options.fade = true} If true, opacity decreases proportionally with life.
@@ -22,14 +32,18 @@ var Item = require('Burner').Item,
  * @param {number} [opt_options.maxSpeed = 4] Maximum speed.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  */
-function Particle(opt_options) {
-  Mover.call(this);
+Particle.prototype.init = function(world, opt_options) {
+  Particle._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Particle';
   this.width = typeof options.width === 'undefined' ? 20 : options.width;
   this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [200, 200, 200];
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.lifespan = typeof options.lifespan === 'undefined' ? 50 : options.lifespan;
   this.life = options.life || 0;
   this.fade = typeof options.fade === 'undefined' ? true : options.fade;
@@ -37,23 +51,6 @@ function Particle(opt_options) {
   this.checkWorldEdges = !!options.checkWorldEdges;
   this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 4 : options.maxSpeed;
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
-}
-Utils.extend(Particle, Mover);
-
-/**
- * Initializes Particle.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
- * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- */
-Particle.prototype.init = function(world, opt_options) {
-  Particle._superClass.init.call(this, world, opt_options);
-
-  var options = opt_options || {};
-
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
 
   if (!options.acceleration) {
     this.acceleration = new Vector(1, 1);

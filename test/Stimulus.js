@@ -33,9 +33,23 @@ test('new Stimulus() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Stimulus({
-    type: 'heat'
+  Burner.System.Classes = {
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Stimulus();
+    obj.init(world, {
+      type: 'heat'
+    });
   });
+
   t.equal(obj.type, 'heat', 'type.');
   t.equal(obj.name, 'heat', 'name.');
   t.equal(obj.width, 50, 'default width.');
@@ -46,9 +60,24 @@ test('new Stimulus() should have default properties.', function(t) {
 
   //
 
-  t.throws(function () {
-   obj = new Stimulus();
-  }, 'should throw exception when not passed a "type" parameter.');
+  beforeTest();
+
+  Burner.System.Classes = {
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Stimulus();
+    t.throws(function () {
+     obj.init(world);
+    }, 'should throw exception when not passed a "type" parameter.');
+  });
 
   t.end();
 });
@@ -57,15 +86,29 @@ test('new Stimulus() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Stimulus({
-    type: 'cold',
-    name: 'hello',
-    width: 30,
-    height: 30,
-    mass: 100,
-    isStatic: false,
-    opacity: 0.25
+  Burner.System.Classes = {
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Stimulus();
+    obj.init(world, {
+      type: 'cold',
+      name: 'hello',
+      width: 30,
+      height: 30,
+      mass: 100,
+      isStatic: false,
+      opacity: 0.25
+    });
   });
+
   t.equal(obj.type, 'cold', 'type.');
   t.equal(obj.name, 'cold', 'name.');
   t.equal(obj.width, 30, 'custom width.');
@@ -242,5 +285,3 @@ test('init() should set additional properties.', function(t) {
 
   t.end();
 });
-
-

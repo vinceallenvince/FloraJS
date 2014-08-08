@@ -8,7 +8,16 @@ var Item = require('Burner').Item,
  * 2D space and are just an extension of Burner Item with isStatic set to true.
  *
  * @constructor
- * @extends Burner.Item
+ * @extends Item
+ */
+function Point() {
+  Item.call(this);
+}
+Utils.extend(Point, Item);
+
+/**
+ * Initializes an instance of Point.
+ *
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.name = 'Point'] Name.
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
@@ -17,8 +26,8 @@ var Item = require('Burner').Item,
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
  */
-function Point(opt_options) {
-  Item.call(this);
+Point.prototype.init = function(world, opt_options) {
+  Point._superClass.init.call(this, world, opt_options);
   var options = opt_options || {};
   this.name = options.name || 'Point';
   this.color = options.color || [200, 200, 200];
@@ -29,8 +38,7 @@ function Point(opt_options) {
 
   // Points are static
   this.isStatic = true;
-}
-Utils.extend(Point, Item);
+};
 
 Point.prototype.step = function() {};
 

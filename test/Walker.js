@@ -25,7 +25,21 @@ test('new Walker() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Walker();
+  Burner.System.Classes = {
+    Walker: Walker
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Walker();
+    obj.init(world);
+  });
+
   t.equal(obj.name, 'Walker', 'default name.');
   t.equal(obj.width, 10, 'default width.');
   t.equal(obj.height, 10, 'default height.');
@@ -59,26 +73,38 @@ test('new Walker() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Walker({
-    name: 'hello',
-    width: 100,
-    height: 200,
-    remainsOnScreen: true,
-    maxSpeed: 10,
-    perlin: false,
-    perlinSpeed: 0.1,
-    perlinTime: 2000,
-    perlinAccelLow: -1,
-    perlinAccelHigh: 1,
-    perlinOffsetX: 200,
-    perlinOffsetY: 100,
-    color: [5, 10, 200],
-    borderWidth: 3,
-    borderStyle: 'dotted',
-    borderColor: [100, 110, 120],
-    borderRadius: 30,
-    opacity: 1,
-    zIndex: 0
+  Burner.System.Classes = {
+    Walker: Walker
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj.init(world, {
+      name: 'hello',
+      width: 100,
+      height: 200,
+      remainsOnScreen: true,
+      maxSpeed: 10,
+      perlin: false,
+      perlinSpeed: 0.1,
+      perlinTime: 2000,
+      perlinAccelLow: -1,
+      perlinAccelHigh: 1,
+      perlinOffsetX: 200,
+      perlinOffsetY: 100,
+      color: [5, 10, 200],
+      borderWidth: 3,
+      borderStyle: 'dotted',
+      borderColor: [100, 110, 120],
+      borderRadius: 30,
+      opacity: 1,
+      zIndex: 0
+    });
   });
 
   t.equal(obj.name, 'hello', 'custom name.');

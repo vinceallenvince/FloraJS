@@ -1514,6 +1514,17 @@ var Mover = _dereq_('./Mover').Mover,
  * repulsion, etc. They can also chase after other Agents, organize with other Agents
  * in a flocking behavior, and steer away from obstacles. They can also follow the mouse.
  *
+ * @constructor
+ * @extends Mover
+ */
+function Agent(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Agent, Mover);
+
+/**
+ * Initializes an instance.
+ *
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
@@ -1531,13 +1542,12 @@ var Mover = _dereq_('./Mover').Mover,
  * @param {string} [opt_options.borderStyle = 'none'] Border style.
  * @param {string|Array} [opt_options.borderColor = 'transparent'] Border color.
  * @param {number} [opt_options.borderRadius = 0] Border radius.
- *
- * @constructor
- * @extends Mover
  */
-function Agent(opt_options) {
-  Mover.call(this);
+Agent.prototype.init = function(world, opt_options) {
+  Agent._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Agent';
 
   this.followMouse = !!options.followMouse;
@@ -1556,19 +1566,10 @@ function Agent(opt_options) {
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || [255, 255, 255];
-  this.borderRadius = options.borderRadius || 0;
-}
-Utils.extend(Agent, Mover);
+  this.borderRadius = options.borderRadius || this.sensors.length ? 100 : 0;
+  this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
 
-/**
- * Initializes an instance.
- *
- * @param {Object} [opt_options=] A map of initial properties.
- */
-Agent.prototype.init = function(world, opt_options) {
-  Agent._superClass.init.call(this, world, opt_options);
-
-  var options = opt_options || {};
+  //
 
   this.separateSumForceVector = new Vector(); // used in Agent.separate()
   this.alignSumForceVector = new Vector(); // used in Agent.align()
@@ -1576,10 +1577,6 @@ Agent.prototype.init = function(world, opt_options) {
   this.followTargetVector = new Vector(); // used in Agent.applyAdditionalForces()
   this.followDesiredVelocity = new Vector(); // used in Agent.follow()
   this.motorDir = new Vector(); // used in Agent.applyAdditionalForces()
-
-  this.desiredSeparation = typeof options.desiredSeparation === 'undefined' ? this.width * 2 : options.desiredSeparation;
-
-  this.borderRadius = options.borderRadius || this.sensors.length ? 100 : 0;
 
   if (!this.velocity.mag()) {
     this.velocity.x = 1; // angle = 0;
@@ -1589,6 +1586,7 @@ Agent.prototype.init = function(world, opt_options) {
     this.velocity.mult(this.motorSpeed);
   }
 
+  // TODO: test this
   for (var i = 0, max = this.sensors.length; i < max; i++) {
     this.sensors[i].parent = this;
   }
@@ -1869,24 +1867,37 @@ var Item = _dereq_('Burner').Item,
  *
  * @constructor
  * @extends Mover
+ */
+function Attractor() {
+  Mover.call(this);
+}
+Utils.extend(Attractor, Mover);
+
+/**
+ * Initializes an instance of Attractor.
  *
- * @param {Object} [opt_options=] A map of initial properties.
+ * @param  {Object} world An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.G = 10] Universal Gravitational Constant.
  * @param {number} [opt_options.mass = 1000] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {Array} [opt_options.color = 92, 187, 0] Color.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
  * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  */
-function Attractor(opt_options) {
-  Mover.call(this);
+Attractor.prototype.init = function(world, opt_options) {
+  Attractor._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Attractor';
   this.G = typeof options.G === 'undefined' ? 10 : options.G;
   this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
@@ -1894,27 +1905,14 @@ function Attractor(opt_options) {
   this.width = typeof options.width === 'undefined' ? 100 : options.width;
   this.height = typeof options.height === 'undefined' ? 100 : options.height;
   this.color = options.color || [92, 187, 0];
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [224, 228, 204];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [64, 129, 0];
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
-}
-Utils.extend(Attractor, Mover);
-
-/**
- * Initializes Attractor.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
- * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- */
-Attractor.prototype.init = function(world, opt_options) {
-  Attractor._superClass.init.call(this, world, opt_options);
-  var options = opt_options || {};
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
 };
 
 /**
@@ -2243,6 +2241,13 @@ var Item = _dereq_('Burner').Item,
  *
  * @constructor
  * @extends Item
+ */
+function Connector() {
+  Item.call(this);
+}
+Utils.extend(Connector, Item);
+
+/**
  * @param {Object} options A map of initial properties.
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
@@ -2251,8 +2256,8 @@ var Item = _dereq_('Burner').Item,
  * @param {string} [options.borderStyle = 'dotted'] Border style.
  * @param {Array} [options.borderColor = 150, 150, 150] Border color.
  */
-function Connector(options) {
-  Item.call(this);
+Connector.prototype.init = function(world, options) {
+  Connector._superClass.init.call(this, world, options);
 
   if (!options || !options.parentA || !options.parentB) {
     throw new Error('Connector: both parentA and parentB are required.');
@@ -2261,7 +2266,6 @@ function Connector(options) {
   this.parentB = options.parentB;
 
   this.name = options.name || 'Connector';
-  // this.colorMode = options.colorMode || 'rgb';
   this.zIndex = options.zIndex || 0;
   this.borderStyle = options.borderStyle || 'dotted';
   this.borderColor = options.borderColor || [150, 150, 150];
@@ -2275,38 +2279,7 @@ function Connector(options) {
   this.height = 0;
   this.color = 'transparent';
 
-}
-Utils.extend(Connector, Item);
-
-/**
- * Initializes an instance.
- *
- * @param {Object} options A map of initial properties.
- * @param {Object} parentA The object that starts the connection.
- * @param {Object} parentB The object that ends the connection.
- * @param {number} [options.zIndex = 0] zIndex.
- * @param {string} [options.borderStyle = 'dotted'] Border style.
- * @param {Array} [options.borderColor = 150, 150, 150] Border color.
- */
-/*Connector.prototype._init = function(options) {
-
-  if (!options || !options.parentA || !options.parentB) {
-    throw new Error('Connector: both parentA and parentB are required.');
-  }
-  this.parentA = options.parentA;
-  this.parentB = options.parentB;
-
-  this.zIndex = options.zIndex || 0;
-
-  this.borderStyle = typeof options.borderStyle === 'undefined' ? 'dotted' : options.borderStyle;
-  this.borderColor = typeof options.borderColor === 'undefined' ? [150, 150, 150] : options.borderColor;
-
-
-  this.borderWidth = 1;
-  this.borderRadius = 0;
-  this.height = 0;
-  this.color = 'transparent';
-};*/
+};
 
 /**
  * Called every frame, step() updates the instance's properties.
@@ -2371,34 +2344,44 @@ Connector.prototype.getCSSText = function(props) {
 module.exports.Connector = Connector;
 
 },{"Burner":8}],14:[function(_dereq_,module,exports){
-var Item = _dereq_('Burner').Item,
-    Attractor = _dereq_('./Attractor').Attractor,
-    Utils = _dereq_('Burner').Utils,
-    Vector = _dereq_('Burner').Vector;
+var Attractor = _dereq_('./Attractor').Attractor,
+    Utils = _dereq_('Burner').Utils;
 
 /**
  * Creates a new Dragger object.
  *
  * @constructor
  * @extends Attractor
- *
- * @param {Object} [opt_options=] A map of initial properties.
+ */
+function Dragger(opt_options) {
+  Attractor.call(this);
+}
+Utils.extend(Dragger, Attractor);
+
+/**
+ * Initializes Dragger.
+ * @param  {Object} world An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.c = 1] Drag coefficient.
  * @param {number} [opt_options.mass = 1000] Mass. Increase for a greater gravitational effect.
  * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
  * @param {number} [opt_options.width = 100] Width.
  * @param {number} [opt_options.height = 100] Height.
  * @param {Array} [opt_options.color = 92, 187, 0] Color.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {string} [opt_options.borderStyle = 'double'] Border style.
  * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  */
-function Dragger(opt_options) {
-  Attractor.call(this);
+Dragger.prototype.init = function(world, opt_options) {
+  Dragger._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Dragger';
   this.c = typeof options.c === 'undefined' ? 1 : options.c;
   this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
@@ -2406,30 +2389,14 @@ function Dragger(opt_options) {
   this.width = typeof options.width === 'undefined' ? 100 : options.width;
   this.height = typeof options.height === 'undefined' ? 100 : options.height;
   this.color = options.color || [105, 210, 231];
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderStyle = options.borderStyle || 'double';
   this.borderColor = options.borderColor || [167, 219, 216];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  /*this.boxShadowOffsetX = options.boxShadowOffsetX || 0;
-  this.boxShadowOffsetY = options.boxShadowOffsetY || 0;
-  this.boxShadowBlur = options.boxShadowBlur || 0;*/
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.boxShadowColor = options.boxShadowColor || [147, 199, 196];
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
-}
-Utils.extend(Dragger, Attractor);
-
-/**
- * Initializes Dragger.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
- * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- */
-Dragger.prototype.init = function(world, opt_options) {
-  Dragger._superClass.init.call(this, world, opt_options);
-  var options = opt_options || {};
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
 };
 
 /**
@@ -2463,12 +2430,23 @@ var Item = _dereq_('Burner').Item,
 /**
  * Creates a new Mover.
  *
- * Points are the most basic Flora item. They represent a fixed point in
- * 2D space and are just an extension of Burner Item with isStatic set to true.
+ * Movers are the root object for any item that moves. They are not
+ * aware of other Movers or stimuli. They have no means of locomotion
+ * and change only due to external forces. You will never directly
+ * implement Mover.
  *
  * @constructor
- * @extends Burner.Item
- * @param {Object} [opt_options=] A map of initial properties.
+ * @extends Item
+ */
+function Mover(opt_options) {
+  Item.call(this);
+}
+Utils.extend(Mover, Item);
+
+/**
+ * Initializes an instance of Mover.
+ * @param  {Object} world An instance of World.
+ * @param  {Object} opt_options A map of initial properties.
  * @param {string} [opt_options.name = 'Mover'] Name.
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
@@ -2485,9 +2463,11 @@ var Item = _dereq_('Burner').Item,
  * @param {function} [opt_options.isStatic = false] Set to true to prevent object from moving.
  * @param {Object} [opt_options.parent = null] Attach to another Flora object.
  */
-function Mover(opt_options) {
-  Item.call(this);
+Mover.prototype.init = function(world, opt_options) {
+  Mover._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Mover';
   this.color = options.color || [255, 255, 255];
   this.borderRadius = options.borderRadius || 0;
@@ -2501,16 +2481,6 @@ function Mover(opt_options) {
   this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 0 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
   this.isStatic = !!options.isStatic;
-}
-Utils.extend(Mover, Item);
-
-/**
- * Initializes Mover.
- * @param  {Object} world       An instance of World.
- * @param  {Object} opt_options A map of initial properties.
- */
-Mover.prototype.init = function(world, opt_options) {
-  Mover._superClass.init.call(this, world, opt_options);
 
   var me = this;
 
@@ -2788,7 +2758,6 @@ module.exports.Mover = Mover;
 
 },{"Burner":8}],16:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
-    Mover = _dereq_('./Mover').Mover,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
     System = _dereq_('Burner').System,
     Utils = _dereq_('Burner').Utils,
@@ -2987,7 +2956,7 @@ Oscillator.prototype.getCSSText = function(props) {
 
 module.exports.Oscillator = Oscillator;
 
-},{"./Mover":15,"./SimplexNoise":23,"Burner":8}],17:[function(_dereq_,module,exports){
+},{"./SimplexNoise":23,"Burner":8}],17:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('Burner').Utils,
@@ -3302,7 +3271,16 @@ var Item = _dereq_('Burner').Item,
  * 2D space and are just an extension of Burner Item with isStatic set to true.
  *
  * @constructor
- * @extends Burner.Item
+ * @extends Item
+ */
+function Point() {
+  Item.call(this);
+}
+Utils.extend(Point, Item);
+
+/**
+ * Initializes an instance of Point.
+ *
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.name = 'Point'] Name.
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
@@ -3311,8 +3289,8 @@ var Item = _dereq_('Burner').Item,
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = 60, 60, 60] Border color.
  */
-function Point(opt_options) {
-  Item.call(this);
+Point.prototype.init = function(world, opt_options) {
+  Point._superClass.init.call(this, world, opt_options);
   var options = opt_options || {};
   this.name = options.name || 'Point';
   this.color = options.color || [200, 200, 200];
@@ -3323,8 +3301,7 @@ function Point(opt_options) {
 
   // Points are static
   this.isStatic = true;
-}
-Utils.extend(Point, Item);
+};
 
 Point.prototype.step = function() {};
 
@@ -3375,9 +3352,7 @@ module.exports.Point = Point;
 
 },{"Burner":8}],20:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
-    Attractor = _dereq_('./Attractor').Attractor,
-    Utils = _dereq_('Burner').Utils,
-    Vector = _dereq_('Burner').Vector;
+    Utils = _dereq_('Burner').Utils;
 
 /**
  * Creates a new RangeDisplay.
@@ -3391,18 +3366,6 @@ var Item = _dereq_('Burner').Item,
  */
 function RangeDisplay(opt_options) {
   Item.call(this);
-  var options = opt_options || {};
-
-  if (!options || !options.sensor) {
-    throw new Error('RangeDisplay: a sensor is required.');
-  }
-  this.sensor = options.sensor;
-
-  this.name = options.name || 'RangeDisplay';
-  this.zIndex = options.zIndex || 10;
-  this.borderStyle = typeof options.borderStyle !== 'undefined' ?  options.borderStyle : 'dashed';
-  this.borderDefaultColor = typeof options.borderDefaultColor !== 'undefined' ? options.borderDefaultColor : [150, 150, 150];
-
 }
 Utils.extend(RangeDisplay, Item);
 
@@ -3413,6 +3376,19 @@ Utils.extend(RangeDisplay, Item);
  */
 RangeDisplay.prototype.init = function(world, opt_options) {
   RangeDisplay._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  if (!options || !options.sensor) {
+    throw new Error('RangeDisplay: a sensor is required.');
+  }
+  this.sensor = options.sensor;
+
+  this.name = 'RangeDisplay';
+  this.zIndex = 10;
+  this.borderStyle = this.sensor.rangeDisplayBorderStyle || 'dashed';
+  this.borderDefaultColor = this.sensor.borderDefaultColor || [150, 150, 150];
+  this.borderColor = this.borderDefaultColor;
 
   /**
    * RangeDisplays have no height or color and rely on the associated DOM element's
@@ -3493,48 +3469,18 @@ RangeDisplay.prototype.getCSSText = function(props) {
 
 module.exports.RangeDisplay = RangeDisplay;
 
-},{"./Attractor":10,"Burner":8}],21:[function(_dereq_,module,exports){
-var Item = _dereq_('Burner').Item,
-    Attractor = _dereq_('./Attractor').Attractor,
-    Utils = _dereq_('Burner').Utils,
-    Vector = _dereq_('Burner').Vector;
+},{"Burner":8}],21:[function(_dereq_,module,exports){
+var Attractor = _dereq_('./Attractor').Attractor,
+    Utils = _dereq_('Burner').Utils;
 
 /**
  * Creates a new Repeller object.
  *
  * @constructor
  * @extends Attractor
- *
- * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.G = 10] Universal Gravitational Constant.
- * @param {number} [opt_options.mass = 1000] Mass. Increase for a greater gravitational effect.
- * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
- * @param {number} [opt_options.width = 100] Width.
- * @param {number} [opt_options.height = 100] Height.
- * @param {Array} [opt_options.color = 92, 187, 0] Color.
- * @param {string} [opt_options.borderStyle = 'double'] Border style.
- * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
- * @param {number} [opt_options.borderRadius = 100] Border radius.
- * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
- * @param {number} [opt_options.opacity = 0.75] The object's opacity.
- * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  */
 function Repeller(opt_options) {
   Attractor.call(this);
-  var options = opt_options || {};
-  this.name = options.name || 'Repeller';
-  this.G = typeof options.G === 'undefined' ? -10 : options.G;
-  this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
-  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
-  this.width = typeof options.width === 'undefined' ? 100 : options.width;
-  this.height = typeof options.height === 'undefined' ? 100 : options.height;
-  this.color = options.color || [250, 105, 0];
-  this.borderStyle = options.borderStyle || 'double';
-  this.borderColor = options.borderColor || [224, 228, 204];
-  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
-  this.boxShadowColor = options.boxShadowColor || [250, 105, 0];
-  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
-  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
 }
 Utils.extend(Repeller, Attractor);
 
@@ -3542,22 +3488,47 @@ Utils.extend(Repeller, Attractor);
  * Initializes Repeller.
  * @param  {Object} world       An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.G = 10] Universal Gravitational Constant.
+ * @param {number} [opt_options.mass = 1000] Mass. Increase for a greater gravitational effect.
+ * @param {boolean} [opt_options.isStatic = true] If true, object will not move.
+ * @param {number} [opt_options.width = 100] Width.
+ * @param {number} [opt_options.height = 100] Height.
+ * @param {Array} [opt_options.color = 92, 187, 0] Color.
  * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {string} [opt_options.borderStyle = 'double'] Border style.
+ * @param {Array} [opt_options.borderColor = 224, 228, 204] Border color.
+ * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
+ * @param {Array} [opt_options.boxShadowColor = 92, 187, 0] Box-shadow color.
+ * @param {number} [opt_options.opacity = 0.75] The object's opacity.
+ * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  */
 Repeller.prototype.init = function(world, opt_options) {
   Repeller._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
+  this.name = options.name || 'Repeller';
+  this.G = typeof options.G === 'undefined' ? -10 : options.G;
+  this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
+  this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
+  this.width = typeof options.width === 'undefined' ? 100 : options.width;
+  this.height = typeof options.height === 'undefined' ? 100 : options.height;
+  this.color = options.color || [250, 105, 0];
   this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
+  this.borderStyle = options.borderStyle || 'double';
+  this.borderColor = options.borderColor || [224, 228, 204];
+  this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
+  this.boxShadowColor = options.boxShadowColor || [250, 105, 0];
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
 };
 
 module.exports.Repeller = Repeller;
 
 },{"./Attractor":10,"Burner":8}],22:[function(_dereq_,module,exports){
-var Item = _dereq_('Burner').Item,
-    Mover = _dereq_('./Mover').Mover,
-    RangeDisplay = _dereq_('./RangeDisplay').RangeDisplay,
+var Mover = _dereq_('./Mover').Mover,
     System = _dereq_('Burner').System,
     Utils = _dereq_('Burner').Utils,
     Vector = _dereq_('Burner').Vector;
@@ -3569,6 +3540,16 @@ var Item = _dereq_('Burner').Item,
  * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
+ */
+function Sensor(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Sensor, Mover);
+
+/**
+ * Initializes Sensor.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
  * @param {string} [opt_options.behavior = ''] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 200] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
@@ -3586,8 +3567,9 @@ var Item = _dereq_('Burner').Item,
  * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
  * @param {Function} [opt_options.onConsume = null] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
  */
-function Sensor(opt_options) {
-  Mover.call(this);
+Sensor.prototype.init = function(world, opt_options) {
+  Sensor._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
 
   this.name = options.name || 'Sensor';
@@ -3607,25 +3589,16 @@ function Sensor(opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.onConsume = options.onConsume || null;
-}
-Utils.extend(Sensor, Mover);
-
-/**
- * Initializes Sensor.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
- * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- */
-Sensor.prototype.init = function(world, opt_options) {
-  Sensor._superClass.init.call(this, world, opt_options);
-  var options = opt_options || {};
+  this.rangeDisplayBorderStyle = options.rangeDisplayBorderStyle || 'dashed';
+  this.rangeDisplayBorderDefaultColor = options.rangeDisplayBorderDefaultColor || [150, 150, 150];
 
   this.parent = options.parent || null;
   this.displayRange = !!options.displayRange;
   if (this.displayRange) {
     this.rangeDisplay = System.add('RangeDisplay', {
-      sensor: this
+      sensor: this,
+      rangeDisplayBorderStyle: this.rangeDisplayBorderStyle,
+      rangeDisplayBorderDefaultColor: this.rangeDisplayBorderDefaultColor
     });
   }
   this.displayConnector = !!options.displayConnector;
@@ -3656,7 +3629,6 @@ Sensor.prototype.step = function() {
       if (this.pointToParentDirection) {
         this.angle = Utils.radiansToDegrees(Math.atan2(this.parent.velocity.y, this.parent.velocity.x));
       }
-
     } else {
       this.location.x = this.parent.location.x;
       this.location.y = this.parent.location.y;
@@ -3738,7 +3710,7 @@ Sensor.prototype._sensorActive = function(target) {
 
 module.exports.Sensor = Sensor;
 
-},{"./Mover":15,"./RangeDisplay":20,"Burner":8}],23:[function(_dereq_,module,exports){
+},{"./Mover":15,"Burner":8}],23:[function(_dereq_,module,exports){
 /*jshint bitwise:false */
 /**
 * https://gist.github.com/304522
@@ -3979,23 +3951,9 @@ var BorderPalette = _dereq_('./BorderPalette').BorderPalette,
  *
  * @constructor
  * @extends Mover
- *
- * @param {Object} opt_options A map of initial properties.
  */
-function Stimulus(opt_options) {
+function Stimulus() {
   Mover.call(this);
-  var options = opt_options || {};
-
-  if (!options.type || typeof options.type !== 'string') {
-    throw new Error('Stimulus requires "type" parameter as a string.');
-  }
-  this.type = options.type;
-  this.name = this.type;
-  this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
-  this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
-  this.width = typeof options.width !== 'undefined' ? options.width : 50;
-  this.height = typeof options.height !== 'undefined' ? options.height : 50;
-  this.opacity = typeof options.opacity !== 'undefined' ? options.opacity : 0.75;
 }
 Utils.extend(Stimulus, Mover);
 
@@ -4052,9 +4010,23 @@ for (i = 0, max = Stimulus.borderStyles.length; i < max; i++) {
  * @param {number} [options.boxShadowSpread = this.width / getRandomNumber(2, 8)] Box-shadow spread.
  * @param {Array} [options.boxShadowColor = [200, 200, 200]] Box-shadow color.
  */
-Stimulus.prototype.init = function(world, options) {
+Stimulus.prototype.init = function(world, opt_options) {
 
-  Stimulus._superClass.init.call(this, world, options);
+  Stimulus._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  if (!options.type || typeof options.type !== 'string') {
+    throw new Error('Stimulus requires "type" parameter as a string.');
+  }
+
+  this.type = options.type;
+  this.name = this.type;
+  this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
+  this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
+  this.width = typeof options.width !== 'undefined' ? options.width : 50;
+  this.height = typeof options.height !== 'undefined' ? options.height : 50;
+  this.opacity = typeof options.opacity !== 'undefined' ? options.opacity : 0.75;
 
   this.color = options.color || (Stimulus.palettes[this.type] ?
       Stimulus.palettes[this.type].getColor() : [255, 255, 255]);

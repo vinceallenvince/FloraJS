@@ -24,7 +24,21 @@ test('new ParticleSystem() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new ParticleSystem();
+  Burner.System.Classes = {
+    ParticleSystem: ParticleSystem
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new ParticleSystem();
+    obj.init(world);
+  });
+
   t.equal(obj.name, 'ParticleSystem', 'default name.');
   t.equal(obj.width, 0, 'default width.');
   t.equal(obj.height, 0, 'default height.');
@@ -60,37 +74,51 @@ test('new ParticleSystem() should accept custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new ParticleSystem({
-    name: 'hello',
-    width: 10,
-    height: 10,
-    color: [10, 20, 30],
-    borderWidth: 3,
-    borderStyle: 'dotted',
-    borderColor: [40, 50, 60],
-    borderRadius: 30,
-    isStatic: false,
-    lifespan: 100,
-    life: 21,
-    burst: 1,
-    burstRate: 4,
-    emitRadius: 3,
-    startColor: [255, 255, 255],
-    endColor: [255, 0, 0],
-    particleOptions: {
-      width : 30,
-      height : 30,
-      lifespan : 100,
-      borderRadius : 200,
-      checkWorldEdges : true,
-      acceleration: new Burner.Vector(10, 10),
-      velocity: new Burner.Vector(20, 20),
-      location: new Burner.Vector(30, 30),
-      maxSpeed: 6,
-      fade: false,
-      shrink: false
-    }
+  Burner.System.Classes = {
+    ParticleSystem: ParticleSystem
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new ParticleSystem();
+    obj.init(world, {
+      name: 'hello',
+      width: 10,
+      height: 10,
+      color: [10, 20, 30],
+      borderWidth: 3,
+      borderStyle: 'dotted',
+      borderColor: [40, 50, 60],
+      borderRadius: 30,
+      isStatic: false,
+      lifespan: 100,
+      life: 21,
+      burst: 1,
+      burstRate: 4,
+      emitRadius: 3,
+      startColor: [255, 255, 255],
+      endColor: [255, 0, 0],
+      particleOptions: {
+        width : 30,
+        height : 30,
+        lifespan : 100,
+        borderRadius : 200,
+        checkWorldEdges : true,
+        acceleration: new Burner.Vector(10, 10),
+        velocity: new Burner.Vector(20, 20),
+        location: new Burner.Vector(30, 30),
+        maxSpeed: 6,
+        fade: false,
+        shrink: false
+      }
+    });
   });
+
   t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.width, 10, 'custom width.');
   t.equal(obj.height, 10, 'custom height.');

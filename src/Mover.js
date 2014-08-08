@@ -6,12 +6,23 @@ var Item = require('Burner').Item,
 /**
  * Creates a new Mover.
  *
- * Points are the most basic Flora item. They represent a fixed point in
- * 2D space and are just an extension of Burner Item with isStatic set to true.
+ * Movers are the root object for any item that moves. They are not
+ * aware of other Movers or stimuli. They have no means of locomotion
+ * and change only due to external forces. You will never directly
+ * implement Mover.
  *
  * @constructor
- * @extends Burner.Item
- * @param {Object} [opt_options=] A map of initial properties.
+ * @extends Item
+ */
+function Mover(opt_options) {
+  Item.call(this);
+}
+Utils.extend(Mover, Item);
+
+/**
+ * Initializes an instance of Mover.
+ * @param  {Object} world An instance of World.
+ * @param  {Object} opt_options A map of initial properties.
  * @param {string} [opt_options.name = 'Mover'] Name.
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
@@ -28,9 +39,11 @@ var Item = require('Burner').Item,
  * @param {function} [opt_options.isStatic = false] Set to true to prevent object from moving.
  * @param {Object} [opt_options.parent = null] Attach to another Flora object.
  */
-function Mover(opt_options) {
-  Item.call(this);
+Mover.prototype.init = function(world, opt_options) {
+  Mover._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Mover';
   this.color = options.color || [255, 255, 255];
   this.borderRadius = options.borderRadius || 0;
@@ -44,16 +57,6 @@ function Mover(opt_options) {
   this.offsetDistance = typeof options.offsetDistance === 'undefined' ? 0 : options.offsetDistance;
   this.offsetAngle = options.offsetAngle || 0;
   this.isStatic = !!options.isStatic;
-}
-Utils.extend(Mover, Item);
-
-/**
- * Initializes Mover.
- * @param  {Object} world       An instance of World.
- * @param  {Object} opt_options A map of initial properties.
- */
-Mover.prototype.init = function(world, opt_options) {
-  Mover._superClass.init.call(this, world, opt_options);
 
   var me = this;
 
