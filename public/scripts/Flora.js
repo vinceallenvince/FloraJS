@@ -12,8 +12,12 @@ Flora.System.Classes = {
   Agent: _dereq_('./src/Agent').Agent,
   Attractor: _dereq_('./src/Attractor').Attractor,
   BorderPalette: _dereq_('./src/BorderPalette').BorderPalette,
+  Caption: _dereq_('./src/Caption').Caption,
   Connector: _dereq_('./src/Connector').Connector,
   Dragger: _dereq_('./src/Dragger').Dragger,
+  FlowField: _dereq_('./src/FlowField').FlowField,
+  FlowFieldMarker: _dereq_('./src/FlowFieldMarker').FlowFieldMarker,
+  InputMenu: _dereq_('./src/InputMenu').InputMenu,
   Mover: _dereq_('./src/Mover').Mover,
   Oscillator: _dereq_('./src/Oscillator').Oscillator,
   Particle: _dereq_('./src/Particle').Particle,
@@ -27,7 +31,7 @@ Flora.System.Classes = {
 };
 
 module.exports = Flora;
-},{"./src/Agent":9,"./src/Attractor":10,"./src/BorderPalette":11,"./src/ColorPalette":12,"./src/Connector":13,"./src/Dragger":14,"./src/Mover":15,"./src/Oscillator":16,"./src/Particle":17,"./src/ParticleSystem":18,"./src/Point":19,"./src/RangeDisplay":20,"./src/Repeller":21,"./src/Sensor":22,"./src/Stimulus":24,"./src/Walker":25,"Burner":8}],2:[function(_dereq_,module,exports){
+},{"./src/Agent":9,"./src/Attractor":10,"./src/BorderPalette":11,"./src/Caption":12,"./src/ColorPalette":13,"./src/Connector":14,"./src/Dragger":15,"./src/FlowField":16,"./src/FlowFieldMarker":17,"./src/InputMenu":18,"./src/Mover":19,"./src/Oscillator":20,"./src/Particle":21,"./src/ParticleSystem":22,"./src/Point":23,"./src/RangeDisplay":24,"./src/Repeller":25,"./src/Sensor":26,"./src/Stimulus":28,"./src/Walker":29,"Burner":8}],2:[function(_dereq_,module,exports){
 /*global document */
 
 var Vector = _dereq_('./Vector').Vector;
@@ -1126,6 +1130,18 @@ Utils.isInside = function(obj, container) {
   return false;
 };
 
+/**
+ * Capitalizes the first character in a string.
+ *
+ * @function capitalizeFirstLetter
+ * @memberof Utils
+ * @param {string} string The string to capitalize.
+ * @returns {string} The string with the first character capitalized.
+ */
+Utils.capitalizeFirstLetter = function(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 module.exports.Utils = Utils;
 
 },{}],6:[function(_dereq_,module,exports){
@@ -1526,6 +1542,7 @@ Utils.extend(Agent, Mover);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
+ * @param {boolean} [opt_options.name = 'Agent'] name.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
  * @param {Object} [opt_options.seekTarget = null] An object to seek.
@@ -1601,7 +1618,7 @@ Agent.prototype.applyAdditionalForces = function() {
 
   var i, max, sensorActivated, sensor, r, theta, x, y;
 
-  /*if (this.sensors.length > 0) { // Sensors
+  if (this.sensors.length > 0) { // Sensors
     for (i = 0, max = this.sensors.length; i < max; i += 1) {
 
       sensor = this.sensors[i];
@@ -1629,7 +1646,7 @@ Agent.prototype.applyAdditionalForces = function() {
       }
 
     }
-  }*/
+  }
 
   /**
    * If no sensors were activated and this.motorSpeed != 0,
@@ -1660,13 +1677,14 @@ Agent.prototype.applyAdditionalForces = function() {
     this.applyForce(this._seek(this.seekTarget));
   }
 
-  /*if (this.flowField) { // follow flow field
+  if (this.flowField) { // follow flow field
     var res = this.flowField.resolution,
       col = Math.floor(this.location.x/res),
       row = Math.floor(this.location.y/res),
       loc, target;
 
     if (this.flowField.field[col]) {
+
       loc = this.flowField.field[col][row];
       if (loc) { // sometimes loc is not available for edge cases
         this.followTargetVector.x = loc.x;
@@ -1678,10 +1696,10 @@ Agent.prototype.applyAdditionalForces = function() {
       target = {
         location: this.followTargetVector
       };
-      this.applyForce(this.follow(target));
+      this.applyForce(this._follow(target));
     }
 
-  }*/
+  }
 
   if (this.flocking) {
     this._flock(System.getAllItemsByName(this.name));
@@ -1716,6 +1734,25 @@ Agent.prototype._seek = function(target) {
   desiredVelocity.limit(this.maxSteeringForce);
 
   return desiredVelocity;
+};
+
+/**
+ * Calculates a steering force to apply to an object following another object.
+ * Agents with flow fields will use this method to calculate a steering force.
+ *
+ * @param {Object} target The object to follow.
+ * @returns {Object} The force to apply.
+ */
+Agent.prototype._follow = function(target) {
+
+  this.followDesiredVelocity.x = target.location.x;
+  this.followDesiredVelocity.y = target.location.y;
+
+  this.followDesiredVelocity.mult(this.maxSpeed);
+  this.followDesiredVelocity.sub(this.velocity);
+  this.followDesiredVelocity.limit(this.maxSteeringForce);
+
+  return this.followDesiredVelocity;
 };
 
 /**
@@ -1856,7 +1893,7 @@ Agent.prototype._cohesion = function(items) {
 module.exports.Agent = Agent;
 
 
-},{"./Mover":15,"Burner":8}],10:[function(_dereq_,module,exports){
+},{"./Mover":19,"Burner":8}],10:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('Burner').Utils,
@@ -1993,7 +2030,7 @@ Attractor.prototype.getCSSText = function(props) {
 
 module.exports.Attractor = Attractor;
 
-},{"./Mover":15,"Burner":8}],11:[function(_dereq_,module,exports){
+},{"./Mover":19,"Burner":8}],11:[function(_dereq_,module,exports){
 var Utils = _dereq_('Burner').Utils;
 /**
  * Creates a new BorderPalette object.
@@ -2064,6 +2101,116 @@ module.exports.BorderPalette = BorderPalette;
 
 
 },{"Burner":8}],12:[function(_dereq_,module,exports){
+var System = _dereq_('Burner').System,
+    Utils = _dereq_('Burner').Utils;
+
+/**
+ * Creates a new Caption object.
+ * Use captions to communicate short messages to users like a title
+ * or simple instructions like 'click for more particles'.
+ *
+ * @constructor
+ */
+function Caption() {
+  this.name = 'Caption';
+}
+
+/**
+ * A noop.
+ */
+//Caption.prototype.reset = function () {};
+
+/**
+ * Intializes an instance of Caption.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {Object} [opt_options.world] A world.
+ * @param {string} [opt_options.position = 'top left'] A text representation
+ *    of the caption's location. Possible values are 'top left', 'top center', 'top right',
+ *    'bottom left', 'bottom center', 'bottom right', 'center'.
+ * @param {string} [opt_options.text = ''] The caption's text.
+ * @param {number} [opt_options.opacity = 0.75] The caption's opacity.
+ * @param {Array} [opt_options.color = 255, 255, 255] The caption's color.
+ * @param {number} [opt_options.borderWidth = 1] The caption's border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] The caption's border style.
+ * @param {Array} [opt_options.borderColor = 204, 204, 204] The caption's border color.
+ */
+Caption.prototype.init = function (world, opt_options) {
+
+  var options = opt_options || {}, i, max, classNames;
+
+  // if a world is not passed, use the first world in the system
+  this.world = world || System.firstWorld();
+  this.position = options.position || 'top left';
+  this.text = options.text || '';
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.color = options.color || [255, 255, 255];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || [204, 204, 204];
+  this.colorMode = 'rgb';
+
+  /**
+   * Holds a reference to the caption's DOM elements.
+   * @private
+   */
+  this.el = document.createElement('div');
+  this.el.id = 'caption';
+  this.el.className = 'caption ';
+  classNames = this.position.split(' ');
+  for (i = 0, max = classNames.length; i < max; i++) {
+    this.el.className = this.el.className + 'caption' + Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+  }
+  this.el.style.opacity = this.opacity;
+  this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+        ', ' + this.color[2] + ')';
+  this.el.style.borderWidth = this.borderWidth + 'px';
+  this.el.style.borderStyle = this.borderStyle;
+  if (typeof this.borderColor === 'string') {
+    this.el.style.borderColor = this.borderColor;
+  } else {
+    this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
+        ', ' + this.borderColor[2] + ')';
+  }
+  this.el.zIndex = 100;
+  this.el.appendChild(document.createTextNode(this.text));
+  if (document.getElementById('caption')) {
+    document.getElementById('caption').parentNode.removeChild(document.getElementById('caption'));
+  }
+  this.world.el.appendChild(this.el);
+};
+
+/**
+ * A noop.
+ */
+Caption.prototype.draw = function() {};
+
+/**
+ * Updates the caption's text.
+ */
+Caption.prototype.update = function(text) {
+  this.el.textContent = text;
+};
+
+/**
+ * Removes the caption's DOM element.
+ *
+ * @returns {boolean} True if object does not exist in the DOM.
+ */
+Caption.prototype.remove = function() {
+
+  var id = this.el.id;
+
+  this.el.parentNode.removeChild(this.el);
+  if (!document.getElementById(id)) {
+    return true;
+  }
+  return;
+};
+
+module.exports.Caption = Caption;
+
+},{"Burner":8}],13:[function(_dereq_,module,exports){
 var Utils = _dereq_('Burner').Utils;
 /**
  * Creates a new ColorPalette object.
@@ -2227,7 +2374,7 @@ ColorPalette.prototype.getColor = function() {
 
 module.exports.ColorPalette = ColorPalette;
 
-},{"Burner":8}],13:[function(_dereq_,module,exports){
+},{"Burner":8}],14:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils,
     Vector = _dereq_('Burner').Vector;
@@ -2343,7 +2490,7 @@ Connector.prototype.getCSSText = function(props) {
 
 module.exports.Connector = Connector;
 
-},{"Burner":8}],14:[function(_dereq_,module,exports){
+},{"Burner":8}],15:[function(_dereq_,module,exports){
 var Attractor = _dereq_('./Attractor').Attractor,
     Utils = _dereq_('Burner').Utils;
 
@@ -2421,7 +2568,280 @@ Dragger.prototype.drag = function(obj) {
 
 module.exports.Dragger = Dragger;
 
-},{"./Attractor":10,"Burner":8}],15:[function(_dereq_,module,exports){
+},{"./Attractor":10,"Burner":8}],16:[function(_dereq_,module,exports){
+var FlowFieldMarker = _dereq_('./FlowFieldMarker').FlowFieldMarker,
+    Item = _dereq_('Burner').Item,
+    SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
+    System = _dereq_('Burner').System,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new FlowField.
+ *
+ * @constructor
+ */
+function FlowField() {
+  Item.call(this);
+}
+Utils.extend(FlowField, Item);
+
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {boolean} [opt_options.name = 'FlowField'] name.
+ * @param {number} [opt_options.resolution = 50] The lower the value, the more vectors are created
+ *    to define the flow field. Low values increase processing time to create the field.
+ * @param {number} [opt_options.perlinSpeed = 0.01] The speed to move through the Perlin Noise space.
+ * @param {number} [opt_options.perlinTime = 100] Sets the Perlin Noise time.
+ * @param {Object} [opt_options.field = null] A list of vectors that define the flow field.
+ * @param {Object} [opt_options.createMarkers = false] Set to true to visualize the flow field.
+ * @param {Object} [opt_options.world = System.firstWorld()] The flowField's world.
+ */
+FlowField.prototype.init = function(world, opt_options) {
+
+  var options = opt_options || {};
+
+  this.name = options.name || 'FlowField';
+  this.resolution = typeof options.resolution !== 'undefined' ? options.resolution : 50;
+  this.perlinSpeed = typeof options.perlinSpeed !== 'undefined' ? options.perlinSpeed : 0.01;
+  this.perlinTime = typeof options.perlinTime !== 'undefined' ? options.perlinTime : 100;
+  this.field = options.field || null;
+  this.createMarkers = !!options.createMarkers;
+  this.world = world;
+  this.lifespan = -1;
+};
+
+/**
+ * Builds a FlowField.
+ */
+FlowField.prototype.build = function() {
+
+  var col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
+      vectorList = {},
+      world = this.world,
+      cols = Math.ceil(world.width / parseFloat(this.resolution)),
+      rows = Math.ceil(world.height / parseFloat(this.resolution)),
+      xoff = this.perlinTime, // create markers and vectors
+      yoff;
+
+  for (col = 0, colMax = cols; col < colMax ; col += 1) {
+
+    yoff = this.perlinTime;
+    vectorList[col] = {};
+    for (row = 0, rowMax = rows; row < rowMax ; row += 1) {
+
+      x = col * this.resolution + this.resolution / 2; // get location on the grid
+      y = row * this.resolution + this.resolution / 2;
+
+      theta = Utils.map(SimplexNoise.noise(xoff, yoff), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
+      fieldX = Math.cos(theta);
+      fieldY = Math.sin(theta);
+      field = new Vector(fieldX, fieldY);
+      vectorList[col][row] = field;
+      angle = Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
+
+      if (this.createMarkers) {
+
+        var ffm = new FlowFieldMarker();
+        world.el.appendChild(ffm.init({ // create the marker
+          location: new Vector(x, y),
+          scale: 1,
+          opacity: Utils.map(angle, -360, 360, 0.1, 0.75),
+          width: this.resolution,
+          height: this.resolution/2,
+          field: field,
+          angle: angle,
+          colorMode: 'rgb',
+          color: [200, 100, 50],
+          borderRadius: 0,
+          zIndex: 0
+        }));
+      }
+      yoff += parseFloat(this.perlinSpeed);
+    }
+    xoff += parseFloat(this.perlinSpeed);
+  }
+  this.field = vectorList;
+};
+
+FlowField.prototype.step = function() {};
+
+FlowField.prototype.draw = function() {};
+
+module.exports.FlowField = FlowField;
+
+},{"./FlowFieldMarker":17,"./SimplexNoise":27,"Burner":8}],17:[function(_dereq_,module,exports){
+var Item = _dereq_('Burner').Item,
+    System = _dereq_('Burner').System,
+    Utils = _dereq_('Burner').Utils,
+    Vector = _dereq_('Burner').Vector;
+
+/**
+ * Creates a new FlowFieldMarker.
+ *
+ * @constructor
+ */
+function FlowFieldMarker() {
+  Item.call(this);
+}
+Utils.extend(FlowFieldMarker, Item);
+
+/**
+ * Initializes an instance of FlowFieldMarker.
+ *
+ * @param {Object} options Options.
+ * @param {Object} [options.location] Location.
+ * @param {number} [options.scale] Scale.
+ * @param {number} [options.opacity] Opacity
+ * @param {number} [options.width] Width.
+ * @param {number} [options.height] Height.
+ * @param {number} [options.angle] Angle.
+ * @param {string} [options.colorMode] Color mode.
+ * @param {Object} [options.color] Color.
+ */
+FlowFieldMarker.prototype.init = function(options) {
+
+  if (!options) {
+    throw new Error('FlowFieldMarker requires location, scale, angle, opacity, width, height, colorMode, and color.');
+  }
+
+  var el = document.createElement('div');
+  var nose = document.createElement('div');
+  el.className = 'flowFieldMarker item';
+  nose.className = 'nose';
+  el.appendChild(nose);
+
+  el.style.cssText = this.getCSSText({
+    x: options.location.x - options.width / 2,
+    y: options.location.y - options.height / 2,
+    width: options.width,
+    height: options.height,
+    opacity: options.opacity,
+    angle: options.angle,
+    scale: 1,
+    colorMode: options.colorMode,
+    color0: options.color[0],
+    color1: options.color[1],
+    color2: options.color[2],
+    zIndex: options.zIndex,
+    borderRadius: options.borderRadius
+  });
+
+  return el;
+};
+
+FlowFieldMarker.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: ' + props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+};
+
+module.exports.FlowFieldMarker = FlowFieldMarker;
+
+},{"Burner":8}],18:[function(_dereq_,module,exports){
+var System = _dereq_('Burner').System,
+    config = _dereq_('./config').config,
+    Utils = _dereq_('Burner').Utils;
+
+/**
+ * Creates a new InputMenu object.
+ * An Input Menu lists key strokes and other input available
+ * for the user to interact with the system.
+ *
+ * @constructor
+ *
+ */
+function InputMenu() {
+  this.name = 'InputMenu';
+}
+
+/**
+ * Initialize an instance of InputMenu.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {Object} [opt_options.world] A world.
+ * @param {string} [opt_options.position = 'top left'] A text representation
+ *    of the menu's location. Possible values are 'top left', 'top center', 'top right',
+ *    'bottom left', 'bottom center', 'bottom right', 'center'.
+ * @param {number} [opt_options.opacity = 0.75] The menu's opacity.
+ * @param {Array} [opt_options.color = 255, 255, 255] The menu's color.
+ * @param {number} [opt_options.borderWidth = 1] The menu's border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] The menu's border style.
+ * @param {Array} [opt_options.borderColor = 204, 204, 204] The menu's border color.
+ */
+InputMenu.prototype.init = function (world, opt_options) {
+
+  var me = this, options = opt_options || {}, i, max, classNames;
+
+  this.world = world || Burner.System.firstWorld();
+  this.position = options.position || 'top left';
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.color = options.color || [255, 255, 255];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || [204, 204, 204];
+  this.colorMode = 'rgb';
+
+  this.text = '\'' + String.fromCharCode(config.keyMap.pause).toLowerCase() + '\' = pause | ' +
+    '\'' + String.fromCharCode(config.keyMap.resetSystem).toLowerCase() + '\' = reset | ' +
+    '\'' + String.fromCharCode(config.keyMap.stats).toLowerCase() + '\' = stats';
+
+  /**
+   * Holds a reference to the caption's DOM elements.
+   * @private
+   */
+  this.el = document.createElement('div');
+  this.el.id = 'inputMenu';
+  this.el.className = 'inputMenu ';
+  classNames = this.position.split(' ');
+  for (i = 0, max = classNames.length; i < max; i++) {
+    this.el.className = this.el.className + 'inputMenu' + Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+  }
+  this.el.style.opacity = this.opacity;
+  this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+        ', ' + this.color[2] + ')';
+  this.el.style.borderWidth = this.borderWidth + 'px';
+  this.el.style.borderStyle = this.borderStyle;
+  if (typeof this.borderColor === 'string') {
+    this.el.style.borderColor = this.borderColor;
+  } else {
+    this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
+        ', ' + this.borderColor[2] + ')';
+  }
+  this.el.appendChild(document.createTextNode(this.text));
+  if (document.getElementById('inputMenu')) {
+    document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
+  }
+
+  this.world.el.appendChild(this.el);
+
+};
+
+/**
+ * A noop.
+ */
+InputMenu.prototype.draw = function() {};
+
+
+/**
+ * Removes the menu's DOM element.
+ */
+InputMenu.prototype.remove = function() {
+
+  var id = this.el.id;
+
+  this.el.parentNode.removeChild(this.el);
+  if (!document.getElementById(id)) {
+    return true;
+  }
+  return;
+};
+
+module.exports.InputMenu = InputMenu;
+
+
+},{"./config":30,"Burner":8}],19:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     System = _dereq_('Burner').System,
     Utils = _dereq_('Burner').Utils,
@@ -2756,7 +3176,7 @@ Mover.prototype.getCSSText = function(props) {
 module.exports.Mover = Mover;
 
 
-},{"Burner":8}],16:[function(_dereq_,module,exports){
+},{"Burner":8}],20:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
     System = _dereq_('Burner').System,
@@ -2772,8 +3192,16 @@ var Item = _dereq_('Burner').Item,
  *
  * @constructor
  * @extends Item
- *
- * @param {Object} [opt_options=] A map of initial properties.
+ */
+function Oscillator(opt_options) {
+  Item.call(this);
+}
+Utils.extend(Oscillator, Item);
+
+/**
+ * Initializes Oscillator.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
  *    angle if pointToDirection = true.
@@ -2800,11 +3228,12 @@ var Item = _dereq_('Burner').Item,
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  * @param {Array} [opt_options.boxShadowColor = 147, 199, 196] Box-shadow color.
  */
-function Oscillator(opt_options) {
-  Item.call(this);
-  var options = opt_options || {};
-  this.name = options.name || 'Oscillator';
+Oscillator.prototype.init = function(world, opt_options) {
+  Oscillator._superClass.init.call(this, world, opt_options);
 
+  var options = opt_options || {};
+
+  this.name = options.name || 'Oscillator';
   this.acceleration = options.acceleration || new Vector(0.01, 0);
   this.aVelocity = options.aVelocity || new Vector();
   this.isStatic = !!options.isStatic;
@@ -2832,21 +3261,11 @@ function Oscillator(opt_options) {
   this.parent = options.parent || null;
   this.pointToDirection = !!options.pointToDirection;
 
-  this.initialLocation = new Vector();
+  //this.initialLocation = new Vector();
   this.lastLocation = new Vector();
-  this.amplitude = new Vector();
-}
-Utils.extend(Oscillator, Item);
+  //this.amplitude = new Vector();
 
-/**
- * Initializes Oscillator.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- */
-Oscillator.prototype.init = function(world, opt_options) {
-  Oscillator._superClass.init.call(this, world, opt_options);
-
-  var options = opt_options || {};
+  //
 
   this.amplitude = options.amplitude || new Vector(this.world.width / 2 - this.width,
       this.world.height / 2 - this.height);
@@ -2956,7 +3375,7 @@ Oscillator.prototype.getCSSText = function(props) {
 
 module.exports.Oscillator = Oscillator;
 
-},{"./SimplexNoise":23,"Burner":8}],17:[function(_dereq_,module,exports){
+},{"./SimplexNoise":27,"Burner":8}],21:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('Burner').Utils,
@@ -2967,12 +3386,22 @@ var Item = _dereq_('Burner').Item,
  *
  * @constructor
  * @extends Mover
- *
- * @param {Object} [opt_options=] A map of initial properties.
+ */
+function Particle(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Particle, Mover);
+
+/**
+ * Initializes Particle.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 20] Width
  * @param {number} [opt_options.height = 20] Height
  * @param {Array} [opt_options.color = [200, 200, 200]] Color.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
  * @param {number} [opt_options.borderRadius = 100] The particle's border radius.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  * @param {number} [opt_options.lifespan = 50] The max life of the object. Set to -1 for infinite life.
  * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
  * @param {boolean} {opt_options.fade = true} If true, opacity decreases proportionally with life.
@@ -2981,14 +3410,18 @@ var Item = _dereq_('Burner').Item,
  * @param {number} [opt_options.maxSpeed = 4] Maximum speed.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  */
-function Particle(opt_options) {
-  Mover.call(this);
+Particle.prototype.init = function(world, opt_options) {
+  Particle._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Particle';
   this.width = typeof options.width === 'undefined' ? 20 : options.width;
   this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [200, 200, 200];
+  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
   this.lifespan = typeof options.lifespan === 'undefined' ? 50 : options.lifespan;
   this.life = options.life || 0;
   this.fade = typeof options.fade === 'undefined' ? true : options.fade;
@@ -2996,23 +3429,6 @@ function Particle(opt_options) {
   this.checkWorldEdges = !!options.checkWorldEdges;
   this.maxSpeed = typeof options.maxSpeed === 'undefined' ? 4 : options.maxSpeed;
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
-}
-Utils.extend(Particle, Mover);
-
-/**
- * Initializes Particle.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
- * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- */
-Particle.prototype.init = function(world, opt_options) {
-  Particle._superClass.init.call(this, world, opt_options);
-
-  var options = opt_options || {};
-
-  this.borderWidth = typeof options.borderWidth === 'undefined' ? this.width / 4 : options.borderWidth;
-  this.boxShadowSpread = typeof options.boxShadowSpread === 'undefined' ? this.width / 4 : options.boxShadowSpread;
 
   if (!options.acceleration) {
     this.acceleration = new Vector(1, 1);
@@ -3097,7 +3513,7 @@ Particle.prototype.getCSSText = function(props) {
 module.exports.Particle = Particle;
 
 
-},{"./Mover":15,"Burner":8}],18:[function(_dereq_,module,exports){
+},{"./Mover":19,"Burner":8}],22:[function(_dereq_,module,exports){
 var ColorPalette = _dereq_('./ColorPalette').ColorPalette,
     Item = _dereq_('Burner').Item,
     Mover = _dereq_('./Mover').Mover,
@@ -3110,8 +3526,16 @@ var ColorPalette = _dereq_('./ColorPalette').ColorPalette,
  *
  * @constructor
  * @extends Mover
- *
- * @param {Object} [opt_options=] A map of initial properties.
+ */
+function ParticleSystem(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(ParticleSystem, Mover);
+
+/**
+ * Initializes Particle.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
  * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
@@ -3129,9 +3553,11 @@ var ColorPalette = _dereq_('./ColorPalette').ColorPalette,
  * @param {Array} [opt_options.endColor = [255, 0, 0]] The ending color of the particle's palette range.
  * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
  */
-function ParticleSystem(opt_options) {
-  Mover.call(this);
+ParticleSystem.prototype.init = function(world, opt_options) {
+  ParticleSystem._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'ParticleSystem';
   this.width = options.width || 0;
   this.height = options.height || 0;
@@ -3161,18 +3587,6 @@ function ParticleSystem(opt_options) {
     fade: true,
     shrink: true
   };
-}
-Utils.extend(ParticleSystem, Mover);
-
-/**
- * Initializes Particle.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- */
-ParticleSystem.prototype.init = function(world, opt_options) {
-  ParticleSystem._superClass.init.call(this, world, opt_options);
-
-  var options = opt_options || {};
 
   if (this.particleOptions.acceleration) {
     this.initParticleAcceleration = new Vector(this.particleOptions.acceleration.x,
@@ -3260,7 +3674,7 @@ ParticleSystem.prototype.getCSSText = function(props) {
 
 module.exports.ParticleSystem = ParticleSystem;
 
-},{"./ColorPalette":12,"./Mover":15,"Burner":8}],19:[function(_dereq_,module,exports){
+},{"./ColorPalette":13,"./Mover":19,"Burner":8}],23:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils;
 
@@ -3350,7 +3764,7 @@ Point.prototype.getCSSText = function(props) {
 
 module.exports.Point = Point;
 
-},{"Burner":8}],20:[function(_dereq_,module,exports){
+},{"Burner":8}],24:[function(_dereq_,module,exports){
 var Item = _dereq_('Burner').Item,
     Utils = _dereq_('Burner').Utils;
 
@@ -3387,7 +3801,7 @@ RangeDisplay.prototype.init = function(world, opt_options) {
   this.name = 'RangeDisplay';
   this.zIndex = 10;
   this.borderStyle = this.sensor.rangeDisplayBorderStyle || 'dashed';
-  this.borderDefaultColor = this.sensor.borderDefaultColor || [150, 150, 150];
+  this.borderDefaultColor = this.sensor.rangeDisplayBorderDefaultColor || [150, 150, 150];
   this.borderColor = this.borderDefaultColor;
 
   /**
@@ -3469,7 +3883,7 @@ RangeDisplay.prototype.getCSSText = function(props) {
 
 module.exports.RangeDisplay = RangeDisplay;
 
-},{"Burner":8}],21:[function(_dereq_,module,exports){
+},{"Burner":8}],25:[function(_dereq_,module,exports){
 var Attractor = _dereq_('./Attractor').Attractor,
     Utils = _dereq_('Burner').Utils;
 
@@ -3527,7 +3941,7 @@ Repeller.prototype.init = function(world, opt_options) {
 
 module.exports.Repeller = Repeller;
 
-},{"./Attractor":10,"Burner":8}],22:[function(_dereq_,module,exports){
+},{"./Attractor":10,"Burner":8}],26:[function(_dereq_,module,exports){
 var Mover = _dereq_('./Mover').Mover,
     System = _dereq_('Burner').System,
     Utils = _dereq_('Burner').Utils,
@@ -3566,6 +3980,7 @@ Utils.extend(Sensor, Mover);
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
  * @param {Function} [opt_options.onConsume = null] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
+ * @param {Function} [opt_options.onDestroy = null] If sensor.behavior == 'DESTROY', sensor calls this function when target is destroyed.
  */
 Sensor.prototype.init = function(world, opt_options) {
   Sensor._superClass.init.call(this, world, opt_options);
@@ -3589,9 +4004,9 @@ Sensor.prototype.init = function(world, opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.onConsume = options.onConsume || null;
-  this.rangeDisplayBorderStyle = options.rangeDisplayBorderStyle || 'dashed';
-  this.rangeDisplayBorderDefaultColor = options.rangeDisplayBorderDefaultColor || [150, 150, 150];
-
+  this.onDestroy = options.onDestroy || null;
+  this.rangeDisplayBorderStyle = options.rangeDisplayBorderStyle || false;
+  this.rangeDisplayBorderDefaultColor = options.rangeDisplayBorderDefaultColor || false;
   this.parent = options.parent || null;
   this.displayRange = !!options.displayRange;
   if (this.displayRange) {
@@ -3691,6 +4106,309 @@ Sensor.prototype.step = function() {
   this.afterStep.call(this);
 };
 
+
+
+Sensor.prototype.getBehavior = function() {
+
+  var i, iMax, j, jMax;
+
+  switch (this.behavior) {
+
+    case 'CONSUME':
+      return function(sensor, target) {
+
+        /**
+         * CONSUME
+         * If inside the target, target shrinks.
+         */
+         if (Utils.isInside(sensor.parent, target)) {
+
+            if (target.width > 2) {
+              target.width *= 0.95;
+              if (!sensor.parent[target.type + 'Level']) {
+                sensor.parent[target.type + 'Level'] = 0;
+              }
+              sensor.parent[target.type + 'Level'] += 1;
+            } else {
+              if (sensor.onConsume && !target.consumed) {
+                target.consumed = true;
+                sensor.onConsume.call(this, sensor, target);
+              }
+              System.remove(target);
+              return;
+            }
+            if (target.height > 1) {
+              target.height *= 0.95;
+            }
+            if (target.borderWidth > 0) {
+              target.borderWidth *= 0.95;
+            }
+            if (target.boxShadowSpread > 0) {
+              target.boxShadowSpread *= 0.95;
+            }
+         }
+      };
+
+    case 'DESTROY':
+      return function(sensor, target) {
+
+        /**
+         * DESTROY
+         * If inside the target, ssytem destroys target.
+         */
+         if (Utils.isInside(sensor.parent, target)) {
+
+            System.add('ParticleSystem', {
+              location: new Vector(target.location.x, target.location.y),
+              lifespan: 20,
+              borderColor: target.borderColor,
+              startColor: target.color,
+              endColor: target.color
+            });
+            System.remove(target);
+
+            if (sensor.onDestroy) {
+              sensor.onDestroy.call(this, sensor, target);
+            }
+         }
+      };
+
+    case 'LIKES':
+      return function(sensor, target) {
+
+        /**
+         * LIKES
+         * Steer toward target at max speed.
+         */
+
+        // desiredVelocity = difference in target location and agent location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      };
+
+    case 'COWARD':
+      return function(sensor, target) {
+
+        /**
+         * COWARD
+         * Steer away from target at max speed.
+         */
+
+        // desiredVelocity = difference in target location and agent location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // reverse the force
+        desiredVelocity.mult(-0.0075);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      };
+
+    case 'AGGRESSIVE':
+      return function(sensor, target) {
+
+        /**
+         * AGGRESSIVE
+         * Steer and arrive at target. Aggressive agents will hit their target.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // get distance to target
+        var distanceToTarget = desiredVelocity.mag();
+
+        if (distanceToTarget < this.width * 2) {
+
+          // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+          desiredVelocity.normalize();
+
+          // as agent gets closer, velocity decreases
+          var m = distanceToTarget / this.maxSpeed;
+
+          // extend desiredVelocity vector
+          desiredVelocity.mult(m);
+
+        }
+
+        // subtract current velocity from desired to create a steering force
+        desiredVelocity.sub(this.velocity);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+
+      };
+
+    case 'CURIOUS':
+      return function(sensor, target) {
+
+        /**
+         * CURIOUS
+         * Steer and arrive at midpoint bw target location and agent location.
+         * After arriving, reverse direction and accelerate to max speed.
+         */
+
+        var desiredVelocity, distanceToTarget;
+
+        if (sensor.state !== 'running') {
+
+          var midpoint = sensor.activationLocation.midpoint(target.location);
+
+          // velocity = difference in location
+          desiredVelocity = Vector.VectorSub(midpoint, this.location);
+
+          // get distance to target
+          distanceToTarget = desiredVelocity.mag();
+
+          // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+          desiredVelocity.normalize();
+
+          // as agent gets closer, velocity decreases
+          var m = distanceToTarget / this.maxSpeed;
+
+          // extend desiredVelocity vector
+          desiredVelocity.mult(m);
+
+          // subtract current velocity from desired to create a steering force
+          desiredVelocity.sub(this.velocity);
+
+          if (m < 0.5) {
+            sensor.state = 'running';
+          }
+        } else {
+
+          // note: desired velocity when running is the difference bw target and this agent
+          desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+          // reverse the force
+          desiredVelocity.mult(-1);
+
+        }
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      };
+
+    case 'EXPLORER':
+      return function(sensor, target) {
+
+        /**
+         * EXPLORER
+         * Gets close to target but does not change velocity.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // get distance to target
+        var distanceToTarget = desiredVelocity.mag();
+
+        // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+        desiredVelocity.normalize();
+
+        // as agent gets closer, velocity decreases
+        var m = distanceToTarget / this.maxSpeed;
+
+        // extend desiredVelocity vector
+        desiredVelocity.mult(-m);
+
+        // subtract current velocity from desired to create a steering force
+        desiredVelocity.sub(this.velocity);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce * 0.05);
+
+        // add motor speed
+        this.motorDir.x = this.velocity.x;
+        this.motorDir.y = this.velocity.y;
+        this.motorDir.normalize();
+        if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
+          this.motorDir.mult(-this.motorSpeed);
+        } else {
+          this.motorDir.mult(this.motorSpeed);
+        }
+
+        desiredVelocity.add(this.motorDir);
+
+        return desiredVelocity;
+
+      };
+
+    case 'LOVES':
+      return function(sensor, target) {
+
+        /**
+         * LOVES
+         * Steer and arrive at target.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // get total distance
+        var distanceToTarget = desiredVelocity.mag();
+
+        if (distanceToTarget > this.width / 2) {
+
+          // normalize so we can adjust
+          desiredVelocity.normalize();
+
+          //
+          var m = distanceToTarget / this.maxSpeed;
+
+          desiredVelocity.mult(m);
+
+          var steer = Vector.VectorSub(desiredVelocity, this.velocity);
+          steer.limit(this.maxSteeringForce * 0.25);
+          return steer;
+        }
+
+        this.angle = Utils.radiansToDegrees(Math.atan2(desiredVelocity.y, desiredVelocity.x));
+
+        this._force.x = 0;
+        this._force.y = 0;
+        return this._force;
+      };
+
+    case 'ACCELERATE':
+      return function(sensor, target) {
+
+        /**
+         * ACCELERATE
+         * Accelerate to max speed.
+         */
+
+        this._force.x = this.velocity.x;
+        this._force.y = this.velocity.y;
+        return this._force.mult(0.25);
+      };
+
+    case 'DECELERATE':
+      return function(sensor, target) {
+
+        /**
+         * DECELERATE
+         * Decelerate to min speed.
+         */
+
+        this._force.x = this.velocity.x;
+        this._force.y = this.velocity.y;
+        return this._force.mult(-0.25);
+      };
+  }
+
+};
+
 /**
  * Checks if a sensor can detect a stimulus object. Note: Assumes
  * target is a circle.
@@ -3710,7 +4428,7 @@ Sensor.prototype._sensorActive = function(target) {
 
 module.exports.Sensor = Sensor;
 
-},{"./Mover":15,"Burner":8}],23:[function(_dereq_,module,exports){
+},{"./Mover":19,"Burner":8}],27:[function(_dereq_,module,exports){
 /*jshint bitwise:false */
 /**
 * https://gist.github.com/304522
@@ -3939,7 +4657,7 @@ SimplexNoise.dot = function(g, x, y) {
 
 module.exports.SimplexNoise = SimplexNoise;
 
-},{}],24:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 var BorderPalette = _dereq_('./BorderPalette').BorderPalette,
     ColorPalette = _dereq_('./ColorPalette').ColorPalette,
     config = _dereq_('./config').config,
@@ -4053,7 +4771,7 @@ Stimulus.prototype.init = function(world, opt_options) {
 
 module.exports.Stimulus = Stimulus;
 
-},{"./BorderPalette":11,"./ColorPalette":12,"./Mover":15,"./config":26,"Burner":8}],25:[function(_dereq_,module,exports){
+},{"./BorderPalette":11,"./ColorPalette":13,"./Mover":19,"./config":30,"Burner":8}],29:[function(_dereq_,module,exports){
 var Mover = _dereq_('./Mover').Mover,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
     Utils = _dereq_('Burner').Utils,
@@ -4068,6 +4786,15 @@ var Mover = _dereq_('./Mover').Mover,
  *
  * @constructor
  * @extends Mover
+ */
+function Walker(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Walker, Mover);
+
+/**
+ * Initializes an instance.
+ *
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.name = 'Walker'] Name
  * @param {number} [opt_options.width = 10] Width
@@ -4089,9 +4816,11 @@ var Mover = _dereq_('./Mover').Mover,
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  */
-function Walker(opt_options) {
-  Mover.call(this);
+Walker.prototype.init = function(world, opt_options) {
+  Walker._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Walker';
   this.width = typeof options.width === 'undefined' ? 10 : options.width;
   this.height = typeof options.height === 'undefined' ? 10 : options.height;
@@ -4113,16 +4842,6 @@ function Walker(opt_options) {
   this.zIndex = typeof options.zIndex === 'undefined' ? 0 : options.zIndex;
 
   this._randomVector = new Vector();
-}
-Utils.extend(Walker, Mover);
-
-/**
- * Initializes an instance.
- *
- * @param {Object} [opt_options=] A map of initial properties.
- */
-Walker.prototype.init = function(world, opt_options) {
-  Walker._superClass.init.call(this, world, opt_options);
 };
 
 /**
@@ -4159,7 +4878,7 @@ Walker.prototype.applyAdditionalForces = function() {
 
 module.exports.Walker = Walker;
 
-},{"./Mover":15,"./SimplexNoise":23,"Burner":8}],26:[function(_dereq_,module,exports){
+},{"./Mover":19,"./SimplexNoise":27,"Burner":8}],30:[function(_dereq_,module,exports){
 /**
  * @namespace
  */

@@ -22,6 +22,7 @@ Utils.extend(Agent, Mover);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
+ * @param {boolean} [opt_options.name = 'Agent'] name.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
  * @param {Object} [opt_options.seekTarget = null] An object to seek.
@@ -97,7 +98,7 @@ Agent.prototype.applyAdditionalForces = function() {
 
   var i, max, sensorActivated, sensor, r, theta, x, y;
 
-  /*if (this.sensors.length > 0) { // Sensors
+  if (this.sensors.length > 0) { // Sensors
     for (i = 0, max = this.sensors.length; i < max; i += 1) {
 
       sensor = this.sensors[i];
@@ -125,7 +126,7 @@ Agent.prototype.applyAdditionalForces = function() {
       }
 
     }
-  }*/
+  }
 
   /**
    * If no sensors were activated and this.motorSpeed != 0,
@@ -156,13 +157,14 @@ Agent.prototype.applyAdditionalForces = function() {
     this.applyForce(this._seek(this.seekTarget));
   }
 
-  /*if (this.flowField) { // follow flow field
+  if (this.flowField) { // follow flow field
     var res = this.flowField.resolution,
       col = Math.floor(this.location.x/res),
       row = Math.floor(this.location.y/res),
       loc, target;
 
     if (this.flowField.field[col]) {
+
       loc = this.flowField.field[col][row];
       if (loc) { // sometimes loc is not available for edge cases
         this.followTargetVector.x = loc.x;
@@ -174,10 +176,10 @@ Agent.prototype.applyAdditionalForces = function() {
       target = {
         location: this.followTargetVector
       };
-      this.applyForce(this.follow(target));
+      this.applyForce(this._follow(target));
     }
 
-  }*/
+  }
 
   if (this.flocking) {
     this._flock(System.getAllItemsByName(this.name));
@@ -212,6 +214,25 @@ Agent.prototype._seek = function(target) {
   desiredVelocity.limit(this.maxSteeringForce);
 
   return desiredVelocity;
+};
+
+/**
+ * Calculates a steering force to apply to an object following another object.
+ * Agents with flow fields will use this method to calculate a steering force.
+ *
+ * @param {Object} target The object to follow.
+ * @returns {Object} The force to apply.
+ */
+Agent.prototype._follow = function(target) {
+
+  this.followDesiredVelocity.x = target.location.x;
+  this.followDesiredVelocity.y = target.location.y;
+
+  this.followDesiredVelocity.mult(this.maxSpeed);
+  this.followDesiredVelocity.sub(this.velocity);
+  this.followDesiredVelocity.limit(this.maxSteeringForce);
+
+  return this.followDesiredVelocity;
 };
 
 /**

@@ -1,6 +1,7 @@
 var Burner = require('Burner'),
     test = require('tape'),
     Agent = require('../src/Agent').Agent,
+    ParticleSystem = require('../src/ParticleSystem').ParticleSystem,
     Stimulus = require('../src/Stimulus').Stimulus,
     Sensor, obj;
 
@@ -402,11 +403,182 @@ test('getBehavior() updates objects in system based on behavior type.', function
   Burner.System._stepForward();
 
   var curious = behavior.call(agent, sensor, heat);
-  t.assert(parseFloat(curious.x.toFixed(2)) === -3.64 && parseFloat(curious.y.toFixed(2)) === -3.43, 'behavior = CURIOUS.');
+  t.assert(parseFloat(curious.x.toFixed(2)) === -3.63 && parseFloat(curious.y.toFixed(2)) === -3.43, 'behavior = CURIOUS.');
 
-  // TODO: EXPLORER
+  heat.location.x = 210; // change to initial location
+  heat.location.y = 160;
+
+  sensor.behavior = 'EXPLORER';
+  var behavior = sensor.getBehavior();
+  var explorer = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(explorer.x.toFixed(2)) === -0.17 && parseFloat(explorer.y.toFixed(2)) === -0.18, 'behavior = EXPLORER.');
+
+  heat.location.x = 195; // change location to get very close to stimulus
+  heat.location.y = 145;
+
+  agent.velocity.x = 0;
+  agent.velocity.y = 0;
+  var behavior = sensor.getBehavior();
+  var explorer = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(explorer.x.toFixed(2)) === -0.18 && parseFloat(explorer.y.toFixed(2)) === -0.17, 'behavior = EXPLORER.');
+
+  heat.location.x = 210; // change to initial location
+  heat.location.y = 160;
+
+  sensor.behavior = 'LOVES';
+  var behavior = sensor.getBehavior();
+  var loves = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(loves.x.toFixed(2)) === 0.89 && parseFloat(loves.y.toFixed(2)) === 0.88, 'behavior = LOVES.');
+
+  heat.location.x = 192; // change location to get very close to stimulus
+  heat.location.y = 142;
+
+  var behavior = sensor.getBehavior();
+  var loves = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(loves.x.toFixed(2)) === 0 && parseFloat(loves.y.toFixed(2)) === 0, 'behavior = LOVES; very close.');
+
+  heat.location.x = 210; // change to initial location
+  heat.location.y = 160;
+
+  agent.velocity.x = 1;
+  agent.velocity.y = 1;
+
+  sensor.behavior = 'ACCELERATE';
+  var behavior = sensor.getBehavior();
+  var accel = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(accel.x.toFixed(2)) === 0.25 && parseFloat(accel.y.toFixed(2)) === 0.25, 'behavior = ACCELERATE.');
+
+  agent.velocity.x = 1;
+  agent.velocity.y = 1;
+
+  sensor.behavior = 'DECELERATE';
+  var behavior = sensor.getBehavior();
+  var decel = behavior.call(agent, sensor, heat);
+  t.assert(parseFloat(decel.x.toFixed(2)) === -0.25 && parseFloat(decel.y.toFixed(2)) === -0.25, 'behavior = DECELERATE.');
 
   t.end();
 
 });
 
+test('getBehavior() DESTORY should remove the target stimulus and create a ParticleSystem.', function(t) {
+
+  beforeTest();
+
+  var obj, sensor, heat, agent, val = 0;
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    ParticleSystem: ParticleSystem,
+    Sensor: Sensor,
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(190, 140),
+      sensors: [
+        this.add('Sensor', {
+          type: 'heat',
+          offsetDistance: 0,
+          behavior: 'DESTROY',
+          onDestroy: function() {
+            val = 100;
+          }
+        })
+      ]
+    });
+    heat = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(192, 142)
+    });
+  });
+
+  var sensor = agent.sensors[0];
+
+  Burner.System._stepForward();
+
+  var behavior = sensor.getBehavior();
+  var destroy = behavior.call(agent, sensor, heat);
+
+  var totalStimulus = Burner.System.getAllItemsByName('heat').length;
+  var totalPS = Burner.System.getAllItemsByName('ParticleSystem').length;
+  t.equal(totalStimulus, 0, 'DESTROY should remove Stimulus.');
+  t.equal(totalPS, 1, 'Should create a Particle system.');
+  t.equal(val, 100, 'DESTROY should fire onDestroy callback.');
+  t.end();
+});
+
+test('getBehavior() CONSUME should shrink the target until it\'s small enough to be removed.', function(t) {
+
+  beforeTest();
+
+  var obj, sensor, heat, agent, val = 0;
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    Sensor: Sensor,
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(190, 140),
+      sensors: [
+        this.add('Sensor', {
+          type: 'heat',
+          offsetDistance: 0,
+          onConsume: function() {
+            val = 100;
+          }
+        })
+      ]
+    });
+    heat = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(210, 160)
+    });
+  });
+
+  var heatInitialHeight = heat.height;
+  var heatBorderWidth = heat.borderWidth;
+  var heatBoxShadowSpread = heat.boxShadowSpread
+
+  Burner.System._stepForward();
+
+  var sensor = agent.sensors[0];
+
+  heat.location.x = 192; // change location to get very close to stimulus
+  heat.location.y = 142;
+
+  sensor.behavior = 'CONSUME';
+  var behavior = sensor.getBehavior();
+  behavior.call(agent, sensor, heat);
+
+  t.equal(sensor.parent['heatLevel'], 1, 'Should add property \'heatLevel\' and increment it.');
+  t.assert(heat.height < heatInitialHeight, 'Target height should decrease.');
+  t.assert(heat.borderWidth < heatBorderWidth, 'Target borderWidth should decrease.');
+  t.assert(heat.boxShadowSpread < heatBoxShadowSpread, 'Target boxShadowSpread should decrease.');
+
+  heat.width = 1;
+
+  Burner.System._stepForward();
+  behavior.call(agent, sensor, heat);
+
+  var totalStimulus = Burner.System.getAllItemsByName('heat').length;
+
+  t.equal(totalStimulus, 0, 'Should remove stimulus when smaller than 2px.');
+  t.equal(val, 100, 'Should call sensor\'s onConsume() when smaller than 2px.');
+
+
+  t.end();
+});

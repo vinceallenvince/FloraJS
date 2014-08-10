@@ -10,30 +10,28 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
       var getRandomNumber = Flora.Utils.getRandomNumber;
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
-
       var i, totalGroupA = 10,
           totalGroupB = 5;
 
-      Burner.System.init(function() {
+      Flora.System.setup(function() {
+
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
 
         var walkerA = this.add('Walker');
 
         this.add('Agent', {
-          velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+          velocity: new Flora.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
           seekTarget: walkerA
         });
 
@@ -42,7 +40,7 @@
         this.add('Agent', {
           width: 15,
           height: 15,
-          velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+          velocity: new Flora.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
           seekTarget: walkerB
         });
 
@@ -53,7 +51,7 @@
           width: 20,
           height: 20,
           color: [255, 100, 0],
-          velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+          velocity: new Flora.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
           seekTarget: walkerC
         });
 
@@ -61,12 +59,12 @@
           width: 20,
           height: 20,
           color: [0, 100, 255],
-          velocity: new Burner.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
+          velocity: new Flora.Vector(getRandomNumber(1, 2, true), getRandomNumber(1, 2, true)),
           seekTarget: agentA
         });
 
 
-        this.add('Caption', {
+        /*this.add('Caption', {
           text: 'Flora.Agent.SeekTarget',
           opacity: 0.4,
           borderColor: 'transparent',
@@ -77,8 +75,9 @@
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'bottom center'
-        });
-      }, world);
+        });*/
+      });
+      Flora.System.loop();
     </script>
   </body>
 </html>

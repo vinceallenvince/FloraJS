@@ -36,6 +36,7 @@ Utils.extend(Sensor, Mover);
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
  * @param {Function} [opt_options.onConsume = null] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
+ * @param {Function} [opt_options.onDestroy = null] If sensor.behavior == 'DESTROY', sensor calls this function when target is destroyed.
  */
 Sensor.prototype.init = function(world, opt_options) {
   Sensor._superClass.init.call(this, world, opt_options);
@@ -59,6 +60,7 @@ Sensor.prototype.init = function(world, opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.onConsume = options.onConsume || null;
+  this.onDestroy = options.onDestroy || null;
   this.rangeDisplayBorderStyle = options.rangeDisplayBorderStyle || false;
   this.rangeDisplayBorderDefaultColor = options.rangeDisplayBorderDefaultColor || false;
   this.parent = options.parent || null;
@@ -176,6 +178,7 @@ Sensor.prototype.getBehavior = function() {
          * If inside the target, target shrinks.
          */
          if (Utils.isInside(sensor.parent, target)) {
+
             if (target.width > 2) {
               target.width *= 0.95;
               if (!sensor.parent[target.type + 'Level']) {
@@ -427,6 +430,10 @@ Sensor.prototype.getBehavior = function() {
         }
 
         this.angle = Utils.radiansToDegrees(Math.atan2(desiredVelocity.y, desiredVelocity.x));
+
+        this._force.x = 0;
+        this._force.y = 0;
+        return this._force;
       };
 
     case 'ACCELERATE':

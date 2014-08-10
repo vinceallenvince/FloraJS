@@ -1,6 +1,9 @@
 var Burner = require('Burner'),
     test = require('tape'),
+    FlowField = require('../src/FlowField').FlowField,
+    Sensor = require('../src/Sensor').Sensor,
     SimplexNoise = require('../src/SimplexNoise').SimplexNoise,
+    Stimulus = require('../src/Stimulus').Stimulus,
     Agent, obj;
 
 function beforeTest() {
@@ -144,6 +147,62 @@ test('new Agent() should have custom properties.', function(t) {
 });
 
 test('step() should update location.', function(t) {
+
+  beforeTest();
+
+  var agent, sensor, heat, val = 0;
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    Sensor: Sensor,
+    Stimulus: Stimulus
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(200, 150),
+      sensors: [
+        this.add('Sensor', {
+          type: 'heat',
+          behavior: 'AGGRESSIVE'
+        }),
+        this.add('Sensor', {
+          type: 'cold'
+        })
+      ]
+    });
+    heat = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(230, 150)
+    });
+  });
+
+  sensorHeat = agent.sensors[0];
+  sensorCold = agent.sensors[1];
+
+  Burner.System._stepForward();
+
+  t.assert(sensorHeat.location.x === 230 && sensorHeat.location.y === 150.1, 'updates sensor location.');
+  t.equal(sensorCold.borderStyle, 'none', 'hides all sensors after first.');
+
+  Burner.System._stepForward();
+  t.assert(sensorHeat.activated && !sensorCold.activated, 'sensorHeat is activated.');
+  t.assert(parseFloat(agent.location.x.toFixed(2)) == 200.5 && parseFloat(agent.location.y.toFixed(2)) == 150.29, 'behavior updates agent location.');
+
+  sensorHeat.behavior = function() {
+    val = 200;
+  };
+
+  Burner.System._stepForward();
+
+  t.equal(val, 200, 'fires custom behavior.');
+
+  //
 
   beforeTest();
 
@@ -351,7 +410,7 @@ test('applyAdditionalForces() should update agent acceleration.', function(t) {
 
 });
 
-test('applyAdditionalForces() should update agent acceleration.', function(t) {
+test('seek() should update agent acceleration.', function(t) {
 
   beforeTest();
 
@@ -639,4 +698,96 @@ test('cohesion() should calculates a force to apply to avoid all other items.', 
   //
   t.end();
 
+});
+
+test('Agent with a flowField should update location based on flowField.', function(t) {
+
+  beforeTest();
+
+  var agent;
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    FlowField: FlowField
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      gravity: new Burner.Vector(),
+      width: 400,
+      height: 300
+    });
+
+    var ffield = this.add('FlowField');
+    ffield.build();
+
+    agent = this.add('Agent', {
+      flowField: ffield,
+      checkWorldEdges: true,
+      wrapWorldEdges: true
+    });
+  });
+
+  var x = agent.location.x;
+  var y = agent.location.y;
+
+  Burner.System._stepForward();
+
+  t.assert(agent.location.x !== x, 'FlowField updates location.x.');
+  t.assert(agent.location.y !== y, 'FlowField updates location.y.');
+
+  //
+
+  var followLoc = agent._follow({location: new Burner.Vector(100, 75)});
+  t.equal(parseFloat(followLoc.x.toFixed(2)), 4, 'returns force x.');
+  t.equal(parseFloat(followLoc.y.toFixed(2)), 3, 'returns force y.');
+
+  t.end();
+});
+
+
+test('Agent with a flowField should update location based on flowField.', function(t) {
+
+  beforeTest();
+
+  var agent;
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    FlowField: FlowField
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      gravity: new Burner.Vector(),
+      width: 400,
+      height: 300
+    });
+
+    var ffield = this.add('FlowField');
+    ffield.build();
+
+    agent = this.add('Agent', {
+      flowField: ffield,
+      checkWorldEdges: true,
+      wrapWorldEdges: true
+    });
+  });
+
+  agent.flowField = {
+    resolution: 50,
+    field: {0:{}}
+  };
+
+  var x = agent.location.x;
+  var y = agent.location.y;
+
+  Burner.System._stepForward();
+
+  t.assert(agent.location.x === x, 'If FlowField is out of range location.x does not update.');
+  t.assert(agent.location.y === y, 'If FlowField is out of range location.y does not update.');
+
+  t.end();
 });
