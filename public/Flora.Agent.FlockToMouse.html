@@ -22,12 +22,14 @@
           gravity: new Flora.Vector()
         });
 
-        this.add('Agent', {
-          followMouse: true,
-          flocking: true
-        });
+        for (var i = 0; i < 20; i++) {
+          this.add('Agent', {
+            followMouse: true,
+            flocking: true
+          });
+        }
 
-        /*this.add('Caption', {
+        this.add('Caption', {
           text: 'Flora.Agent.FlockToMouse',
           opacity: 0.4,
           borderColor: 'transparent',
@@ -38,7 +40,7 @@
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'bottom center'
-        });*/
+        });
       });
       Flora.System.loop();
     </script>
