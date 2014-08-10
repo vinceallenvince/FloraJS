@@ -24,10 +24,24 @@ test('new Connector() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Connector({
-    parentA: {},
-    parentB: {}
+  Burner.System.Classes = {
+    Connector: Connector
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Connector();
+    obj.init(world, {
+      parentA: {},
+      parentB: {}
+    });
   });
+
   t.equal(obj.name, 'Connector', 'name.');
   t.equal(obj.zIndex, 0, 'zIndex.');
   t.equal(obj.borderStyle, 'dotted', 'borderStyle.');
@@ -43,9 +57,23 @@ test('new Connector() should require options.', function(t) {
 
   beforeTest();
 
-  t.throws(function () {
+  Burner.System.Classes = {
+    Connector: Connector
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
     obj = new Connector();
-  }, 'should throw exception when not passed parentA and parentB.');
+    t.throws(function () {
+      obj.init(world);
+    }, 'should throw exception when not passed parentA and parentB.');
+  });
+
   t.end();
 });
 
@@ -53,23 +81,51 @@ test('new Connector() should require parentA and parentB.', function(t) {
 
   beforeTest();
 
-  t.throws(function () {
-    obj = new Connector({
-      parentA: {}
+  Burner.System.Classes = {
+    Connector: Connector
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
     });
-  }, 'should throw exception when not passed parentA and parentB.');
+
+    obj = new Connector();
+    t.throws(function () {
+      obj.init(world, {
+        parentA: {}
+      });
+    }, 'should throw exception when not passed parentB.');
+  });
+
   t.end();
 });
 
-test('new Connector() should require parentA and parentB.', function(t) {
+test('new Connector() should require parentA.', function(t) {
 
   beforeTest();
 
-  t.throws(function () {
-    obj = new Connector({
-      parentB: {}
+  Burner.System.Classes = {
+    Connector: Connector
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
     });
-  }, 'should throw exception when not passed parentA and parentB.');
+
+    obj = new Connector();
+    t.throws(function () {
+      obj.init(world, {
+        parentB: {}
+      });
+    }, 'should throw exception when not passed parentB.');
+  });
+
   t.end();
 });
 

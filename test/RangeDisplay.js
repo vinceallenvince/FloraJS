@@ -23,23 +23,6 @@ test('load RangeDisplay.', function(t) {
   t.end();
 });
 
-test('new RangeDisplay() should have default properties.', function(t) {
-
-  beforeTest();
-
-  var sensor = new Sensor();
-
-  obj = new RangeDisplay({
-    sensor: sensor
-  });
-  t.equal(obj.name, 'RangeDisplay', 'default name.');
-  t.equal(obj.zIndex, 10, 'default zIndex.');
-  t.equal(obj.borderStyle, 'dashed', 'default borderStyle.');
-  t.assert(obj.borderDefaultColor[0] === 150 && obj.borderDefaultColor[1] === 150 && obj.borderDefaultColor[2] === 150, 'default borderDefaultColor.');
-
-  t.end();
-});
-
 test('init() should set additional properties.', function(t) {
 
   beforeTest();
@@ -74,6 +57,10 @@ test('init() should set additional properties.', function(t) {
     });
   });
 
+  t.equal(sensor.rangeDisplay.name, 'RangeDisplay', 'default name.');
+  t.equal(sensor.rangeDisplay.zIndex, 10, 'default zIndex.');
+  t.equal(sensor.rangeDisplay.borderStyle, 'dashed', 'default borderStyle.');
+  t.assert(sensor.rangeDisplay.borderDefaultColor[0] === 150 && sensor.rangeDisplay.borderDefaultColor[1] === 150 && sensor.rangeDisplay.borderDefaultColor[2] === 150, 'default borderDefaultColor.');
   t.equal(sensor.rangeDisplay.borderWidth, 2, 'default borderWidth.');
   t.equal(sensor.rangeDisplay.borderRadius, 100, 'default borderRadius.');
   t.equal(sensor.rangeDisplay.width, sensor.sensitivity, 'default width.');
@@ -98,6 +85,114 @@ test('init() should set additional properties.', function(t) {
 
   t.equal(sensor.rangeDisplay.opacity, sensor.rangeDisplay.minOpacity, 'opacity equals minOpacity.');
   t.equal(sensor.rangeDisplay.borderColor, sensor.rangeDisplay.borderDefaultColor, 'borderColor equals borderDefaultColor.');
+
+  //
+
+  beforeTest();
+
+  var obj, stimulus, sensor, agent;
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    Sensor: Sensor,
+    Stimulus: Stimulus,
+    RangeDisplay: RangeDisplay
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    stimulus = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(110, 110)
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(100, 100),
+      velocity: new Burner.Vector(10, 0),
+      sensors: [
+        this.add('Sensor', {
+          type: 'heat',
+          displayRange: true,
+          rangeDisplayBorderStyle: 'dotted',
+          rangeDisplayBorderDefaultColor: [255, 255, 255]
+        })
+      ]
+    });
+
+    var sensor = agent.sensors[0];
+
+    t.equal(sensor.rangeDisplay.borderStyle, 'dotted', 'custom borderStyle.');
+    t.assert(sensor.rangeDisplay.borderDefaultColor[0] === 255 && sensor.rangeDisplay.borderDefaultColor[1] === 255 && sensor.rangeDisplay.borderDefaultColor[2] === 255, 'custom borderDefaultColor.');
+
+  });
+
+  //
+
+  beforeTest();
+
+  var obj, stimulus, sensor, agent;
+
+  Burner.System.Classes = {
+    Agent: Agent,
+    Sensor: Sensor,
+    Stimulus: Stimulus,
+    RangeDisplay: RangeDisplay
+  };
+
+  Burner.System.setup(function() {
+    this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+    stimulus = this.add('Stimulus', {
+      type: 'heat',
+      location: new Burner.Vector(110, 110)
+    });
+    agent = this.add('Agent', {
+      location: new Burner.Vector(100, 100),
+      velocity: new Burner.Vector(10, 0),
+      sensors: [
+        this.add('Sensor', {
+          type: 'heat',
+          displayRange: true
+        })
+      ]
+    });
+
+    var sensor = agent.sensors[0];
+
+    t.equal(sensor.rangeDisplay.borderStyle, 'dashed', 'custom borderStyle.');
+    t.assert(sensor.rangeDisplay.borderDefaultColor[0] === 150 && sensor.rangeDisplay.borderDefaultColor[1] === 150 && sensor.rangeDisplay.borderDefaultColor[2] === 150, 'custom borderDefaultColor.');
+
+  });
+
+  t.end();
+});
+
+test('new RangeDisplay() should require options.', function(t) {
+
+  beforeTest();
+
+  Burner.System.Classes = {
+    RangeDisplay: RangeDisplay
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new RangeDisplay();
+    t.throws(function () {
+      obj.init(world);
+    }, 'should throw exception when not passed a sensor.');
+  });
 
   t.end();
 });
@@ -145,10 +240,10 @@ test('draw() should assign a css test string to the style property.', function(t
   t.equal(sensor.rangeDisplay.el.style.borderRightStyle, 'dashed', 'el.style border right style');
   t.equal(sensor.rangeDisplay.el.style.borderBottomStyle, 'dashed', 'el.style border bottom style');
   t.equal(sensor.rangeDisplay.el.style.borderLeftStyle, 'dashed', 'el.style border left style');
-  t.equal(sensor.rangeDisplay.el.style.borderTopColor, 'rgb(255, 255, 255)', 'el.style border top color');
-  t.equal(sensor.rangeDisplay.el.style.borderRightColor, 'rgb(255, 255, 255)', 'el.style border right color');
-  t.equal(sensor.rangeDisplay.el.style.borderBottomColor, 'rgb(255, 255, 255)', 'el.style border bottom color');
-  t.equal(sensor.rangeDisplay.el.style.borderLeftColor, 'rgb(255, 255, 255)', 'el.style border left color');
+  t.equal(sensor.rangeDisplay.el.style.borderTopColor, 'rgb(150, 150, 150)', 'el.style border top color');
+  t.equal(sensor.rangeDisplay.el.style.borderRightColor, 'rgb(150, 150, 150)', 'el.style border right color');
+  t.equal(sensor.rangeDisplay.el.style.borderBottomColor, 'rgb(150, 150, 150)', 'el.style border bottom color');
+  t.equal(sensor.rangeDisplay.el.style.borderLeftColor, 'rgb(150, 150, 150)', 'el.style border left color');
   t.equal(sensor.rangeDisplay.el.style.borderTopLeftRadius, '100% 100%', 'el.style border top left radius');
   t.equal(sensor.rangeDisplay.el.style.borderTopRightRadius, '100% 100%', 'el.style border top right radius');
   t.equal(sensor.rangeDisplay.el.style.borderBottomRightRadius, '100% 100%', 'el.style border bottom right radius');

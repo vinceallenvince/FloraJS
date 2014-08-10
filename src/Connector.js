@@ -11,6 +11,13 @@ var Item = require('Burner').Item,
  *
  * @constructor
  * @extends Item
+ */
+function Connector() {
+  Item.call(this);
+}
+Utils.extend(Connector, Item);
+
+/**
  * @param {Object} options A map of initial properties.
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
@@ -19,8 +26,8 @@ var Item = require('Burner').Item,
  * @param {string} [options.borderStyle = 'dotted'] Border style.
  * @param {Array} [options.borderColor = 150, 150, 150] Border color.
  */
-function Connector(options) {
-  Item.call(this);
+Connector.prototype.init = function(world, options) {
+  Connector._superClass.init.call(this, world, options);
 
   if (!options || !options.parentA || !options.parentB) {
     throw new Error('Connector: both parentA and parentB are required.');
@@ -29,7 +36,6 @@ function Connector(options) {
   this.parentB = options.parentB;
 
   this.name = options.name || 'Connector';
-  // this.colorMode = options.colorMode || 'rgb';
   this.zIndex = options.zIndex || 0;
   this.borderStyle = options.borderStyle || 'dotted';
   this.borderColor = options.borderColor || [150, 150, 150];
@@ -43,38 +49,7 @@ function Connector(options) {
   this.height = 0;
   this.color = 'transparent';
 
-}
-Utils.extend(Connector, Item);
-
-/**
- * Initializes an instance.
- *
- * @param {Object} options A map of initial properties.
- * @param {Object} parentA The object that starts the connection.
- * @param {Object} parentB The object that ends the connection.
- * @param {number} [options.zIndex = 0] zIndex.
- * @param {string} [options.borderStyle = 'dotted'] Border style.
- * @param {Array} [options.borderColor = 150, 150, 150] Border color.
- */
-/*Connector.prototype._init = function(options) {
-
-  if (!options || !options.parentA || !options.parentB) {
-    throw new Error('Connector: both parentA and parentB are required.');
-  }
-  this.parentA = options.parentA;
-  this.parentB = options.parentB;
-
-  this.zIndex = options.zIndex || 0;
-
-  this.borderStyle = typeof options.borderStyle === 'undefined' ? 'dotted' : options.borderStyle;
-  this.borderColor = typeof options.borderColor === 'undefined' ? [150, 150, 150] : options.borderColor;
-
-
-  this.borderWidth = 1;
-  this.borderRadius = 0;
-  this.height = 0;
-  this.color = 'transparent';
-};*/
+};
 
 /**
  * Called every frame, step() updates the instance's properties.

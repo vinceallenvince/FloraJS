@@ -24,7 +24,21 @@ test('new Particle() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Particle();
+  Burner.System.Classes = {
+    Particle: Particle
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Particle();
+    obj.init(world);
+  });
+
   t.equal(obj.name, 'Particle', 'default name.');
   t.equal(obj.width, 20, 'default width.');
   t.equal(obj.height, 20, 'default height.');
@@ -36,6 +50,8 @@ test('new Particle() should have default properties.', function(t) {
   t.equal(obj.maxSpeed, 4, 'default maxSpeed.');
   t.equal(obj.zIndex, 1, 'default zIndex.');
   t.assert(obj.color[0] === 200 && obj.color[1] === 200 && obj.color[2] === 200, 'default color.');
+  t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
+  t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
   t.equal(obj.borderRadius, 100, 'default borderRadius.');
 
   t.end();
@@ -45,20 +61,36 @@ test('new Particle() should accept custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Particle({
-    name: 'hello',
-    width: 10,
-    height: 10,
-    lifespan: 10,
-    life: 3,
-    fade: false,
-    shrink: false,
-    checkWorldEdges: true,
-    maxSpeed: 8,
-    zIndex: 10,
-    color: [100, 100, 100],
-    borderRadius: 30
+  Burner.System.Classes = {
+    Particle: Particle
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Particle();
+    obj.init(world, {
+      name: 'hello',
+      width: 10,
+      height: 10,
+      lifespan: 10,
+      life: 3,
+      fade: false,
+      shrink: false,
+      checkWorldEdges: true,
+      maxSpeed: 8,
+      zIndex: 10,
+      color: [100, 100, 100],
+      borderWidth: 8,
+      boxShadowSpread: 16,
+      borderRadius: 30
+    });
   });
+
   t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.width, 10, 'custom width.');
   t.equal(obj.height, 10, 'custom height.');
@@ -70,62 +102,12 @@ test('new Particle() should accept custom properties.', function(t) {
   t.equal(obj.maxSpeed, 8, 'custom maxSpeed.');
   t.equal(obj.zIndex, 10, 'custom zIndex.');
   t.assert(obj.color[0] === 100 && obj.color[1] === 100 && obj.color[2] === 100, 'custom color.');
+  t.equal(obj.borderWidth, 8, 'custom borderWidth.');
+  t.equal(obj.boxShadowSpread, 16, 'custom boxShadowSpread.');
   t.equal(obj.borderRadius, 30, 'custom borderRadius.');
 
   t.end();
 });
-
-test('init() should set additional properties.', function(t) {
-
-  beforeTest();
-
-  var obj;
-
-  Burner.System.Classes = {
-    Particle: Particle
-  };
-
-  Burner.System.setup(function() {
-    this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
-    obj = this.add('Particle', {
-      borderWidth: 8,
-      boxShadowSpread: 16
-    }); // add your new object to the system
-    obj.draw();
-  });
-
-  t.equal(obj.borderWidth, 8, 'custom borderWidth.');
-  t.equal(obj.boxShadowSpread, 16, 'custom boxShadowSpread.');
-
-  //
-
-  beforeTest();
-
-  var obj;
-
-  Burner.System.Classes = {
-    Particle: Particle
-  };
-
-  Burner.System.setup(function() {
-    this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
-    obj = this.add('Particle'); // add your new object to the system
-    obj.draw();
-  });
-
-  t.equal(obj.borderWidth, obj.width / 4, 'default borderWidth.');
-  t.equal(obj.boxShadowSpread, obj.width / 4, 'default boxShadowSpread.');
-  t.end();
-});
-
 
 test('draw() should assign a css test string to the style property.', function(t) {
 

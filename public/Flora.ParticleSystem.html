@@ -17,7 +17,9 @@
     <script type="text/javascript" charset="utf-8">
 
       Flora.System.setup(function() {
-        this.add('World');
+        this.add('World', {
+          gravity: new Flora.Vector()
+        });
         this.add('ParticleSystem', {
           burstRate: 4
         });

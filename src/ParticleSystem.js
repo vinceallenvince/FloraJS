@@ -10,8 +10,16 @@ var ColorPalette = require('./ColorPalette').ColorPalette,
  *
  * @constructor
  * @extends Mover
- *
- * @param {Object} [opt_options=] A map of initial properties.
+ */
+function ParticleSystem(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(ParticleSystem, Mover);
+
+/**
+ * Initializes Particle.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
  * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
@@ -29,9 +37,11 @@ var ColorPalette = require('./ColorPalette').ColorPalette,
  * @param {Array} [opt_options.endColor = [255, 0, 0]] The ending color of the particle's palette range.
  * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
  */
-function ParticleSystem(opt_options) {
-  Mover.call(this);
+ParticleSystem.prototype.init = function(world, opt_options) {
+  ParticleSystem._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'ParticleSystem';
   this.width = options.width || 0;
   this.height = options.height || 0;
@@ -61,18 +71,6 @@ function ParticleSystem(opt_options) {
     fade: true,
     shrink: true
   };
-}
-Utils.extend(ParticleSystem, Mover);
-
-/**
- * Initializes Particle.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- */
-ParticleSystem.prototype.init = function(world, opt_options) {
-  ParticleSystem._superClass.init.call(this, world, opt_options);
-
-  var options = opt_options || {};
 
   if (this.particleOptions.acceleration) {
     this.initParticleAcceleration = new Vector(this.particleOptions.acceleration.x,

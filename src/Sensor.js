@@ -1,6 +1,4 @@
-var Item = require('Burner').Item,
-    Mover = require('./Mover').Mover,
-    RangeDisplay = require('./RangeDisplay').RangeDisplay,
+var Mover = require('./Mover').Mover,
     System = require('Burner').System,
     Utils = require('Burner').Utils,
     Vector = require('Burner').Vector;
@@ -12,6 +10,16 @@ var Item = require('Burner').Item,
  * @extends Mover
  *
  * @param {Object} [opt_options=] A map of initial properties.
+ */
+function Sensor(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Sensor, Mover);
+
+/**
+ * Initializes Sensor.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
  * @param {string} [opt_options.behavior = ''] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 200] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
@@ -28,9 +36,11 @@ var Item = require('Burner').Item,
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = [255, 255, 255]] Border color.
  * @param {Function} [opt_options.onConsume = null] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
+ * @param {Function} [opt_options.onDestroy = null] If sensor.behavior == 'DESTROY', sensor calls this function when target is destroyed.
  */
-function Sensor(opt_options) {
-  Mover.call(this);
+Sensor.prototype.init = function(world, opt_options) {
+  Sensor._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
 
   this.name = options.name || 'Sensor';
@@ -50,25 +60,16 @@ function Sensor(opt_options) {
   this.borderStyle = options.borderStyle || 'solid';
   this.borderColor = options.borderColor || [255, 255, 255];
   this.onConsume = options.onConsume || null;
-}
-Utils.extend(Sensor, Mover);
-
-/**
- * Initializes Sensor.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
- * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
- */
-Sensor.prototype.init = function(world, opt_options) {
-  Sensor._superClass.init.call(this, world, opt_options);
-  var options = opt_options || {};
-
+  this.onDestroy = options.onDestroy || null;
+  this.rangeDisplayBorderStyle = options.rangeDisplayBorderStyle || false;
+  this.rangeDisplayBorderDefaultColor = options.rangeDisplayBorderDefaultColor || false;
   this.parent = options.parent || null;
   this.displayRange = !!options.displayRange;
   if (this.displayRange) {
     this.rangeDisplay = System.add('RangeDisplay', {
-      sensor: this
+      sensor: this,
+      rangeDisplayBorderStyle: this.rangeDisplayBorderStyle,
+      rangeDisplayBorderDefaultColor: this.rangeDisplayBorderDefaultColor
     });
   }
   this.displayConnector = !!options.displayConnector;
@@ -99,8 +100,7 @@ Sensor.prototype.step = function() {
       if (this.pointToParentDirection) {
         this.angle = Utils.radiansToDegrees(Math.atan2(this.parent.velocity.y, this.parent.velocity.x));
       }
-
-    } else { // TODO: test this
+    } else {
       this.location.x = this.parent.location.x;
       this.location.y = this.parent.location.y;
     }
@@ -160,6 +160,309 @@ Sensor.prototype.step = function() {
   }
 
   this.afterStep.call(this);
+};
+
+
+
+Sensor.prototype.getBehavior = function() {
+
+  var i, iMax, j, jMax;
+
+  switch (this.behavior) {
+
+    case 'CONSUME':
+      return function(sensor, target) {
+
+        /**
+         * CONSUME
+         * If inside the target, target shrinks.
+         */
+         if (Utils.isInside(sensor.parent, target)) {
+
+            if (target.width > 2) {
+              target.width *= 0.95;
+              if (!sensor.parent[target.type + 'Level']) {
+                sensor.parent[target.type + 'Level'] = 0;
+              }
+              sensor.parent[target.type + 'Level'] += 1;
+            } else {
+              if (sensor.onConsume && !target.consumed) {
+                target.consumed = true;
+                sensor.onConsume.call(this, sensor, target);
+              }
+              System.remove(target);
+              return;
+            }
+            if (target.height > 1) {
+              target.height *= 0.95;
+            }
+            if (target.borderWidth > 0) {
+              target.borderWidth *= 0.95;
+            }
+            if (target.boxShadowSpread > 0) {
+              target.boxShadowSpread *= 0.95;
+            }
+         }
+      };
+
+    case 'DESTROY':
+      return function(sensor, target) {
+
+        /**
+         * DESTROY
+         * If inside the target, ssytem destroys target.
+         */
+         if (Utils.isInside(sensor.parent, target)) {
+
+            System.add('ParticleSystem', {
+              location: new Vector(target.location.x, target.location.y),
+              lifespan: 20,
+              borderColor: target.borderColor,
+              startColor: target.color,
+              endColor: target.color
+            });
+            System.remove(target);
+
+            if (sensor.onDestroy) {
+              sensor.onDestroy.call(this, sensor, target);
+            }
+         }
+      };
+
+    case 'LIKES':
+      return function(sensor, target) {
+
+        /**
+         * LIKES
+         * Steer toward target at max speed.
+         */
+
+        // desiredVelocity = difference in target location and agent location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      };
+
+    case 'COWARD':
+      return function(sensor, target) {
+
+        /**
+         * COWARD
+         * Steer away from target at max speed.
+         */
+
+        // desiredVelocity = difference in target location and agent location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // reverse the force
+        desiredVelocity.mult(-0.0075);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      };
+
+    case 'AGGRESSIVE':
+      return function(sensor, target) {
+
+        /**
+         * AGGRESSIVE
+         * Steer and arrive at target. Aggressive agents will hit their target.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // get distance to target
+        var distanceToTarget = desiredVelocity.mag();
+
+        if (distanceToTarget < this.width * 2) {
+
+          // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+          desiredVelocity.normalize();
+
+          // as agent gets closer, velocity decreases
+          var m = distanceToTarget / this.maxSpeed;
+
+          // extend desiredVelocity vector
+          desiredVelocity.mult(m);
+
+        }
+
+        // subtract current velocity from desired to create a steering force
+        desiredVelocity.sub(this.velocity);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+
+      };
+
+    case 'CURIOUS':
+      return function(sensor, target) {
+
+        /**
+         * CURIOUS
+         * Steer and arrive at midpoint bw target location and agent location.
+         * After arriving, reverse direction and accelerate to max speed.
+         */
+
+        var desiredVelocity, distanceToTarget;
+
+        if (sensor.state !== 'running') {
+
+          var midpoint = sensor.activationLocation.midpoint(target.location);
+
+          // velocity = difference in location
+          desiredVelocity = Vector.VectorSub(midpoint, this.location);
+
+          // get distance to target
+          distanceToTarget = desiredVelocity.mag();
+
+          // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+          desiredVelocity.normalize();
+
+          // as agent gets closer, velocity decreases
+          var m = distanceToTarget / this.maxSpeed;
+
+          // extend desiredVelocity vector
+          desiredVelocity.mult(m);
+
+          // subtract current velocity from desired to create a steering force
+          desiredVelocity.sub(this.velocity);
+
+          if (m < 0.5) {
+            sensor.state = 'running';
+          }
+        } else {
+
+          // note: desired velocity when running is the difference bw target and this agent
+          desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+          // reverse the force
+          desiredVelocity.mult(-1);
+
+        }
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce);
+
+        return desiredVelocity;
+      };
+
+    case 'EXPLORER':
+      return function(sensor, target) {
+
+        /**
+         * EXPLORER
+         * Gets close to target but does not change velocity.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // get distance to target
+        var distanceToTarget = desiredVelocity.mag();
+
+        // normalize desiredVelocity so we can adjust. ie: magnitude = 1
+        desiredVelocity.normalize();
+
+        // as agent gets closer, velocity decreases
+        var m = distanceToTarget / this.maxSpeed;
+
+        // extend desiredVelocity vector
+        desiredVelocity.mult(-m);
+
+        // subtract current velocity from desired to create a steering force
+        desiredVelocity.sub(this.velocity);
+
+        // limit to the maxSteeringForce
+        desiredVelocity.limit(this.maxSteeringForce * 0.05);
+
+        // add motor speed
+        this.motorDir.x = this.velocity.x;
+        this.motorDir.y = this.velocity.y;
+        this.motorDir.normalize();
+        if (this.velocity.mag() > this.motorSpeed) { // decelerate to defaultSpeed
+          this.motorDir.mult(-this.motorSpeed);
+        } else {
+          this.motorDir.mult(this.motorSpeed);
+        }
+
+        desiredVelocity.add(this.motorDir);
+
+        return desiredVelocity;
+
+      };
+
+    case 'LOVES':
+      return function(sensor, target) {
+
+        /**
+         * LOVES
+         * Steer and arrive at target.
+         */
+
+        // velocity = difference in location
+        var desiredVelocity = Vector.VectorSub(target.location, this.location);
+
+        // get total distance
+        var distanceToTarget = desiredVelocity.mag();
+
+        if (distanceToTarget > this.width / 2) {
+
+          // normalize so we can adjust
+          desiredVelocity.normalize();
+
+          //
+          var m = distanceToTarget / this.maxSpeed;
+
+          desiredVelocity.mult(m);
+
+          var steer = Vector.VectorSub(desiredVelocity, this.velocity);
+          steer.limit(this.maxSteeringForce * 0.25);
+          return steer;
+        }
+
+        this.angle = Utils.radiansToDegrees(Math.atan2(desiredVelocity.y, desiredVelocity.x));
+
+        this._force.x = 0;
+        this._force.y = 0;
+        return this._force;
+      };
+
+    case 'ACCELERATE':
+      return function(sensor, target) {
+
+        /**
+         * ACCELERATE
+         * Accelerate to max speed.
+         */
+
+        this._force.x = this.velocity.x;
+        this._force.y = this.velocity.y;
+        return this._force.mult(0.25);
+      };
+
+    case 'DECELERATE':
+      return function(sensor, target) {
+
+        /**
+         * DECELERATE
+         * Decelerate to min speed.
+         */
+
+        this._force.x = this.velocity.x;
+        this._force.y = this.velocity.y;
+        return this._force.mult(-0.25);
+      };
+  }
+
 };
 
 /**

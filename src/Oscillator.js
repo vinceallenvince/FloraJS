@@ -1,5 +1,4 @@
 var Item = require('Burner').Item,
-    Mover = require('./Mover').Mover,
     SimplexNoise = require('./SimplexNoise').SimplexNoise,
     System = require('Burner').System,
     Utils = require('Burner').Utils,
@@ -14,8 +13,16 @@ var Item = require('Burner').Item,
  *
  * @constructor
  * @extends Item
- *
- * @param {Object} [opt_options=] A map of initial properties.
+ */
+function Oscillator(opt_options) {
+  Item.call(this);
+}
+Utils.extend(Oscillator, Item);
+
+/**
+ * Initializes Oscillator.
+ * @param  {Object} world       An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
  *    angle if pointToDirection = true.
@@ -42,11 +49,12 @@ var Item = require('Burner').Item,
  * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
  * @param {Array} [opt_options.boxShadowColor = 147, 199, 196] Box-shadow color.
  */
-function Oscillator(opt_options) {
-  Item.call(this);
-  var options = opt_options || {};
-  this.name = options.name || 'Oscillator';
+Oscillator.prototype.init = function(world, opt_options) {
+  Oscillator._superClass.init.call(this, world, opt_options);
 
+  var options = opt_options || {};
+
+  this.name = options.name || 'Oscillator';
   this.acceleration = options.acceleration || new Vector(0.01, 0);
   this.aVelocity = options.aVelocity || new Vector();
   this.isStatic = !!options.isStatic;
@@ -74,21 +82,11 @@ function Oscillator(opt_options) {
   this.parent = options.parent || null;
   this.pointToDirection = !!options.pointToDirection;
 
-  this.initialLocation = new Vector();
+  //this.initialLocation = new Vector();
   this.lastLocation = new Vector();
-  this.amplitude = new Vector();
-}
-Utils.extend(Oscillator, Item);
+  //this.amplitude = new Vector();
 
-/**
- * Initializes Oscillator.
- * @param  {Object} world       An instance of World.
- * @param  {Object} [opt_options=] A map of initial properties.
- */
-Oscillator.prototype.init = function(world, opt_options) {
-  Oscillator._superClass.init.call(this, world, opt_options);
-
-  var options = opt_options || {};
+  //
 
   this.amplitude = options.amplitude || new Vector(this.world.width / 2 - this.width,
       this.world.height / 2 - this.height);

@@ -12,6 +12,15 @@ var Mover = require('./Mover').Mover,
  *
  * @constructor
  * @extends Mover
+ */
+function Walker(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Walker, Mover);
+
+/**
+ * Initializes an instance.
+ *
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.name = 'Walker'] Name
  * @param {number} [opt_options.width = 10] Width
@@ -33,9 +42,11 @@ var Mover = require('./Mover').Mover,
  * @param {number} [opt_options.opacity = 0.75] The object's opacity.
  * @param {number} [opt_options.zIndex = 1] The object's zIndex.
  */
-function Walker(opt_options) {
-  Mover.call(this);
+Walker.prototype.init = function(world, opt_options) {
+  Walker._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
+
   this.name = options.name || 'Walker';
   this.width = typeof options.width === 'undefined' ? 10 : options.width;
   this.height = typeof options.height === 'undefined' ? 10 : options.height;
@@ -57,16 +68,6 @@ function Walker(opt_options) {
   this.zIndex = typeof options.zIndex === 'undefined' ? 0 : options.zIndex;
 
   this._randomVector = new Vector();
-}
-Utils.extend(Walker, Mover);
-
-/**
- * Initializes an instance.
- *
- * @param {Object} [opt_options=] A map of initial properties.
- */
-Walker.prototype.init = function(world, opt_options) {
-  Walker._superClass.init.call(this, world, opt_options);
 };
 
 /**

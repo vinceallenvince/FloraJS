@@ -33,7 +33,21 @@ test('new Mover() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Mover();
+  Burner.System.Classes = {
+    Mover: Mover
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Mover();
+    obj.init(world);
+  });
+
   t.equal(obj.name, 'Mover', 'name.');
   t.assert(obj.color[0] === 255 && obj.color[1] === 255 && obj.color[2] === 255, 'color.');
   t.equal(obj.borderRadius, 0, 'borderRadius.');
@@ -52,22 +66,36 @@ test('new Mover() should accept custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Mover({
-    name: 'hello',
-    color: [10, 10, 10],
-    borderRadius: 50,
-    borderWidth: 10,
-    borderStyle: 'dotted',
-    borderColor: [20, 20, 20],
-    pointToDirection: false,
-    draggable: true,
-    parent: {},
-    pointToParentDirection: true,
-    offsetDistance: 30,
-    offsetAngle: 10,
-    beforeStep: function() {},
-    afterStep: function() {}
+  Burner.System.Classes = {
+    Mover: Mover
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Mover();
+    obj.init(world, {
+      name: 'hello',
+      color: [10, 10, 10],
+      borderRadius: 50,
+      borderWidth: 10,
+      borderStyle: 'dotted',
+      borderColor: [20, 20, 20],
+      pointToDirection: false,
+      draggable: true,
+      parent: {},
+      pointToParentDirection: true,
+      offsetDistance: 30,
+      offsetAngle: 10,
+      beforeStep: function() {},
+      afterStep: function() {}
+    });
   });
+
   t.equal(obj.name, 'hello', 'name.');
   t.assert(obj.color[0] === 10 && obj.color[1] === 10 && obj.color[2] === 10, 'color.');
   t.equal(obj.borderRadius, 50, 'borderRadius.');
@@ -82,6 +110,7 @@ test('new Mover() should accept custom properties.', function(t) {
   t.equal(obj.offsetAngle, 10, 'offsetAngle.');
   t.assert(typeof obj.beforeStep, 'function', 'beforeStep.');
   t.assert(typeof obj.afterStep, 'function', 'afterStep.');
+
   t.end();
 });
 
@@ -674,6 +703,8 @@ test('should apply forces from Attractors, Repellers and Draggers.', function(t)
 
   var draggers = Burner.System.getAllItemsByName('Dragger');
   t.equal(draggers.length, 2, 'should apply forces from draggers.');
+
+  // TODO: test force applied
 
   t.end();
 });

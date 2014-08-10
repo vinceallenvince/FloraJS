@@ -26,12 +26,25 @@ test('new Oscillator() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Oscillator();
+  Burner.System.Classes = {
+    Oscillator: Oscillator
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Oscillator();
+    obj.init(world);
+  });
 
   t.equal(obj.name, 'Oscillator', 'name.');
-  t.assert(obj.initialLocation.x === 0 && obj.initialLocation.y === 0, 'default initialLocation.');
+  t.assert(obj.initialLocation.x === 200 && obj.initialLocation.y === 150, 'default initialLocation.');
   t.assert(obj.lastLocation.x === 0 && obj.lastLocation.y === 0, true, 'default lastLocation.');
-  t.assert(obj.amplitude.x === 0 && obj.amplitude.y === 0, 'default amplitude.');
+  t.assert(obj.amplitude.x === 180 && obj.amplitude.y === 130, 'default amplitude.');
   t.equal(obj.acceleration instanceof Vector, true, 'default acceleration.');
   t.equal(obj.aVelocity instanceof Vector, true, 'default aVelocity.');
   t.equal(obj.isStatic, false, 'default isStatic.');
@@ -62,31 +75,44 @@ test('new Oscillator() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Oscillator({
-    acceleration: new Vector(),
-    aVelocity: new Vector(),
-    isStatic: true,
-    isPerlin: true,
-    perlinSpeed: 0.001,
-    perlinTime: 100,
-    perlinAccelLow: -3,
-    perlinAccelHigh: 3,
-    perlinOffsetX: 100,
-    perlinOffsetY: 100,
-    width: 10,
-    height: 10,
-    color: [100, 50, 10],
-    borderWidth: 20,
-    borderStyle: 'dotted',
-    borderColor: [150, 10, 10],
-    borderRadius: 30,
-    boxShadowOffsetX: 10,
-    boxShadowOffsetY: 10,
-    boxShadowBlur: 4,
-    boxShadowSpread: 10,
-    boxShadowColor: [10, 30, 80],
-    opacity: 0.5,
-    zIndex: 200
+  Burner.System.Classes = {
+    Oscillator: Oscillator
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Oscillator();
+    obj.init(world, {
+      acceleration: new Vector(),
+      aVelocity: new Vector(),
+      isStatic: true,
+      isPerlin: true,
+      perlinSpeed: 0.001,
+      perlinTime: 100,
+      perlinAccelLow: -3,
+      perlinAccelHigh: 3,
+      perlinOffsetX: 100,
+      perlinOffsetY: 100,
+      width: 10,
+      height: 10,
+      color: [100, 50, 10],
+      borderWidth: 20,
+      borderStyle: 'dotted',
+      borderColor: [150, 10, 10],
+      borderRadius: 30,
+      boxShadowOffsetX: 10,
+      boxShadowOffsetY: 10,
+      boxShadowBlur: 4,
+      boxShadowSpread: 10,
+      boxShadowColor: [10, 30, 80],
+      opacity: 0.5,
+      zIndex: 200
+    });
   });
 
   t.equal(obj.acceleration instanceof Vector, true, 'custom acceleration.');

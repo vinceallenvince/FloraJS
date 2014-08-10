@@ -24,37 +24,64 @@ test('new Point() should have default properties.', function(t) {
 
   beforeTest();
 
-  obj = new Point();
-  t.equal(obj.name, 'Point', 'name.');
-  t.assert(obj.color[0] === 200 && obj.color[1] === 200 && obj.color[2] === 200, 'color.');
-  t.equal(obj.borderRadius, 100, 'borderRadius.');
-  t.equal(obj.borderWidth, 2, 'borderWidth.');
-  t.equal(obj.borderStyle, 'solid', 'borderStyle.');
-  t.assert(obj.borderColor[0] === 60 && obj.borderColor[1] === 60 && obj.borderColor[2] === 60, 'borderColor.');
-  t.equal(obj.isStatic, true, 'isStatic.');
+  Burner.System.Classes = {
+    Point: Point
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Point();
+    obj.init(world);
+  });
+
+  t.equal(obj.name, 'Point', 'default name.');
+  t.assert(obj.color[0] === 200 && obj.color[1] === 200 && obj.color[2] === 200, 'default color.');
+  t.equal(obj.borderRadius, 100, 'default borderRadius.');
+  t.equal(obj.borderWidth, 2, 'default borderWidth.');
+  t.equal(obj.borderStyle, 'solid', 'default borderStyle.');
+  t.assert(obj.borderColor[0] === 60 && obj.borderColor[1] === 60 && obj.borderColor[2] === 60, 'default borderColor.');
+  t.equal(obj.isStatic, true, 'default isStatic.');
   t.end();
 });
 
-test('new Point() should accept custom properties.', function(t) {
+test('new Point() should have custom properties.', function(t) {
 
   beforeTest();
 
-  obj = new Point({
-    name: 'hello',
-    color: [10, 10, 10],
-    borderRadius: 10,
-    borderWidth: 1,
-    borderStyle: 'dotted',
-    borderColor: [30, 30, 30],
-    isStatic: false
+  Burner.System.Classes = {
+    Point: Point
+  };
+
+  Burner.System.setup(function() {
+    var world = this.add('World', {
+      el: document.getElementById('world'),
+      width: 400,
+      height: 300
+    });
+
+    obj = new Point();
+    obj.init(world, {
+      name: 'hello',
+      color: [10, 10, 10],
+      borderRadius: 10,
+      borderWidth: 1,
+      borderStyle: 'dotted',
+      borderColor: [30, 30, 30],
+      isStatic: false
+    });
   });
-  t.equal(obj.name, 'hello', 'name.');
-  t.assert(obj.color[0] === 10 && obj.color[1] === 10 && obj.color[2] === 10, 'color.');
-  t.equal(obj.borderRadius, 10, 'borderRadius.');
-  t.equal(obj.borderWidth, 1, 'borderWidth.');
-  t.equal(obj.borderStyle, 'dotted', 'borderStyle.');
-  t.assert(obj.borderColor[0] === 30 && obj.borderColor[1] === 30 && obj.borderColor[2] === 30, 'borderColor.');
-  t.equal(obj.isStatic, true, 'isStatic.');
+
+  t.equal(obj.name, 'hello', 'custom name.');
+  t.assert(obj.color[0] === 10 && obj.color[1] === 10 && obj.color[2] === 10, 'custom color.');
+  t.equal(obj.borderRadius, 10, 'custom borderRadius.');
+  t.equal(obj.borderWidth, 1, 'custom borderWidth.');
+  t.equal(obj.borderStyle, 'dotted', 'custom borderStyle.');
+  t.assert(obj.borderColor[0] === 30 && obj.borderColor[1] === 30 && obj.borderColor[2] === 30, 'custom borderColor.');
   t.end();
 });
 

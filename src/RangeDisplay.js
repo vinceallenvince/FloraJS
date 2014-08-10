@@ -1,7 +1,5 @@
 var Item = require('Burner').Item,
-    Attractor = require('./Attractor').Attractor,
-    Utils = require('Burner').Utils,
-    Vector = require('Burner').Vector;
+    Utils = require('Burner').Utils;
 
 /**
  * Creates a new RangeDisplay.
@@ -15,18 +13,6 @@ var Item = require('Burner').Item,
  */
 function RangeDisplay(opt_options) {
   Item.call(this);
-  var options = opt_options || {}; // TODO: test this
-
-  if (!options || !options.sensor) {
-    throw new Error('RangeDisplay: a sensor is required.'); // TODO: test this
-  }
-  this.sensor = options.sensor;
-
-  this.name = options.name || 'RangeDisplay';
-  this.zIndex = options.zIndex || 10;
-  this.borderStyle = typeof options.borderStyle !== 'undefined' ?  options.borderStyle : 'dashed';  // TODO: test this
-  this.borderDefaultColor = typeof options.borderDefaultColor !== 'undefined' ? options.borderDefaultColor : [150, 150, 150];  // TODO: test this
-
 }
 Utils.extend(RangeDisplay, Item);
 
@@ -37,6 +23,19 @@ Utils.extend(RangeDisplay, Item);
  */
 RangeDisplay.prototype.init = function(world, opt_options) {
   RangeDisplay._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  if (!options || !options.sensor) {
+    throw new Error('RangeDisplay: a sensor is required.');
+  }
+  this.sensor = options.sensor;
+
+  this.name = 'RangeDisplay';
+  this.zIndex = 10;
+  this.borderStyle = this.sensor.rangeDisplayBorderStyle || 'dashed';
+  this.borderDefaultColor = this.sensor.rangeDisplayBorderDefaultColor || [150, 150, 150];
+  this.borderColor = this.borderDefaultColor;
 
   /**
    * RangeDisplays have no height or color and rely on the associated DOM element's
