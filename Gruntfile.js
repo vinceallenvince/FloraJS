@@ -124,7 +124,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-plato');
   grunt.loadNpmTasks('grunt-jsdoc');
-  grunt.loadNpmTasks('grunt-browserify');
 
   grunt.registerTask('default', ['cssmin', 'exec:browserify', 'copy:publicJS', 'copy:publicCSS']);
   grunt.registerTask('release', ['csslint', 'jshint', 'cssmin', 'exec:browserify', 'uglify', 'copy:publicJS', 'copy:publicCSS', 'jsdoc', 'plato']);
@@ -133,8 +132,6 @@ module.exports = function(grunt) {
   grunt.registerTask('report', ['plato']);
   grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('lint', ['csslint', 'jshint']);
-
-  // node node_modules/testling/node_modules/browser-launcher/example/detect.js
 
 };
 
