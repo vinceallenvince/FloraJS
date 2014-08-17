@@ -19,7 +19,6 @@ Utils.extend(Point, Item);
  * Initializes an instance of Point.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {string} [opt_options.name = 'Point'] Name.
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -28,8 +27,9 @@ Utils.extend(Point, Item);
  */
 Point.prototype.init = function(world, opt_options) {
   Point._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
-  this.name = options.name || 'Point';
+
   this.color = options.color || [200, 200, 200];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;

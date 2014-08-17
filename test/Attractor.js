@@ -35,8 +35,7 @@ test('new Attractor() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Attractor();
-    obj.init(world);
+    obj = this.add('Attractor');
   });
 
   t.equal(obj.name, 'Attractor', 'name.');
@@ -73,8 +72,7 @@ test('new Attractor() should have custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Attractor();
-    obj.init(world, {
+    obj = this.add('Attractor', {
       G: 20,
       mass: 3000,
       isStatic: false,

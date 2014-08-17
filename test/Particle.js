@@ -35,8 +35,7 @@ test('new Particle() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Particle();
-    obj.init(world);
+    obj = this.add('Particle');
   });
 
   t.equal(obj.name, 'Particle', 'default name.');
@@ -72,9 +71,7 @@ test('new Particle() should accept custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Particle();
-    obj.init(world, {
-      name: 'hello',
+    obj = this.add('Particle', {
       width: 10,
       height: 10,
       lifespan: 10,
@@ -91,7 +88,6 @@ test('new Particle() should accept custom properties.', function(t) {
     });
   });
 
-  t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.width, 10, 'custom width.');
   t.equal(obj.height, 10, 'custom height.');
   t.equal(obj.lifespan, 10, 'custom lifespan.');

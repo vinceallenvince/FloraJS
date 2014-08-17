@@ -18,7 +18,7 @@ Utils.extend(ParticleSystem, Mover);
 
 /**
  * Initializes Particle.
- * @param  {Object} world       An instance of World.
+ * @param  {Object} world An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
@@ -42,7 +42,6 @@ ParticleSystem.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'ParticleSystem';
   this.width = options.width || 0;
   this.height = options.height || 0;
   this.color = options.color || [255, 255, 255];

@@ -21,7 +21,7 @@ Utils.extend(Oscillator, Item);
 
 /**
  * Initializes Oscillator.
- * @param  {Object} world       An instance of World.
+ * @param  {Object} world An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
@@ -54,7 +54,6 @@ Oscillator.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Oscillator';
   this.acceleration = options.acceleration || new Vector(0.01, 0);
   this.aVelocity = options.aVelocity || new Vector();
   this.isStatic = !!options.isStatic;
@@ -82,12 +81,9 @@ Oscillator.prototype.init = function(world, opt_options) {
   this.parent = options.parent || null;
   this.pointToDirection = !!options.pointToDirection;
 
-  //this.initialLocation = new Vector();
-  this.lastLocation = new Vector();
-  //this.amplitude = new Vector();
-
   //
 
+  this.lastLocation = new Vector();
   this.amplitude = options.amplitude || new Vector(this.world.width / 2 - this.width,
       this.world.height / 2 - this.height);
   this.initialLocation = options.initialLocation ||
@@ -172,7 +168,8 @@ Oscillator.prototype.draw = function() {
     boxShadowColor1: this.boxShadowColor[1],
     boxShadowColor2: this.boxShadowColor[2],
     opacity: this.opacity,
-    zIndex: this.zIndex
+    zIndex: this.zIndex,
+    visibility: this.visibility
   });
 
   this.el.style.cssText = cssText;
@@ -191,7 +188,7 @@ Oscillator.prototype.getCSSText = function(props) {
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + ';';
 };
 
 module.exports.Oscillator = Oscillator;

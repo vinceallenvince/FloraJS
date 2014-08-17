@@ -44,8 +44,7 @@ test('new Mover() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Mover();
-    obj.init(world);
+    obj = this.add('Mover');
   });
 
   t.equal(obj.name, 'Mover', 'name.');
@@ -77,9 +76,7 @@ test('new Mover() should accept custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Mover();
-    obj.init(world, {
-      name: 'hello',
+    obj = this.add('Mover', {
       color: [10, 10, 10],
       borderRadius: 50,
       borderWidth: 10,
@@ -96,7 +93,6 @@ test('new Mover() should accept custom properties.', function(t) {
     });
   });
 
-  t.equal(obj.name, 'hello', 'name.');
   t.assert(obj.color[0] === 10 && obj.color[1] === 10 && obj.color[2] === 10, 'color.');
   t.equal(obj.borderRadius, 50, 'borderRadius.');
   t.equal(obj.borderWidth, 10, 'borderWidth.');

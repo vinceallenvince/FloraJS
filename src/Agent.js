@@ -22,7 +22,6 @@ Utils.extend(Agent, Mover);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {boolean} [opt_options.name = 'Agent'] name.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
  * @param {Object} [opt_options.seekTarget = null] An object to seek.
@@ -45,8 +44,7 @@ Agent.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Agent';
-
+  this.name = options.type || 'Agent';
   this.followMouse = !!options.followMouse;
   this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 5 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;

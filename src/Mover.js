@@ -23,7 +23,6 @@ Utils.extend(Mover, Item);
  * Initializes an instance of Mover.
  * @param  {Object} world An instance of World.
  * @param  {Object} opt_options A map of initial properties.
- * @param {string} [opt_options.name = 'Mover'] Name.
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -44,7 +43,6 @@ Mover.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Mover';
   this.color = options.color || [255, 255, 255];
   this.borderRadius = options.borderRadius || 0;
   this.borderWidth = options.borderWidth || 0;
@@ -303,6 +301,7 @@ Mover.prototype.draw = function() {
     color2: this.color[2],
     opacity: this.opacity,
     zIndex: this.zIndex,
+    visibility: this.visibility,
     borderRadius: this.borderRadius,
     borderWidth: this.borderWidth,
     borderStyle: this.borderStyle,
@@ -324,7 +323,7 @@ Mover.prototype.draw = function() {
 Mover.prototype.getCSSText = function(props) {
   return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
-      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +');  opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; border: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +');  opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + '; border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
       props.borderRadius + '%;';
 };

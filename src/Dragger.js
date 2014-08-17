@@ -36,7 +36,6 @@ Dragger.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Dragger';
   this.c = typeof options.c === 'undefined' ? 1 : options.c;
   this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;

@@ -60,6 +60,11 @@ for (i = 0, max = Stimulus.borderStyles.length; i < max; i++) {
  * Initializes an instance.
  *
  * @param {Object} [options=] A map of initial properties.
+ * @param {Array} [options.mass = 50] Mass.
+ * @param {Array} [options.isStatic = true] isStatic.
+ * @param {Array} [options.width = 50] Width.
+ * @param {Array} [options.height = 50] Height.
+ * @param {Array} [options.opacity = 0.75] Opacity.
  * @param {Array} [options.color = [255, 255, 255]] Color.
  * @param {number} [options.borderWidth = this.width / getRandomNumber(2, 8)] Border width.
  * @param {string} [options.borderStyle = 'double'] Border style.
@@ -80,7 +85,6 @@ Stimulus.prototype.init = function(world, opt_options) {
 
   this.type = options.type;
 
-  this.name = options.name || 'Stimulus';
   this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
   this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
   this.width = typeof options.width !== 'undefined' ? options.width : 50;

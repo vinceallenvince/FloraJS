@@ -35,8 +35,7 @@ test('new Point() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Point();
-    obj.init(world);
+    obj = this.add('Point');
   });
 
   t.equal(obj.name, 'Point', 'default name.');
@@ -64,9 +63,7 @@ test('new Point() should have custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Point();
-    obj.init(world, {
-      name: 'hello',
+    obj = this.add('Point', {
       color: [10, 10, 10],
       borderRadius: 10,
       borderWidth: 1,
@@ -76,7 +73,6 @@ test('new Point() should have custom properties.', function(t) {
     });
   });
 
-  t.equal(obj.name, 'hello', 'custom name.');
   t.assert(obj.color[0] === 10 && obj.color[1] === 10 && obj.color[2] === 10, 'custom color.');
   t.equal(obj.borderRadius, 10, 'custom borderRadius.');
   t.equal(obj.borderWidth, 1, 'custom borderWidth.');

@@ -36,7 +36,6 @@ Repeller.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Repeller';
   this.G = typeof options.G === 'undefined' ? -10 : options.G;
   this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;

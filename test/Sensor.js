@@ -38,8 +38,7 @@ test('new Sensor() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Sensor();
-    obj.init(world);
+    obj = this.add('Sensor');
   });
 
   t.equal(obj.name, 'Sensor', 'default name.');
@@ -60,6 +59,7 @@ test('new Sensor() should have default properties.', function(t) {
   t.equal(obj.onConsume, null, 'default onConsume.');
   t.equal(obj.rangeDisplayBorderStyle, false, 'default rangeDisplayBorderStyle');
   t.equal(obj.rangeDisplayBorderDefaultColor, false, 'default rangeDisplayBorderDefaultColor.');
+  t.equal(obj.visibility, 'hidden', 'default visibility.')
 
   t.end();
 });
@@ -79,9 +79,7 @@ test('new Sensor() should have custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Sensor();
-    obj.init(world, {
-      name: 'hello',
+    obj = this.add('Sensor', {
       type: 'heat',
       behavior: function() {return 100;},
       sensitivity: 100,
@@ -104,7 +102,6 @@ test('new Sensor() should have custom properties.', function(t) {
     });
   });
 
-  t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.type, 'heat', 'custom type');
   t.equal(obj.behavior(), 100, 'custom behavior.');
   t.equal(obj.width, 17, 'custom width.');

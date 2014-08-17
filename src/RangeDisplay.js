@@ -31,7 +31,6 @@ RangeDisplay.prototype.init = function(world, opt_options) {
   }
   this.sensor = options.sensor;
 
-  this.name = 'RangeDisplay';
   this.zIndex = 10;
   this.borderStyle = this.sensor.rangeDisplayBorderStyle || 'dashed';
   this.borderDefaultColor = this.sensor.rangeDisplayBorderDefaultColor || [150, 150, 150];
@@ -93,7 +92,8 @@ RangeDisplay.prototype.draw = function() {
     borderStyle: this.borderStyle,
     borderColor0: this.borderColor[0],
     borderColor1: this.borderColor[1],
-    borderColor2: this.borderColor[2]
+    borderColor2: this.borderColor[2],
+    visibility: this.visibility
   });
   this.el.style.cssText = cssText;
 };
@@ -110,7 +110,7 @@ RangeDisplay.prototype.getCSSText = function(props) {
   return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
       props.width + 'px; height: ' + props.height + 'px; border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%;';
+      props.borderRadius + '%; visibility: ' + props.visibility + ';';
 };
 
 

@@ -39,7 +39,6 @@ Attractor.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Attractor';
   this.G = typeof options.G === 'undefined' ? 10 : options.G;
   this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
@@ -111,7 +110,8 @@ Attractor.prototype.draw = function() {
     boxShadowColor1: this.boxShadowColor[1],
     boxShadowColor2: this.boxShadowColor[2],
     opacity: this.opacity,
-    zIndex: this.zIndex
+    zIndex: this.zIndex,
+    visibility: this.visibility
   });
   this.el.style.cssText = cssText;
 };
@@ -129,7 +129,7 @@ Attractor.prototype.getCSSText = function(props) {
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + ';';
 };
 
 module.exports.Attractor = Attractor;

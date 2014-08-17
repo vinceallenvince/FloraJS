@@ -35,8 +35,7 @@ test('new Connector() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Connector();
-    obj.init(world, {
+    obj = this.add('Connector', {
       parentA: {},
       parentB: {}
     });
@@ -68,16 +67,15 @@ test('new Connector() should require options.', function(t) {
       height: 300
     });
 
-    obj = new Connector();
     t.throws(function () {
-      obj.init(world);
+      this.add('Connector');
     }, 'should throw exception when not passed parentA and parentB.');
   });
 
   t.end();
 });
 
-test('new Connector() should require parentA and parentB.', function(t) {
+test('new Connector() should require parentB.', function(t) {
 
   beforeTest();
 
@@ -92,9 +90,8 @@ test('new Connector() should require parentA and parentB.', function(t) {
       height: 300
     });
 
-    obj = new Connector();
     t.throws(function () {
-      obj.init(world, {
+      this.add('Connector', {
         parentA: {}
       });
     }, 'should throw exception when not passed parentB.');
@@ -118,9 +115,8 @@ test('new Connector() should require parentA.', function(t) {
       height: 300
     });
 
-    obj = new Connector();
     t.throws(function () {
-      obj.init(world, {
+      this.add('Connector', {
         parentB: {}
       });
     }, 'should throw exception when not passed parentB.');

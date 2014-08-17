@@ -10,35 +10,34 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(0, 0),
-        c: 0
-      });
+      var world;
+
+      var rand = Flora.Utils.getRandomNumber;
 
       function createWolf(x, y) {
-        Burner.System.add('Agent', {
-          name: 'wolf',
+
+        var wolf = Flora.System.add('Agent', {
+          type: 'Wolf',
           color: [255, 100, 0],
           width: 20,
           height: 20,
           maxSpeed: 10,
           wrapWorldEdges: true,
           motorSpeed: 4,
-          location: new Burner.Vector(x, y),
-          velocity: new Burner.Vector(Flora.Utils.getRandomNumber(0, 2, true),
-              Flora.Utils.getRandomNumber(0, 2, true)),
+          location: new Flora.Vector(x, y),
+          velocity: new Flora.Vector(rand(0, 2, true),
+              rand(0, 2, true)),
           flocking: true,
           sensors: [
-            Burner.System.add('Sensor', {
-              type: 'sheep',
+            Flora.System.add('Sensor', {
+              type: 'Sheep',
+              targetClass: 'Sheep',
               sensitivity: 200,
               displayRange: false,
               behavior: 'AGGRESSIVE'
@@ -46,41 +45,50 @@
           ],
           beforeStep: function() {
 
-            var sheep = Burner.System._caches.sheep.list;
+            var sheep = Flora.System.getAllItemsByAttribute('type', 'Sheep', 'Sheep');
 
             for (var i = sheep.length - 1; i >= 0; i--) {
               if (Flora.Utils.isInside(this, sheep[i])) {
                 createWolf(sheep[i].location.x, sheep[i].location.y);
                 //!! need to check to destroy range display
-                Burner.System.destroyItem(sheep[i].sensors[0]);
-                Burner.System.destroyItem(sheep[i]);
+                Flora.System.remove(sheep[i].sensors[0]);
+                Flora.System.remove(sheep[i]);
               }
             }
           }
         });
+        wolf.type = 'Wolf';
       }
 
-      Burner.System.init(function() {
+      Flora.System.setup(function() {
+
+        world = this.add('World', {
+          gravity: new Flora.Vector(0, 0),
+          c: 0
+        });
 
         for (var i = 0; i < 30; i++) {
-          this.add('Agent', {
-            name: 'sheep',
+          var agent = this.add('Agent', {
+            type: 'Sheep',
             width: 20,
             height: 20,
             maxSpeed: 4,
+            motorSpeed: 10,
             wrapWorldEdges: true,
-            location: new Burner.Vector(world.width / 4, world.height / 2),
-            velocity: new Burner.Vector(Flora.Utils.getRandomNumber(0, 2, true),
-                Flora.Utils.getRandomNumber(0, 2, true)),
+            location: new Flora.Vector(world.width / 4, world.height / 2),
+            velocity: new Flora.Vector(rand(0, 2, true),
+                rand(0, 2, true)),
             flocking: true,
             sensors: [
               this.add('Sensor', {
-                type: 'wolf',
+                type: 'Wolf',
+                targetClass: 'Wolf',
                 sensitivity: 300,
                 behavior: 'COWARD'
               })
             ]
           });
+          agent.type = 'Sheep'
         }
 
         for (var i = 0; i < 1; i++) {
@@ -99,7 +107,8 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-      }, world);
+      });
+      Flora.System.loop();
     </script>
   </body>
 </html>

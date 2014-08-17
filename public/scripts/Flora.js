@@ -557,7 +557,7 @@ Item.prototype.init = function(world, opt_options) {
       typeof options.height === 'undefined' ? 10 : options.height;
 
   this.scale = typeof this.scale !== 'undefined' ? this.scale :
-      options.scale || 1;
+      typeof options.scale === 'undefined' ? 1 : options.scale;
 
   this.angle = typeof this.angle !== 'undefined' ? this.angle :
       options.angle || 0;
@@ -596,7 +596,7 @@ Item.prototype.init = function(world, opt_options) {
       options.boxShadowColor || [255, 255, 255];
 
   this.opacity = typeof this.opacity !== 'undefined' ? this.opacity :
-      options.opacity || 1;
+      typeof options.opacity === 'undefined' ? 1 : options.opacity;
 
   this.zIndex = typeof this.zIndex !== 'undefined' ? this.zIndex :
       options.zIndex || 0;
@@ -620,13 +620,13 @@ Item.prototype.init = function(world, opt_options) {
       options.minSpeed || 0;
 
   this.bounciness = typeof this.bounciness !== 'undefined' ? this.bounciness :
-      options.bounciness || 0.5;
+      typeof options.bounciness === 'undefined' ? 0.5 : options.bounciness;
 
   this.life = typeof this.life !== 'undefined' ? this.life :
       options.life || 0;
 
   this.lifespan = typeof this.lifespan !== 'undefined' ? this.lifespan :
-      options.lifespan || -1;
+      typeof options.lifespan === 'undefined' ? -1 : options.lifespan;
 
   this.checkWorldEdges = typeof this.checkWorldEdges !== 'undefined' ? this.checkWorldEdges :
       typeof options.checkWorldEdges === 'undefined' ? true : options.checkWorldEdges;
@@ -1114,7 +1114,7 @@ System._addWorld = function(world) {
 System.add = function(opt_klass, opt_options, opt_world) {
 
   var klass = opt_klass || 'Item',
-      options = opt_options || null,
+      options = opt_options || {},
       world = opt_world || System.firstWorld(),
       records = this._records, obj;
 
@@ -1595,7 +1595,6 @@ Utils.extend(Agent, Mover);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {boolean} [opt_options.name = 'Agent'] name.
  * @param {boolean} [opt_options.followMouse = false] If true, object will follow mouse.
  * @param {number} [opt_options.maxSteeringForce = 10] Set the maximum strength of any steering force.
  * @param {Object} [opt_options.seekTarget = null] An object to seek.
@@ -1618,8 +1617,7 @@ Agent.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Agent';
-
+  this.name = options.type || 'Agent';
   this.followMouse = !!options.followMouse;
   this.maxSteeringForce = typeof options.maxSteeringForce === 'undefined' ? 5 : options.maxSteeringForce;
   this.seekTarget = options.seekTarget || null;
@@ -1988,7 +1986,6 @@ Attractor.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Attractor';
   this.G = typeof options.G === 'undefined' ? 10 : options.G;
   this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
@@ -2060,7 +2057,8 @@ Attractor.prototype.draw = function() {
     boxShadowColor1: this.boxShadowColor[1],
     boxShadowColor2: this.boxShadowColor[2],
     opacity: this.opacity,
-    zIndex: this.zIndex
+    zIndex: this.zIndex,
+    visibility: this.visibility
   });
   this.el.style.cssText = cssText;
 };
@@ -2078,7 +2076,7 @@ Attractor.prototype.getCSSText = function(props) {
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + ';';
 };
 
 module.exports.Attractor = Attractor;
@@ -2449,7 +2447,6 @@ Utils.extend(Connector, Item);
  * @param {Object} options A map of initial properties.
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
- * @param {string} [opt_options.name = 'Point'] Name.
  * @param {number} [options.zIndex = 0] zIndex.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
  * @param {Array} [options.borderColor = 150, 150, 150] Border color.
@@ -2463,7 +2460,6 @@ Connector.prototype.init = function(world, options) {
   this.parentA = options.parentA;
   this.parentB = options.parentB;
 
-  this.name = options.name || 'Connector';
   this.zIndex = options.zIndex || 0;
   this.borderStyle = options.borderStyle || 'dotted';
   this.borderColor = options.borderColor || [150, 150, 150];
@@ -2518,7 +2514,8 @@ Connector.prototype.draw = function() {
     borderStyle: this.borderStyle,
     borderColor0: this.borderColor[0],
     borderColor1: this.borderColor[1],
-    borderColor2: this.borderColor[2]
+    borderColor2: this.borderColor[2],
+    visibility: this.visibility
   });
   this.el.style.cssText = cssText;
 };
@@ -2536,7 +2533,7 @@ Connector.prototype.getCSSText = function(props) {
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%;';
+      props.borderRadius + '%; visibility: ' + props.visibility + ';';
 };
 
 module.exports.Connector = Connector;
@@ -2580,7 +2577,6 @@ Dragger.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Dragger';
   this.c = typeof options.c === 'undefined' ? 1 : options.c;
   this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
@@ -2642,7 +2638,6 @@ Utils.extend(FlowField, Item);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {boolean} [opt_options.name = 'FlowField'] name.
  * @param {number} [opt_options.resolution = 50] The lower the value, the more vectors are created
  *    to define the flow field. Low values increase processing time to create the field.
  * @param {number} [opt_options.perlinSpeed = 0.01] The speed to move through the Perlin Noise space.
@@ -2652,10 +2647,10 @@ Utils.extend(FlowField, Item);
  * @param {Object} [opt_options.world = System.firstWorld()] The flowField's world.
  */
 FlowField.prototype.init = function(world, opt_options) {
+  FlowField._superClass.init.call(this, world, opt_options);
 
   var options = opt_options || {};
 
-  this.name = options.name || 'FlowField';
   this.resolution = typeof options.resolution !== 'undefined' ? options.resolution : 50;
   this.perlinSpeed = typeof options.perlinSpeed !== 'undefined' ? options.perlinSpeed : 0.01;
   this.perlinTime = typeof options.perlinTime !== 'undefined' ? options.perlinTime : 100;
@@ -2918,7 +2913,6 @@ Utils.extend(Mover, Item);
  * Initializes an instance of Mover.
  * @param  {Object} world An instance of World.
  * @param  {Object} opt_options A map of initial properties.
- * @param {string} [opt_options.name = 'Mover'] Name.
  * @param {string|Array} [opt_options.color = 255, 255, 255] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -2939,7 +2933,6 @@ Mover.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Mover';
   this.color = options.color || [255, 255, 255];
   this.borderRadius = options.borderRadius || 0;
   this.borderWidth = options.borderWidth || 0;
@@ -3198,6 +3191,7 @@ Mover.prototype.draw = function() {
     color2: this.color[2],
     opacity: this.opacity,
     zIndex: this.zIndex,
+    visibility: this.visibility,
     borderRadius: this.borderRadius,
     borderWidth: this.borderWidth,
     borderStyle: this.borderStyle,
@@ -3219,7 +3213,7 @@ Mover.prototype.draw = function() {
 Mover.prototype.getCSSText = function(props) {
   return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
-      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +');  opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; border: ' +
+      props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +');  opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + '; border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
       props.borderRadius + '%;';
 };
@@ -3251,7 +3245,7 @@ Utils.extend(Oscillator, Item);
 
 /**
  * Initializes Oscillator.
- * @param  {Object} world       An instance of World.
+ * @param  {Object} world An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
  * @param {Object} [opt_options.initialLocation = The center of the world] The object's initial location.
  * @param {Object} [opt_options.lastLocation = {x: 0, y: 0}] The object's last location. Used to calculate
@@ -3284,7 +3278,6 @@ Oscillator.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Oscillator';
   this.acceleration = options.acceleration || new Vector(0.01, 0);
   this.aVelocity = options.aVelocity || new Vector();
   this.isStatic = !!options.isStatic;
@@ -3312,12 +3305,9 @@ Oscillator.prototype.init = function(world, opt_options) {
   this.parent = options.parent || null;
   this.pointToDirection = !!options.pointToDirection;
 
-  //this.initialLocation = new Vector();
-  this.lastLocation = new Vector();
-  //this.amplitude = new Vector();
-
   //
 
+  this.lastLocation = new Vector();
   this.amplitude = options.amplitude || new Vector(this.world.width / 2 - this.width,
       this.world.height / 2 - this.height);
   this.initialLocation = options.initialLocation ||
@@ -3402,7 +3392,8 @@ Oscillator.prototype.draw = function() {
     boxShadowColor1: this.boxShadowColor[1],
     boxShadowColor2: this.boxShadowColor[2],
     opacity: this.opacity,
-    zIndex: this.zIndex
+    zIndex: this.zIndex,
+    visibility: this.visibility
   });
 
   this.el.style.cssText = cssText;
@@ -3421,7 +3412,7 @@ Oscillator.prototype.getCSSText = function(props) {
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + ';';
 };
 
 module.exports.Oscillator = Oscillator;
@@ -3445,7 +3436,7 @@ Utils.extend(Particle, Mover);
 
 /**
  * Initializes Particle.
- * @param  {Object} world       An instance of World.
+ * @param  {Object} world An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 20] Width
  * @param {number} [opt_options.height = 20] Height
@@ -3466,7 +3457,6 @@ Particle.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Particle';
   this.width = typeof options.width === 'undefined' ? 20 : options.width;
   this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [200, 200, 200];
@@ -3540,7 +3530,8 @@ Particle.prototype.draw = function() {
     boxShadowColor1: this.boxShadowColor[1],
     boxShadowColor2: this.boxShadowColor[2],
     opacity: this.opacity,
-    zIndex: this.zIndex
+    zIndex: this.zIndex,
+    visibility: this.visibility
   });
   this.el.style.cssText = cssText;
 };
@@ -3558,7 +3549,7 @@ Particle.prototype.getCSSText = function(props) {
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + ';';
 };
 
 module.exports.Particle = Particle;
@@ -3585,7 +3576,7 @@ Utils.extend(ParticleSystem, Mover);
 
 /**
  * Initializes Particle.
- * @param  {Object} world       An instance of World.
+ * @param  {Object} world An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 0] Width
  * @param {number} [opt_options.height = 0] Height
@@ -3609,7 +3600,6 @@ ParticleSystem.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'ParticleSystem';
   this.width = options.width || 0;
   this.height = options.height || 0;
   this.color = options.color || [255, 255, 255];
@@ -3747,7 +3737,6 @@ Utils.extend(Point, Item);
  * Initializes an instance of Point.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {string} [opt_options.name = 'Point'] Name.
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
  * @param {number} [opt_options.borderRadius = 100] Border radius.
  * @param {number} [opt_options.borderWidth = 2] Border width.
@@ -3756,8 +3745,9 @@ Utils.extend(Point, Item);
  */
 Point.prototype.init = function(world, opt_options) {
   Point._superClass.init.call(this, world, opt_options);
+
   var options = opt_options || {};
-  this.name = options.name || 'Point';
+
   this.color = options.color || [200, 200, 200];
   this.borderRadius = typeof options.borderRadius === 'undefined' ? 100 : options.borderRadius;
   this.borderWidth = typeof options.borderWidth === 'undefined' ? 2 : options.borderWidth;
@@ -3849,7 +3839,6 @@ RangeDisplay.prototype.init = function(world, opt_options) {
   }
   this.sensor = options.sensor;
 
-  this.name = 'RangeDisplay';
   this.zIndex = 10;
   this.borderStyle = this.sensor.rangeDisplayBorderStyle || 'dashed';
   this.borderDefaultColor = this.sensor.rangeDisplayBorderDefaultColor || [150, 150, 150];
@@ -3911,7 +3900,8 @@ RangeDisplay.prototype.draw = function() {
     borderStyle: this.borderStyle,
     borderColor0: this.borderColor[0],
     borderColor1: this.borderColor[1],
-    borderColor2: this.borderColor[2]
+    borderColor2: this.borderColor[2],
+    visibility: this.visibility
   });
   this.el.style.cssText = cssText;
 };
@@ -3928,7 +3918,7 @@ RangeDisplay.prototype.getCSSText = function(props) {
   return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
       props.width + 'px; height: ' + props.height + 'px; border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%;';
+      props.borderRadius + '%; visibility: ' + props.visibility + ';';
 };
 
 
@@ -3973,7 +3963,6 @@ Repeller.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Repeller';
   this.G = typeof options.G === 'undefined' ? -10 : options.G;
   this.mass = typeof options.mass === 'undefined' ? 1000 : options.mass;
   this.isStatic = typeof options.isStatic === 'undefined' ? true : options.isStatic;
@@ -4013,9 +4002,10 @@ Utils.extend(Sensor, Mover);
 
 /**
  * Initializes Sensor.
- * @param  {Object} world       An instance of World.
+ * @param  {Object} world An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
- * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
+ * @param {string} [opt_options.type = ''] The type of stimulus that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
+ * @param {string} [opt_options.targetClass = 'Stimulus'] The class of Item that can activate this sensor. eg. 'Stimulus', 'Agent', 'Sheep', 'Wolf'
  * @param {string} [opt_options.behavior = ''] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 200] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
  * @param {number} [opt_options.width = 7] Width.
@@ -4038,8 +4028,8 @@ Sensor.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Sensor';
   this.type = options.type || '';
+  this.targetClass = options.targetClass || 'Stimulus';
   this.behavior = options.behavior || function() {};
   this.sensitivity = typeof options.sensitivity !== 'undefined' ? options.sensitivity : 200;
   this.width = typeof options.width !== 'undefined' ? options.width : 7;
@@ -4071,13 +4061,15 @@ Sensor.prototype.init = function(world, opt_options) {
 
   this.activationLocation = new Vector();
   this._force = new Vector(); // used as a cache Vector
-
+  this.visibility = 'hidden';
 };
 
 /**
  * Called every frame, step() updates the instance's properties.
  */
 Sensor.prototype.step = function() {
+
+  this.visibility = 'visible';
 
   if (this.parent) { // parenting
 
@@ -4104,11 +4096,11 @@ Sensor.prototype.step = function() {
   var check = false;
 
   /**
-   * Check if any Simulus objects exist that match this sensor. If so,
+   * Check if any Stimulus objects exist that match this sensor. If so,
    * loop thru the list and check if sensor should activate.
    */
 
-  var list = System.getAllItemsByAttribute('type', this.type, 'Stimulus');
+  var list = System.getAllItemsByAttribute('type', this.type, this.targetClass); // TODO: should not fix class name
 
   for (var i = 0, max = list.length; i < max; i++) { // heat
 
@@ -4771,6 +4763,11 @@ for (i = 0, max = Stimulus.borderStyles.length; i < max; i++) {
  * Initializes an instance.
  *
  * @param {Object} [options=] A map of initial properties.
+ * @param {Array} [options.mass = 50] Mass.
+ * @param {Array} [options.isStatic = true] isStatic.
+ * @param {Array} [options.width = 50] Width.
+ * @param {Array} [options.height = 50] Height.
+ * @param {Array} [options.opacity = 0.75] Opacity.
  * @param {Array} [options.color = [255, 255, 255]] Color.
  * @param {number} [options.borderWidth = this.width / getRandomNumber(2, 8)] Border width.
  * @param {string} [options.borderStyle = 'double'] Border style.
@@ -4791,7 +4788,6 @@ Stimulus.prototype.init = function(world, opt_options) {
 
   this.type = options.type;
 
-  this.name = options.name || 'Stimulus';
   this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
   this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
   this.width = typeof options.width !== 'undefined' ? options.width : 50;
@@ -4848,9 +4844,8 @@ Utils.extend(Walker, Mover);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {string} [opt_options.name = 'Walker'] Name
- * @param {number} [opt_options.width = 10] Width
- * @param {number} [opt_options.height = 10] Height
+ * @param {number} [opt_options.width = 10] Width.
+ * @param {number} [opt_options.height = 10] Height.
  * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and perlin = true, object will avoid world edges.
  * @param {number} [opt_options.maxSpeed = 1] maxSpeed.
  * @param {boolean} [opt_options.perlin = true] If set to true, object will use Perlin Noise to calculate its location.
@@ -4873,7 +4868,6 @@ Walker.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Walker';
   this.width = typeof options.width === 'undefined' ? 10 : options.width;
   this.height = typeof options.height === 'undefined' ? 10 : options.height;
   this.remainsOnScreen = !!options.remainsOnScreen;

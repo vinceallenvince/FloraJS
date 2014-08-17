@@ -22,9 +22,8 @@ Utils.extend(Walker, Mover);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {string} [opt_options.name = 'Walker'] Name
- * @param {number} [opt_options.width = 10] Width
- * @param {number} [opt_options.height = 10] Height
+ * @param {number} [opt_options.width = 10] Width.
+ * @param {number} [opt_options.height = 10] Height.
  * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and perlin = true, object will avoid world edges.
  * @param {number} [opt_options.maxSpeed = 1] maxSpeed.
  * @param {boolean} [opt_options.perlin = true] If set to true, object will use Perlin Noise to calculate its location.
@@ -47,7 +46,6 @@ Walker.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Walker';
   this.width = typeof options.width === 'undefined' ? 10 : options.width;
   this.height = typeof options.height === 'undefined' ? 10 : options.height;
   this.remainsOnScreen = !!options.remainsOnScreen;

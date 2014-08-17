@@ -35,8 +35,7 @@ test('new ParticleSystem() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new ParticleSystem();
-    obj.init(world);
+    obj = this.add('ParticleSystem');
   });
 
   t.equal(obj.name, 'ParticleSystem', 'default name.');
@@ -85,9 +84,7 @@ test('new ParticleSystem() should accept custom properties.', function(t) {
       height: 300
     });
 
-    obj = new ParticleSystem();
-    obj.init(world, {
-      name: 'hello',
+    obj = this.add('ParticleSystem', {
       width: 10,
       height: 10,
       color: [10, 20, 30],
@@ -119,7 +116,6 @@ test('new ParticleSystem() should accept custom properties.', function(t) {
     });
   });
 
-  t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.width, 10, 'custom width.');
   t.equal(obj.height, 10, 'custom height.');
   t.assert(obj.color[0] === 10 && obj.color[1] === 20 && obj.color[2] === 30, 'custom color.');

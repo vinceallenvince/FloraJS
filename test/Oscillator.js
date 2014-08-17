@@ -37,8 +37,7 @@ test('new Oscillator() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Oscillator();
-    obj.init(world);
+    obj = this.add('Oscillator');
   });
 
   t.equal(obj.name, 'Oscillator', 'name.');
@@ -86,8 +85,7 @@ test('new Oscillator() should have custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Oscillator();
-    obj.init(world, {
+    obj = this.add('Oscillator', {
       acceleration: new Vector(),
       aVelocity: new Vector(),
       isStatic: true,

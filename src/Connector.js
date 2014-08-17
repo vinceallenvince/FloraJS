@@ -21,7 +21,6 @@ Utils.extend(Connector, Item);
  * @param {Object} options A map of initial properties.
  * @param {Object} parentA The object that starts the connection.
  * @param {Object} parentB The object that ends the connection.
- * @param {string} [opt_options.name = 'Point'] Name.
  * @param {number} [options.zIndex = 0] zIndex.
  * @param {string} [options.borderStyle = 'dotted'] Border style.
  * @param {Array} [options.borderColor = 150, 150, 150] Border color.
@@ -35,7 +34,6 @@ Connector.prototype.init = function(world, options) {
   this.parentA = options.parentA;
   this.parentB = options.parentB;
 
-  this.name = options.name || 'Connector';
   this.zIndex = options.zIndex || 0;
   this.borderStyle = options.borderStyle || 'dotted';
   this.borderColor = options.borderColor || [150, 150, 150];
@@ -90,7 +88,8 @@ Connector.prototype.draw = function() {
     borderStyle: this.borderStyle,
     borderColor0: this.borderColor[0],
     borderColor1: this.borderColor[1],
-    borderColor2: this.borderColor[2]
+    borderColor2: this.borderColor[2],
+    visibility: this.visibility
   });
   this.el.style.cssText = cssText;
 };
@@ -108,7 +107,7 @@ Connector.prototype.getCSSText = function(props) {
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%;';
+      props.borderRadius + '%; visibility: ' + props.visibility + ';';
 };
 
 module.exports.Connector = Connector;

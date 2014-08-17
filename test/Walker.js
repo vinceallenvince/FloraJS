@@ -36,8 +36,7 @@ test('new Walker() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Walker();
-    obj.init(world);
+    obj = this.add('Walker');
   });
 
   t.equal(obj.name, 'Walker', 'default name.');
@@ -84,8 +83,7 @@ test('new Walker() should have custom properties.', function(t) {
       height: 300
     });
 
-    obj.init(world, {
-      name: 'hello',
+    obj = this.add('Walker', {
       width: 100,
       height: 200,
       remainsOnScreen: true,
@@ -107,7 +105,6 @@ test('new Walker() should have custom properties.', function(t) {
     });
   });
 
-  t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.width, 100, 'custom width.');
   t.equal(obj.height, 200, 'custom height.');
   t.equal(obj.remainsOnScreen, true, 'custom remainsOnScreen.');

@@ -16,7 +16,7 @@ Utils.extend(Particle, Mover);
 
 /**
  * Initializes Particle.
- * @param  {Object} world       An instance of World.
+ * @param  {Object} world An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
  * @param {number} [opt_options.width = 20] Width
  * @param {number} [opt_options.height = 20] Height
@@ -37,7 +37,6 @@ Particle.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Particle';
   this.width = typeof options.width === 'undefined' ? 20 : options.width;
   this.height = typeof options.height === 'undefined' ? 20 : options.height;
   this.color = options.color || [200, 200, 200];
@@ -111,7 +110,8 @@ Particle.prototype.draw = function() {
     boxShadowColor1: this.boxShadowColor[1],
     boxShadowColor2: this.boxShadowColor[2],
     opacity: this.opacity,
-    zIndex: this.zIndex
+    zIndex: this.zIndex,
+    visibility: this.visibility
   });
   this.el.style.cssText = cssText;
 };
@@ -129,7 +129,7 @@ Particle.prototype.getCSSText = function(props) {
       props.width + 'px; height: ' + props.height + 'px; background-color: ' +
       props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
       props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+      props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + ';';
 };
 
 module.exports.Particle = Particle;

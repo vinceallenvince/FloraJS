@@ -35,8 +35,7 @@ test('new Dragger() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Dragger();
-    obj.init(world);
+    obj = this.add('Dragger');
   });
 
   t.equal(obj.name, 'Dragger', 'name.');
@@ -73,8 +72,7 @@ test('new Dragger() should have custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Dragger();
-    obj.init(world, {
+    obj = this.add('Dragger', {
       c: 20,
       mass: 3000,
       isStatic: false,

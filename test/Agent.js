@@ -39,8 +39,7 @@ test('new Agent() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Agent();
-    obj.init(world);
+    obj = this.add('Agent');
   });
 
   t.equal(obj.name, 'Agent', 'default name.');
@@ -81,9 +80,7 @@ test('new Agent() should have custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Agent();
-    obj.init(world, {
-      name: 'hello',
+    obj = this.add('Agent', {
       followMouse: true,
       maxSteeringForce: 10,
       remainsOnScreen: true,
@@ -103,7 +100,6 @@ test('new Agent() should have custom properties.', function(t) {
     });
   });
 
-  t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.followMouse, true, 'custom followMouse.');
   t.equal(obj.maxSteeringForce, 10, 'custom maxSteeringForce.');
   t.equal(obj.seekTarget.hello, 'hello', 'custom seekTarget.');

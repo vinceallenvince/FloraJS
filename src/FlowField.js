@@ -20,7 +20,6 @@ Utils.extend(FlowField, Item);
  * Initializes an instance.
  *
  * @param {Object} [opt_options=] A map of initial properties.
- * @param {boolean} [opt_options.name = 'FlowField'] name.
  * @param {number} [opt_options.resolution = 50] The lower the value, the more vectors are created
  *    to define the flow field. Low values increase processing time to create the field.
  * @param {number} [opt_options.perlinSpeed = 0.01] The speed to move through the Perlin Noise space.
@@ -30,10 +29,10 @@ Utils.extend(FlowField, Item);
  * @param {Object} [opt_options.world = System.firstWorld()] The flowField's world.
  */
 FlowField.prototype.init = function(world, opt_options) {
+  FlowField._superClass.init.call(this, world, opt_options);
 
   var options = opt_options || {};
 
-  this.name = options.name || 'FlowField';
   this.resolution = typeof options.resolution !== 'undefined' ? options.resolution : 50;
   this.perlinSpeed = typeof options.perlinSpeed !== 'undefined' ? options.perlinSpeed : 0.01;
   this.perlinTime = typeof options.perlinTime !== 'undefined' ? options.perlinTime : 100;

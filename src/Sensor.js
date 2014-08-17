@@ -18,9 +18,10 @@ Utils.extend(Sensor, Mover);
 
 /**
  * Initializes Sensor.
- * @param  {Object} world       An instance of World.
+ * @param  {Object} world An instance of World.
  * @param  {Object} [opt_options=] A map of initial properties.
- * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
+ * @param {string} [opt_options.type = ''] The type of stimulus that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
+ * @param {string} [opt_options.targetClass = 'Stimulus'] The class of Item that can activate this sensor. eg. 'Stimulus', 'Agent', 'Sheep', 'Wolf'
  * @param {string} [opt_options.behavior = ''] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
  * @param {number} [opt_options.sensitivity = 200] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
  * @param {number} [opt_options.width = 7] Width.
@@ -43,8 +44,8 @@ Sensor.prototype.init = function(world, opt_options) {
 
   var options = opt_options || {};
 
-  this.name = options.name || 'Sensor';
   this.type = options.type || '';
+  this.targetClass = options.targetClass || 'Stimulus';
   this.behavior = options.behavior || function() {};
   this.sensitivity = typeof options.sensitivity !== 'undefined' ? options.sensitivity : 200;
   this.width = typeof options.width !== 'undefined' ? options.width : 7;
@@ -76,13 +77,15 @@ Sensor.prototype.init = function(world, opt_options) {
 
   this.activationLocation = new Vector();
   this._force = new Vector(); // used as a cache Vector
-
+  this.visibility = 'hidden';
 };
 
 /**
  * Called every frame, step() updates the instance's properties.
  */
 Sensor.prototype.step = function() {
+
+  this.visibility = 'visible';
 
   if (this.parent) { // parenting
 
@@ -109,11 +112,11 @@ Sensor.prototype.step = function() {
   var check = false;
 
   /**
-   * Check if any Simulus objects exist that match this sensor. If so,
+   * Check if any Stimulus objects exist that match this sensor. If so,
    * loop thru the list and check if sensor should activate.
    */
 
-  var list = System.getAllItemsByAttribute('type', this.type, 'Stimulus');
+  var list = System.getAllItemsByAttribute('type', this.type, this.targetClass); // TODO: should not fix class name
 
   for (var i = 0, max = list.length; i < max; i++) { // heat
 

@@ -10,10 +10,8 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
   <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/Flora.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <div id='worldA'></div>
@@ -21,37 +19,37 @@
     <div id='worldC'></div>
     <script type="text/javascript" charset="utf-8">
 
-      var worldA = new Burner.World(document.getElementById('worldA'), {
-        boundToWindow: false,
-        width: 320,
-        height: 480,
-        color: [60, 60, 60],
-        gravity: new Burner.Vector(),
-        c: 0,
-        location: new Burner.Vector(160, 240)
-      });
+      Flora.System.init(function() {
 
-      var worldB = new Burner.World(document.getElementById('worldB'), {
-        boundToWindow: false,
-        width: 320,
-        height: 480,
-        color: [60, 60, 60],
-        gravity: new Burner.Vector(),
-        c: 0,
-        location: new Burner.Vector(490, 240)
-      });
+        var worldA = this.add('World', {
+          el: document.getElementById('worldA'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(160, 240)
+        });
 
-      var worldC = new Burner.World(document.getElementById('worldC'), {
-        boundToWindow: false,
-        width: 320,
-        height: 480,
-        color: [60, 60, 60],
-        gravity: new Burner.Vector(),
-        c: 0,
-        location: new Burner.Vector(820, 240)
-      });
+        var worldB = this.add('World', {
+          el: document.getElementById('worldB'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(490, 240)
+        });
 
-      Burner.System.init(function() {
+        var worldC = this.add('World', {
+          el: document.getElementById('worldC'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(820, 240)
+        });
 
         this.add('ParticleSystem', {
           startColor: [255, 255, 255],
@@ -65,7 +63,7 @@
         }
 
         for (var i = 0; i < 10; i++) {
-          var size = Burner.System.getRandomNumber(5, 30);
+          var size = Flora.Utils.getRandomNumber(5, 30);
           this.add('Agent', {
             width: size,
             height: size,
@@ -88,7 +86,8 @@
           position: 'bottom center'
         });
 
-      }, [worldA, worldB, worldC]);
+      });
+      Flora.System.loop();
     </script>
   </body>
 </html>

@@ -44,12 +44,12 @@ test('new Stimulus() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Stimulus();
-    obj.init(world, {
+    obj = this.add('Stimulus', {
       type: 'heat'
     });
   });
 
+  t.equal(obj.name, 'Stimulus', 'default name.');
   t.equal(obj.type, 'heat', 'type.');
   t.equal(obj.name, 'Stimulus', 'name.');
   t.equal(obj.width, 50, 'default width.');
@@ -73,9 +73,8 @@ test('new Stimulus() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = new Stimulus();
     t.throws(function () {
-     obj.init(world);
+     this.add('Stimulus');
     }, 'should throw exception when not passed a "type" parameter.');
   });
 
@@ -97,10 +96,8 @@ test('new Stimulus() should have custom properties.', function(t) {
       height: 300
     });
 
-    obj = new Stimulus();
-    obj.init(world, {
+    obj = this.add('Stimulus', {
       type: 'cold',
-      name: 'hello',
       width: 30,
       height: 30,
       mass: 100,
@@ -110,7 +107,6 @@ test('new Stimulus() should have custom properties.', function(t) {
   });
 
   t.equal(obj.type, 'cold', 'type.');
-  t.equal(obj.name, 'hello', 'name.');
   t.equal(obj.width, 30, 'custom width.');
   t.equal(obj.height, 30, 'custom height.');
   t.equal(obj.mass, 100, 'custom mass.');

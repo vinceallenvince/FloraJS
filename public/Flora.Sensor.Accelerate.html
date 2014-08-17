@@ -17,7 +17,10 @@
     <script type="text/javascript" charset="utf-8">
 
       Flora.System.setup(function() {
-        var world = this.add('World');
+        var world = this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
 
         this.add('Agent', {
           angle: 90,
