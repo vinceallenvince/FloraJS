@@ -65,7 +65,6 @@ test('new FlowField() should have custom properties.', function(t) {
     });
 
     obj = this.add('FlowField', {
-      name: 'hello',
       resolution: 100,
       perlinSpeed: 1,
       perlinTime: 1000,
@@ -74,7 +73,6 @@ test('new FlowField() should have custom properties.', function(t) {
     });
   });
 
-  t.equal(obj.name, 'hello', 'custom name.');
   t.equal(obj.resolution, 100, 'custom resolution.');
   t.equal(obj.perlinSpeed, 1, 'custom perlinSpeed.');
   t.equal(obj.perlinTime, 1000, 'custom perlinTime.');

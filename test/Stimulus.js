@@ -51,7 +51,7 @@ test('new Stimulus() should have default properties.', function(t) {
   });
 
   t.equal(obj.type, 'heat', 'type.');
-  t.equal(obj.name, 'heat', 'name.');
+  t.equal(obj.name, 'Stimulus', 'name.');
   t.equal(obj.width, 50, 'default width.');
   t.equal(obj.height, 50, 'default height.');
   t.equal(obj.mass, 50, 'default mass.');
@@ -110,7 +110,7 @@ test('new Stimulus() should have custom properties.', function(t) {
   });
 
   t.equal(obj.type, 'cold', 'type.');
-  t.equal(obj.name, 'cold', 'name.');
+  t.equal(obj.name, 'hello', 'name.');
   t.equal(obj.width, 30, 'custom width.');
   t.equal(obj.height, 30, 'custom height.');
   t.equal(obj.mass, 100, 'custom mass.');

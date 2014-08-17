@@ -36,8 +36,11 @@ Caption.prototype.init = function (world, opt_options) {
 
   var options = opt_options || {}, i, max, classNames;
 
-  // if a world is not passed, use the first world in the system
-  this.world = world || System.firstWorld();
+  if (!world) {
+    throw new Error('Caption.init requires an instance of World.');
+  }
+  this.world = world;
+
   this.position = options.position || 'top left';
   this.text = options.text || '';
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
@@ -45,6 +48,9 @@ Caption.prototype.init = function (world, opt_options) {
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || [204, 204, 204];
+
+  //
+
   this.colorMode = 'rgb';
 
   /**
@@ -69,7 +75,7 @@ Caption.prototype.init = function (world, opt_options) {
     this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
         ', ' + this.borderColor[2] + ')';
   }
-  this.el.zIndex = 100;
+  this.el.style.zIndex = 100;
   this.el.appendChild(document.createTextNode(this.text));
   if (document.getElementById('caption')) {
     document.getElementById('caption').parentNode.removeChild(document.getElementById('caption'));
@@ -84,6 +90,7 @@ Caption.prototype.draw = function() {};
 
 /**
  * Updates the caption's text.
+ * @param {string} text The text to replace the caption's current text.d
  */
 Caption.prototype.update = function(text) {
   this.el.textContent = text;
@@ -91,18 +98,9 @@ Caption.prototype.update = function(text) {
 
 /**
  * Removes the caption's DOM element.
- *
- * @returns {boolean} True if object does not exist in the DOM.
  */
 Caption.prototype.remove = function() {
-
-  var id = this.el.id;
-
   this.el.parentNode.removeChild(this.el);
-  if (!document.getElementById(id)) {
-    return true;
-  }
-  return;
 };
 
 module.exports.Caption = Caption;

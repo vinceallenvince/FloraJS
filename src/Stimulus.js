@@ -79,7 +79,8 @@ Stimulus.prototype.init = function(world, opt_options) {
   }
 
   this.type = options.type;
-  this.name = this.type;
+
+  this.name = options.name || 'Stimulus';
   this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
   this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
   this.width = typeof options.width !== 'undefined' ? options.width : 50;

@@ -113,7 +113,7 @@ Sensor.prototype.step = function() {
    * loop thru the list and check if sensor should activate.
    */
 
-  var list = System.getAllItemsByName(this.type);
+  var list = System.getAllItemsByAttribute('type', this.type, 'Stimulus');
 
   for (var i = 0, max = list.length; i < max; i++) { // heat
 

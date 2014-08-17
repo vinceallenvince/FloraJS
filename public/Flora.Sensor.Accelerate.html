@@ -26,7 +26,7 @@
           maxSpeed: 10,
           width: 20,
           height: 20,
-          location: new Flora.Vector(world.width * 0.4, 0),
+          location: new Flora.Vector(world.width * 0.45, 0),
           sensors: [
             this.add('Sensor', {
               type: 'heat',
@@ -42,7 +42,7 @@
           draggable: true
         });
 
-        /*this.add('Caption', {
+        this.add('Caption', {
           text: 'Flora.Sensor.Accelerate',
           opacity: 0.4,
           borderColor: 'transparent',
@@ -53,7 +53,7 @@
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'bottom center'
-        });*/
+        });
       });
       Flora.System.loop();
     </script>

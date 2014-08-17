@@ -35,953 +35,12 @@ module.exports = Flora;
 module.exports = {
   Item: _dereq_('./src/Item').Item,
   System: _dereq_('./src/System').System,
-  Utils: _dereq_('./src/Utils').Utils,
-  Vector: _dereq_('./src/Vector').Vector,
+  Utils: _dereq_('drawing-utils-lib'),
+  Vector: _dereq_('vector2d-lib'),
   World: _dereq_('./src/World').World
 };
-},{"./src/Item":3,"./src/System":5,"./src/Utils":6,"./src/Vector":7,"./src/World":8}],3:[function(_dereq_,module,exports){
-/*global document */
-
-var Vector = _dereq_('./Vector').Vector;
-
-/**
- * Creates a new Item.
- * @constructor
- * @param {string} opt_name The item's class name.
- */
-function Item() {
-  Item._idCount++;
-}
-
-/**
- * Holds a count of item instances.
- * @memberof Item
- * @private
- */
-Item._idCount = 0;
-
-/**
- * Holds a transform property based on supportedFeatures.
- * @memberof Item
- * @private
- */
-Item._stylePosition =
-    'transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>); ' +
-    '-webkit-transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>); ' +
-    '-moz-transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>); ' +
-    '-o-transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>); ' +
-    '-ms-transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>);';
-
-/**
- * Resets all properties.
- * @function init
- * @memberof Item
- *
- * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.name = 10] The item's name.
- * @param {number} [opt_options.width = 10] Width.
- * @param {number} [opt_options.height = 10] Height.
- * @param {number} [opt_options.scale = 1] Scale.
- * @param {number} [opt_options.angle = 0] Angle.
- * @param {Array} [opt_options.colorMode = 'rgb'] Color mode. Possible values are 'rgb' and 'hsl'.
- * @param {Array} [opt_options.color = 0, 0, 0] Color.
- * @param {number} [opt_options.mass = 10] mass.
- * @param {Function|Object} [opt_options.acceleration = new Vector()] acceleration.
- * @param {Function|Object} [opt_options.velocity = new Vector()] velocity.
- * @param {Function|Object} [opt_options.location = new Vector()] location.
- * @param {number} [opt_options.maxSpeed = 10] maxSpeed.
- * @param {number} [opt_options.minSpeed = 0] minSpeed.
- * @param {bounciness} [opt_options.bounciness = 0] bounciness.
- * @param {number} [opt_options.life = 0] life.
- * @param {number} [opt_options.lifespan = -1] lifespan.
- * @param {boolean} [opt_options.checkWorldEdges = true] Set to true to check for world boundary collisions.
- * @param {boolean} [opt_options.wrapWorldEdges = false] Set to true to check for world boundary collisions and position item at the opposing boundary.
- * @param {Function} [opt_options.beforeStep = function() {}] This function will be called at the beginning of the item's step() function.
- * @param {Function} [opt_options.afterStep = function() {}] This function will be called at the end of the item's step() function.
- * @param {string} [opt_options.name = 'Item'] The item's name. Typically this is the item's class name.
- */
-Item.prototype.init = function(world, opt_options) {
-
-  if (!world || typeof world !== 'object') {
-    throw new Error('Item requires an instance of World.');
-  }
-
-  this.world = world;
-
-  var options = opt_options || {};
-
-  this.name = typeof this.name !== 'undefined' ? this.name :
-      options.name || 'Item';
-
-  this.width = typeof this.width !== 'undefined' ? this.width :
-      typeof options.width === 'undefined' ? 10 : options.width;
-
-  this.height = typeof this.height !== 'undefined' ? this.height :
-      typeof options.height === 'undefined' ? 10 : options.height;
-
-  this.scale = typeof this.scale !== 'undefined' ? this.scale :
-      options.scale || 1;
-
-  this.angle = typeof this.angle !== 'undefined' ? this.angle :
-      options.angle || 0;
-
-  this.colorMode = typeof this.colorMode !== 'undefined' ? this.colorMode :
-      options.colorMode || 'rgb';
-
-  this.color = typeof this.color !== 'undefined' ? this.color :
-      options.color || [0, 0, 0];
-
-  this.borderWidth = typeof this.borderWidth !== 'undefined' ? this.borderWidth :
-      options.borderWidth || 0;
-
-  this.borderStyle = typeof this.borderStyle !== 'undefined' ? this.borderStyle :
-      options.borderStyle || 'none';
-
-  this.borderColor = typeof this.borderColor !== 'undefined' ? this.borderColor :
-      options.borderColor || [255, 255, 255];
-
-  this.borderRadius = typeof this.borderRadius !== 'undefined' ? this.borderRadius :
-      options.borderRadius || 0;
-
-  this.boxShadowOffsetX = typeof this.boxShadowOffsetX !== 'undefined' ? this.boxShadowOffsetX :
-      options.boxShadowOffsetX || 0;
-
-  this.boxShadowOffsetY = typeof this.boxShadowOffsetY !== 'undefined' ? this.boxShadowOffsetY :
-      options.boxShadowOffsetY || 0;
-
-  this.boxShadowBlur = typeof this.boxShadowBlur !== 'undefined' ? this.boxShadowBlur :
-      options.boxShadowBlur || 0;
-
-  this.boxShadowSpread = typeof this.boxShadowSpread !== 'undefined' ? this.boxShadowSpread :
-      options.boxShadowSpread || 0;
-
-  this.boxShadowColor = typeof this.boxShadowColor !== 'undefined' ? this.boxShadowColor :
-      options.boxShadowColor || [255, 255, 255];
-
-  this.opacity = typeof this.opacity !== 'undefined' ? this.opacity :
-      options.opacity || 1;
-
-  this.zIndex = typeof this.zIndex !== 'undefined' ? this.zIndex :
-      options.zIndex || 0;
-
-  this.mass = typeof this.mass !== 'undefined' ? this.mass :
-      typeof options.mass === 'undefined' ? 10 : options.mass;
-
-  this.acceleration = typeof this.acceleration !== 'undefined' ? this.acceleration :
-      options.acceleration || new Vector();
-
-  this.velocity = typeof this.velocity !== 'undefined' ? this.velocity :
-      options.velocity || new Vector();
-
-  this.location = typeof this.location !== 'undefined' ? this.location :
-      options.location || new Vector(this.world.width / 2, this.world.height / 2);
-
-  this.maxSpeed = typeof this.maxSpeed !== 'undefined' ? this.maxSpeed :
-      typeof options.maxSpeed === 'undefined' ? 10 : options.maxSpeed;
-
-  this.minSpeed = typeof this.minSpeed !== 'undefined' ? this.minSpeed :
-      options.minSpeed || 0;
-
-  this.bounciness = typeof this.bounciness !== 'undefined' ? this.bounciness :
-      options.bounciness || 0.5;
-
-  this.life = typeof this.life !== 'undefined' ? this.life :
-      options.life || 0;
-
-  this.lifespan = typeof this.lifespan !== 'undefined' ? this.lifespan :
-      options.lifespan || -1;
-
-  this.checkWorldEdges = typeof this.checkWorldEdges !== 'undefined' ? this.checkWorldEdges :
-      typeof options.checkWorldEdges === 'undefined' ? true : options.checkWorldEdges;
-
-  this.wrapWorldEdges = typeof this.wrapWorldEdges !== 'undefined' ? this.wrapWorldEdges :
-      !!options.wrapWorldEdges;
-
-  this.beforeStep = typeof this.beforeStep !== 'undefined' ? this.beforeStep :
-      options.beforeStep || function() {};
-
-  this.afterStep = typeof this.afterStep !== 'undefined' ? this.afterStep :
-      options.afterStep || function() {};
-
-  this.controlCamera = typeof this.controlCamera !== 'undefined' ? this.controlCamera :
-      !!options.controlCamera;
-
-  this._force = this._force || new Vector();
-
-  this.id = this.name + Item._idCount;
-  if (!this.el) {
-    this.el = document.createElement('div');
-    this.el.id = this.id;
-    this.el.className = 'item ' + this.name.toLowerCase();
-    this.el.style.position = 'absolute';
-    this.el.style.top = '-5000px';
-    this.world.add(this.el);
-  }
-};
-
-/**
- * Applies forces to item.
- * @function step
- * @memberof Item
- */
-Item.prototype.step = function() {
-
-  var x = this.location.x,
-      y = this.location.y;
-
-  this.beforeStep.call(this);
-  this.applyForce(this.world.gravity);
-  this.applyForce(this.world.wind);
-  this.velocity.add(this.acceleration);
-  this.velocity.limit(this.maxSpeed, this.minSpeed);
-  this.location.add(this.velocity);
-  if (this.checkWorldEdges) {
-    this._checkWorldEdges();
-  } else if (this.wrapWorldEdges) {
-    this._wrapWorldEdges();
-  }
-  if (this.controlCamera) { // need the corrected velocity which is the difference bw old/new location
-    this._checkCameraEdges(x, y, this.location.x, this.location.y);
-  }
-  this.acceleration.mult(0);
-  this.afterStep.call(this);
-};
-
-/**
- * Adds a force to this object's acceleration.
- * @function applyForce
- * @memberof Item
- * @param {Object} force A Vector representing a force to apply.
- * @returns {Object} A Vector representing a new acceleration.
- */
-Item.prototype.applyForce = function(force) {
-  // calculated via F = m * a
-  if (force) {
-    this._force.x = force.x;
-    this._force.y = force.y;
-    this._force.div(this.mass);
-    this.acceleration.add(this._force);
-    return this.acceleration;
-  }
-};
-
-/**
- * Prevents object from moving beyond world bounds.
- * @function _checkWorldEdges
- * @memberof Item
- * @private
- */
-Item.prototype._checkWorldEdges = function() {
-
-  var worldRight = this.world.width,
-      worldBottom = this.world.height,
-      location = this.location,
-      velocity = this.velocity,
-      width = this.width * this.scale,
-      height = this.height * this.scale,
-      bounciness = this.bounciness;
-
-  if (location.x + width / 2 > worldRight) {
-    location.x = worldRight - width / 2;
-    velocity.x *= -1 * bounciness;
-  } else if (location.x < width / 2) {
-    location.x = width / 2;
-    velocity.x *= -1 * bounciness;
-  }
-
-  if (location.y + height / 2 > worldBottom) {
-    location.y = worldBottom - height / 2;
-    velocity.y *= -1 * bounciness;
-  } else if (location.y < height / 2) {
-    location.y = height / 2;
-    velocity.y *= -1 * bounciness;
-  }
-};
-
-/**
- * If item moves beyond world bounds, position's object at the opposite boundary.
- * @function _wrapWorldEdges
- * @memberof Item
- * @private
- */
-Item.prototype._wrapWorldEdges = function() {
-
-  var worldRight = this.world.width,
-      worldBottom = this.world.height,
-      location = this.location,
-      width = this.width * this.scale,
-      height = this.height * this.scale;
-
-  if (location.x - width / 2 > worldRight) {
-    location.x = -width / 2;
-  } else if (location.x < -width / 2) {
-    location.x = worldRight + width / 2;
-  }
-
-  if (location.y - height / 2 > worldBottom) {
-    location.y = -height / 2;
-  } else if (location.y < -height / 2) {
-    location.y = worldBottom + height / 2;
-  }
-};
-
-/**
- * Moves the world in the opposite direction of the Camera's controlObj.
- */
-Item.prototype._checkCameraEdges = function(lastX, lastY, x, y) {
-  this.world._camera.x = lastX - x;
-  this.world._camera.y = lastY - y;
-};
-
-/**
- * Updates the corresponding DOM element's style property.
- * @function draw
- * @memberof Item
- */
-Item.prototype.draw = function() {
-  var cssText = this.getCSSText({
-    x: this.location.x - (this.width / 2),
-    y: this.location.y - (this.height / 2),
-    angle: this.angle,
-    scale: this.scale || 1,
-    width: this.width,
-    height: this.height,
-    colorMode: this.colorMode,
-    color0: this.color[0],
-    color1: this.color[1],
-    color2: this.color[2],
-    opacity: this.opacity,
-    zIndex: this.zIndex
-  });
-  this.el.style.cssText = cssText;
-};
-
-/**
- * Concatenates a new cssText string.
- *
- * @function getCSSText
- * @memberof Item
- * @param {Object} props A map of object properties.
- * @returns {string} A string representing cssText.
- */
-Item.prototype.getCSSText = function(props) {
-  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: ' + props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
-};
-
-module.exports.Item = Item;
-
-},{"./Vector":7}],4:[function(_dereq_,module,exports){
-/*global document, window */
-
-/**
- * Creates a new StatsDisplay object.
- *
- * Use this class to create a field in the
- * top-left corner that displays the current
- * frames per second and total number of elements
- * processed in the System.animLoop.
- *
- * Note: StatsDisplay will not function in browsers
- * whose Date object does not support Date.now().
- * These include IE6, IE7, and IE8.
- *
- * @constructor
- */
-function StatsDisplay() {}
-
-/**
- * Name
- * @private
- * @memberof StatsDisplay
- */
-StatsDisplay.name = 'StatsDisplay';
-
-/**
- * Set to false to stop requesting animation frames.
- * @private
- * @memberof StatsDisplay
- */
-StatsDisplay.active = false;
-
-/**
- * Frames per second.
- * @private
- * @memberof StatsDisplay
- */
-StatsDisplay.fps = false;
-
-/**
- * The current time.
- * @private
- * @memberof StatsDisplay
- */
-StatsDisplay._time = Date.now();
-
-/**
- * The time at the last frame.
- * @private
- * @memberof StatsDisplay
- */
-StatsDisplay._timeLastFrame = StatsDisplay._time;
-
-/**
- * The time the last second was sampled.
- * @private
- * @memberof StatsDisplay
- */
-StatsDisplay._timeLastSecond = StatsDisplay._time;
-
-/**
- * Holds the total number of frames
- * between seconds.
- * @private
- * @memberof StatsDisplay
- */
-StatsDisplay._frameCount = 0;
-
-/**
- * Initializes the StatsDisplay.
- * @function update
- * @memberof StatsDisplay
- */
-StatsDisplay.init = function() {
-
-  StatsDisplay.active = true;
-
-  /**
-   * A reference to the DOM element containing the display.
-   * @private
-   */
-  StatsDisplay.el = document.createElement('div');
-  StatsDisplay.el.id = 'statsDisplay';
-  StatsDisplay.el.className = 'statsDisplay';
-  StatsDisplay.el.style.backgroundColor = 'black';
-  StatsDisplay.el.style.color = 'white';
-  StatsDisplay.el.style.fontFamily = 'Helvetica';
-  StatsDisplay.el.style.padding = '0.5em';
-  StatsDisplay.el.style.opacity = '0.5';
-
-
-  // create totol elements label
-  var labelContainer = document.createElement('span');
-  labelContainer.className = 'statsDisplayLabel';
-  labelContainer.style.marginLeft = '0.5em';
-  label = document.createTextNode('total elements: ');
-  labelContainer.appendChild(label);
-  StatsDisplay.el.appendChild(labelContainer);
-
-  // create textNode for totalElements
-  StatsDisplay.totalElementsValue = document.createTextNode('0');
-  StatsDisplay.el.appendChild(StatsDisplay.totalElementsValue);
-
-  // create fps label
-  labelContainer = document.createElement('span');
-  labelContainer.className = 'statsDisplayLabel';
-  labelContainer.style.marginLeft = '0.5em';
-  var label = document.createTextNode('fps: ');
-  labelContainer.appendChild(label);
-  StatsDisplay.el.appendChild(labelContainer);
-
-  // create textNode for fps
-  StatsDisplay.fpsValue = document.createTextNode('0');
-  StatsDisplay.el.appendChild(StatsDisplay.fpsValue);
-
-  document.body.appendChild(StatsDisplay.el);
-
-};
-
-/**
- * If 1000ms have elapsed since the last evaluated second,
- * fps is assigned the total number of frames rendered and
- * its corresponding textNode is updated. The total number of
- * elements is also updated.
- *
- * @function update
- * @memberof StatsDisplay
- * @param {Number} [opt_totalItems] The total items in the system.
- */
-StatsDisplay.update = function(opt_totalItems) {
-
-  var sd = StatsDisplay,
-      totalItems = opt_totalItems || 0;
-
-  sd._time = Date.now();
-  sd._frameCount++;
-
-  // at least a second has passed
-  if (sd._time > sd._timeLastSecond + 1000) {
-
-    sd.fps = sd._frameCount;
-    sd._timeLastSecond = sd._time;
-    sd._frameCount = 0;
-
-    sd.fpsValue.nodeValue = sd.fps;
-    sd.totalElementsValue.nodeValue = totalItems;
-  }
-};
-
-/**
- * Hides statsDisplay from DOM.
- * @function hide
- * @memberof StatsDisplay
- */
-StatsDisplay.hide = function() {
-  var sd = document.getElementById(StatsDisplay.el.id);
-  sd.style.display = 'none';
-};
-
-/**
- * Shows statsDisplay from DOM.
- * @function show
- * @memberof StatsDisplay
- */
-StatsDisplay.show = function() {
-  var sd = document.getElementById(StatsDisplay.el.id);
-  sd.style.display = 'block';
-};
-
-module.exports.StatsDisplay = StatsDisplay;
-
-},{}],5:[function(_dereq_,module,exports){
-/*global window, document, setTimeout, Burner, Modernizr */
+},{"./src/Item":5,"./src/System":7,"./src/World":8,"drawing-utils-lib":3,"vector2d-lib":4}],3:[function(_dereq_,module,exports){
 /*jshint supernew:true */
-
-var Item = _dereq_('./Item').Item,
-    World = _dereq_('./World').World,
-    Vector = _dereq_('./Vector').Vector,
-    Utils = _dereq_('./Utils').Utils,
-    StatsDisplay = _dereq_('./StatsDisplay').StatsDisplay;
-
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-
-/** @namespace */
-var System = {
-  name: 'System'
-};
-
-/**
- * Holds additional classes that can be defined at runtime.
- * @memberof System
- */
-System.Classes = {
-  'Item': Item
-};
-
-/**
- * Holds a vector describing the system gravity.
- * @memberof System
- */
-System.gravity = new Vector(0, 1);
-
-/**
- * Holds a vector describing the system wind.
- * @memberof System
- */
-System.wind = new Vector();
-
-/**
- * Stores references to all items in the system.
- * @memberof System
- * @private
- */
-System._records = [];
-
-/**
- * Stores references to all items removed from the system.
- * @memberof System
- * @private
- */
-System._pool = [];
-
-/**
- * Holds the current and last mouse/touch positions relative
- * to the browser window. Also, holds the current mouse velocity.
- * @public
- */
-System.mouse = {
-  location: new Vector(),
-  lastLocation: new Vector(),
-  velocity: new Vector()
-};
-
-/**
- * An instance of StatsDisplay.
- * @type {Object}
- * @private
- */
-System._statsDisplay = null;
-
- /**
-  * Call to execute any setup code before starting the animation loop.
-  * @function setup
-  * @param  {Object} opt_func   A function to run before the function exits.
-  * @memberof System
-  */
-System.setup = function(opt_func) {
-
-  var func = opt_func || function() {}, i, l, max;
-
-  document.body.onorientationchange = System.updateOrientation;
-
-  // save the current and last mouse position
-  Utils.addEvent(document, 'mousemove', System._recordMouseLoc);
-
-  // save the current and last touch position
-  Utils.addEvent(window, 'touchstart', System._recordMouseLoc);
-  Utils.addEvent(window, 'touchmove', System._recordMouseLoc);
-  Utils.addEvent(window, 'touchend', System._recordMouseLoc);
-
-  // listen for key up
-  Utils.addEvent(window, 'keyup', System._keyup);
-
-  // save the setup callback in case we need to reset the system.
-  System.setupFunc = func;
-
-  System.setupFunc.call(this);
-};
-
- /**
-  * Call to execute any setup code before starting the animation loop.
-  * Note: Deprecated in v3. Use setup();
-  * @function setup
-  * @param  {Object} opt_func   A function to run before the function exits.
-  * @param  {Object|Array} opt_worlds A instance or array of instances of World.
-  * @memberof System
-  */
-System.init = function(opt_func, opt_worlds) {
-  System.setup(opt_func, opt_worlds);
-};
-
-/**
- * Adds world to System records and worlds cache.
- *
- * @function _addWorld
- * @memberof System
- * @private
- * @param {Object} world An instance of World.
- */
-System._addWorld = function(world) {
-  System._records.push(world);
-};
-
-/**
- * Adds instances of class to _records and calls init on them.
- * @function add
- * @memberof System
- * @param {string} [opt_klass = 'Item'] The name of the class to add.
- * @param {Object} [opt_options=] A map of initial properties.
- * @param {string=} [opt_world = System._records[0]] An instance of World to contain the item.
- * @returns {Object} An instance of the added item.
- */
-System.add = function(opt_klass, opt_options, opt_world) {
-
-  var klass = opt_klass || 'Item',
-      options = opt_options || null,
-      world = opt_world || System._records[0],
-      records = this._records, obj;
-
-  // recycle object if one is available
-  if (System._pool.length) {
-    obj = System._cleanObj(System._pool.splice(0, 1)[0]);
-  } else {
-    if (klass.toLowerCase() === 'world') {
-      obj = new World(options);
-    } else if (System.Classes[klass]) {
-      obj = new System.Classes[klass](options);
-    } else {
-      obj = new Item();
-    }
-  }
-  obj.init(world, options);
-  records.push(obj);
-  return obj;
-};
-
-/**
- * Removes all properties from the passed object.
- * @param  {Object} obj An object.
- * @return {Object}     The passed object.
- */
-System._cleanObj = function(obj) {
-  for (var prop in obj) {
-    if (obj.hasOwnProperty(prop)) {
-      delete obj[prop];
-    }
-  }
-  return obj;
-};
-
-/**
- * Removes an item from the system.
- * @function remove
- * @memberof System
- * @param {Object} obj The item to remove.
- */
-System.remove = function (obj) {
-
-  var i, max, records = System._records;
-
-  for (i = 0, max = records.length; i < max; i++) {
-    if (records[i].id === obj.id) {
-      records[i].el.style.visibility = 'hidden'; // hide item
-      System._pool[System._pool.length] = records.splice(i, 1)[0]; // move record to pool array
-      break;
-    }
-  }
-};
-
-/**
- * Removes an item from the system.
- * Note: Deprecated in v3. Use remove().
- * @function remove
- * @memberof System
- * @param {Object} obj The item to remove.
- */
-System.destroy = function (obj) {
-  System.remove(obj);
-};
-
-/**
- * Iterates over records.
- * @function loop
- * @memberof System
- */
-System.loop = function() {
-
-  var i, records = System._records,
-      len = System._records.length;
-
-  for (i = len - 1; i >= 0; i -= 1) {
-    if (records[i].step && !records[i].world.pauseStep) {
-
-      if (records[i].life < records[i].lifespan) {
-        records[i].life += 1;
-      } else if (records[i].lifespan !== -1) {
-        System.remove(records[i]);
-        continue;
-      }
-      records[i].step();
-    }
-  }
-  len = System._records.length; // check length in case items were removed in step()
-  for (i = len - 1; i >= 0; i -= 1) {
-    records[i].draw();
-  }
-  if (StatsDisplay.active) {
-    StatsDisplay.update(len);
-  }
-  if (typeof window.requestAnimationFrame !== 'undefined') {
-    window.requestAnimationFrame(System.loop);
-  }
-};
-
-/**
- * Pauses the system and processes one step in records.
- *
- * @function _stepForward
- * @memberof System
- * @private
- */
-System._stepForward = function() {
-
-  var i, j, max, records = System._records,
-      world, worlds = System.allWorlds();
-
-  for (i = 0, max = worlds.length; i < max; i++) {
-    world = worlds[i];
-    world.pauseStep = true;
-    for (j = records.length - 1; j >= 0; j -= 1) {
-      if (records[j].step) {
-        records[j].step();
-      }
-    }
-    for (j = records.length - 1; j >= 0; j -= 1) {
-      if (records[j].draw) {
-        records[j].draw();
-      }
-    }
-  }
-};
-
-/**
- * Saves the mouse/touch location relative to the browser window.
- *
- * @function _recordMouseLoc
- * @memberof System
- * @private
- */
-System._recordMouseLoc = function(e) {
-
-  var touch, world = System.firstWorld();
-
-  System.mouse.lastLocation.x = System.mouse.location.x;
-  System.mouse.lastLocation.y = System.mouse.location.y;
-
-  if (e.changedTouches) {
-    touch = e.changedTouches[0];
-  }
-
-  /**
-   * Mapping window size to world size allows us to
-   * lead an agent around a world that's not bound
-   * to the window.
-   */
-  if (e.pageX && e.pageY) {
-    System.mouse.location.x = Utils.map(e.pageX, 0, window.innerWidth, 0, world.width);
-    System.mouse.location.y = Utils.map(e.pageY, 0, window.innerHeight, 0, world.height);
-  } else if (e.clientX && e.clientY) {
-    System.mouse.location.x = Utils.map(e.clientX, 0, window.innerWidth, 0, world.width);
-    System.mouse.location.y = Utils.map(e.clientY, 0, window.innerHeight, 0, world.height);
-  } else if (touch) {
-    System.mouse.location.x = touch.pageX;
-    System.mouse.location.y = touch.pageY;
-  }
-
-  System.mouse.velocity.x = System.mouse.lastLocation.x - System.mouse.location.x;
-  System.mouse.velocity.y = System.mouse.lastLocation.y - System.mouse.location.y;
-};
-
-/**
- * Returns the first world in the system.
- *
- * @function firstWorld
- * @memberof System
- * @returns {null|Object} An instance of World.
- */
-System.firstWorld = function() {
-  return this._records.length ? this._records[0] : null;
-};
-
-/**
- * Returns all worlds.
- *
- * @function allWorlds
- * @memberof System
- * @return {Array.<World>} An array of worlds.
- */
-System.allWorlds = function() {
-  return System.getAllItemsByName('World');
-};
-
-/**
- * Returns an array of items created from the same constructor.
- *
- * @function getAllItemsByName
- * @memberof System
- * @param {string} name The 'name' property.
- * @param {Array} [opt_list = this._records] An optional list of items.
- * @returns {Array} An array of items.
- */
-System.getAllItemsByName = function(name, opt_list) {
-
-  var i, max, arr = [],
-      list = opt_list || this._records;
-
-  for (i = 0, max = list.length; i < max; i++) {
-    if (list[i].name === name) {
-      arr[arr.length] = list[i];
-    }
-  }
-  return arr;
-};
-
-/**
- * Handles orientation evenst and forces the world to update its bounds.
- *
- * @function updateOrientation
- * @memberof System
- */
-System.updateOrientation = function() {
-  var worlds = System.allWorlds(),
-  i, max, l = worlds.length;
-  for (i = 0; i < l; i++) {
-    worlds[i].width = worlds[i].el.scrollWidth;
-    worlds[i].height = worlds[i].el.scrollHeight;
-  }
-};
-
-/**
- * Handles keyup events.
- *
- * @function _keyup
- * @memberof System
- * @private
- * @param {Object} e An event.
- */
-System._keyup = function(e) {
-
-  var i, max, world, worlds = System.allWorlds();
-
-  switch(e.keyCode) {
-    case 39:
-      System._stepForward();
-      break;
-    case 80: // p; pause/play
-      for (i = 0, max = worlds.length; i < max; i++) {
-        world = worlds[i];
-        world.pauseStep = !world.pauseStep;
-      }
-      break;
-    case 82: // r; reset
-      System._resetSystem();
-      break;
-    case 83: // s; reset
-      System._toggleStats();
-      break;
-  }
-};
-
-/**
- * Resets the system.
- *
- * @function _resetSystem
- * @memberof System
- * @private
- */
-System._resetSystem = function() {
-
-  var i, max, world, worlds = System.allWorlds();
-
-  for (i = 0, max = worlds.length; i < max; i++) {
-    world = worlds[i];
-    world.pauseStep = false;
-    world.pauseDraw = false;
-
-    while(world.el.firstChild) {
-      world.el.removeChild(world.el.firstChild);
-    }
-  }
-
-  System._records = [];
-  System._pool = [];
-  System.setup(System.setupFunc);
-};
-
-/**
- * Toggles stats display.
- *
- * @function _toggleStats
- * @memberof System
- * @private
- */
-System._toggleStats = function() {
-  if (!StatsDisplay.fps) {
-    StatsDisplay.init();
-  } else {
-    StatsDisplay.active = !StatsDisplay.active;
-  }
-
-  if (!StatsDisplay.active) {
-    StatsDisplay.hide();
-  } else {
-    StatsDisplay.show();
-  }
-};
-
-module.exports.System = System;
-
-},{"./Item":3,"./StatsDisplay":4,"./Utils":6,"./Vector":7,"./World":8}],6:[function(_dereq_,module,exports){
 /** @namespace */
 var Utils = {
   name: 'Utils'
@@ -1150,10 +209,12 @@ Utils.capitalizeFirstLetter = function(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-module.exports.Utils = Utils;
-
-},{}],7:[function(_dereq_,module,exports){
+module.exports = Utils;
+},{}],4:[function(_dereq_,module,exports){
+/*global exports, Vector */
 /*jshint supernew:true */
+
+
 /**
  * Creates a new Vector.
  *
@@ -1397,15 +458,1007 @@ Vector.prototype.midpoint = function(vector) {
  * @returns {Object} A vector.
  */
 Vector.prototype.dot = function(vector) {
+  if (this.z && vector.z) {
+    return this.x * vector.x + this.y * vector.y + this.z * vector.z;
+  }
   return this.x * vector.x + this.y * vector.y;
 };
 
-module.exports.Vector = Vector;
+module.exports = Vector;
+},{}],5:[function(_dereq_,module,exports){
+/*global document */
 
-},{}],8:[function(_dereq_,module,exports){
-var Vector = _dereq_('./Vector').Vector,
+var Vector = _dereq_('vector2d-lib');
+
+/**
+ * Creates a new Item.
+ * @constructor
+ * @param {string} opt_name The item's class name.
+ */
+function Item() {
+  Item._idCount++;
+}
+
+/**
+ * Holds a count of item instances.
+ * @memberof Item
+ * @private
+ */
+Item._idCount = 0;
+
+/**
+ * Holds a transform property based on supportedFeatures.
+ * @memberof Item
+ * @private
+ */
+Item._stylePosition =
+    'transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>); ' +
+    '-webkit-transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>); ' +
+    '-moz-transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>); ' +
+    '-o-transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>); ' +
+    '-ms-transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>);';
+
+/**
+ * Resets all properties.
+ * @function init
+ * @memberof Item
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.name = 10] The item's name.
+ * @param {number} [opt_options.width = 10] Width.
+ * @param {number} [opt_options.height = 10] Height.
+ * @param {number} [opt_options.scale = 1] Scale.
+ * @param {number} [opt_options.angle = 0] Angle.
+ * @param {Array} [opt_options.colorMode = 'rgb'] Color mode. Possible values are 'rgb' and 'hsl'.
+ * @param {Array} [opt_options.color = 200, 200, 200] Color.
+ * @param {Array} [opt_options.borderWidth = 0] borderWidth.
+ * @param {Array} [opt_options.borderStyle = 'none'] borderStyle.
+ * @param {Array} [opt_options.borderColor = 255, 255, 255] borderColor.
+ * @param {Array} [opt_options.borderRadius = 0] borderRadius.
+ * @param {Array} [opt_options.boxShadowOffsetX = 0] boxShadowOffsetX.
+ * @param {Array} [opt_options.boxShadowOffsetY = 0] boxShadowOffsetY.
+ * @param {Array} [opt_options.boxShadowBlur = 0] boxShadowBlur.
+ * @param {Array} [opt_options.boxShadowSpread = 0] boxShadowSpread.
+ * @param {Array} [opt_options.boxShadowColor = 255, 255, 255] boxShadowColor.
+ * @param {Array} [opt_options.opacity = 1] opacity.
+ * @param {Array} [opt_options.zIndex = 0] zIndex.
+ * @param {number} [opt_options.mass = 10] mass.
+ * @param {Function|Object} [opt_options.acceleration = new Vector()] acceleration.
+ * @param {Function|Object} [opt_options.velocity = new Vector()] velocity.
+ * @param {Function|Object} [opt_options.location = new Vector()] location.
+ * @param {number} [opt_options.maxSpeed = 10] maxSpeed.
+ * @param {number} [opt_options.minSpeed = 0] minSpeed.
+ * @param {bounciness} [opt_options.bounciness = 0] bounciness.
+ * @param {number} [opt_options.life = 0] life.
+ * @param {number} [opt_options.lifespan = -1] lifespan.
+ * @param {boolean} [opt_options.checkWorldEdges = true] Set to true to check for world boundary collisions.
+ * @param {boolean} [opt_options.wrapWorldEdges = false] Set to true to check for world boundary collisions and position item at the opposing boundary.
+ * @param {Function} [opt_options.beforeStep = function() {}] This function will be called at the beginning of the item's step() function.
+ * @param {Function} [opt_options.afterStep = function() {}] This function will be called at the end of the item's step() function.
+ * @param {string} [opt_options.name = 'Item'] The item's name. Typically this is the item's class name.
+ */
+Item.prototype.init = function(world, opt_options) {
+
+  if (!world || typeof world !== 'object') {
+    throw new Error('Item requires an instance of World.');
+  }
+
+  this.world = world;
+
+  var options = opt_options || {};
+
+  this.name = typeof this.name !== 'undefined' ? this.name :
+      options.name || 'Item';
+
+  this.width = typeof this.width !== 'undefined' ? this.width :
+      typeof options.width === 'undefined' ? 10 : options.width;
+
+  this.height = typeof this.height !== 'undefined' ? this.height :
+      typeof options.height === 'undefined' ? 10 : options.height;
+
+  this.scale = typeof this.scale !== 'undefined' ? this.scale :
+      options.scale || 1;
+
+  this.angle = typeof this.angle !== 'undefined' ? this.angle :
+      options.angle || 0;
+
+  this.colorMode = typeof this.colorMode !== 'undefined' ? this.colorMode :
+      options.colorMode || 'rgb';
+
+  this.color = typeof this.color !== 'undefined' ? this.color :
+      options.color || [200, 200, 200];
+
+  this.borderWidth = typeof this.borderWidth !== 'undefined' ? this.borderWidth :
+      options.borderWidth || 0;
+
+  this.borderStyle = typeof this.borderStyle !== 'undefined' ? this.borderStyle :
+      options.borderStyle || 'none';
+
+  this.borderColor = typeof this.borderColor !== 'undefined' ? this.borderColor :
+      options.borderColor || [255, 255, 255];
+
+  this.borderRadius = typeof this.borderRadius !== 'undefined' ? this.borderRadius :
+      options.borderRadius || 0;
+
+  this.boxShadowOffsetX = typeof this.boxShadowOffsetX !== 'undefined' ? this.boxShadowOffsetX :
+      options.boxShadowOffsetX || 0;
+
+  this.boxShadowOffsetY = typeof this.boxShadowOffsetY !== 'undefined' ? this.boxShadowOffsetY :
+      options.boxShadowOffsetY || 0;
+
+  this.boxShadowBlur = typeof this.boxShadowBlur !== 'undefined' ? this.boxShadowBlur :
+      options.boxShadowBlur || 0;
+
+  this.boxShadowSpread = typeof this.boxShadowSpread !== 'undefined' ? this.boxShadowSpread :
+      options.boxShadowSpread || 0;
+
+  this.boxShadowColor = typeof this.boxShadowColor !== 'undefined' ? this.boxShadowColor :
+      options.boxShadowColor || [255, 255, 255];
+
+  this.opacity = typeof this.opacity !== 'undefined' ? this.opacity :
+      options.opacity || 1;
+
+  this.zIndex = typeof this.zIndex !== 'undefined' ? this.zIndex :
+      options.zIndex || 0;
+
+  this.mass = typeof this.mass !== 'undefined' ? this.mass :
+      typeof options.mass === 'undefined' ? 10 : options.mass;
+
+  this.acceleration = typeof this.acceleration !== 'undefined' ? this.acceleration :
+      options.acceleration || new Vector();
+
+  this.velocity = typeof this.velocity !== 'undefined' ? this.velocity :
+      options.velocity || new Vector();
+
+  this.location = typeof this.location !== 'undefined' ? this.location :
+      options.location || new Vector(this.world.width / 2, this.world.height / 2);
+
+  this.maxSpeed = typeof this.maxSpeed !== 'undefined' ? this.maxSpeed :
+      typeof options.maxSpeed === 'undefined' ? 10 : options.maxSpeed;
+
+  this.minSpeed = typeof this.minSpeed !== 'undefined' ? this.minSpeed :
+      options.minSpeed || 0;
+
+  this.bounciness = typeof this.bounciness !== 'undefined' ? this.bounciness :
+      options.bounciness || 0.5;
+
+  this.life = typeof this.life !== 'undefined' ? this.life :
+      options.life || 0;
+
+  this.lifespan = typeof this.lifespan !== 'undefined' ? this.lifespan :
+      options.lifespan || -1;
+
+  this.checkWorldEdges = typeof this.checkWorldEdges !== 'undefined' ? this.checkWorldEdges :
+      typeof options.checkWorldEdges === 'undefined' ? true : options.checkWorldEdges;
+
+  this.wrapWorldEdges = typeof this.wrapWorldEdges !== 'undefined' ? this.wrapWorldEdges :
+      !!options.wrapWorldEdges;
+
+  this.beforeStep = typeof this.beforeStep !== 'undefined' ? this.beforeStep :
+      options.beforeStep || function() {};
+
+  this.afterStep = typeof this.afterStep !== 'undefined' ? this.afterStep :
+      options.afterStep || function() {};
+
+  this.controlCamera = typeof this.controlCamera !== 'undefined' ? this.controlCamera :
+      !!options.controlCamera;
+
+  this._force = this._force || new Vector();
+
+  this.id = this.name + Item._idCount;
+  if (!this.el) {
+    this.el = document.createElement('div');
+    this.el.id = this.id;
+    this.el.className = 'item ' + this.name.toLowerCase();
+    this.el.style.position = 'absolute';
+    this.el.style.top = '-5000px';
+    this.world.add(this.el);
+  }
+};
+
+/**
+ * Applies forces to item.
+ * @function step
+ * @memberof Item
+ */
+Item.prototype.step = function() {
+
+  var x = this.location.x,
+      y = this.location.y;
+
+  this.beforeStep.call(this);
+  this.applyForce(this.world.gravity);
+  this.applyForce(this.world.wind);
+  this.velocity.add(this.acceleration);
+  this.velocity.limit(this.maxSpeed, this.minSpeed);
+  this.location.add(this.velocity);
+  if (this.checkWorldEdges) {
+    this._checkWorldEdges();
+  } else if (this.wrapWorldEdges) {
+    this._wrapWorldEdges();
+  }
+  if (this.controlCamera) { // need the corrected velocity which is the difference bw old/new location
+    this._checkCameraEdges(x, y, this.location.x, this.location.y);
+  }
+  this.acceleration.mult(0);
+  this.afterStep.call(this);
+};
+
+/**
+ * Adds a force to this object's acceleration.
+ * @function applyForce
+ * @memberof Item
+ * @param {Object} force A Vector representing a force to apply.
+ * @returns {Object} A Vector representing a new acceleration.
+ */
+Item.prototype.applyForce = function(force) {
+  // calculated via F = m * a
+  if (force) {
+    this._force.x = force.x;
+    this._force.y = force.y;
+    this._force.div(this.mass);
+    this.acceleration.add(this._force);
+    return this.acceleration;
+  }
+};
+
+/**
+ * Prevents object from moving beyond world bounds.
+ * @function _checkWorldEdges
+ * @memberof Item
+ * @private
+ */
+Item.prototype._checkWorldEdges = function() {
+
+  var worldRight = this.world.width,
+      worldBottom = this.world.height,
+      location = this.location,
+      velocity = this.velocity,
+      width = this.width * this.scale,
+      height = this.height * this.scale,
+      bounciness = this.bounciness;
+
+  if (location.x + width / 2 > worldRight) {
+    location.x = worldRight - width / 2;
+    velocity.x *= -1 * bounciness;
+  } else if (location.x < width / 2) {
+    location.x = width / 2;
+    velocity.x *= -1 * bounciness;
+  }
+
+  if (location.y + height / 2 > worldBottom) {
+    location.y = worldBottom - height / 2;
+    velocity.y *= -1 * bounciness;
+  } else if (location.y < height / 2) {
+    location.y = height / 2;
+    velocity.y *= -1 * bounciness;
+  }
+};
+
+/**
+ * If item moves beyond world bounds, position's object at the opposite boundary.
+ * @function _wrapWorldEdges
+ * @memberof Item
+ * @private
+ */
+Item.prototype._wrapWorldEdges = function() {
+
+  var worldRight = this.world.width,
+      worldBottom = this.world.height,
+      location = this.location,
+      width = this.width * this.scale,
+      height = this.height * this.scale;
+
+  if (location.x - width / 2 > worldRight) {
+    location.x = -width / 2;
+  } else if (location.x < -width / 2) {
+    location.x = worldRight + width / 2;
+  }
+
+  if (location.y - height / 2 > worldBottom) {
+    location.y = -height / 2;
+  } else if (location.y < -height / 2) {
+    location.y = worldBottom + height / 2;
+  }
+};
+
+/**
+ * Moves the world in the opposite direction of the Camera's controlObj.
+ */
+Item.prototype._checkCameraEdges = function(lastX, lastY, x, y) {
+  this.world._camera.x = lastX - x;
+  this.world._camera.y = lastY - y;
+};
+
+/**
+ * Updates the corresponding DOM element's style property.
+ * @function draw
+ * @memberof Item
+ */
+Item.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    colorMode: this.colorMode,
+    color0: this.color[0],
+    color1: this.color[1],
+    color2: this.color[2],
+    opacity: this.opacity,
+    zIndex: this.zIndex
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof Item
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+Item.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: ' + props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
+};
+
+module.exports.Item = Item;
+
+},{"vector2d-lib":4}],6:[function(_dereq_,module,exports){
+/*global document, window */
+
+/**
+ * Creates a new StatsDisplay object.
+ *
+ * Use this class to create a field in the
+ * top-left corner that displays the current
+ * frames per second and total number of elements
+ * processed in the System.animLoop.
+ *
+ * Note: StatsDisplay will not function in browsers
+ * whose Date object does not support Date.now().
+ * These include IE6, IE7, and IE8.
+ *
+ * @constructor
+ */
+function StatsDisplay() {}
+
+/**
+ * Name
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay.name = 'StatsDisplay';
+
+/**
+ * Set to false to stop requesting animation frames.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay.active = false;
+
+/**
+ * Frames per second.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay.fps = false;
+
+/**
+ * The current time.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay._time = Date.now();
+
+/**
+ * The time at the last frame.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay._timeLastFrame = StatsDisplay._time;
+
+/**
+ * The time the last second was sampled.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay._timeLastSecond = StatsDisplay._time;
+
+/**
+ * Holds the total number of frames
+ * between seconds.
+ * @private
+ * @memberof StatsDisplay
+ */
+StatsDisplay._frameCount = 0;
+
+/**
+ * Initializes the StatsDisplay.
+ * @function update
+ * @memberof StatsDisplay
+ */
+StatsDisplay.init = function() {
+
+  StatsDisplay.active = true;
+
+  /**
+   * A reference to the DOM element containing the display.
+   * @private
+   */
+  StatsDisplay.el = document.createElement('div');
+  StatsDisplay.el.id = 'statsDisplay';
+  StatsDisplay.el.className = 'statsDisplay';
+  StatsDisplay.el.style.backgroundColor = 'black';
+  StatsDisplay.el.style.color = 'white';
+  StatsDisplay.el.style.fontFamily = 'Helvetica';
+  StatsDisplay.el.style.padding = '0.5em';
+  StatsDisplay.el.style.opacity = '0.5';
+
+
+  // create totol elements label
+  var labelContainer = document.createElement('span');
+  labelContainer.className = 'statsDisplayLabel';
+  labelContainer.style.marginLeft = '0.5em';
+  label = document.createTextNode('total elements: ');
+  labelContainer.appendChild(label);
+  StatsDisplay.el.appendChild(labelContainer);
+
+  // create textNode for totalElements
+  StatsDisplay.totalElementsValue = document.createTextNode('0');
+  StatsDisplay.el.appendChild(StatsDisplay.totalElementsValue);
+
+  // create fps label
+  labelContainer = document.createElement('span');
+  labelContainer.className = 'statsDisplayLabel';
+  labelContainer.style.marginLeft = '0.5em';
+  var label = document.createTextNode('fps: ');
+  labelContainer.appendChild(label);
+  StatsDisplay.el.appendChild(labelContainer);
+
+  // create textNode for fps
+  StatsDisplay.fpsValue = document.createTextNode('0');
+  StatsDisplay.el.appendChild(StatsDisplay.fpsValue);
+
+  document.body.appendChild(StatsDisplay.el);
+
+};
+
+/**
+ * If 1000ms have elapsed since the last evaluated second,
+ * fps is assigned the total number of frames rendered and
+ * its corresponding textNode is updated. The total number of
+ * elements is also updated.
+ *
+ * @function update
+ * @memberof StatsDisplay
+ * @param {Number} [opt_totalItems] The total items in the system.
+ */
+StatsDisplay.update = function(opt_totalItems) {
+
+  var sd = StatsDisplay,
+      totalItems = opt_totalItems || 0;
+
+  sd._time = Date.now();
+  sd._frameCount++;
+
+  // at least a second has passed
+  if (sd._time > sd._timeLastSecond + 1000) {
+
+    sd.fps = sd._frameCount;
+    sd._timeLastSecond = sd._time;
+    sd._frameCount = 0;
+
+    sd.fpsValue.nodeValue = sd.fps;
+    sd.totalElementsValue.nodeValue = totalItems;
+  }
+};
+
+/**
+ * Hides statsDisplay from DOM.
+ * @function hide
+ * @memberof StatsDisplay
+ */
+StatsDisplay.hide = function() {
+  var sd = document.getElementById(StatsDisplay.el.id);
+  sd.style.display = 'none';
+};
+
+/**
+ * Shows statsDisplay from DOM.
+ * @function show
+ * @memberof StatsDisplay
+ */
+StatsDisplay.show = function() {
+  var sd = document.getElementById(StatsDisplay.el.id);
+  sd.style.display = 'block';
+};
+
+module.exports.StatsDisplay = StatsDisplay;
+
+},{}],7:[function(_dereq_,module,exports){
+/*global window, document, setTimeout, Burner, Modernizr */
+/*jshint supernew:true */
+
+var Item = _dereq_('./Item').Item,
+    World = _dereq_('./World').World,
+    Vector = _dereq_('vector2d-lib'),
+    Utils = _dereq_('drawing-utils-lib'),
+    StatsDisplay = _dereq_('./StatsDisplay').StatsDisplay;
+
+window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+/** @namespace */
+var System = {
+  name: 'System'
+};
+
+/**
+ * Holds additional classes that can be defined at runtime.
+ * @memberof System
+ */
+System.Classes = {
+  'Item': Item
+};
+
+/**
+ * Holds a vector describing the system gravity.
+ * @memberof System
+ */
+System.gravity = new Vector(0, 1);
+
+/**
+ * Holds a vector describing the system wind.
+ * @memberof System
+ */
+System.wind = new Vector();
+
+/**
+ * Stores references to all items in the system.
+ * @memberof System
+ * @private
+ */
+System._records = [];
+
+/**
+ * Stores references to all items removed from the system.
+ * @memberof System
+ * @private
+ */
+System._pool = [];
+
+/**
+ * Holds the current and last mouse/touch positions relative
+ * to the browser window. Also, holds the current mouse velocity.
+ * @public
+ */
+System.mouse = {
+  location: new Vector(),
+  lastLocation: new Vector(),
+  velocity: new Vector()
+};
+
+/**
+ * An instance of StatsDisplay.
+ * @type {Object}
+ * @private
+ */
+System._statsDisplay = null;
+
+ /**
+  * Call to execute any setup code before starting the animation loop.
+  * @function setup
+  * @param  {Object} opt_func   A function to run before the function exits.
+  * @memberof System
+  */
+System.setup = function(opt_func) {
+
+  var func = opt_func || function() {}, i, l, max;
+
+  document.body.onorientationchange = System.updateOrientation;
+
+  // save the current and last mouse position
+  Utils.addEvent(document, 'mousemove', System._recordMouseLoc);
+
+  // save the current and last touch position
+  Utils.addEvent(window, 'touchstart', System._recordMouseLoc);
+  Utils.addEvent(window, 'touchmove', System._recordMouseLoc);
+  Utils.addEvent(window, 'touchend', System._recordMouseLoc);
+
+  // listen for key up
+  Utils.addEvent(window, 'keyup', System._keyup);
+
+  // save the setup callback in case we need to reset the system.
+  System.setupFunc = func;
+
+  System.setupFunc.call(this);
+};
+
+ /**
+  * Call to execute any setup code before starting the animation loop.
+  * Note: Deprecated in v3. Use setup();
+  * @function setup
+  * @param  {Object} opt_func   A function to run before the function exits.
+  * @param  {Object|Array} opt_worlds A instance or array of instances of World.
+  * @memberof System
+  */
+System.init = function(opt_func, opt_worlds) {
+  System.setup(opt_func, opt_worlds);
+};
+
+/**
+ * Adds world to System records and worlds cache.
+ *
+ * @function _addWorld
+ * @memberof System
+ * @private
+ * @param {Object} world An instance of World.
+ */
+System._addWorld = function(world) {
+  System._records.push(world);
+};
+
+/**
+ * Adds instances of class to _records and calls init on them.
+ * @function add
+ * @memberof System
+ * @param {string} [opt_klass = 'Item'] The name of the class to add.
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {string=} [opt_world = System._records[0]] An instance of World to contain the item.
+ * @returns {Object} An instance of the added item.
+ */
+System.add = function(opt_klass, opt_options, opt_world) {
+
+  var klass = opt_klass || 'Item',
+      options = opt_options || null,
+      world = opt_world || System.firstWorld(),
+      records = this._records, obj;
+
+  // recycle object if one is available; obj must be an instance of the same class
+  for (var i = 0, max = System._pool.length; i < max; i++) {
+    if (System._pool[i].name === klass) {
+      obj = System._cleanObj(System._pool.splice(i, 1)[0]);
+      break;
+    }
+  }
+
+  if (!obj) {
+    if (klass.toLowerCase() === 'world') {
+      obj = new World(options);
+    } else if (System.Classes[klass]) {
+      obj = new System.Classes[klass](options);
+    } else {
+      obj = new Item();
+    }
+  }
+
+  options.name = klass;
+  obj.init(world, options);
+  records.push(obj);
+  return obj;
+};
+
+/**
+ * Removes all properties from the passed object.
+ * @param  {Object} obj An object.
+ * @return {Object}     The passed object.
+ */
+System._cleanObj = function(obj) {
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      delete obj[prop];
+    }
+  }
+  return obj;
+};
+
+/**
+ * Removes an item from the system.
+ * @function remove
+ * @memberof System
+ * @param {Object} obj The item to remove.
+ */
+System.remove = function (obj) {
+
+  var i, max, records = System._records;
+
+  for (i = 0, max = records.length; i < max; i++) {
+    if (records[i].id === obj.id) {
+      records[i].el.style.visibility = 'hidden'; // hide item
+      System._pool[System._pool.length] = records.splice(i, 1)[0]; // move record to pool array
+      break;
+    }
+  }
+};
+
+/**
+ * Removes an item from the system.
+ * Note: Deprecated in v3. Use remove().
+ * @function remove
+ * @memberof System
+ * @param {Object} obj The item to remove.
+ */
+System.destroy = function (obj) {
+  System.remove(obj);
+};
+
+/**
+ * Iterates over records.
+ * @function loop
+ * @memberof System
+ */
+System.loop = function() {
+
+  var i, records = System._records,
+      len = System._records.length;
+
+  for (i = len - 1; i >= 0; i -= 1) {
+    if (records[i].step && !records[i].world.pauseStep) {
+
+      if (records[i].life < records[i].lifespan) {
+        records[i].life += 1;
+      } else if (records[i].lifespan !== -1) {
+        System.remove(records[i]);
+        continue;
+      }
+      records[i].step();
+    }
+  }
+  len = System._records.length; // check length in case items were removed in step()
+  for (i = len - 1; i >= 0; i -= 1) {
+    records[i].draw();
+  }
+  if (StatsDisplay.active) {
+    StatsDisplay.update(len);
+  }
+  if (typeof window.requestAnimationFrame !== 'undefined') {
+    window.requestAnimationFrame(System.loop);
+  }
+};
+
+/**
+ * Pauses the system and processes one step in records.
+ *
+ * @function _stepForward
+ * @memberof System
+ * @private
+ */
+System._stepForward = function() {
+
+  var i, j, max, records = System._records,
+      world, worlds = System.allWorlds();
+
+  for (i = 0, max = worlds.length; i < max; i++) {
+    world = worlds[i];
+    world.pauseStep = true;
+    for (j = records.length - 1; j >= 0; j -= 1) {
+      if (records[j].step) {
+        records[j].step();
+      }
+    }
+    for (j = records.length - 1; j >= 0; j -= 1) {
+      if (records[j].draw) {
+        records[j].draw();
+      }
+    }
+  }
+};
+
+/**
+ * Saves the mouse/touch location relative to the browser window.
+ *
+ * @function _recordMouseLoc
+ * @memberof System
+ * @private
+ */
+System._recordMouseLoc = function(e) {
+
+  var touch, world = System.firstWorld();
+
+  System.mouse.lastLocation.x = System.mouse.location.x;
+  System.mouse.lastLocation.y = System.mouse.location.y;
+
+  if (e.changedTouches) {
+    touch = e.changedTouches[0];
+  }
+
+  /**
+   * Mapping window size to world size allows us to
+   * lead an agent around a world that's not bound
+   * to the window.
+   */
+  if (e.pageX && e.pageY) {
+    System.mouse.location.x = Utils.map(e.pageX, 0, window.innerWidth, 0, world.width);
+    System.mouse.location.y = Utils.map(e.pageY, 0, window.innerHeight, 0, world.height);
+  } else if (e.clientX && e.clientY) {
+    System.mouse.location.x = Utils.map(e.clientX, 0, window.innerWidth, 0, world.width);
+    System.mouse.location.y = Utils.map(e.clientY, 0, window.innerHeight, 0, world.height);
+  } else if (touch) {
+    System.mouse.location.x = touch.pageX;
+    System.mouse.location.y = touch.pageY;
+  }
+
+  System.mouse.velocity.x = System.mouse.lastLocation.x - System.mouse.location.x;
+  System.mouse.velocity.y = System.mouse.lastLocation.y - System.mouse.location.y;
+};
+
+/**
+ * Returns the first world in the system.
+ *
+ * @function firstWorld
+ * @memberof System
+ * @returns {null|Object} An instance of World.
+ */
+System.firstWorld = function() {
+  return this._records.length ? this._records[0] : null;
+};
+
+/**
+ * Returns all worlds.
+ *
+ * @function allWorlds
+ * @memberof System
+ * @return {Array.<World>} An array of worlds.
+ */
+System.allWorlds = function() {
+  return System.getAllItemsByName('World');
+};
+
+/**
+ * Returns an array of items created from the same constructor.
+ *
+ * @function getAllItemsByName
+ * @memberof System
+ * @param {string} name The 'name' property.
+ * @param {Array} [opt_list = this._records] An optional list of items.
+ * @returns {Array} An array of items.
+ */
+System.getAllItemsByName = function(name, opt_list) {
+
+  var i, max, arr = [],
+      list = opt_list || this._records;
+
+  for (i = 0, max = list.length; i < max; i++) {
+    if (list[i].name === name) {
+      arr[arr.length] = list[i];
+    }
+  }
+  return arr;
+};
+
+/**
+ * Returns an array of items with an attribute that matches the
+ * passed 'attr'. If 'opt_val' is passed, 'attr' must equal 'val'.
+ *
+ * @function getAllItemsByAttribute
+ * @memberof System
+ * @param {string} attr The property to match.
+ * @param {*} [opt_val=] The 'attr' property must equal 'val'.
+ * @returns {Array} An array of items.
+ */
+System.getAllItemsByAttribute = function(attr, opt_val, opt_name) { // TODO: add test
+
+  var i, max, arr = [], records = this._records,
+      val = typeof opt_val !== 'undefined' ? opt_val : null,
+      name = opt_name || false;
+
+  for (i = 0, max = records.length; i < max; i++) {
+    if (typeof records[i][attr] !== 'undefined') {
+      if (val !== null && records[i][attr] !== val) {
+        continue;
+      }
+      if (name && records[i].name !== name) {
+        continue;
+      }
+      arr[arr.length] = records[i];
+    }
+  }
+  return arr;
+};
+
+/**
+ * Handles orientation evenst and forces the world to update its bounds.
+ *
+ * @function updateOrientation
+ * @memberof System
+ */
+System.updateOrientation = function() {
+  var worlds = System.allWorlds(),
+  i, max, l = worlds.length;
+  for (i = 0; i < l; i++) {
+    worlds[i].width = worlds[i].el.scrollWidth;
+    worlds[i].height = worlds[i].el.scrollHeight;
+  }
+};
+
+/**
+ * Handles keyup events.
+ *
+ * @function _keyup
+ * @memberof System
+ * @private
+ * @param {Object} e An event.
+ */
+System._keyup = function(e) {
+
+  var i, max, world, worlds = System.allWorlds();
+
+  switch(e.keyCode) {
+    case 39:
+      System._stepForward();
+      break;
+    case 80: // p; pause/play
+      for (i = 0, max = worlds.length; i < max; i++) {
+        world = worlds[i];
+        world.pauseStep = !world.pauseStep;
+      }
+      break;
+    case 82: // r; reset
+      System._resetSystem();
+      break;
+    case 83: // s; reset
+      System._toggleStats();
+      break;
+  }
+};
+
+/**
+ * Resets the system.
+ *
+ * @function _resetSystem
+ * @memberof System
+ * @private
+ */
+System._resetSystem = function() {
+
+  var i, max, world, worlds = System.allWorlds();
+
+  for (i = 0, max = worlds.length; i < max; i++) {
+    world = worlds[i];
+    world.pauseStep = false;
+    world.pauseDraw = false;
+
+    while(world.el.firstChild) {
+      world.el.removeChild(world.el.firstChild);
+    }
+  }
+
+  System._records = [];
+  System._pool = [];
+  System.setup(System.setupFunc);
+};
+
+/**
+ * Toggles stats display.
+ *
+ * @function _toggleStats
+ * @memberof System
+ * @private
+ */
+System._toggleStats = function() {
+  if (!StatsDisplay.fps) {
+    StatsDisplay.init();
+  } else {
+    StatsDisplay.active = !StatsDisplay.active;
+  }
+
+  if (!StatsDisplay.active) {
+    StatsDisplay.hide();
+  } else {
+    StatsDisplay.show();
+  }
+};
+
+module.exports.System = System;
+
+},{"./Item":5,"./StatsDisplay":6,"./World":8,"drawing-utils-lib":3,"vector2d-lib":4}],8:[function(_dereq_,module,exports){
+var Vector = _dereq_('vector2d-lib'),
     Item = _dereq_('./Item').Item,
-    Utils = _dereq_('./Utils').Utils;
+    Utils = _dereq_('drawing-utils-lib');
 
 /**
  * Creates a new World.
@@ -1517,7 +1570,7 @@ World.prototype.getCSSText = function(props) {
 };
 
 module.exports.World = World;
-},{"./Item":3,"./Utils":6,"./Vector":7}],9:[function(_dereq_,module,exports){
+},{"./Item":5,"drawing-utils-lib":3,"vector2d-lib":4}],9:[function(_dereq_,module,exports){
 var Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('Burner').Utils,
     System = _dereq_('Burner').System,
@@ -2139,8 +2192,11 @@ Caption.prototype.init = function (world, opt_options) {
 
   var options = opt_options || {}, i, max, classNames;
 
-  // if a world is not passed, use the first world in the system
-  this.world = world || System.firstWorld();
+  if (!world) {
+    throw new Error('Caption.init requires an instance of World.');
+  }
+  this.world = world;
+
   this.position = options.position || 'top left';
   this.text = options.text || '';
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
@@ -2148,6 +2204,9 @@ Caption.prototype.init = function (world, opt_options) {
   this.borderWidth = options.borderWidth || 0;
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || [204, 204, 204];
+
+  //
+
   this.colorMode = 'rgb';
 
   /**
@@ -2172,7 +2231,7 @@ Caption.prototype.init = function (world, opt_options) {
     this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
         ', ' + this.borderColor[2] + ')';
   }
-  this.el.zIndex = 100;
+  this.el.style.zIndex = 100;
   this.el.appendChild(document.createTextNode(this.text));
   if (document.getElementById('caption')) {
     document.getElementById('caption').parentNode.removeChild(document.getElementById('caption'));
@@ -2187,6 +2246,7 @@ Caption.prototype.draw = function() {};
 
 /**
  * Updates the caption's text.
+ * @param {string} text The text to replace the caption's current text.d
  */
 Caption.prototype.update = function(text) {
   this.el.textContent = text;
@@ -2194,18 +2254,9 @@ Caption.prototype.update = function(text) {
 
 /**
  * Removes the caption's DOM element.
- *
- * @returns {boolean} True if object does not exist in the DOM.
  */
 Caption.prototype.remove = function() {
-
-  var id = this.el.id;
-
   this.el.parentNode.removeChild(this.el);
-  if (!document.getElementById(id)) {
-    return true;
-  }
-  return;
 };
 
 module.exports.Caption = Caption;
@@ -2774,7 +2825,11 @@ InputMenu.prototype.init = function (world, opt_options) {
 
   var me = this, options = opt_options || {}, i, max, classNames;
 
-  this.world = world || Burner.System.firstWorld();
+  if (!world) {
+    throw new Error('Caption.init requires an instance of World.');
+  }
+  this.world = world;
+
   this.position = options.position || 'top left';
   this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
   this.color = options.color || [255, 255, 255];
@@ -2782,6 +2837,8 @@ InputMenu.prototype.init = function (world, opt_options) {
   this.borderStyle = options.borderStyle || 'none';
   this.borderColor = options.borderColor || [204, 204, 204];
   this.colorMode = 'rgb';
+
+  //
 
   this.text = '\'' + String.fromCharCode(config.keyMap.pause).toLowerCase() + '\' = pause | ' +
     '\'' + String.fromCharCode(config.keyMap.resetSystem).toLowerCase() + '\' = reset | ' +
@@ -2809,6 +2866,7 @@ InputMenu.prototype.init = function (world, opt_options) {
     this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
         ', ' + this.borderColor[2] + ')';
   }
+  this.el.style.zIndex = 100;
   this.el.appendChild(document.createTextNode(this.text));
   if (document.getElementById('inputMenu')) {
     document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
@@ -2828,14 +2886,7 @@ InputMenu.prototype.draw = function() {};
  * Removes the menu's DOM element.
  */
 InputMenu.prototype.remove = function() {
-
-  var id = this.el.id;
-
   this.el.parentNode.removeChild(this.el);
-  if (!document.getElementById(id)) {
-    return true;
-  }
-  return;
 };
 
 module.exports.InputMenu = InputMenu;
@@ -4057,7 +4108,7 @@ Sensor.prototype.step = function() {
    * loop thru the list and check if sensor should activate.
    */
 
-  var list = System.getAllItemsByName(this.type);
+  var list = System.getAllItemsByAttribute('type', this.type, 'Stimulus');
 
   for (var i = 0, max = list.length; i < max; i++) { // heat
 
@@ -4739,7 +4790,8 @@ Stimulus.prototype.init = function(world, opt_options) {
   }
 
   this.type = options.type;
-  this.name = this.type;
+
+  this.name = options.name || 'Stimulus';
   this.mass = typeof options.mass !== 'undefined' ? options.mass : 50;
   this.isStatic = typeof options.isStatic !== 'undefined' ? options.isStatic : true;
   this.width = typeof options.width !== 'undefined' ? options.width : 50;
