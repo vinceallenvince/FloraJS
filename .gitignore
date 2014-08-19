@@ -10,6 +10,3 @@ specs
 ##### FILES ####
 *.DS_Store
 *.swp
-public/scripts/Burner.js
-public/scripts/Burner.min.js
-public/css/Burner.min.css
