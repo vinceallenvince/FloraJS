@@ -10,44 +10,27 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Flora.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
+    <div id='world'></div>
     <script type="text/javascript" charset="utf-8">
 
       Flora.System.setup(function() {
-
-        var world = this.add('World', {
-          gravity: new Flora.Vector(),
-          c: 0
+        this.add('World', {
+          el: document.getElementById('world'),
+          width: 800,
+          height: 600,
+          borderWidth: 1,
+          borderStyle: 'dotted',
+          borderColor: [100, 100, 100]
         });
 
-        this.add('Agent', {
-          angle: 90,
-          motorSpeed: 2,
-          minSpeed: 1,
-          maxSpeed: 10,
-          width: 20,
-          height: 20,
-          location: new Flora.Vector(world.width * 0.5, 0),
-          sensors: [
-            this.add('Sensor', {
-              type: 'heat',
-              displayRange: true,
-              displayConnector: true,
-              behavior: 'ACCELERATE'
-            })
-          ]
-        }, world);
-
-        this.add('Stimulus', {
-          type: 'heat',
-          draggable: true
-        });
+        this.add('Agent');
 
         this.add('Caption', {
-          text: 'Flora.Agent.MotorSpeed',
+          text: 'Flora.WorldDOM',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

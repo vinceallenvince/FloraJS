@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-  var standaloneNamespace = 'Burner';
+  var standaloneNamespace = 'Flora';
   var latest = '<%= pkg.name %>';
   var releaseDir = 'release/';
   var devRelease = releaseDir + latest + '.js';

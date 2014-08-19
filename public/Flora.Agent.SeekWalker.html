@@ -10,25 +10,26 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Flora.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
       Flora.System.setup(function() {
-
         this.add('World', {
           gravity: new Flora.Vector(),
           c: 0
         });
 
+        var walker = this.add('Walker');
+
         this.add('Agent', {
-          followMouse: true
+          seekTarget: walker
         });
 
         this.add('Caption', {
-          text: 'Flora.Agent.FollowMouse',
+          text: 'Flora.Agent.SeekWalker',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'

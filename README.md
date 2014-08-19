@@ -1,35 +1,52 @@
 # FloraJS: a JavaScript framework for rendering natural systems in a web browser.
 
-In Flora, the 'world' is your web browser. DOM elements inhabit the world and behave according to rules meant to simulate a natural environment. You can find demos at http://www.florajs.com.
+In Flora, the 'world' is your web browser. DOM elements inhabit the world and behave according to rules meant to simulate a natural environment. You can find demos at http://vinceallenvince.github.io/FloraJS.
 
 The formulas driving a large part of Flora are adapted from Daniel Shiffman's 'The Nature of Code' at http://natureofcode.com. Inspiration also came from the writings of Valentino Braitenberg and Gary Flake.
 
-## Simple System
+## Install
 
-FloraJS has two major components, a set of classes for elements in a natural system, and a renderer called <a href='http://github.com/foldi/Burner'>Burner</a> to draw those elements to the DOM.
+To include FloraJS as a component in your project, use the node module.
 
-To setup a simple Flora system, reference the <a href='http://github.com/foldi/Burner/tree/master/dist'>Burner</a> and <a href='http://github.com/foldi/FloraJS/tree/master/dist'>Flora</a> .js files from scripts tag in the &lt;head&gt; of your document. Also, reference the Burner and Flora .css files from link tags.
+```
+npm install florajs --save
+```
 
-In the body, add a &lt;script&gt; tag and create a new system. Pass the system a function that describes the elements in your world.
+You can also use the [standalone version](https://github.com/vinceallenvince/FloraJS/releases/latest) and reference both the css and js files from your document.
+
+```
+<html>
+  <head>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  ...
+
+
+#### Simple System
+
+1. Pass Flora.System.setup() a function that describes the items in your world.
+2. The first item must be a World. (eg. this.add('World'))
+3. Call Flora.System.loop() to start the animation.
 
 ```html
 <!DOCTYPE html>
-  <html>
+<html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Flora</title>
-    <link rel="stylesheet" href="css/burner.css" type="text/css" charset="utf-8" />
-    <link rel="stylesheet" href="css/flora.css" type="text/css" charset="utf-8" />
-    <script src="scripts/burner.js" type="text/javascript" charset="utf-8"></script>
-    <script src="scripts/flora.js" type="text/javascript" charset="utf-8"></script>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      // start the system; pass initial instructions
-      Burner.System.init(function() {
+      Flora.System.setup(function() {
+        this.add('World');
         this.add('Agent');
       });
+      Flora.System.loop();
+
     </script>
   </body>
 </html>
@@ -37,54 +54,87 @@ In the body, add a &lt;script&gt; tag and create a new system. Pass the system a
 
 You should see a block fall and bounce off the bottom of your browser window.
 
-http://www.florajs.com/examples/simple.html
+http://vinceallenvince.github.io/FloraJS/Flora.Agent.html
 
 #### The System and its Worlds
 
 Every Flora system starts with one System and one World. While a System may have many Worlds, by default, Flora's system uses the &lt;body&gt; as the only World.
 
-In the example above, immediately after the system starts, a Agent is created and appended to the World (or &lt;body&gt;).
+In the example above, immediately after the system starts, it creates an Agent and appends it to the World (or &lt;body&gt;).
 
 Worlds carry two properties that directly affect their elements.
 
 * gravity {Vector} default: new Vector(0, 1)
 * c (coefficient of friction) {number} 0.01
 
-We can change these defaults after the system starts by first creating a world and passing options. Next, we pass the world as a 2nd parameter to the Burner.System.init() method.
+We can change these defaults by passing options when we add the world.
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(0, -1),
-        c: 0.75
-      });
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(0, -1)
+        });
         this.add('Agent');
-      }, world);
+      });
+      Flora.System.loop();
+
+    </script>
+  </body>
+</html>
+```
 
 We've reversed the World's gravity and increased its friction. Now the block slowly drifts upwards.
 
-http://www.florajs.com/examples/world_update.html
+http://vinceallenvince.github.io/FloraJS/Flora.WorldProperties.html
 
 #### Agents
 
 Agents are basic Flora elements that respond to forces like gravity, attraction, repulsion, etc. They can also chase after other Agents, organize with other Agents in a flocking behavior, and steer away from obstacles.
 
-Agents are highly configurable. For a complete list of options see the docs at http://www.florajs.com/docs/symbols/Agent.html
+Agents are highly configurable. For a complete list of options see the docs at http://vinceallenvince.github.io/FloraJS/docs/symbols/Agent.html
 
 For an example of the Agent's seek behavior, set 'followMouse' to 'true' when creating the Agent.
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
         this.add('Agent', {
           followMouse: true
         });
-      }, world);
+      });
+      Flora.System.loop();
 
-http://www.florajs.com/examples/agent_follows_mouse.html
+    </script>
+  </body>
+</html>
+```
+
+http://vinceallenvince.github.io/FloraJS/Flora.Agent.FollowMouse.html
 
 #### Walkers
 
@@ -97,28 +147,72 @@ Walkers carry two properties that directly affect how they 'walk'.
 
 By default, Walkers use an algorithm called Perlin Noise (http://en.wikipedia.org/wiki/Perlin_noise) to navigate their World. Below is an example.
 
-      Burner.System.init(function() {
-        this.add('Walker');
-      });
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-http://www.florajs.com/examples/walker.html
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+        for (var i = 0; i < 60; i++) {
+          this.add('Walker');
+        }
+      });
+      Flora.System.loop();
+
+    </script>
+  </body>
+</html>
+```
+
+http://vinceallenvince.github.io/FloraJS/Flora.Walker.Perlin.html
 
 #### Targets
 
 In the Agent example above, the Agent targeted the mouse. By saving a reference to a new Walker and passing at as a 'seekTarget' for a new Agent, we can make the Agent seek the Walker.
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
-        this.add('Agent', {
-          seekTarget: this.add('Walker')
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
         });
-      }, world);
 
-http://www.florajs.com/examples/agent_seeks_walker.html
+        var walker = this.add('Walker');
+
+        this.add('Agent', {
+          seekTarget: walker
+        });
+      });
+      Flora.System.loop();
+
+    </script>
+  </body>
+</html>
+```
+
+http://vinceallenvince.github.io/FloraJS/Flora.Agent.SeekWalker.html
 
 #### Flocking
 
@@ -130,74 +224,133 @@ Agents can also organize in flocks. The following properties affect flocking beh
 * alignStrength {number} default: 0.2
 * cohesionStrength {number} default: 0.1
 
-In the example below, we create 20 Agents and set their 'seekTarget' to the Walker. We also set 'flocking' to true to enable the flocking behavior.
+In the example below, we create two groups of Agents and set their 'seekTarget' to Walkers. We also set 'flocking' to true to enable the flocking behavior.
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
+      var i, totalGroupA = 10,
+          totalGroupB = 5;
 
-        var walker = this.add('Walker');
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
 
-        for (var i = 0; i < 20; i++) {
+        var walkerGroupA = this.add('Walker');
+
+        for (i = 0; i < totalGroupA; i ++) {
           this.add('Agent', {
-            seekTarget: walker,
-            flocking: true
+            flocking: true,
+            seekTarget: walkerGroupA
           });
         }
-      }, world);
 
-http://www.florajs.com/examples/agents_flock_to_walker.html
+        var walkerGroupB = this.add('Walker');
+
+        for (i = 0; i < totalGroupB; i ++) {
+          this.add('Agent', {
+            flocking: true,
+            seekTarget: walkerGroupB
+          });
+        }
+      });
+      Flora.System.loop();
+
+    </script>
+  </body>
+</html>
+```
+
+http://vinceallenvince.github.io/FloraJS/Flora.Agent.Flocking.html
 
 In the example below, Agents flock to the mouse. We've also adjusted the 'width' and 'height' properties.
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
-        for (var i = 0; i < 10; i++) {
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector()
+        });
+
+        for (var i = 0; i < 20; i++) {
           this.add('Agent', {
             followMouse: true,
-            flocking: true,
-            width: 20,
-            height: 15
+            flocking: true
           });
         }
-      }, world);
+      });
+      Flora.System.loop();
 
-http://www.florajs.com/examples/agents_flock_to_mouse.html
+    </script>
+  </body>
+</html>
+```
+
+http://vinceallenvince.github.io/FloraJS/FlockToMouse.html
 
 #### Proximity
 
 FloraJS has some built in Proximity objects that exert a force on Agents that come in direct contact or land within the object's range of influence.
 
-* Liquid
+* Dragger
 * Attractor
 * Repeller
 
-In the example below, we create a Liquid object and an Agent that follows the mouse. You can click and drag to place the Liquid anywhere in the World. Use your mouse to make the Agent pass through the Liquid.
+In the example below, we create a Dragger object and an Agent that follows the mouse. You can click and drag to place the Dragger anywhere in the World. Use your mouse to make the Agent pass through the Dragger.
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
 
-      Burner.System.init(function() {
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      Flora.System.setup(function() {
+        this.add('World');
         this.add('Agent', {
-          followMouse: true
+          location: new Flora.Vector(document.body.scrollWidth / 2, 20)
         });
-        this.add('Liquid', {
+        this.add('Dragger', {
           draggable: true
         });
-      }, world);
+      });
+      Flora.System.loop();
 
-You can replace 'Liquid' with 'Attractor' and 'Repeller' to view how the Proximity objects affect an Agent.
+    </script>
+  </body>
+</html>
+```
 
-http://www.florajs.com/examples/liquid.html
+You can replace 'Dragger' with 'Attractor' or 'Repeller' to view how the Proximity objects affect an Agent.
+
+http://vinceallenvince.github.io/FloraJS/Flora.Dragger.html
 
 #### Sensors and Stimuli
 
@@ -221,209 +374,196 @@ Sensors are tuned specifically to a Stimulant and can be configured to activate 
 
 In the example below, the Agent carries a Sensor that senses Heat. When activated, it triggers the 'COWARD' behavior.
 
-      var world = new Burner.World(document.body, {
-        gravity: new Burner.Vector(),
-        c: 0
-      });
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+
+        this.add('Agent', {
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          location: new Flora.Vector(world.width * 0.49, 0),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'COWARD'
+            })
+          ]
+        }, world);
+
         this.add('Stimulus', {
           type: 'heat',
           draggable: true
         });
-        this.add('Agent', {
-          sensors: [
-            this.add('Sensor', {
-              type: 'heat',
-              behavior: 'COWARD'
-            })
-          ],
-          velocity: new Burner.Vector(1, 0.5),
-          maxSpeed: 5,
-          motorSpeed: 10
-        });
-      }, world);
+      });
+      Flora.System.loop();
+
+    </script>
+  </body>
+</html>
+```
 
 Notice, we've updated the World and removed any gravitational forces. We've also updated the 'motorSpeed' property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Heat objects.
 
-http://www.florajs.com/examples/sensor.html
+http://vinceallenvince.github.io/FloraJS/Flora.Sensor.Coward.html
 
-#### A small World
+#### A Small World
 
 Putting it all together, we can observe Agents navigate a World with multiple Stimuli and Proximity objects.
 
-    var world = new Burner.World(document.body, {
-      gravity: new Burner.Vector(),
-      c: 0
-    });
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Flora</title>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
 
-    Burner.System.init(function() {
+      var rand = Flora.Utils.getRandomNumber;
 
-      this.add('Stimulus', {
-        type: 'heat',
-        draggable: true,
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.25, this.world.height * 0.15);
-        }
-      });
-
-      this.add('Stimulus', {
-        type: 'heat',
-        draggable: true,
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.15);
-        }
-      });
-
-      this.add('Stimulus', {
-        type: 'heat',
-        draggable: true,
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.85);
-        }
-      });
-
-      this.add('Stimulus', {
-        type: 'heat',
-        draggable: true,
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.15, this.world.height * 0.75);
-        }
-      });
-
-      this.add('Stimulus', {
-        type: 'cold',
-        draggable: true,
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.5, this.world.height * 0.5);
-        }
-      });
-
-      this.add('Liquid', {
-        draggable: true,
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
-        }
-      });
-
-      this.add('Liquid', {
-        draggable: true,
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
-        }
-      });
-
-      this.add('Agent', {
-        sensors: [
-          this.add('Sensor', {
-            type: 'heat',
-            behavior: 'COWARD'
-          }),
-         this.add('Sensor', {
-            type: 'cold',
-            behavior: 'ACCELERATE'
-          })
-        ],
-        velocity: new Burner.Vector(1, 0.5),
-        minSpeed: 1,
-        mass: 10,
-        motorSpeed: 4
-      });
-    }, world);
-
-http://www.florajs.com/examples/sensor_stimuli.html
-
-#### Camera
-
-In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course, there can only be one agent controlling the World's Camera.
-
-    var world = new Burner.World(document.body, {
-      gravity: new Burner.Vector(),
-      c: 0,
-      borderWidth: 1,
-      borderStyle: 'dashed',
-      borderColor: [100, 100, 100]
-    });
-
-    Burner.System.init(function() {
-
-      this.add('Stimulus', {
-        type: 'heat',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.25, this.world.height * 0.15);
-        }
-      });
-
-      this.add('Stimulus', {
-        type: 'heat',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.15);
-        }
-      });
-
-      this.add('Stimulus', {
-        type: 'heat',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.85);
-        }
-      });
-
-      this.add('Stimulus', {
-        type: 'heat',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.15, this.world.height * 0.75);
-        }
-      });
-
-      this.add('Stimulus', {
-        type: 'cold',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.5, this.world.height * 0.5);
-        }
-      });
-
-      this.add('Liquid', {
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
-        }
-      });
-
-      this.add('Liquid', {
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
-        }
-      });
-
-      for (var i = 0; i < 5; i ++) {
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0,
+          borderWidth: 1,
+          borderStyle: 'dashed',
+          borderColor: [100, 100, 100]
+        });
 
         this.add('Agent', {
+          controlCamera: false,
+          angle: rand(0, 360),
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          wrapWorldEdges: true,
+          location: new Flora.Vector(world.width * 0.5, world.height * 0.5),
           sensors: [
             this.add('Sensor', {
               type: 'heat',
-              behavior: 'COWARD'
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 100,
+              behavior: 'EXPLORER'
             }),
-           this.add('Sensor', {
+            this.add('Sensor', {
               type: 'cold',
-              behavior: 'ACCELERATE'
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 150,
+              behavior: 'CURIOUS',
+              opacity: 0
+            }),
+            this.add('Sensor', {
+              type: 'food',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 250,
+              behavior: 'ACCELERATE',
+              opacity: 0
+            }),
+            this.add('Sensor', {
+              type: 'light',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 80,
+              behavior: 'DECELERATE',
+              opacity: 0
+            }),
+            this.add('Sensor', {
+              type: 'oxygen',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 50,
+              behavior: 'COWARD',
+              opacity: 0
             })
-          ],
-          velocity: new Burner.Vector(Flora.Utils.getRandomNumber(-1, 1, true),
-              Flora.Utils.getRandomNumber(-1, 1, true)),
-          minSpeed: 1,
-          mass: 10,
-          motorSpeed: 4,
-          wrapWorldEdges: true,
-          controlCamera: !i,
-          color: !i ? [255, 100, 0] : [197, 177, 115]
-        });
-      }
-    }, world);
+          ]
+        }, world);
 
-http://www.florajs.com/examples/camera.html
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'heat',
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
+          });
+        }
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'cold',
+            location: new Flora.Vector(rand(0, world.width * 0.25), rand(0, world.height))
+          });
+        }
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'food',
+            location: new Flora.Vector(rand(world.width * 0.75, world.width), rand(0, world.height))
+          });
+        }
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'light',
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height * 0.25))
+          });
+        }
+
+        for (var i = 0; i < 3; i++) {
+          this.add('Stimulus', {
+            type: 'oxygen',
+            location: new Flora.Vector(rand(0, world.width), rand(world.height * 0.75, world.height))
+          });
+        }
+      });
+      Flora.System.loop();
+
+    </script>
+  </body>
+</html>
+```
+
+http://vinceallenvince.github.io/FloraJS/Flora.Sim.MultipleStimuli.html
+
+#### Camera
+
+In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course, there can only be one agent controlling the world's camera.
+
+    ...
+    this.add('Agent', {
+      controlCamera: true,
+    ...
+
+http://vinceallenvince.github.io/FloraJS/
 
 #### Your own worlds
 
-Burner allows you to define worlds using any DOM element. This is useful if you want your world to live alongside other DOM elements or simply do not want the entire body defined as a world.
+Flora allows you to define worlds using any DOM element. This is useful if you want your world to live alongside other DOM elements or simply do not want the entire body defined as a world.
 
 To define a world, just create the DOM element you want to represent the world and reference it when calling new Burner.World().
 
@@ -431,52 +571,45 @@ To define a world, just create the DOM element you want to represent the world a
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv='content-type' content='text/html; charset=UTF-8' />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <title>Flora</title>
-    <link rel='stylesheet' href='css/Burner.min.css' type='text/css' charset='utf-8' />
-    <link rel='stylesheet' href='css/Flora.min.css' type='text/css' charset='utf-8' />
-    <script src='scripts/Burner.min.js' type='text/javascript' charset='utf-8'></script>
-    <script src='scripts/Flora.min.js' type='text/javascript' charset='utf-8'></script>
+    <link href="css/flora.min.css" type="text/css" charset="utf-8" rel="stylesheet" />
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
-    <div id='worldA'></div>
     <script type="text/javascript" charset="utf-8">
 
-      var world = new Burner.World(document.getElementById('worldA'), {
-        boundToWindow: false,
-        width: 320,
-        height: 480,
-        color: [60, 60, 60],
-        gravity: new Burner.Vector(0, 0),
-        c: 0
-      });
+      Flora.System.setup(function() {
+        this.add('World', {
+          el: document.getElementById('world'),
+          width: 800,
+          height: 600,
+          borderWidth: 1,
+          borderStyle: 'dotted',
+          borderColor: [100, 100, 100]
+        });
 
-      Burner.System.init(function() {
         this.add('Agent');
       });
+      Flora.System.loop();
     </script>
   </body>
 </html>
 ```
 
-http://www.florajs.com/examples/dom_world.html
-
-Notice we passed 'boundToWindow: false' as an option. This means if we resize the browser, it has no effect on the world. If we passed 'true', the world would resize with the browser. This is useful if you want to layer worlds that span the full width and height of the browser.
+http://vinceallenvince.github.io/FloraJS/Flora.WorldDOM.html
 
 #### Multiple worlds
 
-Burner also supports multiple worlds. First, define your worlds. Next, pass them in an array as the second argument to Burner.System.init(). Here's an example.
+Flora also supports multiple worlds... here's an example.
 
 ```html
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv='content-type' content='text/html; charset=UTF-8' />
-    <title>Flora</title>
-    <link rel='stylesheet' href='css/Burner.min.css' type='text/css' charset='utf-8' />
-    <link rel='stylesheet' href='css/Flora.min.css' type='text/css' charset='utf-8' />
-    <script src='scripts/Burner.min.js' type='text/javascript' charset='utf-8'></script>
-    <script src='scripts/Flora.min.js' type='text/javascript' charset='utf-8'></script>
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <div id='worldA'></div>
@@ -484,37 +617,37 @@ Burner also supports multiple worlds. First, define your worlds. Next, pass them
     <div id='worldC'></div>
     <script type="text/javascript" charset="utf-8">
 
-      var worldA = new Burner.World(document.getElementById('worldA'), {
-        boundToWindow: false,
-        width: 320,
-        height: 480,
-        color: [60, 60, 60],
-        gravity: new Burner.Vector(),
-        c: 0,
-        location: new Burner.Vector(160, 240)
-      });
+      Flora.System.init(function() {
 
-      var worldB = new Burner.World(document.getElementById('worldB'), {
-        boundToWindow: false,
-        width: 320,
-        height: 480,
-        color: [60, 60, 60],
-        gravity: new Burner.Vector(),
-        c: 0,
-        location: new Burner.Vector(490, 240)
-      });
+        var worldA = this.add('World', {
+          el: document.getElementById('worldA'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(160, 240)
+        });
 
-      var worldC = new Burner.World(document.getElementById('worldC'), {
-        boundToWindow: false,
-        width: 320,
-        height: 480,
-        color: [60, 60, 60],
-        gravity: new Burner.Vector(),
-        c: 0,
-        location: new Burner.Vector(820, 240)
-      });
+        var worldB = this.add('World', {
+          el: document.getElementById('worldB'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(490, 240)
+        });
 
-      Burner.System.init(function() {
+        var worldC = this.add('World', {
+          el: document.getElementById('worldC'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(820, 240)
+        });
 
         this.add('ParticleSystem', {
           startColor: [255, 255, 255],
@@ -528,7 +661,7 @@ Burner also supports multiple worlds. First, define your worlds. Next, pass them
         }
 
         for (var i = 0; i < 10; i++) {
-          var size = Burner.System.getRandomNumber(5, 30);
+          var size = Flora.Utils.getRandomNumber(5, 30);
           this.add('Agent', {
             width: size,
             height: size,
@@ -537,63 +670,22 @@ Burner also supports multiple worlds. First, define your worlds. Next, pass them
             flocking: true
           }, worldC);
         }
-
-        this.add('Caption', {
-          text: 'Muliple Worlds',
-          opacity: 0.4,
-          borderColor: 'transparent',
-          position: 'top center'
-        });
-
-        this.add('InputMenu', {
-          opacity: 0.4,
-          borderColor: 'transparent',
-          position: 'bottom center'
-        });
-
-      }, [worldA, worldB, worldC]);
+      });
+      Flora.System.loop();
     </script>
   </body>
 </html>
 ```
 
-http://www.florajs.com/examples/multiple_worlds.html
-
-#### DOM Renderer
-
-If you want to drop the Flora classes and use your own, use <a href='http://github.com/foldi/Burner'>Burner</a> to render your system.
+http://vinceallenvince.github.io/FloraJS/Flora.WorldsMultiple.html
 
 #### Advanced exmaples
 
 The following examples implement advanced functions of FloraJS.
 
-* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle3c_VALUES.html'>Values</a>
+* [Sheep vs. Wolves](http://vinceallenvince.github.io/FloraJS/Flora.Sim.SheepvsWolves.html)
+* [Fish Food](http://vinceallenvince.github.io/FloraJS/Flora.FishFood.html)
 
-* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle3b_EXPLORER.html'>Explorer</a>
-
-* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle3a_LOVES.html'>Loves</a>
-
-* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle2b_AGGRESSIVE.html'>Aggressive</a>
-
-* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle2a_COWARD.html'>Coward</a>
-
-* Braitenberg Vechicles - <a href='http://www.florajs.com/demos/braitenberg_vehicle1_ALIVE.html'>Alive</a>
-
-* Flocking - <a href='http://www.florajs.com/demos/flap.html'>Flap</a>
-
-* Flocking - <a href='http://www.florajs.com/demos/spin.html'>Spin</a>
-
-* Flocking - <a href='http://www.florajs.com/demos/roll.html'>Roll</a>
-
-#### More Code
-
-You can find code for the examples above at:
-
-* <a href='http://github.com/foldi/FloraJS-Examples'>Examples</a>
-
-* <a href='http://github.com/foldi/FloraJS-Flocking'>Flocking</a>
-
-* <a href='http://github.com/foldi/Braitenberg-Vehicles'>Braitenberg Vehicles</a>
 
 Building this project
 ------
@@ -610,10 +702,16 @@ Next, run grunt.
 grunt
 ```
 
-To generate docs, run:
+To run the tests, run 'npm test'.
 
 ```
-grunt doc
+npm test
+```
+
+To check test coverage run 'grunt coverage'.
+
+```
+grunt coverage
 ```
 
 A pre-commit hook is defined in /pre-commit that runs jshint. To use the hook, run the following:
@@ -626,3 +724,5 @@ A post-commit hook is defined in /post-commit that runs the Plato complexity ana
 
 ```
 ln -s ../../post-commit .git/hooks/post-commit
+```
+

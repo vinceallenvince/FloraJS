@@ -17,36 +17,11 @@
     <script type="text/javascript" charset="utf-8">
 
       Flora.System.setup(function() {
-        var world = this.add('World', {
-          gravity: new Flora.Vector(),
-          c: 0
-        });
-
-        this.add('Agent', {
-          angle: 90,
-          motorSpeed: 2,
-          minSpeed: 1,
-          maxSpeed: 10,
-          width: 20,
-          height: 20,
-          location: new Flora.Vector(world.width * 0.47, 20),
-          sensors: [
-            this.add('Sensor', {
-              type: 'heat',
-              displayRange: true,
-              displayConnector: true,
-              behavior: 'CURIOUS'
-            })
-          ]
-        });
-
-        this.add('Stimulus', {
-          type: 'heat',
-          draggable: true
-        });
+        this.add('World');
+        this.add('Agent');
 
         this.add('Caption', {
-          text: 'Flora.Sensor.Curious',
+          text: 'Flora.Agent',
           opacity: 0.4,
           borderColor: 'transparent',
           position: 'top center'
