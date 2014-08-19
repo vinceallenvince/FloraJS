@@ -49,7 +49,7 @@
 
       var rand = Flora.Utils.getRandomNumber;
 
-      var i, groupA = [], totalFood = 8, totalFish = 5;
+      var i, food = [], totalFood = 8, totalFish = 5;
 
       function createFood(x, y) {
 
@@ -63,8 +63,8 @@
           opacity: 0
         });
 
-        Flora.System.add('Agent', {
-          name: 'groupA',
+        var agent = Flora.System.add('Agent', {
+          type: 'food',
           width: 8,
           height: 8,
           location: new Flora.Vector(x, y),
@@ -91,6 +91,7 @@
             })
           ]
         });
+        agent.type = 'food';
 
       }
 
@@ -98,7 +99,6 @@
 
         world = this.add('World', {
           el: document.getElementById('worldA'),
-          boundToWindow: false,
           width: 920,
           height: 480,
           borderColor: [60, 60, 60],
@@ -131,14 +131,13 @@
 
           // create FISH
           var fish = this.add('Agent', {
-            name: 'fish',
+            type: 'Fish',
             width: 16,
             height: 16,
             color: controlCamera ? [255, 255, 255] : [255, 100, 0],
             location: loc,
             angle: angle,
             controlCamera: controlCamera,
-            eyeRotation: 0,
             borderWidth: 2,
             borderStyle: 'solid',
             borderColor: controlCamera ? [255, 100, 0] : [197, 177, 115],
@@ -147,6 +146,7 @@
             maxSpeed: 2,
             createFlag: 0,
             beforeStep: function() {
+
               if (rand(1, 100) === 1) {
                 var a = new Flora.Vector(1, 0);
                 a.rotate(Flora.Utils.degreesToRadians(this.angle));
@@ -171,17 +171,20 @@
                 sensitivity: 100
               }),
               this.add('Sensor', {
-                type: 'groupA',
+                type: 'food',
+                targetClass: 'food',
                 behavior: 'LIKES',
                 offsetDistance: 18,
                 displayRange: true,
                 sensitivity: 100
               }),
               this.add('Sensor', {
-                type: 'groupA',
+                type: 'food',
+                targetClass: 'food',
                 behavior: 'CONSUME',
                 offsetDistance: 18,
                 displayRange: false,
+                displayConnector: false,
                 sensitivity: 100,
                 onConsume: function(sensor, target) {
 
@@ -199,20 +202,17 @@
                   });
 
                   // check if target has sensors
+                  // if so, set lifespan = 1;
+                  // can't remove here bc will throw an index error in System.loop
                   for (var i = target.sensors.length - 1; i >= 0; i--) {
-                    if (target.sensors[i].displayRange) {
-                      var rangeDisplays = Flora.System.getAllItemsByName('RangeDisplay');
-                      for (var j = rangeDisplays.length - 1; j >= 0; j--) {
-                        if (rangeDisplays[j].sensor.id === target.sensors[i].id) {
-                          Flora.System.destroyItem(rangeDisplays[j]);
-                        }
-                      }
-                    }
-                    Flora.System.destroyItem(target.sensors[i]);
+                    //target.sensors[i].lifespan = 1;
+                    //target.sensors[i].life = 0;
+                    Flora.System.remove(target.sensors[i]);
                   }
 
-                  Flora.System.destroyItem(target.seekTarget);
-
+                  //target.seekTarget.lifespan = 1;
+                  //target.seekTarget.life = 0;
+                  Flora.System.remove(target);
                 }
               })
             ]
@@ -230,6 +230,8 @@
           eye.style.opacity = 1;
           fish.el.appendChild(eye);
           fish.eye = eye;
+          fish.eyeRotation = 0;
+          fish.type = 'Fish';
         }
 
         var angle = rand(0, 359, true);
@@ -266,12 +268,10 @@
               this.acceleration.add(a);
             }
 
-            /**
-             * If any agent is inside shark, create a
-             * new groupA.
-             */
+            // If any agent is inside shark, create a
+            // new food.
             var check = false;
-            var agents = Flora.System.getAllItemsByName('fish');
+            var agents = Flora.System.getAllItemsByName('Fish');
             for (var i = 0, max = agents.length; i < max; i++) {
               if (Flora.Utils.isInside(agents[i], this)) {
                 if (agents[i].createFlag < totalFoodToCreate) {
@@ -293,7 +293,8 @@
           },
           sensors: [
             this.add('Sensor', {
-              type: 'fish',
+              type: 'Fish',
+              targetClass: 'Fish',
               behavior: 'LIKES',
               displayRange: true,
               displayConnector: true,

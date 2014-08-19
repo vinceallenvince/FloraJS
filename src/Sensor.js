@@ -116,9 +116,9 @@ Sensor.prototype.step = function() {
    * loop thru the list and check if sensor should activate.
    */
 
-  var list = System.getAllItemsByAttribute('type', this.type, this.targetClass); // TODO: should not fix class name
+  var list = System.getAllItemsByAttribute('type', this.type, this.targetClass);
 
-  for (var i = 0, max = list.length; i < max; i++) { // heat
+  for (var i = 0, max = list.length; i < max; i++) {
 
     if (this._sensorActive(list[i], this.sensitivity)) {
 
