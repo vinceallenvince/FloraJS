@@ -1,4 +1,4 @@
-var Burner = require('Burner'),
+var Burner = require('burner'),
     test = require('tape'),
     Attractor = require('../src/Attractor').Attractor,
     Repeller = require('../src/Repeller').Repeller,

@@ -1,4 +1,4 @@
-var Utils = require('Burner').Utils;
+var Utils = require('burner').Utils;
 /**
  * Creates a new ColorPalette object.
  *

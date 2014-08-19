@@ -1,6 +1,6 @@
-var System = require('Burner').System,
+var System = require('burner').System,
     config = require('./config').config,
-    Utils = require('Burner').Utils;
+    Utils = require('burner').Utils;
 
 /**
  * Creates a new InputMenu object.

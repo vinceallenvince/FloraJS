@@ -1,6 +1,6 @@
-var Item = require('Burner').Item,
-    Utils = require('Burner').Utils,
-    Vector = require('Burner').Vector;
+var Item = require('burner').Item,
+    Utils = require('burner').Utils,
+    Vector = require('burner').Vector;
 
 /**
  * Creates a new Connector.

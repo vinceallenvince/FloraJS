@@ -1,4 +1,4 @@
-var Burner = require('Burner'),
+var Burner = require('burner'),
     test = require('tape'),
     FlowField = require('../src/FlowField').FlowField,
     Sensor = require('../src/Sensor').Sensor,

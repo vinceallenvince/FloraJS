@@ -1,7 +1,7 @@
 var Mover = require('./Mover').Mover,
     SimplexNoise = require('./SimplexNoise').SimplexNoise,
-    Utils = require('Burner').Utils,
-    Vector = require('Burner').Vector;
+    Utils = require('burner').Utils,
+    Vector = require('burner').Vector;
 
 /**
  * Creates a new Walker.

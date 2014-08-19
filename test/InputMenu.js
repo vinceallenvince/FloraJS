@@ -1,4 +1,4 @@
-var Burner = require('Burner'),
+var Burner = require('burner'),
     test = require('tape'),
     config = require('../src/config').config,
     InputMenu, obj;

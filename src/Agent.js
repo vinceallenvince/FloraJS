@@ -1,7 +1,7 @@
 var Mover = require('./Mover').Mover,
-    Utils = require('Burner').Utils,
-    System = require('Burner').System,
-    Vector = require('Burner').Vector;
+    Utils = require('burner').Utils,
+    System = require('burner').System,
+    Vector = require('burner').Vector;
 
 /**
  * Creates a new Agent.

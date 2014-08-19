@@ -1,4 +1,4 @@
-var Burner = require('Burner'),
+var Burner = require('burner'),
     test = require('tape'),
     Agent = require('../src/Agent').Agent,
     Sensor = require('../src/Sensor').Sensor,

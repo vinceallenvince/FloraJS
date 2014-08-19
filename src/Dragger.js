@@ -1,5 +1,5 @@
 var Attractor = require('./Attractor').Attractor,
-    Utils = require('Burner').Utils;
+    Utils = require('burner').Utils;
 
 /**
  * Creates a new Dragger object.

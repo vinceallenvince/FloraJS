@@ -1,8 +1,8 @@
-var Item = require('Burner').Item,
+var Item = require('burner').Item,
     SimplexNoise = require('./SimplexNoise').SimplexNoise,
-    System = require('Burner').System,
-    Utils = require('Burner').Utils,
-    Vector = require('Burner').Vector;
+    System = require('burner').System,
+    Utils = require('burner').Utils,
+    Vector = require('burner').Vector;
 
 /**
  * Creates a new Oscillator.
