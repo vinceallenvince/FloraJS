@@ -35,10 +35,11 @@ test('new ParticleSystem() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('ParticleSystem');
+    obj = new ParticleSystem();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'ParticleSystem', 'default name.');
+  t.notEqual(obj.name, 'ParticleSystem', 'System.add() should pass name.');
   t.equal(obj.width, 0, 'default width.');
   t.equal(obj.height, 0, 'default height.');
   t.assert(obj.color[0] === 255 && obj.color[1] === 255 && obj.color[2] === 255, 'default color.');

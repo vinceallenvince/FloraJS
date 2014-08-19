@@ -80,7 +80,7 @@ Stimulus.prototype.init = function(world, opt_options) {
   var options = opt_options || {};
 
   if (!options.type || typeof options.type !== 'string') {
-    throw new Error('Stimulus requires "type" parameter as a string.');
+    throw new Error('Stimulus requires \'type\' parameter as a string.');
   }
 
   this.type = options.type;

@@ -35,10 +35,11 @@ test('new Point() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Point');
+    obj = new Point();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Point', 'default name.');
+  t.notEqual(obj.name, 'Point', 'System.add() should pass name.');
   t.assert(obj.color[0] === 200 && obj.color[1] === 200 && obj.color[2] === 200, 'default color.');
   t.equal(obj.borderRadius, 100, 'default borderRadius.');
   t.equal(obj.borderWidth, 2, 'default borderWidth.');

@@ -36,10 +36,11 @@ test('new Walker() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Walker');
+    obj = new Walker();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Walker', 'default name.');
+  t.notEqual(obj.name, 'Walker', 'System.add() shoud pass name.');
   t.equal(obj.width, 10, 'default width.');
   t.equal(obj.height, 10, 'default height.');
   t.equal(obj.remainsOnScreen, false, 'default remainsOnScreen.');

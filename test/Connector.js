@@ -35,13 +35,14 @@ test('new Connector() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Connector', {
+    obj = new Connector();
+    obj.init(world, {
       parentA: {},
       parentB: {}
     });
   });
 
-  t.equal(obj.name, 'Connector', 'name.');
+  t.notEqual(obj.name, 'Connector', 'System.add() should pass name.');
   t.equal(obj.zIndex, 0, 'zIndex.');
   t.equal(obj.borderStyle, 'dotted', 'borderStyle.');
   t.assert(obj.borderColor[0] === 150 && obj.borderColor[1] === 150 && obj.borderColor[2] === 150, 'borderColor.');
@@ -68,7 +69,8 @@ test('new Connector() should require options.', function(t) {
     });
 
     t.throws(function () {
-      this.add('Connector');
+      obj = new Connector();
+      obj.init(world);
     }, 'should throw exception when not passed parentA and parentB.');
   });
 

@@ -39,7 +39,8 @@ test('new Agent() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Agent');
+    obj = new Agent();
+    obj.init(world);
   });
 
   t.equal(obj.name, 'Agent', 'default name.');

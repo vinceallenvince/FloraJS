@@ -44,10 +44,11 @@ test('new Mover() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Mover');
+    obj = new Mover();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Mover', 'name.');
+  t.notEqual(obj.name, 'Mover', 'System.add() should pass name.');
   t.assert(obj.color[0] === 255 && obj.color[1] === 255 && obj.color[2] === 255, 'color.');
   t.equal(obj.borderRadius, 0, 'borderRadius.');
   t.equal(obj.borderWidth, 0, 'borderWidth.');

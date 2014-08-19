@@ -35,10 +35,11 @@ test('new Attractor() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Attractor');
+    obj = new Attractor();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Attractor', 'name.');
+  t.notEqual(obj.name, 'Attractor', 'System.add() should pass name.');
   t.equal(obj.G, 10, 'default gravitational constant.');
   t.equal(obj.mass, 1000, 'default mass.');
   t.equal(obj.isStatic, true, 'default isStatic');

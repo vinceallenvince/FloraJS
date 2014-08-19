@@ -35,10 +35,11 @@ test('new Particle() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Particle');
+    obj = new Particle();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Particle', 'default name.');
+  t.notEqual(obj.name, 'Particle', 'System.add() should pass name.');
   t.equal(obj.width, 20, 'default width.');
   t.equal(obj.height, 20, 'default height.');
   t.equal(obj.lifespan, 50, 'default lifespan.');

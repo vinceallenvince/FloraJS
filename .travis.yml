@@ -6,15 +6,6 @@ before_install:
 - sh -e /etc/init.d/xvfb start
 - npm install -g grunt-cli
 after_success: grunt release
-deploy:
-  provider: releases
-  api_key:
-    secure: TB3YWoiCIxQGCYSZupdf0vd1cGjdjZYNjF1foWXQBWP7T7DirEShH/lY/EQgczFEjsyW0fC9mgNjMcVeUWYpvyhS7no1wL0ClTKNdbUVlNVygzkBUSe2r6UkAFR1WrPTuvbEwuQir6HuxNqlzbxxRcVMjxNY9wbMusqOJGSYeBg=
-  file:
-  - releases/flora.min.js
-  - releases/flora.min.css
-  on:
-    repo: vinceallenvince/FloraJS
 before_deploy: echo 'ready?'
 after_deploy:
 - echo 'done!'

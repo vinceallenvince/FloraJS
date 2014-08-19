@@ -38,10 +38,11 @@ test('new Sensor() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Sensor');
+    obj = new Sensor();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Sensor', 'default name.');
+  t.notEqual(obj.name, 'Sensor', 'System.add() should pass name.');
   t.equal(obj.type, '', 'default type.');
   t.equal(typeof obj.behavior, 'function', 'default behavior.');
   t.equal(obj.sensitivity, 200, 'default sensitivity.');

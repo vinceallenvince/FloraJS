@@ -35,10 +35,11 @@ test('new Dragger() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Dragger');
+    obj = new Dragger();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Dragger', 'name.');
+  t.notEqual(obj.name, 'Dragger', 'System.add() should pass name.');
   t.equal(obj.c, 1, 'default drag coefficient.');
   t.equal(obj.mass, 1000, 'default mass.');
   t.equal(obj.isStatic, true, 'default isStatic');

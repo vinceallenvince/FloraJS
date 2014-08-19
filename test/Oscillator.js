@@ -37,10 +37,11 @@ test('new Oscillator() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Oscillator');
+    obj = new Oscillator();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Oscillator', 'name.');
+  t.notEqual(obj.name, 'Oscillator', 'System.add() should pass name.');
   t.assert(obj.initialLocation.x === 200 && obj.initialLocation.y === 150, 'default initialLocation.');
   t.assert(obj.lastLocation.x === 0 && obj.lastLocation.y === 0, true, 'default lastLocation.');
   t.assert(obj.amplitude.x === 180 && obj.amplitude.y === 130, 'default amplitude.');

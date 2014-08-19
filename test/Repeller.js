@@ -35,10 +35,11 @@ test('new Repeller() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Repeller');
+    obj = new Repeller();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'Repeller', 'default name.');
+  t.notEqual(obj.name, 'Repeller', 'System.add() should pass name.');
   t.equal(obj.G, -10, 'default gravitational constant.');
   t.equal(obj.mass, 1000, 'default mass.');
   t.equal(obj.isStatic, true, 'default isStatic');

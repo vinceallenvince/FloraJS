@@ -35,10 +35,11 @@ test('new FlowField() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('FlowField');
+    obj = new FlowField();
+    obj.init(world);
   });
 
-  t.equal(obj.name, 'FlowField', 'default name.');
+  t.notEqual(obj.name, 'FlowField', 'System.add() should pass name.');
   t.equal(obj.resolution, 50, 'default resolution.');
   t.equal(obj.perlinSpeed, 0.01, 'default perlinSpeed.');
   t.equal(obj.perlinTime, 100, 'default perlinTime.');

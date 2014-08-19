@@ -44,14 +44,14 @@ test('new Stimulus() should have default properties.', function(t) {
       height: 300
     });
 
-    obj = this.add('Stimulus', {
+    obj = new Stimulus();
+    obj.init(world, {
       type: 'heat'
     });
   });
 
-  t.equal(obj.name, 'Stimulus', 'default name.');
+  t.notEqual(obj.name, 'Stimulus', 'System.add() should pass name.');
   t.equal(obj.type, 'heat', 'type.');
-  t.equal(obj.name, 'Stimulus', 'name.');
   t.equal(obj.width, 50, 'default width.');
   t.equal(obj.height, 50, 'default height.');
   t.equal(obj.mass, 50, 'default mass.');
@@ -76,6 +76,12 @@ test('new Stimulus() should have default properties.', function(t) {
     t.throws(function () {
      this.add('Stimulus');
     }, 'should throw exception when not passed a "type" parameter.');
+
+    t.throws(function () {
+     this.add('Stimulus', {
+      type: 100
+     });
+    }, 'should throw exception when "type" parameter is not a string.');
   });
 
   t.end();
