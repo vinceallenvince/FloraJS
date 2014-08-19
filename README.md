@@ -21,6 +21,7 @@ You can also use the [standalone version](https://github.com/vinceallenvince/Flo
     <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   ...
+```
 
 
 #### Simple System
