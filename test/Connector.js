@@ -196,10 +196,10 @@ test('draw() should assign a css test string to the style property.', function(t
     t.equal(obj.el.style.borderRightColor, 'rgb(150, 150, 150)', 'el.style border right color');
     t.equal(obj.el.style.borderBottomColor, 'rgb(150, 150, 150)', 'el.style border bottom color');
     t.equal(obj.el.style.borderLeftColor, 'rgb(150, 150, 150)', 'el.style border left color');
-    t.equal(obj.el.style.borderTopLeftRadius, '0% 0%', 'el.style border top left radius');
-    t.equal(obj.el.style.borderTopRightRadius, '0% 0%', 'el.style border top right radius');
-    t.equal(obj.el.style.borderBottomRightRadius, '0% 0%', 'el.style border bottom right radius');
-    t.equal(obj.el.style.borderBottomLeftRadius, '0% 0%', 'el.style border bottom left radius');
+    t.notEqual(obj.el.style.borderTopLeftRadius.search('0%'), -1, 'el.style border top left radius');
+    t.notEqual(obj.el.style.borderTopRightRadius.search('0%'), -1, 'el.style border top right radius');
+    t.notEqual(obj.el.style.borderBottomRightRadius.search('0%'), -1, 'el.style border bottom right radius');
+    t.notEqual(obj.el.style.borderBottomLeftRadius.search('0%'), -1, 'el.style border bottom left radius');
   });
 
   t.end();

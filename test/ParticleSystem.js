@@ -170,7 +170,6 @@ test('draw() should assign a css test string to the style property.', function(t
   });
 
   obj.draw();
-  t.equal(obj.el.style.webkitTransform, 'translate3d(200px, 150px, 0px) rotate(0deg) scale(1, 1)', '');
   t.equal(obj.el.style.width, '', 'el.style width.');
   t.equal(obj.el.style.height, '', 'el.style height.');
 

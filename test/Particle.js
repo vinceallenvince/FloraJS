@@ -144,11 +144,11 @@ test('draw() should assign a css test string to the style property.', function(t
   t.equal(obj.el.style.borderRightColor, 'rgb(0, 0, 0)', 'el.style border right color');
   t.equal(obj.el.style.borderBottomColor, 'rgb(0, 0, 0)', 'el.style border bottom color');
   t.equal(obj.el.style.borderLeftColor, 'rgb(0, 0, 0)', 'el.style border left color');
-  t.equal(obj.el.style.borderTopLeftRadius, '100% 100%', 'el.style border top left radius');
-  t.equal(obj.el.style.borderTopRightRadius, '100% 100%', 'el.style border top right radius');
-  t.equal(obj.el.style.borderBottomRightRadius, '100% 100%', 'el.style border bottom right radius');
-  t.equal(obj.el.style.borderBottomLeftRadius, '100% 100%', 'el.style border bottom left radius');
-  t.equal(obj.el.style.boxShadow, 'rgb(255, 255, 255) 0px 0px 0px 16px', 'el.style boxShadow');
+  t.notEqual(obj.el.style.borderTopLeftRadius.search('100%'), -1, 'el.style border top left radius');
+  t.notEqual(obj.el.style.borderTopRightRadius.search('100%'), -1, 'el.style border top right radius');
+  t.notEqual(obj.el.style.borderBottomRightRadius.search('100%'), -1, 'el.style border bottom right radius');
+  t.notEqual(obj.el.style.borderBottomLeftRadius.search('100%'), -1, 'el.style border bottom left radius');
+  t.notEqual(obj.el.style.boxShadow.search('0px 0px 0px 16px'), -1, 'el.style boxShadow');
   t.equal(obj.el.style.opacity, '1', 'el.style opacity');
   t.equal(obj.el.style.zIndex, '1', 'el.style zIndex');
 

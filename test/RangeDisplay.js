@@ -244,10 +244,10 @@ test('draw() should assign a css test string to the style property.', function(t
   t.equal(sensor.rangeDisplay.el.style.borderRightColor, 'rgb(150, 150, 150)', 'el.style border right color');
   t.equal(sensor.rangeDisplay.el.style.borderBottomColor, 'rgb(150, 150, 150)', 'el.style border bottom color');
   t.equal(sensor.rangeDisplay.el.style.borderLeftColor, 'rgb(150, 150, 150)', 'el.style border left color');
-  t.equal(sensor.rangeDisplay.el.style.borderTopLeftRadius, '100% 100%', 'el.style border top left radius');
-  t.equal(sensor.rangeDisplay.el.style.borderTopRightRadius, '100% 100%', 'el.style border top right radius');
-  t.equal(sensor.rangeDisplay.el.style.borderBottomRightRadius, '100% 100%', 'el.style border bottom right radius');
-  t.equal(sensor.rangeDisplay.el.style.borderBottomLeftRadius, '100% 100%', 'el.style border bottom left radius');
+  t.notEqual(sensor.rangeDisplay.el.style.borderTopLeftRadius.search('100%'), -1, 'el.style border top left radius');
+  t.notEqual(sensor.rangeDisplay.el.style.borderTopRightRadius.search('100%'), -1, 'el.style border top right radius');
+  t.notEqual(sensor.rangeDisplay.el.style.borderBottomRightRadius.search('100%'), -1, 'el.style border bottom right radius');
+  t.notEqual(sensor.rangeDisplay.el.style.borderBottomLeftRadius.search('100%'), -1, 'el.style border bottom left radius');
 
   t.end();
 });
