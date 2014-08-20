@@ -10,10 +10,8 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
-  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
@@ -46,16 +44,17 @@
         endColor: [171, 55, 19]
       });
 
-      Burner.System.init(function() {
 
-        var world = Burner.System.firstWorld();
+      Flora.System.setup(function() {
+
+        var world = this.add('World');
 
         var maxOscillators = 56;
         var minSize = 1;
 
         for (var i = 0; i < maxOscillators; i++) {
 
-          var amp = new Burner.Vector(1, 1);
+          var amp = new Flora.Vector(1, 1);
           amp.normalize();
           amp.rotate(Flora.Utils.degreesToRadians(i * 10));
           amp.mult(i * 5);
@@ -70,12 +69,11 @@
             borderWidth: 3,
             borderColor: palette.getColor(),
             amplitude: amp,
-            acceleration: new Burner.Vector(Flora.Utils.map(i, 0, maxOscillators, 0, 0.05),
+            acceleration: new Flora.Vector(Flora.Utils.map(i, 0, maxOscillators, 0, 0.05),
               Flora.Utils.map(i, 0, maxOscillators, 0, 0.025)),
-            aVelocity: new Burner.Vector(Flora.Utils.map(i, 0, maxOscillators, 0, 1),
+            aVelocity: new Flora.Vector(Flora.Utils.map(i, 0, maxOscillators, 0, 1),
                 Flora.Utils.map(i, 0, maxOscillators, 0, 1))
           });
-
         }
 
         this.add('Caption', {
@@ -91,6 +89,7 @@
           position: 'bottom center'
         });
       });
+      Flora.System.loop();
     </script>
   </body>
 </html>
