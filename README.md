@@ -9,7 +9,7 @@ The formulas driving a large part of Flora are adapted from Daniel Shiffman's ['
 To include FloraJS as a component in your project, use the node module.
 
 ```
-npm install florajs --save
+npm install flora --save
 ```
 
 You can also use the [standalone version](https://github.com/vinceallenvince/FloraJS/releases/latest) and reference both the css and js files from your document.
@@ -26,8 +26,8 @@ You can also use the [standalone version](https://github.com/vinceallenvince/Flo
 
 #### Simple System
 
-1. Pass Flora.System.setup() a function that describes the items in your world.
-2. The first item must be a World. (eg. this.add('World'))
+1. Pass a function to Flora.System.setup() that describes the items in your world.
+2. The first item must be a World. (eg. this.add('World')).
 3. Call Flora.System.loop() to start the animation.
 
 ```html
@@ -84,7 +84,8 @@ We can change these defaults by passing options when we add the world.
 
       Flora.System.setup(function() {
         this.add('World', {
-          gravity: new Flora.Vector(0, -1)
+          gravity: new Flora.Vector(0, -1),
+          c: 0
         });
         this.add('Agent');
       });
@@ -105,7 +106,7 @@ Agents are basic Flora elements that respond to forces like gravity, attraction,
 
 Agents are highly configurable. For a complete list of options see the docs at http://vinceallenvince.github.io/FloraJS/docs/symbols/Agent.html
 
-For an example of the Agent's seek behavior, set 'followMouse' to 'true' when creating the Agent.
+For an example of an Agent's seek behavior, set 'followMouse' to 'true' when creating the Agent.
 
 ```html
 <!DOCTYPE html>
@@ -141,12 +142,11 @@ http://vinceallenvince.github.io/FloraJS/Flora.Agent.FollowMouse.html
 
 Walkers are a step down on the evolutionary chain from Agents. They have no seeking, steering or directional behavior and just randomly explore their World. Use Walkers to create wandering objects or targets for Agents to seek.
 
-Walkers carry two properties that directly affect how they 'walk'.
+Walkers carry a property that directly affect how they 'walk'.
 
-* isPerlin {boolean} default: true
-* isRandom {boolean} default: false
+* perlin {boolean} default: true
 
-By default, Walkers use an algorithm called Perlin Noise (http://en.wikipedia.org/wiki/Perlin_noise) to navigate their World. Below is an example.
+By default, Walkers use an algorithm called Perlin Noise (http://en.wikipedia.org/wiki/Perlin_noise) to navigate their World. Below is an example of 60 Walkers wandering around.
 
 ```html
 <!DOCTYPE html>
@@ -275,7 +275,7 @@ In the example below, we create two groups of Agents and set their 'seekTarget' 
 
 http://vinceallenvince.github.io/FloraJS/Flora.Agent.Flocking.html
 
-In the example below, Agents flock to the mouse. We've also adjusted the 'width' and 'height' properties.
+In the example below, Agents flock to the mouse.
 
 ```html
 <!DOCTYPE html>
@@ -336,7 +336,7 @@ In the example below, we create a Dragger object and an Agent that follows the m
       Flora.System.setup(function() {
         this.add('World');
         this.add('Agent', {
-          location: new Flora.Vector(document.body.scrollWidth / 2, 20)
+          followMouse: true
         });
         this.add('Dragger', {
           draggable: true
@@ -372,8 +372,11 @@ Sensors are tuned specifically to a Stimulant and can be configured to activate 
 * LIKES
 * LOVES
 * EXPLORER
+* CURIOUS
+* DESTROY
+* CONSUME
 
-In the example below, the Agent carries a Sensor that senses Heat. When activated, it triggers the 'COWARD' behavior.
+In the example below, an Agent carries a Sensor that senses Heat. When activated, it triggers the 'COWARD' behavior.
 
 ```html
 <!DOCTYPE html>
@@ -409,7 +412,7 @@ In the example below, the Agent carries a Sensor that senses Heat. When activate
               behavior: 'COWARD'
             })
           ]
-        }, world);
+        });
 
         this.add('Stimulus', {
           type: 'heat',
@@ -455,7 +458,7 @@ Putting it all together, we can observe Agents navigate a World with multiple St
         });
 
         this.add('Agent', {
-          controlCamera: false,
+          controlCamera: true,
           angle: rand(0, 360),
           motorSpeed: 2,
           minSpeed: 1,
@@ -553,7 +556,7 @@ http://vinceallenvince.github.io/FloraJS/Flora.Sim.MultipleStimuli.html
 
 #### Camera
 
-In the above example, we have a fixed, third-person perspective of our World. But Flora can also provide a first-person perspective from the point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course, there can only be one agent controlling the world's camera.
+Notice in the above example, we view the world from the first-person point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course, there can only be one agent controlling the world's camera.
 
     ...
     this.add('Agent', {

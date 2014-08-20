@@ -58,7 +58,7 @@ module.exports = function(grunt) {
       publicJS: {
         expand: true,
         cwd: releaseDir,
-        src: '*.js',
+        src: ['*.js', '*.js.map'],
         dest: 'public/scripts/',
         flatten: true,
         filter: 'isFile'

@@ -731,8 +731,8 @@ test('Agent with a flowField should update location based on flowField.', functi
 
   Burner.System._stepForward();
 
-  t.assert(agent.location.x !== x, 'FlowField updates location.x.');
-  t.assert(agent.location.y !== y, 'FlowField updates location.y.');
+  t.assert(agent.followTargetVector.x >= -1 || agent.followTargetVector.x <= 1, 'FlowField updates followTargetVector.x.');
+  t.assert(agent.followTargetVector.y >= -1 || agent.followTargetVector.y <= 1, 'FlowField updates followTargetVector.y.');
 
   //
 
@@ -742,7 +742,6 @@ test('Agent with a flowField should update location based on flowField.', functi
 
   t.end();
 });
-
 
 test('Agent with a flowField should update location based on flowField.', function(t) {
 
@@ -775,7 +774,7 @@ test('Agent with a flowField should update location based on flowField.', functi
 
   agent.flowField = {
     resolution: 50,
-    field: {0:{}}
+    field: {4: {}}
   };
 
   var x = agent.location.x;
@@ -783,8 +782,8 @@ test('Agent with a flowField should update location based on flowField.', functi
 
   Burner.System._stepForward();
 
-  t.assert(agent.location.x === x, 'If FlowField is out of range location.x does not update.');
-  t.assert(agent.location.y === y, 'If FlowField is out of range location.y does not update.');
+  t.assert(agent.followTargetVector.x === x, 'If FlowField is out of range followTargetVector.x does not update.');
+  t.assert(agent.followTargetVector.y === y, 'If FlowField is out of range followTargetVector.y does not update.');
 
   t.end();
 });

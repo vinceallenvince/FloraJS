@@ -2,10 +2,10 @@
 // Flora classes
 var Flora = {
   ColorPalette: _dereq_('./src/ColorPalette').ColorPalette,
-  System: _dereq_('Burner').System,
-  Utils: _dereq_('Burner').Utils,
-  Vector: _dereq_('Burner').Vector,
-  World: _dereq_('Burner').World
+  System: _dereq_('burner').System,
+  Utils: _dereq_('burner').Utils,
+  Vector: _dereq_('burner').Vector,
+  World: _dereq_('burner').World
 };
 
 Flora.System.Classes = {
@@ -31,7 +31,7 @@ Flora.System.Classes = {
 };
 
 module.exports = Flora;
-},{"./src/Agent":16,"./src/Attractor":17,"./src/BorderPalette":18,"./src/Caption":19,"./src/ColorPalette":20,"./src/Connector":21,"./src/Dragger":22,"./src/FlowField":23,"./src/FlowFieldMarker":24,"./src/InputMenu":25,"./src/Mover":26,"./src/Oscillator":27,"./src/Particle":28,"./src/ParticleSystem":29,"./src/Point":30,"./src/RangeDisplay":31,"./src/Repeller":32,"./src/Sensor":33,"./src/Stimulus":35,"./src/Walker":36,"Burner":2}],2:[function(_dereq_,module,exports){
+},{"./src/Agent":9,"./src/Attractor":10,"./src/BorderPalette":11,"./src/Caption":12,"./src/ColorPalette":13,"./src/Connector":14,"./src/Dragger":15,"./src/FlowField":16,"./src/FlowFieldMarker":17,"./src/InputMenu":18,"./src/Mover":19,"./src/Oscillator":20,"./src/Particle":21,"./src/ParticleSystem":22,"./src/Point":23,"./src/RangeDisplay":24,"./src/Repeller":25,"./src/Sensor":26,"./src/Stimulus":28,"./src/Walker":29,"burner":2}],2:[function(_dereq_,module,exports){
 var Burner = {
   Item: _dereq_('./src/Item').Item,
   System: _dereq_('./src/System').System,
@@ -1574,20 +1574,6 @@ World.prototype.getCSSText = function(props) {
 
 module.exports.World = World;
 },{"./Item":5,"drawing-utils-lib":3,"vector2d-lib":4}],9:[function(_dereq_,module,exports){
-arguments[4][2][0].apply(exports,arguments)
-},{"./src/Item":12,"./src/System":14,"./src/World":15,"drawing-utils-lib":10,"vector2d-lib":11}],10:[function(_dereq_,module,exports){
-module.exports=_dereq_(3)
-},{}],11:[function(_dereq_,module,exports){
-module.exports=_dereq_(4)
-},{}],12:[function(_dereq_,module,exports){
-module.exports=_dereq_(5)
-},{"vector2d-lib":11}],13:[function(_dereq_,module,exports){
-module.exports=_dereq_(6)
-},{}],14:[function(_dereq_,module,exports){
-arguments[4][7][0].apply(exports,arguments)
-},{"./Item":12,"./StatsDisplay":13,"./World":15,"drawing-utils-lib":10,"vector2d-lib":11}],15:[function(_dereq_,module,exports){
-arguments[4][8][0].apply(exports,arguments)
-},{"./Item":12,"drawing-utils-lib":10,"vector2d-lib":11}],16:[function(_dereq_,module,exports){
 var Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('burner').Utils,
     System = _dereq_('burner').System,
@@ -1961,7 +1947,7 @@ Agent.prototype._cohesion = function(items) {
 module.exports.Agent = Agent;
 
 
-},{"./Mover":26,"burner":9}],17:[function(_dereq_,module,exports){
+},{"./Mover":19,"burner":2}],10:[function(_dereq_,module,exports){
 var Item = _dereq_('burner').Item,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('burner').Utils,
@@ -2098,7 +2084,7 @@ Attractor.prototype.getCSSText = function(props) {
 
 module.exports.Attractor = Attractor;
 
-},{"./Mover":26,"burner":9}],18:[function(_dereq_,module,exports){
+},{"./Mover":19,"burner":2}],11:[function(_dereq_,module,exports){
 var Utils = _dereq_('burner').Utils;
 /**
  * Creates a new BorderPalette object.
@@ -2168,7 +2154,7 @@ BorderPalette.prototype.getBorder = function() {
 module.exports.BorderPalette = BorderPalette;
 
 
-},{"burner":9}],19:[function(_dereq_,module,exports){
+},{"burner":2}],12:[function(_dereq_,module,exports){
 var System = _dereq_('burner').System,
     Utils = _dereq_('burner').Utils;
 
@@ -2276,7 +2262,7 @@ Caption.prototype.remove = function() {
 
 module.exports.Caption = Caption;
 
-},{"burner":9}],20:[function(_dereq_,module,exports){
+},{"burner":2}],13:[function(_dereq_,module,exports){
 var Utils = _dereq_('burner').Utils;
 /**
  * Creates a new ColorPalette object.
@@ -2440,7 +2426,7 @@ ColorPalette.prototype.getColor = function() {
 
 module.exports.ColorPalette = ColorPalette;
 
-},{"burner":9}],21:[function(_dereq_,module,exports){
+},{"burner":2}],14:[function(_dereq_,module,exports){
 var Item = _dereq_('burner').Item,
     Utils = _dereq_('burner').Utils,
     Vector = _dereq_('burner').Vector;
@@ -2555,7 +2541,7 @@ Connector.prototype.getCSSText = function(props) {
 
 module.exports.Connector = Connector;
 
-},{"burner":9}],22:[function(_dereq_,module,exports){
+},{"burner":2}],15:[function(_dereq_,module,exports){
 var Attractor = _dereq_('./Attractor').Attractor,
     Utils = _dereq_('burner').Utils;
 
@@ -2632,7 +2618,7 @@ Dragger.prototype.drag = function(obj) {
 
 module.exports.Dragger = Dragger;
 
-},{"./Attractor":17,"burner":9}],23:[function(_dereq_,module,exports){
+},{"./Attractor":10,"burner":2}],16:[function(_dereq_,module,exports){
 var FlowFieldMarker = _dereq_('./FlowFieldMarker').FlowFieldMarker,
     Item = _dereq_('burner').Item,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
@@ -2736,7 +2722,7 @@ FlowField.prototype.draw = function() {};
 
 module.exports.FlowField = FlowField;
 
-},{"./FlowFieldMarker":24,"./SimplexNoise":34,"burner":9}],24:[function(_dereq_,module,exports){
+},{"./FlowFieldMarker":17,"./SimplexNoise":27,"burner":2}],17:[function(_dereq_,module,exports){
 var Item = _dereq_('burner').Item,
     System = _dereq_('burner').System,
     Utils = _dereq_('burner').Utils,
@@ -2802,7 +2788,7 @@ FlowFieldMarker.prototype.getCSSText = function(props) {
 
 module.exports.FlowFieldMarker = FlowFieldMarker;
 
-},{"burner":9}],25:[function(_dereq_,module,exports){
+},{"burner":2}],18:[function(_dereq_,module,exports){
 var System = _dereq_('burner').System,
     config = _dereq_('./config').config,
     Utils = _dereq_('burner').Utils;
@@ -2904,7 +2890,7 @@ InputMenu.prototype.remove = function() {
 module.exports.InputMenu = InputMenu;
 
 
-},{"./config":37,"burner":9}],26:[function(_dereq_,module,exports){
+},{"./config":30,"burner":2}],19:[function(_dereq_,module,exports){
 var Item = _dereq_('burner').Item,
     System = _dereq_('burner').System,
     Utils = _dereq_('burner').Utils,
@@ -3238,7 +3224,7 @@ Mover.prototype.getCSSText = function(props) {
 module.exports.Mover = Mover;
 
 
-},{"burner":9}],27:[function(_dereq_,module,exports){
+},{"burner":2}],20:[function(_dereq_,module,exports){
 var Item = _dereq_('burner').Item,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
     System = _dereq_('burner').System,
@@ -3434,7 +3420,7 @@ Oscillator.prototype.getCSSText = function(props) {
 
 module.exports.Oscillator = Oscillator;
 
-},{"./SimplexNoise":34,"burner":9}],28:[function(_dereq_,module,exports){
+},{"./SimplexNoise":27,"burner":2}],21:[function(_dereq_,module,exports){
 var Item = _dereq_('burner').Item,
     Mover = _dereq_('./Mover').Mover,
     Utils = _dereq_('burner').Utils,
@@ -3572,7 +3558,7 @@ Particle.prototype.getCSSText = function(props) {
 module.exports.Particle = Particle;
 
 
-},{"./Mover":26,"burner":9}],29:[function(_dereq_,module,exports){
+},{"./Mover":19,"burner":2}],22:[function(_dereq_,module,exports){
 var ColorPalette = _dereq_('./ColorPalette').ColorPalette,
     Item = _dereq_('burner').Item,
     Mover = _dereq_('./Mover').Mover,
@@ -3732,7 +3718,7 @@ ParticleSystem.prototype.getCSSText = function(props) {
 
 module.exports.ParticleSystem = ParticleSystem;
 
-},{"./ColorPalette":20,"./Mover":26,"burner":9}],30:[function(_dereq_,module,exports){
+},{"./ColorPalette":13,"./Mover":19,"burner":2}],23:[function(_dereq_,module,exports){
 var Item = _dereq_('burner').Item,
     Utils = _dereq_('burner').Utils;
 
@@ -3822,7 +3808,7 @@ Point.prototype.getCSSText = function(props) {
 
 module.exports.Point = Point;
 
-},{"burner":9}],31:[function(_dereq_,module,exports){
+},{"burner":2}],24:[function(_dereq_,module,exports){
 var Item = _dereq_('burner').Item,
     Utils = _dereq_('burner').Utils;
 
@@ -3941,7 +3927,7 @@ RangeDisplay.prototype.getCSSText = function(props) {
 
 module.exports.RangeDisplay = RangeDisplay;
 
-},{"burner":9}],32:[function(_dereq_,module,exports){
+},{"burner":2}],25:[function(_dereq_,module,exports){
 var Attractor = _dereq_('./Attractor').Attractor,
     Utils = _dereq_('burner').Utils;
 
@@ -3998,7 +3984,7 @@ Repeller.prototype.init = function(world, opt_options) {
 
 module.exports.Repeller = Repeller;
 
-},{"./Attractor":17,"burner":9}],33:[function(_dereq_,module,exports){
+},{"./Attractor":10,"burner":2}],26:[function(_dereq_,module,exports){
 var Mover = _dereq_('./Mover').Mover,
     System = _dereq_('burner').System,
     Utils = _dereq_('burner').Utils,
@@ -4117,7 +4103,7 @@ Sensor.prototype.step = function() {
    * loop thru the list and check if sensor should activate.
    */
 
-  var list = System.getAllItemsByAttribute('type', this.type, this.targetClass);
+  var list = System.getAllItemsByAttribute('type', this.type, this.targetClass || 'Stimulus');
 
   for (var i = 0, max = list.length; i < max; i++) {
 
@@ -4488,7 +4474,7 @@ Sensor.prototype._sensorActive = function(target) {
 
 module.exports.Sensor = Sensor;
 
-},{"./Mover":26,"burner":9}],34:[function(_dereq_,module,exports){
+},{"./Mover":19,"burner":2}],27:[function(_dereq_,module,exports){
 /*jshint bitwise:false */
 /**
 * https://gist.github.com/304522
@@ -4717,7 +4703,7 @@ SimplexNoise.dot = function(g, x, y) {
 
 module.exports.SimplexNoise = SimplexNoise;
 
-},{}],35:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 var BorderPalette = _dereq_('./BorderPalette').BorderPalette,
     ColorPalette = _dereq_('./ColorPalette').ColorPalette,
     config = _dereq_('./config').config,
@@ -4836,7 +4822,7 @@ Stimulus.prototype.init = function(world, opt_options) {
 
 module.exports.Stimulus = Stimulus;
 
-},{"./BorderPalette":18,"./ColorPalette":20,"./Mover":26,"./config":37,"burner":9}],36:[function(_dereq_,module,exports){
+},{"./BorderPalette":11,"./ColorPalette":13,"./Mover":19,"./config":30,"burner":2}],29:[function(_dereq_,module,exports){
 var Mover = _dereq_('./Mover').Mover,
     SimplexNoise = _dereq_('./SimplexNoise').SimplexNoise,
     Utils = _dereq_('burner').Utils,
@@ -4941,7 +4927,7 @@ Walker.prototype.applyAdditionalForces = function() {
 
 module.exports.Walker = Walker;
 
-},{"./Mover":26,"./SimplexNoise":34,"burner":9}],37:[function(_dereq_,module,exports){
+},{"./Mover":19,"./SimplexNoise":27,"burner":2}],30:[function(_dereq_,module,exports){
 /**
  * @namespace
  */

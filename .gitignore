@@ -8,5 +8,8 @@ src_bak
 specs
 #
 ##### FILES ####
+.log
 *.DS_Store
 *.swp
+public/scripts/flora.js
+*.map

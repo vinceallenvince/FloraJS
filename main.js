@@ -1,10 +1,10 @@
 // Flora classes
 var Flora = {
   ColorPalette: require('./src/ColorPalette').ColorPalette,
-  System: require('Burner').System,
-  Utils: require('Burner').Utils,
-  Vector: require('Burner').Vector,
-  World: require('Burner').World
+  System: require('burner').System,
+  Utils: require('burner').Utils,
+  Vector: require('burner').Vector,
+  World: require('burner').World
 };
 
 Flora.System.Classes = {

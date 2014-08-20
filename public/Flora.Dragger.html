@@ -19,7 +19,7 @@
       Flora.System.setup(function() {
         this.add('World');
         this.add('Agent', {
-          location: new Flora.Vector(document.body.scrollWidth / 2, 20)
+          followMouse: true
         });
         this.add('Dragger', {
           draggable: true
