@@ -75,7 +75,8 @@ module.exports = function(grunt) {
     exec: {
       test: 'npm test',
       coverage: 'browserify -t coverify test/*.js | testling | coverify',
-      browserify: 'browserify main.js --standalone ' + standaloneNamespace + ' -o ' + devRelease
+      browserify: 'browserify main.js --standalone ' + standaloneNamespace + ' -o ' + devRelease,
+      ghPagesIndex: 'public/gh-pages-index.sh ' + standaloneNamespace
     },
     watch: {
       files: ['src/*.js'],
@@ -116,6 +117,7 @@ module.exports = function(grunt) {
   grunt.registerTask('report', ['plato']);
   grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('lint', ['csslint', 'jshint']);
+  grunt.registerTask('ghPages', ['exec:ghPagesIndex'])
 
 };
 
