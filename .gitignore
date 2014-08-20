@@ -2,7 +2,14 @@
 node_modules
 reports
 doc
-
-#### FILES ####
+out
+release
+src_bak
+specs
+#
+##### FILES ####
+public/scripts/flora.js
+.log
 *.DS_Store
 *.swp
+*.map
