@@ -9,7 +9,7 @@ specs
 #
 ##### FILES ####
 public/scripts/flora.js
-.log
+*.log
 *.DS_Store
 *.swp
 *.map

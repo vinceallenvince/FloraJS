@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
 
   var standaloneNamespace = 'Flora';
-  var latest = '<%= pkg.name %>';
+  var latest = 'flora';
   var releaseDir = 'release/';
   var devRelease = releaseDir + latest + '.js';
   var bannerContentMin = '/*! <%= pkg.name %> v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd hh:mm:ss") %> \n' +
