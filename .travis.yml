@@ -5,19 +5,31 @@ before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
 - npm install -g grunt-cli
+after_success: grunt release
 before_deploy: echo 'ready to deploy?'
-deploy:
-- provider: releases
-  api_key:
-    secure: o+rKD1Qwd/A7yFAw1zYxta6Y8oXSHYpft67WzIp+44vvW4arMYZ3OyowuLwr5+Jes79Vkk9f5sSQsa+3BrrIwENX3fjTMHWhv4RwkudjCpLXK4Xb+tbaP0DgAlg9eQN4kP8pvPnwYBwopvu1sLZUeAEWOgVYfxFCExADpAuyAdg=
-  file:
-  - release/flora.min.js
-  - release/flora.min.css
-  on:
-    repo: vinceallenvince/FloraJS
-    tags: true
-    all_branches: true
+after_deploy:
+- echo 'done!'
+- ./deploy-gh-pages.sh
 env:
   global:
-    - GH_REF: github.com/vinceallenvince/Burner.git
-    - secure: CipXlQpTaAirKaXn4fSKtVgCHg1NrzGi1vesa9iOzUOaTtQS+tn/BPnbZHt0/2tkHuIaW7XXX+5Y6OsaXI7icjoHBcS+J8GX1A4U3SqcrOQZ6ZKnyWaK8C67DZA1ezhCQEu9XfRPCPVpTtRkna9ctYcbodY3ekUoSujVrqMGU4w=
+  - GH_REF: github.com/vinceallenvince/FloraJS.git
+  - secure: CipXlQpTaAirKaXn4fSKtVgCHg1NrzGi1vesa9iOzUOaTtQS+tn/BPnbZHt0/2tkHuIaW7XXX+5Y6OsaXI7icjoHBcS+J8GX1A4U3SqcrOQZ6ZKnyWaK8C67DZA1ezhCQEu9XfRPCPVpTtRkna9ctYcbodY3ekUoSujVrqMGU4w=
+deploy:
+  - provider: npm
+    email: vince@vinceallen.com
+    api_key:
+      secure: ZWuwJzknoPOreRHb6lTxzPJdJ32OKwtuxpkhoi0i/JRjBtZTdHOsp0qIi73xB0fbuWtpPNByIshOu58WxtOBX3kxswKDBQC+OFh+h+lK3R0b2DvWybeCiAw+vm0mp+cilvIkJ2/9km71WsO4xnEa85lwhQEIYCncy4InK/zXW8c=
+    on:
+      tags: true
+      repo: vinceallenvince/FloraJS
+      all_branches: true
+  - provider: releases
+    api_key:
+      secure: o+rKD1Qwd/A7yFAw1zYxta6Y8oXSHYpft67WzIp+44vvW4arMYZ3OyowuLwr5+Jes79Vkk9f5sSQsa+3BrrIwENX3fjTMHWhv4RwkudjCpLXK4Xb+tbaP0DgAlg9eQN4kP8pvPnwYBwopvu1sLZUeAEWOgVYfxFCExADpAuyAdg=
+    file:
+    - release/flora.min.js
+    - release/flora.min.css
+    on:
+      repo: vinceallenvince/FloraJS
+      tags: true
+      all_branches: true
