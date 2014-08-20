@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -10,88 +9,72 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
-  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
-  <script type="text/javascript" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
 
-    var world = new Burner.World(document.body, {
-      gravity: new Burner.Vector(),
-      c: 0,
-      borderWidth: 1,
-      borderStyle: 'dashed',
-      borderColor: [100, 100, 100]
-    });
+    Flora.System.setup(function() {
 
-    Burner.System.init(function() {
-
-      this.add('Stimulus', {
-        type: 'heat',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.25, this.world.height * 0.15);
-        }
+      var world = this.add('World', {
+        gravity: new Flora.Vector(),
+        c: 0,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: [100, 100, 100]
       });
 
       this.add('Stimulus', {
         type: 'heat',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.15);
-        }
+        location: new Flora.Vector(world.width * 0.25, world.height * 0.15)
       });
 
       this.add('Stimulus', {
         type: 'heat',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.85, this.world.height * 0.85);
-        }
+        location: new Flora.Vector(world.width * 0.85, world.height * 0.15)
       });
 
       this.add('Stimulus', {
         type: 'heat',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.15, this.world.height * 0.75);
-        }
+        location: new Flora.Vector(world.width * 0.85, world.height * 0.85)
+      });
+
+      this.add('Stimulus', {
+        type: 'heat',
+        location: new Flora.Vector(world.width * 0.15, world.height * 0.75)
       });
 
       this.add('Stimulus', {
         type: 'cold',
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.5, this.world.height * 0.5);
-        }
+        location: new Flora.Vector(world.width * 0.5, world.height * 0.5)
       });
 
       this.add('Dragger', {
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.45, this.world.height * 0.8);
-        }
+        location: new Flora.Vector(world.width * 0.45, world.height * 0.8)
       });
 
       this.add('Dragger', {
-        location: function () {
-          return new Burner.Vector(this.world.width * 0.65, this.world.height * 0.2);
-        }
+        location: new Flora.Vector(world.width * 0.65, world.height * 0.2)
       });
 
       for (var i = 0; i < 5; i ++) {
-        
+
         var controlCamera = !i;
 
-          var loc = new Burner.Vector(world.width * 0.5, world.height * 0.5);
-          var offset = new Burner.Vector(1, 1);
+          var loc = new Flora.Vector(world.width * 0.5, world.height * 0.5);
+          var offset = new Flora.Vector(1, 1);
           offset.normalize();
           offset.rotate(Flora.Utils.degreesToRadians(Flora.Utils.getRandomNumber(0, 359, true)));
           offset.mult(30);
           loc.add(offset);
 
           var angle = Flora.Utils.getRandomNumber(0, 359, true);
-          var acceleration = new Burner.Vector(1, 0);
+          var acceleration = new Flora.Vector(1, 0);
           acceleration.rotate(Flora.Utils.degreesToRadians(angle));
           acceleration.normalize();
           acceleration.mult(20);
-        
+
           // create FISH
           var fish = this.add('Agent', {
             name: 'fish',
@@ -111,8 +94,12 @@
             maxSpeed: 2,
             createFlag: 0,
             beforeStep: function() {
+
+              if (typeof this.eyeRotation === 'undefined') {
+                this.eyeRotation = 0;
+              }
               /*if (Flora.Utils.getRandomNumber(1, 100) === 1) {
-                var a = new Burner.Vector(1, 0);
+                var a = new Flora.Vector(1, 0);
                 a.rotate(Flora.Utils.degreesToRadians(this.angle));
                 a.normalize();
                 a.mult(20);
@@ -139,7 +126,7 @@
               })
             ]
           });
-        
+
           var eye = document.createElement('div');
           eye.id = 'eye-' + fish.id;
           eye.className = 'eye';
@@ -152,7 +139,7 @@
           eye.style.opacity = 1;
           fish.el.appendChild(eye);
           fish.eye = eye;
-            
+
       }
 
       //
@@ -169,7 +156,8 @@
         borderColor: 'transparent',
         position: 'bottom center'
       });
-    }, world);
+    });
+    Flora.System.loop();
   </script>
 </body>
 </html>

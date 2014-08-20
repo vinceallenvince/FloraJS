@@ -10,24 +10,22 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
-  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
+      Flora.System.setup(function() {
 
-        var world = Burner.System.firstWorld();
+        var world = this.add('World');
 
         var pointA = this.add('Point', {
-          location: new Burner.Vector(world.width * 0.25, world.height * 0.25)
+          location: new Flora.Vector(world.width * 0.25, world.height * 0.25)
         });
 
         var pointB = this.add('Point', {
-          location: new Burner.Vector(world.width * 0.75, world.height * 0.75)
+          location: new Flora.Vector(world.width * 0.75, world.height * 0.75)
         });
 
         this.add('Connector', {
@@ -48,6 +46,7 @@
           position: 'bottom center'
         });
       });
+      Flora.System.loop();
     </script>
   </body>
 </html>

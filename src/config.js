@@ -1,10 +1,7 @@
-/*global Burner, Flora */
-Burner.Classes = Flora;
-
 /**
  * @namespace
  */
-var Config = {
+var config = {
   borderStyles: [
     'none',
     'solid',
@@ -59,3 +56,5 @@ var Config = {
     reset: 4
   }
 };
+
+module.exports.config = config;

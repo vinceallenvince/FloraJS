@@ -10,16 +10,14 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
-  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
-
+      Flora.System.setup(function() {
+        this.add('World');
         this.add('Point');
 
         this.add('Caption', {
@@ -35,6 +33,7 @@
           position: 'bottom center'
         });
       });
+      Flora.System.loop();
     </script>
   </body>
 </html>
