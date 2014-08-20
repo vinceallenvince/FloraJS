@@ -1,2 +1,3 @@
 #!/bin/sh
 grunt lint
+npm test

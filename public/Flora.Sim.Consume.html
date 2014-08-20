@@ -10,51 +10,45 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
-  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <div id="worldA"></div>
     <script type="text/javascript" charset="utf-8">
 
-      var getRandomNumber = Flora.Utils.getRandomNumber;
+      var rand = Flora.Utils.getRandomNumber;
 
       var caption, i, totalOxygen = 10;
 
-      var world = new Burner.World(document.getElementById("worldA"), {
-        boundToWindow: false,
-        width: 920,
-        height: 480,
-        borderColor: [60, 60, 60],
-        borderStyle: 'dotted',
-        borderWidth: 1,
-        gravity: new Burner.Vector(0, 0),
-        c: 0
-      });
+      Flora.System.setup(function() {
 
-      Burner.System.init(function() {
+        world = this.add('World', {
+          el: document.getElementById('worldA'),
+          width: 920,
+          height: 480,
+          borderColor: [60, 60, 60],
+          borderStyle: 'dotted',
+          borderWidth: 1,
+          gravity: new Flora.Vector(0, 0),
+          c: 0
+        });
 
         for (i = 0; i < totalOxygen; i++) {
           this.add('Stimulus', {
             type: 'oxygen',
-            location: function () {
-              return new Burner.Vector(getRandomNumber(0, this.world.width), getRandomNumber(0, this.world.height));
-            }
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
           });
         }
 
-        this.add('Agent', {
-          angle: getRandomNumber(0, 359),
+        var agent = this.add('Agent', {
+          angle: rand(0, 359),
           motorSpeed: 5,
           minSpeed: 0,
           maxSpeed: 10,
           width: 20,
           height: 20,
           wrapWorldEdges: true,
-          maxOxygenLevel: 100,
-          oxygenLevel: 100,
           sensors: [
             this.add('Sensor', {
               type: 'oxygen',
@@ -83,6 +77,8 @@
             }
           }
         });
+        agent.maxOxygenLevel = 100;
+        agent.oxygenLevel = 100;
 
         caption = this.add('Caption', {
           text: '',
@@ -96,7 +92,8 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
-      }, world);
+      });
+      Flora.System.loop();
     </script>
   </body>
 </html>

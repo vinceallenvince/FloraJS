@@ -10,23 +10,21 @@
   <meta property='og:url' content='http://www.florajs.com' />
   <meta property='og:site_name' content='FloraJS' />
   <title>FloraJS | Simulate natural systems with JavaScript</title>
-  <link rel="stylesheet" href="css/Burner.min.css" type="text/css" charset="utf-8" />
-  <link rel="stylesheet" href="css/Flora.min.css" type="text/css" charset="utf-8" />
-  <script src="scripts/Burner.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="scripts/Flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
 
-      Burner.System.init(function() {
-
-        var world = Burner.System.firstWorld();
+      Flora.System.setup(function() {
+        var world = this.add('World');
+        //this.add('Oscillator');
 
         this.add('Oscillator', {
-          initialLocation: new Burner.Vector(world.width / 2, world.height / 2),
-          amplitude: new Burner.Vector(100, 100),
-          acceleration: new Burner.Vector(0.05, 0.05),
-          aVelocity: new Burner.Vector(0.9, 0)
+          initialLocation: new Flora.Vector(world.width / 2, world.height / 2),
+          amplitude: new Flora.Vector(100, 100),
+          acceleration: new Flora.Vector(0.05, 0.05),
+          aVelocity: new Flora.Vector(0.9, 0)
         });
 
         this.add('Caption', {
@@ -42,6 +40,7 @@
           position: 'bottom center'
         });
       });
+      Flora.System.loop();
     </script>
   </body>
 </html>
