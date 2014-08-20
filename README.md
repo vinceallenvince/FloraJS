@@ -9,7 +9,7 @@ The formulas driving a large part of Flora are adapted from Daniel Shiffman's ['
 To include FloraJS as a component in your project, use the node module.
 
 ```
-npm install flora --save
+npm install florajs --save
 ```
 
 You can also use the [standalone version](https://github.com/vinceallenvince/FloraJS/releases/latest) and reference both the css and js files from your document.
