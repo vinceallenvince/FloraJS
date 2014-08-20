@@ -50,7 +50,7 @@ module.exports = function(grunt) {
         sourceMap: true
       },
       target: {
-        src: [releaseDir + latest + '.js'],
+        src: releaseDir + latest + '.js',
         dest: releaseDir + latest + '.min.js'
       }
     },
@@ -76,11 +76,7 @@ module.exports = function(grunt) {
       test: 'npm test',
       coverage: 'browserify -t coverify test/*.js | testling | coverify',
       browserify: 'browserify main.js --standalone ' + standaloneNamespace + ' -o ' + devRelease,
-      ghPagesIndex: 'public/gh-pages-index.sh ' + standaloneNamespace
-    },
-    watch: {
-      files: ['src/*.js'],
-      tasks: ['jshint'],
+      ghPagesIndex: './gh-pages-index.sh ' + standaloneNamespace
     },
     plato: {
       options: {},
@@ -111,7 +107,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-jsdoc');
 
   grunt.registerTask('default', ['cssmin', 'exec:browserify', 'copy:publicJS', 'copy:publicCSS']);
-  grunt.registerTask('release', ['clean', 'csslint', 'jshint', 'cssmin', 'exec:browserify', 'uglify', 'copy:publicJS', 'copy:publicCSS', 'jsdoc', 'plato']);
+  grunt.registerTask('release', ['clean', 'csslint', 'jshint', 'cssmin', 'exec:browserify', 'uglify', 'copy:publicJS', 'copy:publicCSS', 'exec:ghPagesIndex', 'jsdoc', 'plato']);
   grunt.registerTask('test', ['exec:test']);
   grunt.registerTask('coverage', ['exec:coverage']);
   grunt.registerTask('report', ['plato']);
