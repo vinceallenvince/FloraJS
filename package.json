@@ -33,6 +33,7 @@
     "testling": "^1.6.1"
   },
   "dependencies": {
-    "burner": "~3.0.3"
+    "burner": "~3.0.3",
+    "borderpalette": "~0.1.6"
   }
 }

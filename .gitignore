@@ -5,7 +5,7 @@ doc
 out
 release
 src_bak
-specs
+test_bak
 #
 ##### FILES ####
 public/scripts/flora.js
