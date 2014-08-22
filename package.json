@@ -1,6 +1,6 @@
 {
   "name": "florajs",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Simulate natural systems with JavaScript.",
   "main": "src/main.js",
   "scripts": {
