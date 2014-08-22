@@ -1,6 +1,6 @@
 // Flora classes
 var Flora = {
-  ColorPalette: require('./src/ColorPalette').ColorPalette,
+  ColorPalette: require('colorpalette'),
   System: require('burner').System,
   Utils: require('burner').Utils,
   Vector: require('burner').Vector,
@@ -10,7 +10,7 @@ var Flora = {
 Flora.System.Classes = {
   Agent: require('./src/Agent').Agent,
   Attractor: require('./src/Attractor').Attractor,
-  BorderPalette: require('./src/BorderPalette').BorderPalette,
+  BorderPalette: require('borderpalette'),
   Caption: require('./src/Caption').Caption,
   Connector: require('./src/Connector').Connector,
   Dragger: require('./src/Dragger').Dragger,

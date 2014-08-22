@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "burner": "~3.0.3",
-    "borderpalette": "~0.1.6"
+    "borderpalette": "~0.1.6",
+    "colorpalette": "~0.1.3"
   }
 }

@@ -1,4 +1,4 @@
-var ColorPalette = require('./ColorPalette').ColorPalette,
+var ColorPalette = require('colorpalette'),
     Item = require('burner').Item,
     Mover = require('./Mover').Mover,
     System = require('burner').System,
