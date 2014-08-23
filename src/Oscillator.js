@@ -1,5 +1,5 @@
 var Item = require('burner').Item,
-    SimplexNoise = require('./SimplexNoise').SimplexNoise,
+    SimplexNoise = require('quietriot'),
     System = require('burner').System,
     Utils = require('burner').Utils,
     Vector = require('burner').Vector;

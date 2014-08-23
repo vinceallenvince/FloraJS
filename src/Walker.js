@@ -1,5 +1,5 @@
 var Mover = require('./Mover').Mover,
-    SimplexNoise = require('./SimplexNoise').SimplexNoise,
+    SimplexNoise = require('quietriot'),
     Utils = require('burner').Utils,
     Vector = require('burner').Vector;
 

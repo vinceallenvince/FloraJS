@@ -1,7 +1,7 @@
 var Burner = require('burner'),
     Vector = Burner.Vector,
     test = require('tape'),
-    SimplexNoise = require('../src/SimplexNoise').SimplexNoise,
+    SimplexNoise = require('quietriot'),
     Oscillator, obj;
 
 function beforeTest() {

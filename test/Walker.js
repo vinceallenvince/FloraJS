@@ -1,6 +1,6 @@
 var Burner = require('burner'),
     test = require('tape'),
-    SimplexNoise = require('../src/SimplexNoise').SimplexNoise,
+    SimplexNoise = require('quietriot'),
     Walker, obj;
 
 function beforeTest() {
