@@ -92,6 +92,12 @@
           borderColor: 'transparent',
           position: 'bottom center'
         });
+
+        var player = new Flora.SoundBed.Player();
+        player.init({
+          volumeMin: 0.25,
+          volumeMax: 0.5
+        });
       });
       Flora.System.loop();
     </script>

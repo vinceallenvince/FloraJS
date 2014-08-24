@@ -1,6 +1,7 @@
 // Flora classes
 var Flora = {
   ColorPalette: require('colorpalette'),
+  SoundBed: require('soundbed'),
   System: require('burner').System,
   Utils: require('burner').Utils,
   Vector: require('burner').Vector,

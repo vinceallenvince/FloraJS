@@ -304,8 +304,13 @@
           ]
         });
 
+        var player = new Flora.SoundBed.Player();
+        player.init({
+          volumeMin: 0.25,
+          volumeMax: 0.5
+        });
       });
-    Flora.System.loop();
+      Flora.System.loop();
     </script>
   </body>
 </html>

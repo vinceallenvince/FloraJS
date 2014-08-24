@@ -683,6 +683,23 @@ Flora also supports multiple worlds... here's an example.
 
 http://vinceallenvince.github.io/FloraJS/Flora.WorldsMultiple.html
 
+#### Sound
+
+Flora uses [SoundBed](https://github.com/vinceallenvince/soundbed) to generate ambient noise for simluations. To use it, just create a new Flora.SoundBed.Player and pass in your opitons via player.init().
+
+```
+  Flora.System.setup(function() {
+    ...
+    var player = new Flora.SoundBed.Player();
+    player.init({
+      volumeMin: 0.25,
+      volumeMax: 0.5
+    });
+   ...
+  });
+```
+
+
 #### Advanced exmaples
 
 The following examples implement advanced functions of FloraJS.

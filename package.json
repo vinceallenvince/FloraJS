@@ -36,6 +36,7 @@
     "burner": "~3.0.3",
     "borderpalette": "~0.1.6",
     "colorpalette": "~0.1.3",
-    "quietriot": "~0.1.1"
+    "quietriot": "~0.1.1",
+    "soundbed": "~0.1.6"
   }
 }
