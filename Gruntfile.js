@@ -75,7 +75,7 @@ module.exports = function(grunt) {
     exec: {
       test: 'npm test',
       coverage: 'browserify -t coverify test/*.js | testling | coverify',
-      browserify: 'browserify main.js --standalone ' + standaloneNamespace + ' -o ' + devRelease,
+      browserify: 'browserify src/main.js --standalone ' + standaloneNamespace + ' -o ' + devRelease,
       ghPagesIndex: './gh-pages-index.sh ' + standaloneNamespace
     },
     plato: {
