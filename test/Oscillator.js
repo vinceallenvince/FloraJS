@@ -48,7 +48,7 @@ test('new Oscillator() should have default properties.', function(t) {
   t.equal(obj.acceleration instanceof Vector, true, 'default acceleration.');
   t.equal(obj.aVelocity instanceof Vector, true, 'default aVelocity.');
   t.equal(obj.isStatic, false, 'default isStatic.');
-  t.equal(obj.isPerlin, false, 'default isPerlin.');
+  t.equal(obj.perlin, false, 'default perlin.');
   t.equal(obj.perlinSpeed, 0.005, 'default perlinSpeed.');
   t.equal(obj.perlinTime, 0, 'default perlinTime.');
   t.equal(obj.perlinAccelLow, -2, 'default perlinAccelLow.');
@@ -90,7 +90,7 @@ test('new Oscillator() should have custom properties.', function(t) {
       acceleration: new Vector(),
       aVelocity: new Vector(),
       isStatic: true,
-      isPerlin: true,
+      perlin: true,
       perlinSpeed: 0.001,
       perlinTime: 100,
       perlinAccelLow: -3,
@@ -117,7 +117,7 @@ test('new Oscillator() should have custom properties.', function(t) {
   t.equal(obj.acceleration instanceof Vector, true, 'custom acceleration.');
   t.equal(obj.aVelocity instanceof Vector, true, 'custom aVelocity.');
   t.equal(obj.isStatic, true, 'custom isStatic.');
-  t.equal(obj.isPerlin, true, 'custom isPerlin.');
+  t.equal(obj.perlin, true, 'custom perlin.');
   t.equal(obj.perlinSpeed, 0.001, 'custom perlinSpeed.');
   t.equal(obj.perlinTime, 100, 'custom perlinTime.');
   t.equal(obj.perlinAccelLow, -3, 'custom perlinAccelLow.');
@@ -297,7 +297,7 @@ test('step() should update oscillator location.', function(t) {
       height: 300
     });
     obj = this.add('Oscillator', {
-      isPerlin: true,
+      perlin: true,
       perlinOffsetX: 10000,
       perlinOffsetY: 10000
     });

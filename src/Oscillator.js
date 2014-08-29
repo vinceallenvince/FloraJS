@@ -32,11 +32,11 @@ Utils.extend(Oscillator, Item);
  *    constant acceleration.
  * @param {Object} [opt_options.aVelocity = new Vector()] Angular velocity.
  * @param {boolean} [opt_options.isStatic = false] If true, object will not move.
- * @param {boolean} [opt_options.isPerlin = false] If set to true, object will use Perlin Noise to calculate its location.
- * @param {number} [opt_options.perlinSpeed = 0.005] If isPerlin = true, perlinSpeed determines how fast the object location moves through the noise space.
+ * @param {boolean} [opt_options.perlin = false] If set to true, object will use Perlin Noise to calculate its location.
+ * @param {number} [opt_options.perlinSpeed = 0.005] If perlin = true, perlinSpeed determines how fast the object location moves through the noise space.
  * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
- * @param {number} [opt_options.perlinAccelLow = -2] The lower bound of acceleration when isPerlin = true.
- * @param {number} [opt_options.perlinAccelHigh = 2] The upper bound of acceleration when isPerlin = true.
+ * @param {number} [opt_options.perlinAccelLow = -2] The lower bound of acceleration when perlin = true.
+ * @param {number} [opt_options.perlinAccelHigh = 2] The upper bound of acceleration when perlin = true.
  * @param {number} [opt_options.offsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
  * @param {number} [opt_options.offsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
  * @param {number} [opt_options.width = 20] Width.
@@ -57,7 +57,7 @@ Oscillator.prototype.init = function(world, opt_options) {
   this.acceleration = options.acceleration || new Vector(0.01, 0);
   this.aVelocity = options.aVelocity || new Vector();
   this.isStatic = !!options.isStatic;
-  this.isPerlin = !!options.isPerlin;
+  this.perlin = !!options.perlin;
   this.perlinSpeed = typeof options.perlinSpeed === 'undefined' ? 0.005 : options.perlinSpeed;
   this.perlinTime = options.perlinTime || 0;
   this.perlinAccelLow = typeof options.perlinAccelLow === 'undefined' ? -2 : options.perlinAccelLow;
@@ -104,7 +104,7 @@ Oscillator.prototype.step = function () {
     return;
   }
 
-  if (this.isPerlin) {
+  if (this.perlin) {
     this.perlinTime += this.perlinSpeed;
     this.aVelocity.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
     this.aVelocity.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
