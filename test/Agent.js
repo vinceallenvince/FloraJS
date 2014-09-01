@@ -19,7 +19,7 @@ function beforeTest() {
 }
 
 test('load Agent.', function(t) {
-  Agent = require('../src/Agent').Agent;
+  Agent = require('../src/Agent');
   t.ok(Agent, 'object loaded');
   t.end();
 });

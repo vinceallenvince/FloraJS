@@ -368,5 +368,5 @@ Agent.prototype._cohesion = function(items) {
   return new Vector();
 };
 
-module.exports.Agent = Agent;
+module.exports = Agent;
 

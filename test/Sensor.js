@@ -1,6 +1,6 @@
 var Burner = require('burner'),
     test = require('tape'),
-    Agent = require('../src/Agent').Agent,
+    Agent = require('../src/Agent'),
     ParticleSystem = require('../src/ParticleSystem').ParticleSystem,
     Stimulus = require('../src/Stimulus').Stimulus,
     Sensor, obj;
