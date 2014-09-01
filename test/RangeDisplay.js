@@ -18,7 +18,7 @@ function beforeTest() {
 }
 
 test('load RangeDisplay.', function(t) {
-  RangeDisplay = require('../src/RangeDisplay').RangeDisplay;
+  RangeDisplay = require('../src/RangeDisplay');
   t.ok(RangeDisplay, 'object loaded');
   t.end();
 });

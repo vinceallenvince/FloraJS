@@ -114,4 +114,4 @@ RangeDisplay.prototype.getCSSText = function(props) {
 };
 
 
-module.exports.RangeDisplay = RangeDisplay;
+module.exports = RangeDisplay;
