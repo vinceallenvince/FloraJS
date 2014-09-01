@@ -22,7 +22,7 @@ Flora.System.Classes = {
   InputMenu: require('./InputMenu'),
   Mover: require('./Mover'),
   Oscillator: require('./Oscillator'),
-  Particle: require('./Particle').Particle,
+  Particle: require('./Particle'),
   ParticleSystem: require('./ParticleSystem').ParticleSystem,
   Point: require('./Point').Point,
   RangeDisplay: require('./RangeDisplay').RangeDisplay,

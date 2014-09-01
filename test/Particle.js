@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load Particle.', function(t) {
-  Particle = require('../src/Particle').Particle;
+  Particle = require('../src/Particle');
   t.ok(Particle, 'object loaded');
   t.end();
 });
