@@ -23,7 +23,7 @@ Flora.System.Classes = {
   Mover: require('./Mover'),
   Oscillator: require('./Oscillator'),
   Particle: require('./Particle'),
-  ParticleSystem: require('./ParticleSystem').ParticleSystem,
+  ParticleSystem: require('./ParticleSystem'),
   Point: require('./Point').Point,
   RangeDisplay: require('./RangeDisplay').RangeDisplay,
   Repeller: require('./Repeller').Repeller,

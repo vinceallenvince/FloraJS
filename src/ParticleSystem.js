@@ -155,4 +155,4 @@ ParticleSystem.prototype.getCSSText = function(props) {
 };
 
 
-module.exports.ParticleSystem = ParticleSystem;
+module.exports = ParticleSystem;
