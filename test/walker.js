@@ -16,7 +16,7 @@ function beforeTest() {
 }
 
 test('load Walker.', function(t) {
-  Walker = require('../src/Walker');
+  Walker = require('../src/walker');
   t.ok(Walker, 'object loaded');
   t.end();
 });

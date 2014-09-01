@@ -1,6 +1,6 @@
 var ColorPalette = require('colorpalette'),
     Item = require('burner').Item,
-    Mover = require('./Mover'),
+    Mover = require('./mover'),
     System = require('burner').System,
     Utils = require('burner').Utils,
     Vector = require('burner').Vector;

@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load Connector.', function(t) {
-  Connector = require('../src/Connector');
+  Connector = require('../src/connector');
   t.ok(Connector, 'object loaded');
   t.end();
 });

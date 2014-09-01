@@ -1,8 +1,8 @@
 var Burner = require('burner'),
     test = require('tape'),
-    Agent = require('../src/Agent'),
-    ParticleSystem = require('../src/ParticleSystem'),
-    Stimulus = require('../src/Stimulus'),
+    Agent = require('../src/agent'),
+    ParticleSystem = require('../src/particlesystem'),
+    Stimulus = require('../src/stimulus'),
     Sensor, obj;
 
 function beforeTest() {
@@ -18,7 +18,7 @@ function beforeTest() {
 }
 
 test('load Sensor.', function(t) {
-  Sensor = require('../src/Sensor');
+  Sensor = require('../src/sensor');
   t.ok(Sensor, 'object loaded');
   t.end();
 });

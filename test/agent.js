@@ -1,9 +1,9 @@
 var Burner = require('burner'),
     test = require('tape'),
-    FlowField = require('../src/FlowField'),
-    Sensor = require('../src/Sensor'),
+    FlowField = require('../src/flowfield'),
+    Sensor = require('../src/sensor'),
     SimplexNoise = require('quietriot'),
-    Stimulus = require('../src/Stimulus'),
+    Stimulus = require('../src/stimulus'),
     Agent, obj;
 
 function beforeTest() {
@@ -19,7 +19,7 @@ function beforeTest() {
 }
 
 test('load Agent.', function(t) {
-  Agent = require('../src/Agent');
+  Agent = require('../src/agent');
   t.ok(Agent, 'object loaded');
   t.end();
 });

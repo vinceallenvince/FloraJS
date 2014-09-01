@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load Repeller.', function(t) {
-  Repeller = require('../src/Repeller');
+  Repeller = require('../src/repeller');
   t.ok(Repeller, 'object loaded');
   t.end();
 });

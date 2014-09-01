@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load FlowFieldMarker.', function(t) {
-  FlowFieldMarker = require('../src/FlowFieldMarker');
+  FlowFieldMarker = require('../src/flowfieldmarker');
   t.ok(FlowFieldMarker, 'object loaded');
   t.end();
 });

@@ -16,7 +16,7 @@ function beforeTest() {
 }
 
 test('load InputMenu.', function(t) {
-  InputMenu = require('../src/InputMenu');
+  InputMenu = require('../src/inputmenu');
   t.ok(InputMenu, 'object loaded');
   t.end();
 });

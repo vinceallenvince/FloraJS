@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load Point.', function(t) {
-  Point = require('../src/Point');
+  Point = require('../src/point');
   t.ok(Point, 'object loaded');
   t.end();
 });

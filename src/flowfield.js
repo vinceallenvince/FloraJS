@@ -1,4 +1,4 @@
-var FlowFieldMarker = require('./FlowFieldMarker'),
+var FlowFieldMarker = require('./flowfieldmarker'),
     Item = require('burner').Item,
     SimplexNoise = require('quietriot'),
     System = require('burner').System,

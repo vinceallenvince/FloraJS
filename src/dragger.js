@@ -1,4 +1,4 @@
-var Attractor = require('./Attractor'),
+var Attractor = require('./attractor'),
     Utils = require('burner').Utils;
 
 /**

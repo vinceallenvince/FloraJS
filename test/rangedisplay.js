@@ -1,8 +1,8 @@
 var Burner = require('burner'),
     test = require('tape'),
-    Agent = require('../src/Agent'),
-    Sensor = require('../src/Sensor'),
-    Stimulus = require('../src/Stimulus'),
+    Agent = require('../src/agent'),
+    Sensor = require('../src/sensor'),
+    Stimulus = require('../src/stimulus'),
     RangeDisplay, obj;
 
 function beforeTest() {
@@ -18,7 +18,7 @@ function beforeTest() {
 }
 
 test('load RangeDisplay.', function(t) {
-  RangeDisplay = require('../src/RangeDisplay');
+  RangeDisplay = require('../src/rangedisplay');
   t.ok(RangeDisplay, 'object loaded');
   t.end();
 });

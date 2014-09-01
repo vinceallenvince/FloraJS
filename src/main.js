@@ -11,25 +11,25 @@ var Flora = {
 };
 
 Flora.System.Classes = {
-  Agent: require('./Agent'),
-  Attractor: require('./Attractor'),
+  Agent: require('./agent'),
+  Attractor: require('./attractor'),
   BorderPalette: require('borderpalette'),
-  Caption: require('./Caption'),
-  Connector: require('./Connector'),
-  Dragger: require('./Dragger'),
-  FlowField: require('./FlowField'),
-  FlowFieldMarker: require('./FlowFieldMarker'),
-  InputMenu: require('./InputMenu'),
-  Mover: require('./Mover'),
-  Oscillator: require('./Oscillator'),
-  Particle: require('./Particle'),
-  ParticleSystem: require('./ParticleSystem'),
-  Point: require('./Point'),
-  RangeDisplay: require('./RangeDisplay'),
-  Repeller: require('./Repeller'),
-  Sensor: require('./Sensor'),
-  Stimulus: require('./Stimulus'),
-  Walker: require('./Walker')
+  Caption: require('./caption'),
+  Connector: require('./connector'),
+  Dragger: require('./dragger'),
+  FlowField: require('./flowfield'),
+  FlowFieldMarker: require('./flowfieldmarker'),
+  InputMenu: require('./inputmenu'),
+  Mover: require('./mover'),
+  Oscillator: require('./oscillator'),
+  Particle: require('./particle'),
+  ParticleSystem: require('./particlesystem'),
+  Point: require('./point'),
+  RangeDisplay: require('./rangedisplay'),
+  Repeller: require('./repeller'),
+  Sensor: require('./sensor'),
+  Stimulus: require('./stimulus'),
+  Walker: require('./walker')
 };
 
 module.exports = Flora;

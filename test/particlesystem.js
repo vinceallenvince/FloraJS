@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load ParticleSystem.', function(t) {
-  ParticleSystem = require('../src/ParticleSystem');
+  ParticleSystem = require('../src/particlesystem');
   t.ok(ParticleSystem, 'object loaded');
   t.end();
 });

@@ -1,8 +1,8 @@
 var Burner = require('burner'),
     test = require('tape'),
-    Attractor = require('../src/Attractor'),
-    Repeller = require('../src/Repeller'),
-    Dragger = require('../src/Dragger'),
+    Attractor = require('../src/attractor'),
+    Repeller = require('../src/repeller'),
+    Dragger = require('../src/dragger'),
     Mover, obj;
 
 var evts = {};
@@ -24,7 +24,7 @@ function beforeTest() {
 }
 
 test('load Mover.', function(t) {
-  Mover = require('../src/Mover');
+  Mover = require('../src/mover');
   t.ok(Mover, 'object loaded');
   t.end();
 });
