@@ -99,4 +99,4 @@ FlowField.prototype.step = function() {};
 
 FlowField.prototype.draw = function() {};
 
-module.exports.FlowField = FlowField;
+module.exports = FlowField;

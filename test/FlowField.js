@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load FlowField.', function(t) {
-  FlowField = require('../src/FlowField').FlowField;
+  FlowField = require('../src/FlowField');
   t.ok(FlowField, 'object loaded');
   t.end();
 });
