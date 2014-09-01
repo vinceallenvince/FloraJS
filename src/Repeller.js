@@ -52,4 +52,4 @@ Repeller.prototype.init = function(world, opt_options) {
   this.zIndex = typeof options.zIndex === 'undefined' ? 1 : options.zIndex;
 };
 
-module.exports.Repeller = Repeller;
+module.exports = Repeller;

@@ -26,7 +26,7 @@ Flora.System.Classes = {
   ParticleSystem: require('./ParticleSystem'),
   Point: require('./Point'),
   RangeDisplay: require('./RangeDisplay'),
-  Repeller: require('./Repeller').Repeller,
+  Repeller: require('./Repeller'),
   Sensor: require('./Sensor').Sensor,
   Stimulus: require('./Stimulus').Stimulus,
   Walker: require('./Walker').Walker

@@ -1,7 +1,7 @@
 var Burner = require('burner'),
     test = require('tape'),
     Attractor = require('../src/Attractor'),
-    Repeller = require('../src/Repeller').Repeller,
+    Repeller = require('../src/Repeller'),
     Dragger = require('../src/Dragger'),
     Mover, obj;
 
