@@ -11,8 +11,8 @@ var Flora = {
 };
 
 Flora.System.Classes = {
-  Agent: require('./Agent').Agent,
-  Attractor: require('./Attractor').Attractor,
+  Agent: require('./Agent'),
+  Attractor: require('./Attractor'),
   BorderPalette: require('borderpalette'),
   Caption: require('./Caption').Caption,
   Connector: require('./Connector').Connector,

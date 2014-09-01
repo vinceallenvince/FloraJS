@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load Attractor.', function(t) {
-  Attractor = require('../src/Attractor').Attractor;
+  Attractor = require('../src/Attractor');
   t.ok(Attractor, 'object loaded');
   t.end();
 });
