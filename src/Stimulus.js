@@ -1,7 +1,7 @@
 var BorderPalette = require('borderpalette'),
     ColorPalette = require('colorpalette'),
     config = require('./config').config,
-    Mover = require('./Mover').Mover,
+    Mover = require('./Mover'),
     Utils = require('burner').Utils;
 
 /**

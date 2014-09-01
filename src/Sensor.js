@@ -1,4 +1,4 @@
-var Mover = require('./Mover').Mover,
+var Mover = require('./Mover'),
     System = require('burner').System,
     Utils = require('burner').Utils,
     Vector = require('burner').Vector;

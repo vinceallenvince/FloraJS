@@ -328,5 +328,5 @@ Mover.prototype.getCSSText = function(props) {
       props.borderRadius + '%;';
 };
 
-module.exports.Mover = Mover;
+module.exports = Mover;
 

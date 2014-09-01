@@ -24,7 +24,7 @@ function beforeTest() {
 }
 
 test('load Mover.', function(t) {
-  Mover = require('../src/Mover').Mover;
+  Mover = require('../src/Mover');
   t.ok(Mover, 'object loaded');
   t.end();
 });

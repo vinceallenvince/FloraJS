@@ -1,5 +1,5 @@
 var Item = require('burner').Item,
-    Mover = require('./Mover').Mover,
+    Mover = require('./Mover'),
     Utils = require('burner').Utils,
     Vector = require('burner').Vector;
 
