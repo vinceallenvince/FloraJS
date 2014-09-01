@@ -17,7 +17,7 @@ function beforeTest() {
 }
 
 test('load Oscillator.', function(t) {
-  Oscillator = require('../src/Oscillator').Oscillator;
+  Oscillator = require('../src/Oscillator');
   t.ok(Oscillator, 'object loaded');
   t.end();
 });
