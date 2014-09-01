@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load Dragger.', function(t) {
-  Dragger = require('../src/Dragger').Dragger;
+  Dragger = require('../src/Dragger');
   t.ok(Dragger, 'object loaded');
   t.end();
 });

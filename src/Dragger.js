@@ -72,4 +72,4 @@ Dragger.prototype.drag = function(obj) {
   return this._force;
 };
 
-module.exports.Dragger = Dragger;
+module.exports = Dragger;
