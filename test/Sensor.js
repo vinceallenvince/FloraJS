@@ -18,7 +18,7 @@ function beforeTest() {
 }
 
 test('load Sensor.', function(t) {
-  Sensor = require('../src/Sensor').Sensor;
+  Sensor = require('../src/Sensor');
   t.ok(Sensor, 'object loaded');
   t.end();
 });

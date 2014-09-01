@@ -485,4 +485,4 @@ Sensor.prototype._sensorActive = function(target) {
   return distance < sensorRadius + targetRadius;
 };
 
-module.exports.Sensor = Sensor;
+module.exports = Sensor;

@@ -27,7 +27,7 @@ Flora.System.Classes = {
   Point: require('./Point'),
   RangeDisplay: require('./RangeDisplay'),
   Repeller: require('./Repeller'),
-  Sensor: require('./Sensor').Sensor,
+  Sensor: require('./Sensor'),
   Stimulus: require('./Stimulus').Stimulus,
   Walker: require('./Walker').Walker
 };

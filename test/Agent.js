@@ -1,7 +1,7 @@
 var Burner = require('burner'),
     test = require('tape'),
     FlowField = require('../src/FlowField'),
-    Sensor = require('../src/Sensor').Sensor,
+    Sensor = require('../src/Sensor'),
     SimplexNoise = require('quietriot'),
     Stimulus = require('../src/Stimulus').Stimulus,
     Agent, obj;
