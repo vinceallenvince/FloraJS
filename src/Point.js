@@ -85,4 +85,4 @@ Point.prototype.getCSSText = function(props) {
       props.borderRadius + '%;';
 };
 
-module.exports.Point = Point;
+module.exports = Point;
