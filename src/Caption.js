@@ -103,4 +103,4 @@ Caption.prototype.remove = function() {
   this.el.parentNode.removeChild(this.el);
 };
 
-module.exports.Caption = Caption;
+module.exports = Caption;

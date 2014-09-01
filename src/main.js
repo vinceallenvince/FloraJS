@@ -14,7 +14,7 @@ Flora.System.Classes = {
   Agent: require('./Agent'),
   Attractor: require('./Attractor'),
   BorderPalette: require('borderpalette'),
-  Caption: require('./Caption').Caption,
+  Caption: require('./Caption'),
   Connector: require('./Connector').Connector,
   Dragger: require('./Dragger').Dragger,
   FlowField: require('./FlowField').FlowField,

@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load Caption.', function(t) {
-  Caption = require('../src/Caption').Caption;
+  Caption = require('../src/Caption');
   t.ok(Caption, 'object loaded');
   t.end();
 });
