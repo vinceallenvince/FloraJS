@@ -2,7 +2,7 @@ var Burner = require('burner'),
     test = require('tape'),
     Agent = require('../src/Agent'),
     Sensor = require('../src/Sensor'),
-    Stimulus = require('../src/Stimulus').Stimulus,
+    Stimulus = require('../src/Stimulus'),
     RangeDisplay, obj;
 
 function beforeTest() {

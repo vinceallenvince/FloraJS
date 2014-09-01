@@ -3,7 +3,7 @@ var Burner = require('burner'),
     FlowField = require('../src/FlowField'),
     Sensor = require('../src/Sensor'),
     SimplexNoise = require('quietriot'),
-    Stimulus = require('../src/Stimulus').Stimulus,
+    Stimulus = require('../src/Stimulus'),
     Agent, obj;
 
 function beforeTest() {

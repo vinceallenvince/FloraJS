@@ -15,7 +15,7 @@ function beforeTest() {
 }
 
 test('load Stimulus.', function(t) {
-  Stimulus = require('../src/Stimulus').Stimulus;
+  Stimulus = require('../src/Stimulus');
   t.ok(Stimulus, 'object loaded');
   t.end();
 });

@@ -2,7 +2,7 @@ var Burner = require('burner'),
     test = require('tape'),
     Agent = require('../src/Agent'),
     ParticleSystem = require('../src/ParticleSystem'),
-    Stimulus = require('../src/Stimulus').Stimulus,
+    Stimulus = require('../src/Stimulus'),
     Sensor, obj;
 
 function beforeTest() {

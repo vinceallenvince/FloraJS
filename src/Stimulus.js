@@ -114,4 +114,4 @@ Stimulus.prototype.init = function(world, opt_options) {
 
 };
 
-module.exports.Stimulus = Stimulus;
+module.exports = Stimulus;
