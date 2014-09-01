@@ -110,4 +110,4 @@ Connector.prototype.getCSSText = function(props) {
       props.borderRadius + '%; visibility: ' + props.visibility + ';';
 };
 
-module.exports.Connector = Connector;
+module.exports = Connector;
