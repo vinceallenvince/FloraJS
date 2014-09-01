@@ -19,7 +19,7 @@ Flora.System.Classes = {
   Dragger: require('./Dragger'),
   FlowField: require('./FlowField'),
   FlowFieldMarker: require('./FlowFieldMarker'),
-  InputMenu: require('./InputMenu').InputMenu,
+  InputMenu: require('./InputMenu'),
   Mover: require('./Mover').Mover,
   Oscillator: require('./Oscillator').Oscillator,
   Particle: require('./Particle').Particle,

@@ -96,5 +96,5 @@ InputMenu.prototype.remove = function() {
   this.el.parentNode.removeChild(this.el);
 };
 
-module.exports.InputMenu = InputMenu;
+module.exports = InputMenu;
 
