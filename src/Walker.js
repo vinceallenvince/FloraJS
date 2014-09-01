@@ -100,4 +100,4 @@ Walker.prototype.applyAdditionalForces = function() {
   this.applyForce(this._randomVector);
 };
 
-module.exports.Walker = Walker;
+module.exports = Walker;

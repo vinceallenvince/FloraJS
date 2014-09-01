@@ -29,7 +29,7 @@ Flora.System.Classes = {
   Repeller: require('./Repeller'),
   Sensor: require('./Sensor'),
   Stimulus: require('./Stimulus'),
-  Walker: require('./Walker').Walker
+  Walker: require('./Walker')
 };
 
 module.exports = Flora;
