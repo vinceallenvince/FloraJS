@@ -236,11 +236,11 @@ test('step() should update oscillator location.', function(t) {
 
   Burner.System._stepForward();
 
-  t.equal(parseFloat(obj.location.x.toFixed(2)), 101.8, 'obj.location.x updated.');
+  t.equal(parseFloat(obj.location.x.toFixed(2)), 279.99, 'obj.location.x updated.');
   t.equal(parseFloat(obj.location.y.toFixed(2)), 100, 'obj.location.y updated.');
   t.equal(parseFloat(obj.aVelocity.x.toFixed(2)), 0.01, 'obj.aVelocity.x updated.');
   t.equal(parseFloat(obj.aVelocity.y.toFixed(2)), 0, 'obj.aVelocity.y updated.');
-  t.equal(parseFloat(obj.angle.toFixed(2)), 44.49, 'obj.angle updated.');
+  t.equal(parseFloat(obj.angle.toFixed(2)), 19.65, 'obj.angle updated.');
   t.equal(obj.life, 100, 'obj.life should increment.');
 
   Burner.System._stepForward();
@@ -269,7 +269,7 @@ test('step() should update oscillator location.', function(t) {
 
   Burner.System._stepForward();
 
-  t.equal(parseFloat(obj.location.x.toFixed(2)), 51.8, 'obj.location.x is relative to parent location.x.');
+  t.equal(parseFloat(obj.location.x.toFixed(2)), 229.99, 'obj.location.x is relative to parent location.x.');
   t.equal(parseFloat(obj.location.y.toFixed(2)), 50, 'obj.location.y is relative to parent location.y.');
 
   //
@@ -305,7 +305,7 @@ test('step() should update oscillator location.', function(t) {
 
   Burner.System._stepForward();
 
-  t.equal(parseFloat(obj.location.x.toFixed(2)), 194.54, 'obj.location.x updated via perlin noise.');
+  t.equal(parseFloat(obj.location.x.toFixed(2)), 379.92, 'obj.location.x updated via perlin noise.');
   t.equal(parseFloat(obj.location.y.toFixed(2)), 153.94, 'obj.location.y updated via perlin noise.');
 
   t.end();

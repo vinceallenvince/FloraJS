@@ -117,7 +117,7 @@ Oscillator.prototype.step = function () {
     this.initialLocation.y = this.parent.location.y;
   }
 
-  this.location.x = this.initialLocation.x + Math.sin(this.aVelocity.x) * this.amplitude.x;
+  this.location.x = this.initialLocation.x + Math.cos(this.aVelocity.x) * this.amplitude.x;
   this.location.y = this.initialLocation.y + Math.sin(this.aVelocity.y) * this.amplitude.y;
 
   if (this.pointToDirection) { // object rotates toward direction
