@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Index</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Index</h1>
+    
+    
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>FloraJS: a JavaScript framework for rendering natural systems in a web browser.</h1>
+<p>In Flora, the 'world' is your web browser. DOM elements inhabit the world and behave according to rules meant to simulate a natural environment. You can find demos at <a href="http://vinceallenvince.github.io/FloraJS">http://vinceallenvince.github.io/FloraJS</a>.</p>
+<p>The formulas driving a large part of Flora are adapted from Daniel Shiffman's <a href="http://natureofcode.com">'The Nature of Code'</a>. Inspiration also came from the writings of Valentino Braitenberg and Gary Flake.</p>
+<h2>Install</h2>
+<p>To include FloraJS as a component in your project, use the node module.</p>
+<pre><code>npm install florajs --save</code></pre>
+<p>You can also use the <a href="https://github.com/vinceallenvince/FloraJS/releases/latest">standalone version</a> and reference both the css and js files from your document.</p>
+<pre><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  ...</code></pre>
+<h4>Simple System</h4>
+<ol>
+<li>Pass a function to Flora.System.setup() that describes the items in your world.</li>
+<li>The first item must be a World. (eg. this.add('World')).</li>
+<li>Call Flora.System.loop() to start the animation.</li>
+</ol>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        this.add('World');
+        this.add('Agent');
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>You should see a block fall and bounce off the bottom of your browser window.</p>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.Agent.html">http://vinceallenvince.github.io/FloraJS/Flora.Agent.html</a></p>
+<h4>The System and its Worlds</h4>
+<p>Every Flora system starts with one System and one World. While a System may have many Worlds, by default, Flora's system uses the &lt;body&gt; as the only World.</p>
+<p>In the example above, immediately after the system starts, it creates an Agent and appends it to the World (or &lt;body&gt;).</p>
+<p>Worlds carry two properties that directly affect their elements.</p>
+<ul>
+<li>gravity {Vector} default: new Vector(0, 1)</li>
+<li>c (coefficient of friction) {number} 0.01</li>
+</ul>
+<p>We can change these defaults by passing options when we add the world.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(0, -1),
+          c: 0
+        });
+        this.add('Agent');
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>We've reversed the World's gravity and increased its friction. Now the block slowly drifts upwards.</p>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.WorldProperties.html">http://vinceallenvince.github.io/FloraJS/Flora.WorldProperties.html</a></p>
+<h4>Agents</h4>
+<p>Agents are basic Flora elements that respond to forces like gravity, attraction, repulsion, etc. They can also chase after other Agents, organize with other Agents in a flocking behavior, and steer away from obstacles.</p>
+<p>Agents are highly configurable. For a complete list of options see the docs at <a href="http://vinceallenvince.github.io/FloraJS/docs/symbols/Agent.html">http://vinceallenvince.github.io/FloraJS/docs/symbols/Agent.html</a></p>
+<p>For an example of an Agent's seek behavior, set 'followMouse' to 'true' when creating the Agent.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+        this.add('Agent', {
+          followMouse: true
+        });
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.Agent.FollowMouse.html">http://vinceallenvince.github.io/FloraJS/Flora.Agent.FollowMouse.html</a></p>
+<h4>Walkers</h4>
+<p>Walkers are a step down on the evolutionary chain from Agents. They have no seeking, steering or directional behavior and just randomly explore their World. Use Walkers to create wandering objects or targets for Agents to seek.</p>
+<p>Walkers carry a property that directly affect how they 'walk'.</p>
+<ul>
+<li>perlin {boolean} default: true</li>
+</ul>
+<p>By default, Walkers use an algorithm called Perlin Noise (<a href="http://en.wikipedia.org/wiki/Perlin_noise">http://en.wikipedia.org/wiki/Perlin_noise</a>) to navigate their World. Below is an example of 60 Walkers wandering around.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+        for (var i = 0; i &lt; 60; i++) {
+          this.add('Walker');
+        }
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.Walker.Perlin.html">http://vinceallenvince.github.io/FloraJS/Flora.Walker.Perlin.html</a></p>
+<h4>Targets</h4>
+<p>In the Agent example above, the Agent targeted the mouse. By saving a reference to a new Walker and passing at as a 'seekTarget' for a new Agent, we can make the Agent seek the Walker.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+
+        var walker = this.add('Walker');
+
+        this.add('Agent', {
+          seekTarget: walker
+        });
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.Agent.SeekWalker.html">http://vinceallenvince.github.io/FloraJS/Flora.Agent.SeekWalker.html</a></p>
+<h4>Flocking</h4>
+<p>Agents can also organize in flocks. The following properties affect flocking behavior.</p>
+<ul>
+<li>flocking {boolean} default: false</li>
+<li>desiredSeparation {number} default: width * 2</li>
+<li>separateStrength {number} default: 0.3</li>
+<li>alignStrength {number} default: 0.2</li>
+<li>cohesionStrength {number} default: 0.1</li>
+</ul>
+<p>In the example below, we create two groups of Agents and set their 'seekTarget' to Walkers. We also set 'flocking' to true to enable the flocking behavior.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      var i, totalGroupA = 10,
+          totalGroupB = 5;
+
+      Flora.System.setup(function() {
+        this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+
+        var walkerGroupA = this.add('Walker');
+
+        for (i = 0; i &lt; totalGroupA; i ++) {
+          this.add('Agent', {
+            flocking: true,
+            seekTarget: walkerGroupA
+          });
+        }
+
+        var walkerGroupB = this.add('Walker');
+
+        for (i = 0; i &lt; totalGroupB; i ++) {
+          this.add('Agent', {
+            flocking: true,
+            seekTarget: walkerGroupB
+          });
+        }
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.Agent.Flocking.html">http://vinceallenvince.github.io/FloraJS/Flora.Agent.Flocking.html</a></p>
+<p>In the example below, Agents flock to the mouse.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector()
+        });
+
+        for (var i = 0; i &lt; 20; i++) {
+          this.add('Agent', {
+            followMouse: true,
+            flocking: true
+          });
+        }
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/FlockToMouse.html">http://vinceallenvince.github.io/FloraJS/FlockToMouse.html</a></p>
+<h4>Proximity</h4>
+<p>FloraJS has some built in Proximity objects that exert a force on Agents that come in direct contact or land within the object's range of influence.</p>
+<ul>
+<li>Dragger</li>
+<li>Attractor</li>
+<li>Repeller</li>
+</ul>
+<p>In the example below, we create a Dragger object and an Agent that follows the mouse. You can click and drag to place the Dragger anywhere in the World. Use your mouse to make the Agent pass through the Dragger.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        this.add('World');
+        this.add('Agent', {
+          followMouse: true
+        });
+        this.add('Dragger', {
+          draggable: true
+        });
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>You can replace 'Dragger' with 'Attractor' or 'Repeller' to view how the Proximity objects affect an Agent.</p>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.Dragger.html">http://vinceallenvince.github.io/FloraJS/Flora.Dragger.html</a></p>
+<h4>Sensors and Stimuli</h4>
+<p>Agents can carry an unlimited amount of Sensors that react to Flora's Stimulus types. The following Stimulus types are available:</p>
+<ul>
+<li>Cold</li>
+<li>Heat</li>
+<li>Food</li>
+<li>Light</li>
+<li>Oxygen</li>
+</ul>
+<p>Sensors are tuned specifically to a Stimulant and can be configured to activate a specific behavior. The following behaviors are available:</p>
+<ul>
+<li>ACCELERATE</li>
+<li>DECELERATE</li>
+<li>AGGRESSIVE</li>
+<li>COWARD</li>
+<li>LIKES</li>
+<li>LOVES</li>
+<li>EXPLORER</li>
+<li>CURIOUS</li>
+<li>DESTROY</li>
+<li>CONSUME</li>
+</ul>
+<p>In the example below, an Agent carries a Sensor that senses Heat. When activated, it triggers the 'COWARD' behavior.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+
+        this.add('Agent', {
+          angle: 90,
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          location: new Flora.Vector(world.width * 0.49, 0),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'COWARD'
+            })
+          ]
+        });
+
+        this.add('Stimulus', {
+          type: 'heat',
+          draggable: true
+        });
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>Notice, we've updated the World and removed any gravitational forces. We've also updated the 'motorSpeed' property to give the Agent a constant velocity. You should see the Agent navigate the World and avoid the Heat objects.</p>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.Sensor.Coward.html">http://vinceallenvince.github.io/FloraJS/Flora.Sensor.Coward.html</a></p>
+<h4>A Small World</h4>
+<p>Putting it all together, we can observe Agents navigate a World with multiple Stimuli and Proximity objects.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      var rand = Flora.Utils.getRandomNumber;
+
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0,
+          borderWidth: 1,
+          borderStyle: 'dashed',
+          borderColor: [100, 100, 100]
+        });
+
+        this.add('Agent', {
+          controlCamera: true,
+          angle: rand(0, 360),
+          motorSpeed: 2,
+          minSpeed: 1,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          wrapWorldEdges: true,
+          location: new Flora.Vector(world.width * 0.5, world.height * 0.5),
+          sensors: [
+            this.add('Sensor', {
+              type: 'heat',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 100,
+              behavior: 'EXPLORER'
+            }),
+            this.add('Sensor', {
+              type: 'cold',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 150,
+              behavior: 'CURIOUS',
+              opacity: 0
+            }),
+            this.add('Sensor', {
+              type: 'food',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 250,
+              behavior: 'ACCELERATE',
+              opacity: 0
+            }),
+            this.add('Sensor', {
+              type: 'light',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 80,
+              behavior: 'DECELERATE',
+              opacity: 0
+            }),
+            this.add('Sensor', {
+              type: 'oxygen',
+              displayRange: true,
+              displayConnector: true,
+              sensitivity: 50,
+              behavior: 'COWARD',
+              opacity: 0
+            })
+          ]
+        }, world);
+
+        for (var i = 0; i &lt; 3; i++) {
+          this.add('Stimulus', {
+            type: 'heat',
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
+          });
+        }
+
+        for (var i = 0; i &lt; 3; i++) {
+          this.add('Stimulus', {
+            type: 'cold',
+            location: new Flora.Vector(rand(0, world.width * 0.25), rand(0, world.height))
+          });
+        }
+
+        for (var i = 0; i &lt; 3; i++) {
+          this.add('Stimulus', {
+            type: 'food',
+            location: new Flora.Vector(rand(world.width * 0.75, world.width), rand(0, world.height))
+          });
+        }
+
+        for (var i = 0; i &lt; 3; i++) {
+          this.add('Stimulus', {
+            type: 'light',
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height * 0.25))
+          });
+        }
+
+        for (var i = 0; i &lt; 3; i++) {
+          this.add('Stimulus', {
+            type: 'oxygen',
+            location: new Flora.Vector(rand(0, world.width), rand(world.height * 0.75, world.height))
+          });
+        }
+      });
+      Flora.System.loop();
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.Sim.MultipleStimuli.html">http://vinceallenvince.github.io/FloraJS/Flora.Sim.MultipleStimuli.html</a></p>
+<h4>Camera</h4>
+<p>Notice in the above example, we view the world from the first-person point of view of an Agent. Setting 'controlCamera' to 'true' on an agent will force Flora's camera to track that agent. Of course, there can only be one agent controlling the world's camera.</p>
+<pre><code>...
+this.add('Agent', {
+  controlCamera: true,
+...</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/">http://vinceallenvince.github.io/FloraJS/</a></p>
+<h4>Your own worlds</h4>
+<p>Flora allows you to define worlds using any DOM element. This is useful if you want your world to live alongside other DOM elements or simply do not want the entire body defined as a world.</p>
+<p>To define a world, just create the DOM element you want to represent the world and reference it when calling new Burner.World().</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Flora&lt;/title&gt;
+    &lt;link href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; rel=&quot;stylesheet&quot; /&gt;
+    &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.setup(function() {
+        this.add('World', {
+          el: document.getElementById('world'),
+          width: 800,
+          height: 600,
+          borderWidth: 1,
+          borderStyle: 'dotted',
+          borderColor: [100, 100, 100]
+        });
+
+        this.add('Agent');
+      });
+      Flora.System.loop();
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.WorldDOM.html">http://vinceallenvince.github.io/FloraJS/Flora.WorldDOM.html</a></p>
+<h4>Multiple worlds</h4>
+<p>Flora also supports multiple worlds... here's an example.</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+  &lt;title&gt;FloraJS | Simulate natural systems with JavaScript&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;css/flora.min.css&quot; type=&quot;text/css&quot; charset=&quot;utf-8&quot; /&gt;
+  &lt;script src=&quot;scripts/flora.min.js&quot; type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id='worldA'&gt;&lt;/div&gt;
+    &lt;div id='worldB'&gt;&lt;/div&gt;
+    &lt;div id='worldC'&gt;&lt;/div&gt;
+    &lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+
+      Flora.System.init(function() {
+
+        var worldA = this.add('World', {
+          el: document.getElementById('worldA'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(160, 240)
+        });
+
+        var worldB = this.add('World', {
+          el: document.getElementById('worldB'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(490, 240)
+        });
+
+        var worldC = this.add('World', {
+          el: document.getElementById('worldC'),
+          width: 320,
+          height: 480,
+          color: [60, 60, 60],
+          gravity: new Flora.Vector(),
+          c: 0,
+          location: new Flora.Vector(820, 240)
+        });
+
+        this.add('ParticleSystem', {
+          startColor: [255, 255, 255],
+          particleOptions: {
+            maxSpeed: 3
+          }
+        }, worldA);
+
+        for (var i = 0; i &lt; 10; i++) {
+          this.add('Walker', null, worldB);
+        }
+
+        for (var i = 0; i &lt; 10; i++) {
+          var size = Flora.Utils.getRandomNumber(5, 30);
+          this.add('Agent', {
+            width: size,
+            height: size,
+            mass: size,
+            followMouse: true,
+            flocking: true
+          }, worldC);
+        }
+      });
+      Flora.System.loop();
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><a href="http://vinceallenvince.github.io/FloraJS/Flora.WorldsMultiple.html">http://vinceallenvince.github.io/FloraJS/Flora.WorldsMultiple.html</a></p>
+<h4>Sound</h4>
+<p>Flora uses <a href="https://github.com/vinceallenvince/soundbed">SoundBed</a> to generate ambient noise for simluations. To use it, just create a new Flora.SoundBed.Player and pass in your opitons via player.init().</p>
+<pre><code>  Flora.System.setup(function() {
+    ...
+    var player = new Flora.SoundBed.Player();
+    player.init({
+      volumeMin: 0.25,
+      volumeMax: 0.5
+    });
+   ...
+  });</code></pre>
+<h4>Advanced exmaples</h4>
+<p>The following examples implement advanced functions of FloraJS.</p>
+<ul>
+<li><a href="http://vinceallenvince.github.io/FloraJS/Flora.Sim.SheepvsWolves.html">Sheep vs. Wolves</a></li>
+<li><a href="http://vinceallenvince.github.io/FloraJS/Flora.FishFood.html">Fish Food</a></li>
+</ul>
+<h2>Building this project</h2>
+<p>This project uses <a href="http://gruntjs.com">Grunt</a>. To build the project first install the node modules.</p>
+<pre><code>npm install</code></pre>
+<p>Next, run grunt.</p>
+<pre><code>grunt</code></pre>
+<p>To run the tests, run 'npm test'.</p>
+<pre><code>npm test</code></pre>
+<p>To check test coverage run 'grunt coverage'.</p>
+<pre><code>grunt coverage</code></pre>
+<p>A pre-commit hook is defined in /pre-commit that runs jshint. To use the hook, run the following:</p>
+<pre><code>ln -s ../../pre-commit .git/hooks/pre-commit</code></pre>
+<p>A post-commit hook is defined in /post-commit that runs the Plato complexity analysis tools. To use the hook, run the following:</p>
+<pre><code>ln -s ../../post-commit .git/hooks/post-commit</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="Caption.html">Caption</a></li><li><a href="Connector.html">Connector</a></li><li><a href="Dragger.html">Dragger</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="RangeDisplay.html">RangeDisplay</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="config.html">config</a></li></ul><h3>Global</h3><ul><li><a href="global.html#i">i</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Sep 15 2014 17:26:00 GMT-0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>walker.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">55.65</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">103</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">43.14</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.19</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var Mover = require(&#039;./mover&#039;),
+    SimplexNoise = require(&#039;quietriot&#039;),
+    Utils = require(&#039;burner&#039;).Utils,
+    Vector = require(&#039;burner&#039;).Vector;
+
+/**
+ * Creates a new Walker.
+ *
+ * Walkers have no seeking, steering or directional behavior and just randomly
+ * explore their World. Use Walkers to create wandering objects or targets
+ * for Agents to seek. They are not affected by gravity or friction.
+ *
+ * @constructor
+ * @extends Mover
+ */
+function Walker(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Walker, Mover);
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.width = 10] Width.
+ * @param {number} [opt_options.height = 10] Height.
+ * @param {boolean} [opt_options.remainsOnScreen = false] If set to true and perlin = true, object will avoid world edges.
+ * @param {number} [opt_options.maxSpeed = 1] maxSpeed.
+ * @param {boolean} [opt_options.perlin = true] If set to true, object will use Perlin Noise to calculate its location.
+ * @param {number} [opt_options.perlinSpeed = 0.005] If perlin = true, perlinSpeed determines how fast the object location moves through the noise space.
+ * @param {number} [opt_options.perlinTime = 0] Sets the Perlin Noise time.
+ * @param {number} [opt_options.perlinAccelLow = -0.075] The lower bound of acceleration when perlin = true.
+ * @param {number} [opt_options.perlinAccelHigh = 0.075] The upper bound of acceleration when perlin = true.
+ * @param {number} [opt_options.perlinOffsetX = Math.random() * 10000] The x offset in the Perlin Noise space.
+ * @param {number} [opt_options.perlinOffsetY = Math.random() * 10000] The y offset in the Perlin Noise space.
+ * @param {string|Array} [opt_options.color = 255, 150, 50] Color.
+ * @param {string|number} [opt_options.borderWidth = &#039;1em&#039;] Border width.
+ * @param {string} [opt_options.borderStyle = &#039;double&#039;] Border style.
+ * @param {string|Array} [opt_options.borderColor = 255, 255, 255] Border color.
+ * @param {string} [opt_options.borderRadius = 100] Border radius.
+ * @param {number} [opt_options.opacity = 0.75] The object&#039;s opacity.
+ * @param {number} [opt_options.zIndex = 1] The object&#039;s zIndex.
+ */
+Walker.prototype.init = function(world, opt_options) {
+  Walker._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  this.width = typeof options.width === &#039;undefined&#039; ? 10 : options.width;
+  this.height = typeof options.height === &#039;undefined&#039; ? 10 : options.height;
+  this.remainsOnScreen = !!options.remainsOnScreen;
+  this.maxSpeed = typeof options.maxSpeed === &#039;undefined&#039; ? 1 : options.maxSpeed;
+  this.perlin = typeof options.perlin === &#039;undefined&#039; ? true : options.perlin;
+  this.perlinSpeed = typeof options.perlinSpeed === &#039;undefined&#039; ? 0.005 : options.perlinSpeed;
+  this.perlinTime = options.perlinTime || 0;
+  this.perlinAccelLow = typeof options.perlinAccelLow === &#039;undefined&#039; ? -0.075 : options.perlinAccelLow;
+  this.perlinAccelHigh = typeof options.perlinAccelHigh === &#039;undefined&#039; ? 0.075 : options.perlinAccelHigh;
+  this.perlinOffsetX = typeof options.perlinOffsetX === &#039;undefined&#039; ? Math.random() * 10000 : options.perlinOffsetX;
+  this.perlinOffsetY = typeof options.perlinOffsetY === &#039;undefined&#039; ? Math.random() * 10000 : options.perlinOffsetY;
+  this.color = options.color || [255, 150, 50];
+  this.borderWidth = typeof options.borderWidth === &#039;undefined&#039; ? 0 : options.borderWidth;
+  this.borderStyle = options.borderStyle || &#039;none&#039;;
+  this.borderColor = options.borderColor || [255, 255, 255];
+  this.borderRadius = typeof options.borderRadius === &#039;undefined&#039; ? 100 : options.borderRadius;
+  this.opacity = typeof options.opacity === &#039;undefined&#039; ? 1 : options.opacity;
+  this.zIndex = typeof options.zIndex === &#039;undefined&#039; ? 0 : options.zIndex;
+
+  this._randomVector = new Vector();
+};
+
+/**
+ * If walker uses perlin noise, updates acceleration based on noise space. If walker
+ * is a random walker, updates location based on random location.
+ */
+Walker.prototype.applyAdditionalForces = function() {
+
+  // walker use either perlin noise or random walk
+  if (this.perlin) {
+
+    this.perlinTime += this.perlinSpeed;
+
+    if (this.remainsOnScreen) {
+      this.acceleration = new Vector();
+      this.velocity = new Vector();
+      this.location.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0), -1, 1, 0, this.world.width);
+      this.location.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY), -1, 1, 0, this.world.height);
+    } else {
+      this.acceleration.x =  Utils.map(SimplexNoise.noise(this.perlinTime + this.perlinOffsetX, 0), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+      this.acceleration.y =  Utils.map(SimplexNoise.noise(0, this.perlinTime + this.perlinOffsetY), -1, 1, this.perlinAccelLow, this.perlinAccelHigh);
+    }
+    return;
+  }
+
+  // point to a random angle and move toward it
+  this._randomVector.x = 1;
+  this._randomVector.y = 1;
+  this._randomVector.normalize();
+  this._randomVector.rotate(Utils.degreesToRadians(Utils.getRandomNumber(0, 359)));
+  this._randomVector.mult(this.maxSpeed);
+  this.applyForce(this._randomVector);
+};
+
+module.exports = Walker;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

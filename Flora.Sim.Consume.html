@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id="worldA"></div>
+    <script type="text/javascript" charset="utf-8">
+
+      var rand = Flora.Utils.getRandomNumber;
+
+      var caption, i, totalOxygen = 10;
+
+      Flora.System.setup(function() {
+
+        world = this.add('World', {
+          el: document.getElementById('worldA'),
+          width: 920,
+          height: 480,
+          borderColor: [60, 60, 60],
+          borderStyle: 'dotted',
+          borderWidth: 1,
+          gravity: new Flora.Vector(0, 0),
+          c: 0
+        });
+
+        for (i = 0; i < totalOxygen; i++) {
+          this.add('Stimulus', {
+            type: 'oxygen',
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
+          });
+        }
+
+        var agent = this.add('Agent', {
+          angle: rand(0, 359),
+          motorSpeed: 5,
+          minSpeed: 0,
+          maxSpeed: 10,
+          width: 20,
+          height: 20,
+          wrapWorldEdges: true,
+          sensors: [
+            this.add('Sensor', {
+              type: 'oxygen',
+              displayRange: true,
+              displayConnector: true,
+              behavior: 'AGGRESSIVE'
+            }),
+            this.add('Sensor', {
+              type: 'oxygen',
+              behavior: 'CONSUME'
+            })
+          ],
+          beforeStep: function() {
+            // agent slows down as it runs out of oxygen
+            if (this.oxygenLevel > 1) {
+              this.oxygenLevel -= 0.5;
+              var motorSpeed = Flora.Utils.map(this.oxygenLevel, 0, this.maxOxygenLevel, 0, 5);
+              this.motorSpeed = Flora.Utils.constrain(motorSpeed, 0, 5);
+              var maxSpeed = Flora.Utils.map(this.oxygenLevel, 0, this.maxOxygenLevel, 0, 10);
+              this.maxSpeed = Flora.Utils.constrain(maxSpeed, 0, 10);
+              caption.update('Agent oxygen level: ' + this.oxygenLevel.toFixed(2));
+            } else {
+              this.isStatic = true;
+              caption.update('Agent ran out of oxygen. Press \'r\' to reset.');
+              return;
+            }
+          }
+        });
+        agent.maxOxygenLevel = 100;
+        agent.oxygenLevel = 100;
+
+        caption = this.add('Caption', {
+          text: '',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+
+        var player = new Flora.SoundBed.Player();
+        player.init({
+          volumeMin: 0.25,
+          volumeMax: 0.5
+        });
+      });
+      Flora.System.loop();
+    </script>
+  </body>
+</html>

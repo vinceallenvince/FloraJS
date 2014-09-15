@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>particle.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">57.40</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">135</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">42.87</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.96</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var Item = require(&#039;burner&#039;).Item,
+    Mover = require(&#039;./mover&#039;),
+    Utils = require(&#039;burner&#039;).Utils,
+    Vector = require(&#039;burner&#039;).Vector;
+
+/**
+ * Creates a new Particle object.
+ *
+ * @constructor
+ * @extends Mover
+ */
+function Particle(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(Particle, Mover);
+
+/**
+ * Initializes Particle.
+ * @param  {Object} world An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.width = 20] Width
+ * @param {number} [opt_options.height = 20] Height
+ * @param {Array} [opt_options.color = [200, 200, 200]] Color.
+ * @param {number} [opt_options.borderWidth = this.width / 4] Border width.
+ * @param {number} [opt_options.borderRadius = 100] The particle&#039;s border radius.
+ * @param {number} [opt_options.boxShadowSpread = this.width / 4] Box-shadow spread.
+ * @param {number} [opt_options.lifespan = 50] The max life of the object. Set to -1 for infinite life.
+ * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, object is destroyed.
+ * @param {boolean} {opt_options.fade = true} If true, opacity decreases proportionally with life.
+ * @param {boolean} {opt_options.shrink = true} If true, width and height decrease proportionally with life.
+ * @param {boolean} [opt_options.checkWorldEdges = false] Set to true to check the object&#039;s location against the world&#039;s bounds.
+ * @param {number} [opt_options.maxSpeed = 4] Maximum speed.
+ * @param {number} [opt_options.zIndex = 1] The object&#039;s zIndex.
+ */
+Particle.prototype.init = function(world, opt_options) {
+  Particle._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  this.width = typeof options.width === &#039;undefined&#039; ? 20 : options.width;
+  this.height = typeof options.height === &#039;undefined&#039; ? 20 : options.height;
+  this.color = options.color || [200, 200, 200];
+  this.borderWidth = typeof options.borderWidth === &#039;undefined&#039; ? this.width / 4 : options.borderWidth;
+  this.borderRadius = typeof options.borderRadius === &#039;undefined&#039; ? 100 : options.borderRadius;
+  this.boxShadowSpread = typeof options.boxShadowSpread === &#039;undefined&#039; ? this.width / 4 : options.boxShadowSpread;
+  this.lifespan = typeof options.lifespan === &#039;undefined&#039; ? 50 : options.lifespan;
+  this.life = options.life || 0;
+  this.fade = typeof options.fade === &#039;undefined&#039; ? true : options.fade;
+  this.shrink = typeof options.shrink === &#039;undefined&#039; ? true : options.shrink;
+  this.checkWorldEdges = !!options.checkWorldEdges;
+  this.maxSpeed = typeof options.maxSpeed === &#039;undefined&#039; ? 4 : options.maxSpeed;
+  this.zIndex = typeof options.zIndex === &#039;undefined&#039; ? 1 : options.zIndex;
+
+  if (!options.acceleration) {
+    this.acceleration = new Vector(1, 1);
+    this.acceleration.normalize();
+    this.acceleration.mult(this.maxSpeed ? this.maxSpeed : 3);
+    this.acceleration.rotate(Utils.getRandomNumber(0, Math.PI * 2, true));
+  }
+  if (!options.velocity) {
+    this.velocity = new Vector();
+  }
+  this.initWidth = this.width;
+  this.initHeight = this.height;
+};
+
+/**
+ * Applies additional forces.
+ */
+Particle.prototype.afterStep = function() {
+
+  if (this.fade) {
+    this.opacity = Utils.map(this.life, 0, this.lifespan, 1, 0);
+  }
+
+  if (this.shrink) {
+    this.width = Utils.map(this.life, 0, this.lifespan, this.initWidth, 0);
+    this.height = Utils.map(this.life, 0, this.lifespan, this.initHeight, 0);
+  }
+};
+
+/**
+ * Updates the corresponding DOM element&#039;s style property.
+ * @function draw
+ * @memberof Particle
+ */
+Particle.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1,
+    width: this.width,
+    height: this.height,
+    color0: this.color[0],
+    color1: this.color[1],
+    color2: this.color[2],
+    colorMode: this.colorMode,
+    borderRadius: this.borderRadius,
+    borderWidth: this.borderWidth,
+    borderStyle: this.borderStyle,
+    borderColor0: this.borderColor[0],
+    borderColor1: this.borderColor[1],
+    borderColor2: this.borderColor[2],
+    boxShadowOffsetX: this.boxShadowOffsetX,
+    boxShadowOffsetY: this.boxShadowOffsetY,
+    boxShadowBlur: this.boxShadowBlur,
+    boxShadowSpread: this.boxShadowSpread,
+    boxShadowColor0: this.boxShadowColor[0],
+    boxShadowColor1: this.boxShadowColor[1],
+    boxShadowColor2: this.boxShadowColor[2],
+    opacity: this.opacity,
+    zIndex: this.zIndex,
+    visibility: this.visibility
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof Particle
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+Particle.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/&lt;x&gt;/g, props.x).replace(/&lt;y&gt;/g, props.y).replace(/&lt;angle&gt;/g, props.angle).replace(/&lt;scale&gt;/g, props.scale) + &#039;width: &#039; +
+      props.width + &#039;px; height: &#039; + props.height + &#039;px; background-color: &#039; +
+      props.colorMode + &#039;(&#039; + props.color0 + &#039;, &#039; + props.color1 + (props.colorMode === &#039;hsl&#039; ? &#039;%&#039; : &#039;&#039;) + &#039;, &#039; + props.color2 + (props.colorMode === &#039;hsl&#039; ? &#039;%&#039; : &#039;&#039;) +&#039;); border: &#039; +
+      props.borderWidth + &#039;px &#039; + props.borderStyle + &#039; &#039; + props.colorMode + &#039;(&#039; + props.borderColor0 + &#039;, &#039; + props.borderColor1 + (props.colorMode === &#039;hsl&#039; ? &#039;%&#039; : &#039;&#039;) + &#039;, &#039; + props.borderColor2 + (props.colorMode === &#039;hsl&#039; ? &#039;%&#039; : &#039;&#039;) + &#039;); border-radius: &#039; +
+      props.borderRadius + &#039;%; box-shadow: &#039; + props.boxShadowOffsetX + &#039;px &#039; + props.boxShadowOffsetY + &#039;px &#039; + props.boxShadowBlur + &#039;px &#039; + props.boxShadowSpread + &#039;px &#039; + props.colorMode + &#039;(&#039; + props.boxShadowColor0 + &#039;, &#039; + props.boxShadowColor1 + (props.colorMode === &#039;hsl&#039; ? &#039;%&#039; : &#039;&#039;) + &#039;, &#039; + props.boxShadowColor2 + (props.colorMode === &#039;hsl&#039; ? &#039;%&#039; : &#039;&#039;) + &#039;); opacity: &#039; + props.opacity + &#039;; z-index: &#039; + props.zIndex + &#039;; visibility: &#039; + props.visibility + &#039;;&#039;;
+};
+
+module.exports = Particle;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

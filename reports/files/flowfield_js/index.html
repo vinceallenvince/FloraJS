@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>flowfield.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">58.84</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">102</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">35.55</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.02</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var FlowFieldMarker = require(&#039;./flowfieldmarker&#039;),
+    Item = require(&#039;burner&#039;).Item,
+    SimplexNoise = require(&#039;quietriot&#039;),
+    System = require(&#039;burner&#039;).System,
+    Utils = require(&#039;burner&#039;).Utils,
+    Vector = require(&#039;burner&#039;).Vector;
+
+/**
+ * Creates a new FlowField.
+ *
+ * @constructor
+ */
+function FlowField() {
+  Item.call(this);
+}
+Utils.extend(FlowField, Item);
+
+
+/**
+ * Initializes an instance.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.resolution = 50] The lower the value, the more vectors are created
+ *    to define the flow field. Low values increase processing time to create the field.
+ * @param {number} [opt_options.perlinSpeed = 0.01] The speed to move through the Perlin Noise space.
+ * @param {number} [opt_options.perlinTime = 100] Sets the Perlin Noise time.
+ * @param {Object} [opt_options.field = null] A list of vectors that define the flow field.
+ * @param {Object} [opt_options.createMarkers = false] Set to true to visualize the flow field.
+ * @param {Object} [opt_options.world = System.firstWorld()] The flowField&#039;s world.
+ */
+FlowField.prototype.init = function(world, opt_options) {
+  FlowField._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  this.resolution = typeof options.resolution !== &#039;undefined&#039; ? options.resolution : 50;
+  this.perlinSpeed = typeof options.perlinSpeed !== &#039;undefined&#039; ? options.perlinSpeed : 0.01;
+  this.perlinTime = typeof options.perlinTime !== &#039;undefined&#039; ? options.perlinTime : 100;
+  this.field = options.field || null;
+  this.createMarkers = !!options.createMarkers;
+  this.world = world;
+  this.lifespan = -1;
+};
+
+/**
+ * Builds a FlowField.
+ */
+FlowField.prototype.build = function() {
+
+  var col, colMax, row, rowMax, x, y, theta, fieldX, fieldY, field, angle,
+      vectorList = {},
+      world = this.world,
+      cols = Math.ceil(world.width / parseFloat(this.resolution)),
+      rows = Math.ceil(world.height / parseFloat(this.resolution)),
+      xoff = this.perlinTime, // create markers and vectors
+      yoff;
+
+  for (col = 0, colMax = cols; col &lt; colMax ; col += 1) {
+
+    yoff = this.perlinTime;
+    vectorList[col] = {};
+    for (row = 0, rowMax = rows; row &lt; rowMax ; row += 1) {
+
+      x = col * this.resolution + this.resolution / 2; // get location on the grid
+      y = row * this.resolution + this.resolution / 2;
+
+      theta = Utils.map(SimplexNoise.noise(xoff, yoff), 0, 1, 0, Math.PI * 2); // get the vector based on Perlin noise
+      fieldX = Math.cos(theta);
+      fieldY = Math.sin(theta);
+      field = new Vector(fieldX, fieldY);
+      vectorList[col][row] = field;
+      angle = Utils.radiansToDegrees(Math.atan2(fieldY, fieldX)); // get the angle of the vector
+
+      if (this.createMarkers) {
+
+        var ffm = new FlowFieldMarker();
+        world.el.appendChild(ffm.init({ // create the marker
+          location: new Vector(x, y),
+          scale: 1,
+          opacity: Utils.map(angle, -360, 360, 0.1, 0.75),
+          width: this.resolution,
+          height: this.resolution/2,
+          field: field,
+          angle: angle,
+          colorMode: &#039;rgb&#039;,
+          color: [200, 100, 50],
+          borderRadius: 0,
+          zIndex: 0
+        }));
+      }
+      yoff += parseFloat(this.perlinSpeed);
+    }
+    xoff += parseFloat(this.perlinSpeed);
+  }
+  this.field = vectorList;
+};
+
+FlowField.prototype.step = function() {};
+
+FlowField.prototype.draw = function() {};
+
+module.exports = FlowField;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

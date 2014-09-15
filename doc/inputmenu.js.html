@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: inputmenu.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: inputmenu.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>var System = require('burner').System,
+    config = require('./config').config,
+    Utils = require('burner').Utils;
+
+/**
+ * Creates a new InputMenu object.
+ * An Input Menu lists key strokes and other input available
+ * for the user to interact with the system.
+ *
+ * @constructor
+ *
+ */
+function InputMenu() {
+  this.name = 'InputMenu';
+}
+
+/**
+ * Initialize an instance of InputMenu.
+ *
+ * @param {Object} [opt_options=] A map of initial properties.
+ * @param {Object} [opt_options.world] A world.
+ * @param {string} [opt_options.position = 'top left'] A text representation
+ *    of the menu's location. Possible values are 'top left', 'top center', 'top right',
+ *    'bottom left', 'bottom center', 'bottom right', 'center'.
+ * @param {number} [opt_options.opacity = 0.75] The menu's opacity.
+ * @param {Array} [opt_options.color = 255, 255, 255] The menu's color.
+ * @param {number} [opt_options.borderWidth = 1] The menu's border width.
+ * @param {string} [opt_options.borderStyle = 'solid'] The menu's border style.
+ * @param {Array} [opt_options.borderColor = 204, 204, 204] The menu's border color.
+ */
+InputMenu.prototype.init = function (world, opt_options) {
+
+  var me = this, options = opt_options || {}, i, max, classNames;
+
+  if (!world) {
+    throw new Error('Caption.init requires an instance of World.');
+  }
+  this.world = world;
+
+  this.position = options.position || 'top left';
+  this.opacity = typeof options.opacity === 'undefined' ? 0.75 : options.opacity;
+  this.color = options.color || [255, 255, 255];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || 'none';
+  this.borderColor = options.borderColor || [204, 204, 204];
+  this.colorMode = 'rgb';
+
+  //
+
+  this.text = '\'' + String.fromCharCode(config.keyMap.pause).toLowerCase() + '\' = pause | ' +
+    '\'' + String.fromCharCode(config.keyMap.resetSystem).toLowerCase() + '\' = reset | ' +
+    '\'' + String.fromCharCode(config.keyMap.stats).toLowerCase() + '\' = stats';
+
+  /**
+   * Holds a reference to the caption's DOM elements.
+   * @private
+   */
+  this.el = document.createElement('div');
+  this.el.id = 'inputMenu';
+  this.el.className = 'inputMenu ';
+  classNames = this.position.split(' ');
+  for (i = 0, max = classNames.length; i &lt; max; i++) {
+    this.el.className = this.el.className + 'inputMenu' + Utils.capitalizeFirstLetter(classNames[i]) + ' ';
+  }
+  this.el.style.opacity = this.opacity;
+  this.el.style.color = this.colorMode + '(' + this.color[0] + ', ' + this.color[1] +
+        ', ' + this.color[2] + ')';
+  this.el.style.borderWidth = this.borderWidth + 'px';
+  this.el.style.borderStyle = this.borderStyle;
+  if (typeof this.borderColor === 'string') {
+    this.el.style.borderColor = this.borderColor;
+  } else {
+    this.el.style.borderColor = this.colorMode + '(' + this.borderColor[0] + ', ' + this.borderColor[1] +
+        ', ' + this.borderColor[2] + ')';
+  }
+  this.el.style.zIndex = 100;
+  this.el.appendChild(document.createTextNode(this.text));
+  if (document.getElementById('inputMenu')) {
+    document.getElementById('inputMenu').parentNode.removeChild(document.getElementById('inputMenu'));
+  }
+
+  this.world.el.appendChild(this.el);
+
+};
+
+/**
+ * A noop.
+ */
+InputMenu.prototype.draw = function() {};
+
+
+/**
+ * Removes the menu's DOM element.
+ */
+InputMenu.prototype.remove = function() {
+  this.el.parentNode.removeChild(this.el);
+};
+
+module.exports = InputMenu;
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Agent.html">Agent</a></li><li><a href="Attractor.html">Attractor</a></li><li><a href="Caption.html">Caption</a></li><li><a href="Connector.html">Connector</a></li><li><a href="Dragger.html">Dragger</a></li><li><a href="FlowField.html">FlowField</a></li><li><a href="FlowFieldMarker.html">FlowFieldMarker</a></li><li><a href="InputMenu.html">InputMenu</a></li><li><a href="Mover.html">Mover</a></li><li><a href="Oscillator.html">Oscillator</a></li><li><a href="Particle.html">Particle</a></li><li><a href="ParticleSystem.html">ParticleSystem</a></li><li><a href="Point.html">Point</a></li><li><a href="RangeDisplay.html">RangeDisplay</a></li><li><a href="Repeller.html">Repeller</a></li><li><a href="Sensor.html">Sensor</a></li><li><a href="Stimulus.html">Stimulus</a></li><li><a href="Walker.html">Walker</a></li></ul><h3>Namespaces</h3><ul><li><a href="config.html">config</a></li></ul><h3>Global</h3><ul><li><a href="global.html#i">i</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Sep 15 2014 17:25:59 GMT-0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

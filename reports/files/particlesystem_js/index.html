@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>particlesystem.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">54.85</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">158</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">51.06</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.60</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var ColorPalette = require(&#039;colorpalette&#039;),
+    Item = require(&#039;burner&#039;).Item,
+    Mover = require(&#039;./mover&#039;),
+    System = require(&#039;burner&#039;).System,
+    Utils = require(&#039;burner&#039;).Utils,
+    Vector = require(&#039;burner&#039;).Vector;
+
+/**
+ * Creates a new ParticleSystem.
+ *
+ * @constructor
+ * @extends Mover
+ */
+function ParticleSystem(opt_options) {
+  Mover.call(this);
+}
+Utils.extend(ParticleSystem, Mover);
+
+/**
+ * Initializes Particle.
+ * @param  {Object} world An instance of World.
+ * @param  {Object} [opt_options=] A map of initial properties.
+ * @param {number} [opt_options.width = 0] Width
+ * @param {number} [opt_options.height = 0] Height
+ * @param {string|Array} [opt_options.color = [255, 255, 255]] Color.
+ * @param {number} [opt_options.borderWidth = 0] Border width.
+ * @param {string} [opt_options.borderStyle = &#039;none&#039;] Border style.
+ * @param {string|Array} [opt_options.borderColor = [255, 255, 255]] Border color.
+ * @param {number} [opt_options.borderRadius = 0] Border radius.
+ * @param {boolean} [opt_options.isStatic = true] If set to true, particle system does not move.
+ * @param {number} [opt_options.lifespan = 1000] The max life of the system. Set to -1 for infinite life.
+ * @param {number} [opt_options.life = 0] The current life value. If greater than this.lifespan, system is destroyed.
+ * @param {number} [opt_options.burst = 1] The number of particles to create per burst.
+ * @param {number} [opt_options.burstRate = 1] The number of frames between bursts. Lower values = more particles.
+ * @param {number} [opt_options.emitRadius = 3] The ParticleSystem adds this offset to the location of the Particles it creates.
+ * @param {Array} [opt_options.startColor = [255, 255, 255]] The starting color of the particle&#039;s palette range.
+ * @param {Array} [opt_options.endColor = [255, 0, 0]] The ending color of the particle&#039;s palette range.
+ * @param {Object} [opt_options.particleOptions] A map of options for particles created by system.
+ */
+ParticleSystem.prototype.init = function(world, opt_options) {
+  ParticleSystem._superClass.init.call(this, world, opt_options);
+
+  var options = opt_options || {};
+
+  this.width = options.width || 0;
+  this.height = options.height || 0;
+  this.color = options.color || [255, 255, 255];
+  this.borderWidth = options.borderWidth || 0;
+  this.borderStyle = options.borderStyle || &#039;none&#039;;
+  this.borderColor = options.borderColor || [255, 255, 255];
+  this.borderRadius = options.borderRadius || 0;
+  this.isStatic = typeof options.isStatic === &#039;undefined&#039; ? true : options.isStatic;
+  this.lifespan = typeof options.lifespan === &#039;undefined&#039; ? -1: options.lifespan;
+  this.life = typeof options.life === &#039;undefined&#039; ? -1 : options.life;
+  this.burst = typeof options.burst === &#039;undefined&#039; ? 1 : options.burst;
+  this.burstRate = typeof options.burstRate === &#039;undefined&#039; ? 4 : options.burstRate;
+  this.emitRadius = typeof options.emitRadius === &#039;undefined&#039; ? 3 : options.emitRadius;
+  this.startColor = options.startColor || [255, 255, 255];
+  this.endColor = options.endColor || [255, 0, 0];
+  this.particleOptions = options.particleOptions || {
+    width : 15,
+    height : 15,
+    lifespan : 50,
+    borderRadius : 100,
+    checkWorldEdges : false,
+    acceleration: null,
+    velocity: null,
+    location: null,
+    maxSpeed: 3,
+    fade: true,
+    shrink: true
+  };
+
+  if (this.particleOptions.acceleration) {
+    this.initParticleAcceleration = new Vector(this.particleOptions.acceleration.x,
+      this.particleOptions.acceleration.y);
+  }
+
+  var pl = new ColorPalette();
+  pl.addColor({ // adds a random sampling of colors to palette
+    min: 12,
+    max: 24,
+    startColor: this.startColor,
+    endColor: this.endColor
+  });
+
+  this.clock = 0;
+
+  this.beforeStep = function () {
+
+    var location, offset,
+        initAcceleration = this.initParticleAcceleration;
+
+    if (this.life &lt; this.lifespan) {
+      this.life += 1;
+    } else if (this.lifespan !== -1) {
+      System.remove(this);
+      return;
+    }
+
+    if (this.clock % this.burstRate === 0) {
+
+      location = new Vector(this.location.x, this.location.y); // use the particle system&#039;s location
+      offset = new Vector(1, 1); // get the emit radius
+      offset.normalize();
+      offset.mult(this.emitRadius); // expand emit radius in a random direction
+      offset.rotate(Utils.getRandomNumber(0, Math.PI * 2, true));
+      location.add(offset);
+
+      for (var i = 0; i &lt; this.burst; i++) {
+        this.particleOptions.world = this.world;
+        this.particleOptions.life = 0;
+        this.particleOptions.color = pl.getColor();
+        this.particleOptions.borderStyle = &#039;solid&#039;;
+        this.particleOptions.borderColor = pl.getColor();
+        this.particleOptions.boxShadowColor = pl.getColor();
+        if (initAcceleration) {
+          this.particleOptions.acceleration = new Vector(initAcceleration.x, initAcceleration.y);
+        }
+        this.particleOptions.location = location;
+
+        System.add(&#039;Particle&#039;, this.particleOptions);
+      }
+    }
+    this.clock++;
+  };
+
+};
+
+/**
+ * Updates the corresponding DOM element&#039;s style property.
+ * @function draw
+ * @memberof ParticleSystem
+ */
+ParticleSystem.prototype.draw = function() {
+  var cssText = this.getCSSText({
+    x: this.location.x - (this.width / 2),
+    y: this.location.y - (this.height / 2),
+    angle: this.angle,
+    scale: this.scale || 1
+  });
+  this.el.style.cssText = cssText;
+};
+
+/**
+ * Concatenates a new cssText string.
+ *
+ * @function getCSSText
+ * @memberof ParticleSystem
+ * @param {Object} props A map of object properties.
+ * @returns {string} A string representing cssText.
+ */
+ParticleSystem.prototype.getCSSText = function(props) {
+  return Item._stylePosition.replace(/&lt;x&gt;/g, props.x).replace(/&lt;y&gt;/g, props.y).replace(/&lt;angle&gt;/g, props.angle).replace(/&lt;scale&gt;/g, props.scale) + &#039;;&#039;;
+};
+
+
+module.exports = ParticleSystem;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
