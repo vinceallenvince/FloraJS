@@ -104,7 +104,7 @@ http://vinceallenvince.github.io/FloraJS/Flora.WorldProperties.html
 
 Agents are basic Flora elements that respond to forces like gravity, attraction, repulsion, etc. They can also chase after other Agents, organize with other Agents in a flocking behavior, and steer away from obstacles.
 
-Agents are highly configurable. For a complete list of options see the docs at http://vinceallenvince.github.io/FloraJS/docs/symbols/Agent.html
+Agents are highly configurable. For a complete list of options see the docs at http://vinceallenvince.github.io/FloraJS/doc/Agent.html
 
 For an example of an Agent's seek behavior, set 'followMouse' to 'true' when creating the Agent.
 
@@ -308,7 +308,7 @@ In the example below, Agents flock to the mouse.
 </html>
 ```
 
-http://vinceallenvince.github.io/FloraJS/FlockToMouse.html
+http://vinceallenvince.github.io/FloraJS/Flora.Agent.FlockToMouse.html
 
 #### Proximity
 
@@ -563,8 +563,6 @@ Notice in the above example, we view the world from the first-person point of vi
       controlCamera: true,
     ...
 
-http://vinceallenvince.github.io/FloraJS/
-
 #### Your own worlds
 
 Flora allows you to define worlds using any DOM element. This is useful if you want your world to live alongside other DOM elements or simply do not want the entire body defined as a world.
@@ -705,7 +703,7 @@ Flora uses [SoundBed](https://github.com/vinceallenvince/soundbed) to generate a
 The following examples implement advanced functions of FloraJS.
 
 * [Sheep vs. Wolves](http://vinceallenvince.github.io/FloraJS/Flora.Sim.SheepvsWolves.html)
-* [Fish Food](http://vinceallenvince.github.io/FloraJS/Flora.FishFood.html)
+* [Fish Food](http://vinceallenvince.github.io/FloraJS/Flora.Sim.FishFood.html)
 
 
 Building this project
