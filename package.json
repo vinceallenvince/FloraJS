@@ -1,6 +1,6 @@
 {
   "name": "florajs",
-  "version": "3.1.0",
+  "version": "3.1.2",
   "description": "Simulate natural systems with JavaScript.",
   "main": "src/main.js",
   "scripts": {
@@ -33,10 +33,10 @@
     "testling": "^1.6.1"
   },
   "dependencies": {
-    "burner": "^3.1.5",
     "borderpalette": "^0.1.7",
+    "burner": "^3.1.5",
     "colorpalette": "^0.1.5",
     "quietriot": "^0.1.2",
-    "soundbed": "^0.1.7"
+    "soundbed": "^0.1.8"
   }
 }
