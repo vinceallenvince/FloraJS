@@ -18,7 +18,7 @@ deploy:
   - provider: npm
     email: vince@vinceallen.com
     api_key:
-      secure: ZWuwJzknoPOreRHb6lTxzPJdJ32OKwtuxpkhoi0i/JRjBtZTdHOsp0qIi73xB0fbuWtpPNByIshOu58WxtOBX3kxswKDBQC+OFh+h+lK3R0b2DvWybeCiAw+vm0mp+cilvIkJ2/9km71WsO4xnEa85lwhQEIYCncy4InK/zXW8c=
+      secure: M8zRan3ShuLIoZBnxaHnZvn7pJwMiWglU0xHHspbacmRB7HnAX1+bRNybiPPZYqlLCcR4l/Bddn87dt/l9Ynzl9Ipb/VlhpR6WKOtqTZdmxZ0a9D2Rx2fv1MmO9Om+iGDhGGFRD1kUSNiZJ75WUM1EMGyoPVJ955UbzorG3U0PM=
     on:
       tags: true
       repo: vinceallenvince/FloraJS
