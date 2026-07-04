@@ -20,3 +20,6 @@ public/css/flora.min.css
 #
 ##### LOCAL ####
 .claude/
+#
+##### DIST ####
+dist/

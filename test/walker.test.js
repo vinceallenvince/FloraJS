@@ -1,13 +1,7 @@
 import { test, expect, beforeEach } from 'vitest';
-import { createRequire } from 'node:module';
 import Burner from '../src/vendor/burner/main';
+import SimplexNoise from '../src/vendor/quietriot';
 import Walker from '../src/walker';
-
-// Load quietriot through Node's CommonJS cache so we get the exact same
-// module instance Walker uses internally; an ESM import would create a
-// second instance and SimplexNoise.config() would not affect Walker.
-const require = createRequire(import.meta.url);
-const SimplexNoise = require('../src/vendor/quietriot');
 
 let obj;
 

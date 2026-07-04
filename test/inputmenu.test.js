@@ -1,12 +1,6 @@
 import { test, expect, beforeEach } from 'vitest';
 import Burner from '../src/vendor/burner/main';
-import { createRequire } from 'node:module';
-
-// src/inputmenu.js loads './config' through Vitest's externalized (native
-// CommonJS) module cache, while an ESM `import` here would create a second,
-// separate instance of the module. Use a native require so the test mutates
-// the same config object InputMenu reads from.
-const config = createRequire(import.meta.url)('../src/config').config;
+import { config } from '../src/config';
 import InputMenu from '../src/inputmenu';
 
 let obj;
