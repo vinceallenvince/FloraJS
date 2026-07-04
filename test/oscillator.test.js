@@ -1,14 +1,7 @@
 import { test, expect, beforeEach } from 'vitest';
-import { createRequire } from 'node:module';
 import Burner from '../src/vendor/burner/main';
 import Oscillator from '../src/oscillator';
-
-// src/oscillator.js is CommonJS, so its require('./vendor/quietriot') resolves
-// through Node's native CJS cache while an ESM import here would get a
-// separate Vite-transformed copy. Use createRequire to get the same instance
-// the oscillator uses, so SimplexNoise.config() below actually takes effect.
-const cjsRequire = createRequire(import.meta.url);
-const SimplexNoise = cjsRequire('../src/vendor/quietriot');
+import SimplexNoise from '../src/vendor/quietriot';
 
 var Vector = Burner.Vector;
 

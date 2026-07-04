@@ -1,10 +1,21 @@
 {
   "name": "florajs",
-  "version": "3.2.0",
+  "version": "4.0.0",
   "description": "Simulate natural systems with JavaScript.",
-  "main": "src/main.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types/main.d.ts",
+      "import": "./dist/florajs.js"
+    }
+  },
+  "files": [
+    "dist",
+    "css"
+  ],
   "scripts": {
     "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "serve": "python3 -m http.server 8321 --directory public"
   },
@@ -19,6 +30,7 @@
   "devDependencies": {
     "esbuild": "^0.28.1",
     "jsdom": "^29.1.1",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.9"
   }
 }
