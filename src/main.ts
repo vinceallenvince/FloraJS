@@ -4,6 +4,7 @@ import SimplexNoise from './vendor/quietriot';
 import SoundBed from './vendor/soundbed/index';
 import { Item, System, Utils, Vector, World } from './vendor/burner/main';
 import { DOMRenderer, getRenderer, setRenderer } from './renderer/index';
+import CanvasRenderer from './renderer/canvas-renderer';
 
 import Agent from './agent';
 import Attractor from './attractor';
@@ -47,8 +48,16 @@ System.Classes = {
   Walker
 };
 
+// Dev/test affordance: append ?renderer=canvas to a demo URL to run it
+// on the CanvasRenderer without touching the page's code.
+if (typeof window !== 'undefined' && typeof window.location !== 'undefined' &&
+    /[?&]renderer=canvas/.test(window.location.search)) {
+  setRenderer(new CanvasRenderer());
+}
+
 const Flora = {
   BorderPalette,
+  CanvasRenderer,
   ColorPalette,
   DOMRenderer,
   SimplexNoise,
@@ -63,6 +72,7 @@ const Flora = {
 
 export {
   BorderPalette,
+  CanvasRenderer,
   ColorPalette,
   DOMRenderer,
   getRenderer,

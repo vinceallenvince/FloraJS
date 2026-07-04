@@ -58,7 +58,9 @@ export default class Mover extends Item {
     this.mouseOutInterval = false;
     this._friction = new Vector();
 
-    if (this.draggable) {
+    // Dragging listens on the item's DOM element; renderers without
+    // per-item elements (canvas) do not support draggable yet.
+    if (this.draggable && this.el) {
 
       Utils.addEvent(this.el, 'mouseover', (function() {
         return function(e: any) {

@@ -3,6 +3,7 @@ import World from './world';
 import Vector from '../vector2d-lib';
 import Utils from '../drawing-utils-lib';
 import FPSDisplay from '../fpsdisplay';
+import { getRenderer } from '../../renderer/index';
 
 /**
  * The System runs the animation loop: it creates, recycles, steps
@@ -275,13 +276,10 @@ const System = {
   },
 
   /**
-   * Draws all records via their renderer.
+   * Draws all records via the active renderer.
    */
   _draw(): void {
-    var records = System._records;
-    for (var i = records.length - 1; i >= 0; i -= 1) {
-      records[i].draw();
-    }
+    getRenderer().drawFrame(System._records);
   },
 
   /**
