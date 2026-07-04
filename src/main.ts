@@ -3,6 +3,7 @@ import ColorPalette from './vendor/colorpalette';
 import SimplexNoise from './vendor/quietriot';
 import SoundBed from './vendor/soundbed/index';
 import { Item, System, Utils, Vector, World } from './vendor/burner/main';
+import { DOMRenderer, getRenderer, setRenderer } from './renderer/index';
 
 import Agent from './agent';
 import Attractor from './attractor';
@@ -49,17 +50,23 @@ System.Classes = {
 const Flora = {
   BorderPalette,
   ColorPalette,
+  DOMRenderer,
   SimplexNoise,
   SoundBed,
   System,
   Utils,
   Vector,
-  World
+  World,
+  getRenderer,
+  setRenderer
 };
 
 export {
   BorderPalette,
   ColorPalette,
+  DOMRenderer,
+  getRenderer,
+  setRenderer,
   SimplexNoise,
   SoundBed,
   Item,

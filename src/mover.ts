@@ -1,4 +1,5 @@
 import { Item, System, Utils, Vector } from './vendor/burner/main';
+import type { StyleProps } from './renderer/dom-renderer';
 
 /**
  * Creates a new Mover.
@@ -279,8 +280,8 @@ export default class Mover extends Item {
   /**
    * Updates the corresponding DOM element's style property.
    */
-  draw(): void {
-    var cssText = this.getCSSText({
+  getStyle(): StyleProps {
+    return {
       x: this.location.x - (this.width / 2),
       y: this.location.y - (this.height / 2),
       angle: this.angle,
@@ -300,21 +301,7 @@ export default class Mover extends Item {
       borderColor0: this.borderColor[0],
       borderColor1: this.borderColor[1],
       borderColor2: this.borderColor[2]
-    });
-    this.el.style.cssText = cssText;
+    };
   }
 
-  /**
-   * Concatenates a new cssText string.
-   *
-   * @param props A map of object properties.
-   * @returns A string representing cssText.
-   */
-  getCSSText(props: { [key: string]: any }): string {
-    return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
-        props.width + 'px; height: ' + props.height + 'px; background-color: ' +
-        props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +');  opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + '; border: ' +
-        props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-        props.borderRadius + '%;';
-  }
 }

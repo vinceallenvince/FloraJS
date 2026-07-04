@@ -1,6 +1,7 @@
 import ColorPalette from './vendor/colorpalette';
 import { Item, System, Utils, Vector } from './vendor/burner/main';
 import Mover from './mover';
+import type { StyleProps } from './renderer/dom-renderer';
 
 /**
  * Creates a new ParticleSystem.
@@ -129,25 +130,13 @@ export default class ParticleSystem extends Mover {
    * @function draw
    * @memberof ParticleSystem
    */
-  draw(): void {
-    var cssText = this.getCSSText({
+  getStyle(): StyleProps {
+    return {
       x: this.location.x - (this.width / 2),
       y: this.location.y - (this.height / 2),
       angle: this.angle,
       scale: this.scale || 1
-    });
-    this.el.style.cssText = cssText;
+    };
   }
 
-  /**
-   * Concatenates a new cssText string.
-   *
-   * @function getCSSText
-   * @memberof ParticleSystem
-   * @param {Object} props A map of object properties.
-   * @returns {string} A string representing cssText.
-   */
-  getCSSText(props: { [key: string]: any }): string {
-    return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + ';';
-  }
 }
