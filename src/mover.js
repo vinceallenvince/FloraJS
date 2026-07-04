@@ -1,7 +1,7 @@
-var Item = require('burner').Item,
-    System = require('burner').System,
-    Utils = require('burner').Utils,
-    Vector = require('burner').Vector;
+var Item = require('./vendor/burner/main').Item,
+    System = require('./vendor/burner/main').System,
+    Utils = require('./vendor/burner/main').Utils,
+    Vector = require('./vendor/burner/main').Vector;
 
 /**
  * Creates a new Mover.
@@ -176,7 +176,7 @@ Mover.mouseout = function() {
 
 Mover.prototype.step = function() {
 
-  var i, max, x = this.location.x,
+  var i, max, r, theta, x = this.location.x,
       y = this.location.y;
 
   this.beforeStep.call(this);

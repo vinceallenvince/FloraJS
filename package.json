@@ -1,10 +1,12 @@
 {
   "name": "florajs",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "description": "Simulate natural systems with JavaScript.",
   "main": "src/main.js",
   "scripts": {
-    "test": "browserify test/*.js | testling"
+    "build": "node build.mjs",
+    "test": "vitest run",
+    "serve": "python3 -m http.server 8321 --directory public"
   },
   "repository": "http://github.com/vinceallenvince/FloraJS",
   "author": {
@@ -15,28 +17,8 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^4.1.10",
-    "coverify": "^1.0.7",
-    "grunt": "~0.4.1",
-    "grunt-contrib-clean": "~0.6.0",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-csslint": "~0.1.2",
-    "grunt-contrib-cssmin": "~0.6.1",
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-uglify": "~0.5.0",
-    "grunt-exec": "~0.4.6",
-    "grunt-jsdoc": "~0.4.0",
-    "grunt-plato": "~0.2.1",
-    "phantomjs": "^1.9.7-8",
-    "tap": "^0.4.11",
-    "tape": "^2.13.3",
-    "testling": "^1.6.1"
-  },
-  "dependencies": {
-    "borderpalette": "^0.1.7",
-    "burner": "^3.1.5",
-    "colorpalette": "^0.1.5",
-    "quietriot": "^0.1.2",
-    "soundbed": "^0.1.8"
+    "esbuild": "^0.28.1",
+    "jsdom": "^29.1.1",
+    "vitest": "^4.1.9"
   }
 }

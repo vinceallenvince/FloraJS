@@ -709,39 +709,28 @@ The following examples implement advanced functions of FloraJS.
 Building this project
 ------
 
-This project uses [Grunt](http://gruntjs.com). To build the project first install the node modules.
+Install the dev dependencies, then build.
 
 ```
 npm install
+npm run build
 ```
 
-Next, run grunt.
+This bundles `src/` with [esbuild](https://esbuild.github.io) into `public/scripts/flora.min.js` and minifies `css/main.css` into `public/css/flora.min.css`.
 
-```
-grunt
-```
-
-To run the tests, run 'npm test'.
+To run the tests ([Vitest](https://vitest.dev) with a jsdom environment):
 
 ```
 npm test
 ```
 
-To check test coverage run 'grunt coverage'.
+To view the demos locally after a build:
 
 ```
-grunt coverage
+npm run serve
 ```
 
-A pre-commit hook is defined in /pre-commit that runs jshint. To use the hook, run the following:
+then open http://localhost:8321.
 
-```
-ln -s ../../pre-commit .git/hooks/pre-commit
-```
-
-A post-commit hook is defined in /post-commit that runs the Plato complexity analysis tools. To use the hook, run the following:
-
-```
-ln -s ../../post-commit .git/hooks/post-commit
-```
+Demos are deployed to GitHub Pages automatically on every push to master (see `.github/workflows/deploy-gh-pages.yml`).
 

@@ -1,19 +1,19 @@
 // Flora classes
 var Flora = {
-  BorderPalette: require('borderpalette'),
-  ColorPalette: require('colorpalette'),
-  SimplexNoise: require('quietriot'),
-  SoundBed: require('soundbed'),
-  System: require('burner').System,
-  Utils: require('burner').Utils,
-  Vector: require('burner').Vector,
-  World: require('burner').World
+  BorderPalette: require('./vendor/borderpalette'),
+  ColorPalette: require('./vendor/colorpalette'),
+  SimplexNoise: require('./vendor/quietriot'),
+  SoundBed: require('./vendor/soundbed/index'),
+  System: require('./vendor/burner/main').System,
+  Utils: require('./vendor/burner/main').Utils,
+  Vector: require('./vendor/burner/main').Vector,
+  World: require('./vendor/burner/main').World
 };
 
 Flora.System.Classes = {
   Agent: require('./agent'),
   Attractor: require('./attractor'),
-  BorderPalette: require('borderpalette'),
+  BorderPalette: require('./vendor/borderpalette'),
   Caption: require('./caption'),
   Connector: require('./connector'),
   Dragger: require('./dragger'),

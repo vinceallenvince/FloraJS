@@ -13,3 +13,10 @@ public/scripts/flora.js
 *.DS_Store
 *.swp
 *.map
+#
+##### BUILD OUTPUTS ####
+public/scripts/flora.min.js
+public/css/flora.min.css
+#
+##### LOCAL ####
+.claude/
