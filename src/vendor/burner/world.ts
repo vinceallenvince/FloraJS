@@ -1,5 +1,6 @@
 import Vector from '../vector2d-lib';
 import Item, { ItemOptions } from './item';
+import type { StyleProps } from '../../renderer/dom-renderer';
 
 /**
  * A World contains Items and applies global forces (gravity, wind)
@@ -12,6 +13,9 @@ export default class World extends Item {
   pauseStep: boolean;
   pauseDraw: boolean;
   _camera: Vector;
+  _autoWidth: boolean;
+  _autoHeight: boolean;
+  _resizeObserver: ResizeObserver | null;
 
   constructor(opt_options?: ItemOptions) {
     super();
@@ -78,6 +82,34 @@ export default class World extends Item {
     this.pauseDraw = !!options.pauseDraw;
     this.el.className = this.name.toLowerCase();
     this._camera = this._camera || new Vector();
+
+    // Track the element's size so the world's bounds follow container
+    // resizes — but never stomp explicitly configured dimensions.
+    this._autoWidth = typeof options.width === 'undefined';
+    this._autoHeight = typeof options.height === 'undefined';
+    this._observeResize();
+  }
+
+  /**
+   * Watches this world's element for size changes and updates the
+   * world's bounds. For body-sized worlds the documentElement is
+   * observed, since it tracks the viewport.
+   */
+  _observeResize(): void {
+    if (this._resizeObserver || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+    var target = this.el === document.body ? document.documentElement : this.el;
+    this._resizeObserver = new ResizeObserver(() => {
+      var size = World.measureSize(this.el);
+      if (this._autoWidth) {
+        this.width = size.width;
+      }
+      if (this._autoHeight) {
+        this.height = size.height;
+      }
+    });
+    this._resizeObserver.observe(target);
   }
 
   /**
@@ -96,33 +128,25 @@ export default class World extends Item {
   }
 
   /**
-   * Updates the corresponding DOM element's style property.
+   * Describes this world's visual state for the renderer.
    */
-  draw(): void {
-    var cssText = this.getCSSText({
+  getStyle(): StyleProps {
+    return {
       x: this.location.x - (this.width / 2),
       y: this.location.y - (this.height / 2),
       angle: this.angle,
       scale: this.scale || 1,
       width: this.width,
       height: this.height,
+      colorMode: 'rgb',
       color0: this.color[0],
       color1: this.color[1],
       color2: this.color[2],
       borderWidth: this.borderWidth,
       borderStyle: this.borderStyle,
-      borderColor1: this.borderColor[0],
-      borderColor2: this.borderColor[1],
-      borderColor3: this.borderColor[2]
-    });
-    this.el.style.cssText = cssText;
-  }
-
-  /**
-   * Concatenates a new cssText string.
-   * @param props A map of object properties.
-   */
-  getCSSText(props: { [key: string]: any }): string {
-    return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: rgb(' + props.color0 + ', ' + props.color1 + ', ' + props.color2 + '); border: ' + props.borderWidth + 'px ' + props.borderStyle + ' rgb(' + props.borderColor1 + ', ' + props.borderColor2 + ', ' + props.borderColor3 + ')';
+      borderColor0: this.borderColor[0],
+      borderColor1: this.borderColor[1],
+      borderColor2: this.borderColor[2]
+    };
   }
 }

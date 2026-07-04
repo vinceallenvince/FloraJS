@@ -1,4 +1,6 @@
 import Vector from '../vector2d-lib';
+import { getRenderer } from '../../renderer/index';
+import type { StyleProps } from '../../renderer/dom-renderer';
 import type World from './world';
 
 export interface ItemOptions {
@@ -13,10 +15,6 @@ export interface ItemOptions {
 export default class Item {
   /** Holds a count of item instances. */
   static _idCount = 0;
-
-  /** Template for an item's transform style. */
-  static _stylePosition =
-      'transform: translate3d(<x>px, <y>px, 0) rotate(<angle>deg) scale(<scale>, <scale>);';
 
   // Items are configured via a two-phase construct-then-init() protocol
   // and carry open-ended option properties, so allow dynamic access.
@@ -178,12 +176,7 @@ export default class Item {
 
     this.id = this.name + Item._idCount;
     if (!this.el) {
-      this.el = document.createElement('div');
-      this.el.id = this.id;
-      this.el.className = 'item ' + this.name.toLowerCase();
-      this.el.style.position = 'absolute';
-      this.el.style.top = '-5000px';
-      this.world.add(this.el);
+      getRenderer().addItem(this);
     }
   }
 
@@ -290,10 +283,17 @@ export default class Item {
   }
 
   /**
-   * Updates the corresponding DOM element's style property.
+   * Renders this item via the active renderer.
    */
   draw(): void {
-    var cssText = this.getCSSText({
+    getRenderer().drawItem(this);
+  }
+
+  /**
+   * Describes this item's visual state for the renderer.
+   */
+  getStyle(): StyleProps {
+    return {
       x: this.location.x - (this.width / 2),
       y: this.location.y - (this.height / 2),
       angle: this.angle,
@@ -307,15 +307,6 @@ export default class Item {
       opacity: this.opacity,
       zIndex: this.zIndex,
       visibility: this.visibility
-    });
-    this.el.style.cssText = cssText;
-  }
-
-  /**
-   * Concatenates a new cssText string.
-   * @param props A map of object properties.
-   */
-  getCSSText(props: { [key: string]: any }): string {
-    return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: ' + props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + ';';
+    };
   }
 }

@@ -1,4 +1,5 @@
 import { Item } from './vendor/burner/main';
+import { getRenderer } from './renderer/index';
 
 /**
  * Creates a new FlowFieldMarker.
@@ -35,7 +36,7 @@ export default class FlowFieldMarker extends Item {
     nose.className = 'nose';
     el.appendChild(nose);
 
-    el.style.cssText = this.getCSSText({
+    el.style.cssText = getRenderer().buildCSSText({
       x: options.location.x - options.width / 2,
       y: options.location.y - options.height / 2,
       width: options.width,
@@ -47,14 +48,9 @@ export default class FlowFieldMarker extends Item {
       color0: options.color[0],
       color1: options.color[1],
       color2: options.color[2],
-      zIndex: options.zIndex,
-      borderRadius: options.borderRadius
+      zIndex: options.zIndex
     });
 
     return el;
-  }
-
-  getCSSText(props: { [key: string]: any }): string {
-    return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' + props.width + 'px; height: ' + props.height + 'px; background-color: ' + props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + ';';
   }
 }

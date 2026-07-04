@@ -1,5 +1,6 @@
 import { Item, Utils, Vector } from './vendor/burner/main';
 import Mover from './mover';
+import type { StyleProps } from './renderer/dom-renderer';
 
 /**
  * Creates a new Particle object.
@@ -82,8 +83,8 @@ export default class Particle extends Mover {
    * @function draw
    * @memberof Particle
    */
-  draw(): void {
-    var cssText = this.getCSSText({
+  getStyle(): StyleProps {
+    return {
       x: this.location.x - (this.width / 2),
       y: this.location.y - (this.height / 2),
       angle: this.angle,
@@ -110,23 +111,7 @@ export default class Particle extends Mover {
       opacity: this.opacity,
       zIndex: this.zIndex,
       visibility: this.visibility
-    });
-    this.el.style.cssText = cssText;
+    };
   }
 
-  /**
-   * Concatenates a new cssText string.
-   *
-   * @function getCSSText
-   * @memberof Particle
-   * @param {Object} props A map of object properties.
-   * @returns {string} A string representing cssText.
-   */
-  getCSSText(props: { [key: string]: any }): string {
-    return Item._stylePosition.replace(/<x>/g, props.x).replace(/<y>/g, props.y).replace(/<angle>/g, props.angle).replace(/<scale>/g, props.scale) + 'width: ' +
-        props.width + 'px; height: ' + props.height + 'px; background-color: ' +
-        props.colorMode + '(' + props.color0 + ', ' + props.color1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.color2 + (props.colorMode === 'hsl' ? '%' : '') +'); border: ' +
-        props.borderWidth + 'px ' + props.borderStyle + ' ' + props.colorMode + '(' + props.borderColor0 + ', ' + props.borderColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.borderColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); border-radius: ' +
-        props.borderRadius + '%; box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' + props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' + props.colorMode + '(' + props.boxShadowColor0 + ', ' + props.boxShadowColor1 + (props.colorMode === 'hsl' ? '%' : '') + ', ' + props.boxShadowColor2 + (props.colorMode === 'hsl' ? '%' : '') + '); opacity: ' + props.opacity + '; z-index: ' + props.zIndex + '; visibility: ' + props.visibility + ';';
-  }
 }

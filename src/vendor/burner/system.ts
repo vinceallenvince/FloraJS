@@ -40,8 +40,24 @@ const System = {
     velocity: new Vector()
   },
 
-  /** Increments with each call to System.loop. */
+  /** Increments with each simulation step. */
   clock: 0,
+
+  /**
+   * Duration of one simulation step in ms. The loop runs the
+   * simulation at this fixed rate regardless of display refresh
+   * rate, so sims behave identically on 60Hz and 240Hz screens.
+   */
+  stepMs: 1000 / 60,
+
+  /** Accumulates unsimulated time between animation frames. */
+  _accumulator: 0,
+
+  /** Timestamp of the previous animation frame. */
+  _lastFrameTime: null as number | null,
+
+  /** True once loop() has started the animation-frame chain. */
+  _running: false,
 
   /**
    * System.loop() calls this function. Use to execute
@@ -59,7 +75,8 @@ const System = {
   setup(opt_func?: () => void): void {
     var func = opt_func || function() {};
 
-    (document.body as any).onorientationchange = System.updateOrientation;
+    // Worlds observe their own elements via ResizeObserver (see
+    // World._observeResize), which covers orientation changes too.
 
     // save the current and last mouse position
     Utils.addEvent(document, 'mousemove', System._recordMouseLoc);
@@ -173,17 +190,75 @@ const System = {
   },
 
   /**
-   * Iterates over records.
+   * Starts the animation loop: a fixed-timestep simulation (stepMs per
+   * step, with an accumulator) drawn once per animation frame. Also
+   * runs one immediate step + draw so items appear without waiting for
+   * the first frame, matching the pre-fixed-timestep behavior of a
+   * direct loop() call.
    * @param opt_function A function to run at the end of every frame.
    */
   loop(opt_function?: () => void): void {
-    var i, records = System._records,
-        len = System._records.length,
-        frameFunction = opt_function || function() {};
+    var frameFunction = opt_function || function() {};
 
     if (!System.frameFunction) {
       System.frameFunction = frameFunction;
     }
+
+    System._step();
+    System._draw();
+    System.frameFunction.call(this);
+
+    if (!System._running) {
+      System._running = true;
+      window.requestAnimationFrame((t) => System._frame(t));
+    }
+  },
+
+  /**
+   * One animation frame: simulate however many fixed steps the elapsed
+   * time covers, then draw once.
+   * @param now The rAF timestamp in ms.
+   */
+  _frame(now: number): void {
+    window.requestAnimationFrame((t) => System._frame(t));
+
+    if (System._lastFrameTime === null) {
+      System._lastFrameTime = now;
+      return;
+    }
+
+    var delta = now - System._lastFrameTime;
+    System._lastFrameTime = now;
+
+    // Cap the debt a background tab can build up: after a long pause,
+    // resume smoothly instead of fast-forwarding hundreds of steps.
+    if (delta > 250) {
+      delta = 250;
+    }
+
+    System._accumulator += delta;
+
+    while (System._accumulator >= System.stepMs) {
+      System._step();
+      System._accumulator -= System.stepMs;
+    }
+
+    System._draw();
+
+    if (FPSDisplay.active) {
+      FPSDisplay.update(System._records.length);
+    }
+    if (System.frameFunction) {
+      System.frameFunction.call(this);
+    }
+  },
+
+  /**
+   * Advances the simulation one step.
+   */
+  _step(): void {
+    var i, records = System._records,
+        len = System._records.length;
 
     for (i = len - 1; i >= 0; i -= 1) {
       if (records[i] && records[i].step && !records[i].world.pauseStep) {
@@ -196,16 +271,17 @@ const System = {
         records[i].step();
       }
     }
-    len = System._records.length; // check length in case items were removed in step()
-    for (i = len - 1; i >= 0; i -= 1) {
+    System.clock++;
+  },
+
+  /**
+   * Draws all records via their renderer.
+   */
+  _draw(): void {
+    var records = System._records;
+    for (var i = records.length - 1; i >= 0; i -= 1) {
       records[i].draw();
     }
-    System.clock++;
-    if (FPSDisplay.active) {
-      FPSDisplay.update(len);
-    }
-    System.frameFunction.call(this);
-    window.requestAnimationFrame(() => System.loop());
   },
 
   /**
@@ -372,6 +448,11 @@ const System = {
       world.pauseStep = false;
       world.pauseDraw = false;
 
+      if (world._resizeObserver) {
+        world._resizeObserver.disconnect();
+        world._resizeObserver = null;
+      }
+
       while (world.el.firstChild) {
         world.el.removeChild(world.el.firstChild);
       }
@@ -380,6 +461,7 @@ const System = {
     System._records = [];
     System._pool = [];
     System.clock = 0;
+    System._accumulator = 0;
     System.setup(System.setupFunc);
   },
 
