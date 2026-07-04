@@ -1,7 +1,7 @@
 var Mover = require('./mover'),
-    System = require('burner').System,
-    Utils = require('burner').Utils,
-    Vector = require('burner').Vector;
+    System = require('./vendor/burner/main').System,
+    Utils = require('./vendor/burner/main').Utils,
+    Vector = require('./vendor/burner/main').Vector;
 
 /**
  * Creates a new Sensor object.
@@ -91,10 +91,10 @@ Sensor.prototype.step = function() {
 
     if (this.offsetDistance) {
 
-      r = this.offsetDistance; // use angle to calculate x, y
-      theta = Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
-      x = r * Math.cos(theta);
-      y = r * Math.sin(theta);
+      var r = this.offsetDistance; // use angle to calculate x, y
+      var theta = Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
+      var x = r * Math.cos(theta);
+      var y = r * Math.sin(theta);
 
       this.location.x = this.parent.location.x;
       this.location.y = this.parent.location.y;

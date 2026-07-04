@@ -1,8 +1,8 @@
-var BorderPalette = require('borderpalette'),
-    ColorPalette = require('colorpalette'),
+var BorderPalette = require('./vendor/borderpalette'),
+    ColorPalette = require('./vendor/colorpalette'),
     config = require('./config').config,
     Mover = require('./mover'),
-    Utils = require('burner').Utils;
+    Utils = require('./vendor/burner/main').Utils;
 
 /**
  * Creates a new Stimulus.

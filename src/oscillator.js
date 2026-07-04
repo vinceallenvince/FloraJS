@@ -1,8 +1,8 @@
-var Item = require('burner').Item,
-    SimplexNoise = require('quietriot'),
-    System = require('burner').System,
-    Utils = require('burner').Utils,
-    Vector = require('burner').Vector;
+var Item = require('./vendor/burner/main').Item,
+    SimplexNoise = require('./vendor/quietriot'),
+    System = require('./vendor/burner/main').System,
+    Utils = require('./vendor/burner/main').Utils,
+    Vector = require('./vendor/burner/main').Vector;
 
 /**
  * Creates a new Oscillator.
@@ -121,7 +121,7 @@ Oscillator.prototype.step = function () {
   this.location.y = this.initialLocation.y + Math.sin(this.aVelocity.y) * this.amplitude.y;
 
   if (this.pointToDirection) { // object rotates toward direction
-      velDiff = Vector.VectorSub(this.location, this.lastLocation);
+      var velDiff = Vector.VectorSub(this.location, this.lastLocation);
       this.angle = Utils.radiansToDegrees(Math.atan2(velDiff.y, velDiff.x));
   }
 

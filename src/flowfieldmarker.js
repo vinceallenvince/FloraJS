@@ -1,7 +1,7 @@
-var Item = require('burner').Item,
-    System = require('burner').System,
-    Utils = require('burner').Utils,
-    Vector = require('burner').Vector;
+var Item = require('./vendor/burner/main').Item,
+    System = require('./vendor/burner/main').System,
+    Utils = require('./vendor/burner/main').Utils,
+    Vector = require('./vendor/burner/main').Vector;
 
 /**
  * Creates a new FlowFieldMarker.

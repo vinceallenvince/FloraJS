@@ -1,5 +1,5 @@
-var System = require('burner').System,
-    Utils = require('burner').Utils;
+var System = require('./vendor/burner/main').System,
+    Utils = require('./vendor/burner/main').Utils;
 
 /**
  * Creates a new Caption object.

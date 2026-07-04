@@ -1,7 +1,7 @@
-var Item = require('burner').Item,
+var Item = require('./vendor/burner/main').Item,
     Mover = require('./mover'),
-    Utils = require('burner').Utils,
-    Vector = require('burner').Vector;
+    Utils = require('./vendor/burner/main').Utils,
+    Vector = require('./vendor/burner/main').Vector;
 
 /**
  * Creates a new Particle object.

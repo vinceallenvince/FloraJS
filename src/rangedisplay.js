@@ -1,5 +1,5 @@
-var Item = require('burner').Item,
-    Utils = require('burner').Utils;
+var Item = require('./vendor/burner/main').Item,
+    Utils = require('./vendor/burner/main').Utils;
 
 /**
  * Creates a new RangeDisplay.

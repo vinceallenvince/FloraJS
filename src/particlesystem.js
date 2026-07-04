@@ -1,9 +1,9 @@
-var ColorPalette = require('colorpalette'),
-    Item = require('burner').Item,
+var ColorPalette = require('./vendor/colorpalette'),
+    Item = require('./vendor/burner/main').Item,
     Mover = require('./mover'),
-    System = require('burner').System,
-    Utils = require('burner').Utils,
-    Vector = require('burner').Vector;
+    System = require('./vendor/burner/main').System,
+    Utils = require('./vendor/burner/main').Utils,
+    Vector = require('./vendor/burner/main').Vector;
 
 /**
  * Creates a new ParticleSystem.

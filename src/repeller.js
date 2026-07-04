@@ -1,5 +1,5 @@
 var Attractor = require('./attractor'),
-    Utils = require('burner').Utils;
+    Utils = require('./vendor/burner/main').Utils;
 
 /**
  * Creates a new Repeller object.

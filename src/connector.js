@@ -1,6 +1,6 @@
-var Item = require('burner').Item,
-    Utils = require('burner').Utils,
-    Vector = require('burner').Vector;
+var Item = require('./vendor/burner/main').Item,
+    Utils = require('./vendor/burner/main').Utils,
+    Vector = require('./vendor/burner/main').Vector;
 
 /**
  * Creates a new Connector.
