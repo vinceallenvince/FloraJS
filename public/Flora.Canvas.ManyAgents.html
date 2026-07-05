@@ -65,16 +65,24 @@
           }));
         }
 
-        // High speed with a weak steering force makes agents overshoot
-        // and orbit their target instead of stacking on top of it.
+        // High speed with a moderate steering force makes agents chase
+        // without stacking on their target; flocking makes pursuers of
+        // the same walker school together on the way. The wide
+        // desiredSeparation with a strong separate force holds each
+        // school open — hundreds of agents share a walker, and if they
+        // collapse into a pile, every agent's flocking neighborhood is
+        // the whole pile and the physics cost explodes.
         for (var j = 0; j < TOTAL_AGENTS; j++) {
           this.add('Agent', {
             width: 4,
             height: 4,
             color: palette.getColor(),
             maxSpeed: rand(6, 14),
-            maxSteeringForce: rand(1, 3, true) * 0.1,
+            maxSteeringForce: rand(1, 3, true) * 0.5,
             seekTarget: walkers[j % TOTAL_WALKERS],
+            flocking: true,
+            desiredSeparation: 24,
+            separateStrength: 1.2,
             wrapWorldEdges: true,
             velocity: new Flora.Vector(rand(-4, 4, true), rand(-4, 4, true)),
             location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
