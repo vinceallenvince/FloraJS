@@ -58,7 +58,9 @@ export default class Mover extends Item {
     this.mouseOutInterval = false;
     this._friction = new Vector();
 
-    if (this.draggable) {
+    // Dragging listens on the item's DOM element; renderers without
+    // per-item elements (canvas) do not support draggable yet.
+    if (this.draggable && this.el) {
 
       Utils.addEvent(this.el, 'mouseover', (function() {
         return function(e: any) {
@@ -192,8 +194,8 @@ export default class Mover extends Item {
     }
     this.applyForce(this.world.gravity); // gravity
 
-    // attractors
-    var attractors = System.getAllItemsByName('Attractor');
+    // attractors (per-step cached by System._step; see system.ts)
+    var attractors = System._attractors || System.getAllItemsByName('Attractor');
     for (i = 0, max = attractors.length; i < max; i += 1) {
       if (this.id !== attractors[i].id) {
         this.applyForce(attractors[i].attract(this));
@@ -201,7 +203,7 @@ export default class Mover extends Item {
     }
 
     // repellers
-    var repellers = System.getAllItemsByName('Repeller');
+    var repellers = System._repellers || System.getAllItemsByName('Repeller');
     for (i = 0, max = repellers.length; i < max; i += 1) {
       if (this.id !== repellers[i].id) {
         this.applyForce(repellers[i].attract(this));
@@ -209,7 +211,7 @@ export default class Mover extends Item {
     }
 
     // draggers
-    var draggers = System.getAllItemsByName('Dragger');
+    var draggers = System._draggers || System.getAllItemsByName('Dragger');
     for (i = 0, max = draggers.length; i < max; i += 1) {
       if (this.id !== draggers[i].id && Utils.isInside(this, draggers[i])) {
         this.applyForce(draggers[i].drag(this));

@@ -100,3 +100,38 @@ test('World with explicit dimensions keeps them; resize updates only auto-sized 
   expect(world._autoWidth).toBe(false);
   expect(world._autoHeight).toBe(false);
 });
+
+test('getNeighbors covers every same-name item within radius (grid vs brute force).', () => {
+  // Deterministic pseudo-random locations, including cell-boundary values.
+  let seed = 42;
+  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const items = [];
+  for (let i = 0; i < 200; i++) {
+    const it = System.add('Item');
+    it.location.x = rand() * 400;
+    it.location.y = rand() * 300;
+    items.push(it);
+  }
+
+  const radius = 25;
+  const subject = items[0];
+  const bruteForce = items.filter((it) =>
+    it !== subject && subject.location.distance(it.location) <= radius);
+
+  // Inside a step the grid is active.
+  System._grids = {};
+  const neighbors = System.getNeighbors(subject, radius);
+  System._grids = null;
+
+  // The grid returns a superset (callers re-filter by exact distance):
+  // every genuinely-in-radius item must be present, names must match.
+  for (const it of bruteForce) {
+    expect(neighbors).toContain(it);
+  }
+  for (const it of neighbors) {
+    expect(it.name).toBe(subject.name);
+  }
+
+  // Outside a step it falls back to the full same-name list.
+  expect(System.getNeighbors(subject, radius).length).toBe(items.length + 1); // +1: beforeEach adds one Item
+});

@@ -23,3 +23,6 @@ public/css/flora.min.css
 #
 ##### DIST ####
 dist/
+#
+##### RENDERER COMPARISON SHOTS ####
+renderer-comparison/

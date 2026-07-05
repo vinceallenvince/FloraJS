@@ -59,6 +59,17 @@ export default class DOMRenderer {
   }
 
   /**
+   * Draws one frame. Iterates in reverse record order (the historical
+   * order) and defers to each item's draw() so classes with custom
+   * draw behavior keep it.
+   */
+  drawFrame(records: any[]): void {
+    for (var i = records.length - 1; i >= 0; i -= 1) {
+      records[i].draw();
+    }
+  }
+
+  /**
    * Writes an item's current visual state to its DOM element.
    */
   drawItem(item: any): void {

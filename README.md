@@ -706,6 +706,29 @@ The following examples implement advanced functions of FloraJS.
 * [Fish Food](http://vinceallenvince.github.io/FloraJS/Flora.Sim.FishFood.html)
 
 
+Renderers
+------
+
+FloraJS ships two renderers. The default `DOMRenderer` draws each item
+as an absolutely-positioned DOM element — items can be styled with CSS,
+and the `draggable` option works. The `CanvasRenderer` draws all items
+into a single canvas per world, which scales to far larger populations:
+
+```js
+Flora.setRenderer(new Flora.CanvasRenderer());
+Flora.System.setup(function() { ... });
+Flora.System.loop();
+```
+
+For quick comparisons, append `?renderer=canvas` to any demo URL.
+
+Canvas limitations: per-item CSS styling and `draggable` are
+unavailable (items have no DOM element), and code that decorates
+`item.el` directly requires the DOMRenderer. CSS `box-shadow` spread is
+approximated. To compare the renderers across every demo, run
+`node scripts-dev/compare-renderers.mjs` (requires playwright) and open
+`renderer-comparison/index.html`.
+
 Building this project
 ------
 

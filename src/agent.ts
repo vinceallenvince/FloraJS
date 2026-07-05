@@ -176,7 +176,12 @@ export default class Agent extends Mover {
     }
 
     if (this.flocking) {
-      this._flock(System.getAllItemsByName(this.name));
+      // The widest range any of the three flocking behaviors uses:
+      // _separate (desiredSeparation), _align (width * 2) and
+      // _cohesion (10). They re-filter by exact distance, so the
+      // grid's superset yields identical forces to the full list.
+      var flockRadius = Math.max(this.desiredSeparation, this.width * 2, 10);
+      this._flock(System.getNeighbors(this, flockRadius));
     }
 
     return this.acceleration;
