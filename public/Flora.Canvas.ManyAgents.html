@@ -12,6 +12,7 @@
   <title>FloraJS | Simulate natural systems with JavaScript</title>
   <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
   <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="scripts/palette-tuner.js" type="text/javascript" charset="utf-8"></script>
   </head>
   <body>
     <script type="text/javascript" charset="utf-8">
@@ -30,6 +31,29 @@
 
       var rand = Flora.Utils.getRandomNumber;
 
+      // The base palette as start -> end gradient pairs, editable live
+      // via the PaletteTuner panel (top right). Defaults are an
+      // analogous blue -> violet -> magenta family so the swarm reads
+      // as one color space; tune it, then "copy as code".
+      var palettePairs = [
+        { start: [20, 60, 220], end: [90, 200, 255] },
+        { start: [90, 40, 230], end: [170, 130, 255] },
+        { start: [200, 40, 200], end: [255, 140, 230] }
+      ];
+
+      function buildPalette(pairs) {
+        var palette = new Flora.ColorPalette();
+        for (var i = 0; i < pairs.length; i++) {
+          palette.addColor({
+            min: 6,
+            max: 24,
+            startColor: pairs[i].start.slice(),
+            endColor: pairs[i].end.slice()
+          });
+        }
+        return palette;
+      }
+
       Flora.System.setup(function() {
 
         var world = this.add('World', {
@@ -37,23 +61,7 @@
           c: 0
         });
 
-        var palette = new Flora.ColorPalette();
-        palette.addColor({
-          min: 6,
-          max: 24,
-          startColor: [255, 100, 0],
-          endColor: [255, 255, 0]
-        }).addColor({
-          min: 6,
-          max: 24,
-          startColor: [0, 100, 255],
-          endColor: [50, 255, 255]
-        }).addColor({
-          min: 6,
-          max: 24,
-          startColor: [200, 0, 200],
-          endColor: [255, 150, 255]
-        });
+        var palette = buildPalette(palettePairs);
 
         var walkers = [];
         for (var i = 0; i < TOTAL_WALKERS; i++) {
@@ -108,6 +116,20 @@
         });
       });
       Flora.System.loop();
+
+      // Live palette editing: rebuild the palette and re-roll every
+      // agent's color. Colors are plain arrays read by the renderer
+      // each frame, so mutation shows up on the next draw.
+      PaletteTuner.init({
+        colors: palettePairs,
+        onChange: function(pairs) {
+          var palette = buildPalette(pairs);
+          var agents = Flora.System.getAllItemsByName('Agent');
+          for (var i = 0; i < agents.length; i++) {
+            agents[i].color = palette.getColor();
+          }
+        }
+      });
     </script>
   </body>
 </html>
