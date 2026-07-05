@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      // A CanvasRenderer showcase: thousands of agents pursuing a
+      // handful of wandering walkers. Add ?renderer=dom to run the
+      // same scene on the default DOMRenderer and compare for
+      // yourself; add ?agents=N to change the population.
+      if (!/[?&]renderer=dom/.test(window.location.search)) {
+        Flora.setRenderer(new Flora.CanvasRenderer());
+      }
+
+      var TOTAL_WALKERS = 12;
+      // Override with ?agents=10000 to probe your machine's ceiling.
+      var TOTAL_AGENTS = parseInt((window.location.search.match(/[?&]agents=(\d+)/) || [])[1], 10) || 3000;
+
+      var rand = Flora.Utils.getRandomNumber;
+
+      Flora.System.setup(function() {
+
+        var world = this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0
+        });
+
+        var palette = new Flora.ColorPalette();
+        palette.addColor({
+          min: 6,
+          max: 24,
+          startColor: [255, 100, 0],
+          endColor: [255, 255, 0]
+        }).addColor({
+          min: 6,
+          max: 24,
+          startColor: [0, 100, 255],
+          endColor: [50, 255, 255]
+        }).addColor({
+          min: 6,
+          max: 24,
+          startColor: [200, 0, 200],
+          endColor: [255, 150, 255]
+        });
+
+        var walkers = [];
+        for (var i = 0; i < TOTAL_WALKERS; i++) {
+          walkers.push(this.add('Walker', {
+            width: 14,
+            height: 14,
+            color: [255, 255, 255],
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
+          }));
+        }
+
+        // High speed with a moderate steering force makes agents chase
+        // without stacking on their target; flocking makes pursuers of
+        // the same walker school together on the way. The wide
+        // desiredSeparation with a strong separate force holds each
+        // school open — hundreds of agents share a walker, and if they
+        // collapse into a pile, every agent's flocking neighborhood is
+        // the whole pile and the physics cost explodes.
+        for (var j = 0; j < TOTAL_AGENTS; j++) {
+          this.add('Agent', {
+            width: 4,
+            height: 4,
+            color: palette.getColor(),
+            maxSpeed: rand(6, 14),
+            maxSteeringForce: rand(1, 3, true) * 0.5,
+            seekTarget: walkers[j % TOTAL_WALKERS],
+            flocking: true,
+            desiredSeparation: 24,
+            separateStrength: 1.2,
+            wrapWorldEdges: true,
+            velocity: new Flora.Vector(rand(-4, 4, true), rand(-4, 4, true)),
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height)),
+            // Opacity inversely proportional to speed: agents at rest
+            // are solid, agents at their top speed fade to a streak.
+            afterStep: function() {
+              this.opacity = Flora.Utils.map(this.velocity.mag(), 0, this.maxSpeed, 1, 0.2);
+            }
+          });
+        }
+
+        this.add('Caption', {
+          text: 'Flora.Canvas.ManyAgents | ' + TOTAL_AGENTS + ' agents',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+      });
+      Flora.System.loop();
+    </script>
+  </body>
+</html>
