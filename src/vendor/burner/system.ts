@@ -255,11 +255,28 @@ const System = {
   },
 
   /**
+   * Per-step caches of the proximity items every Mover reacts to.
+   * Without these, each of n movers scans all n records three times
+   * per step (O(n^2)), which collapses at thousands of items. Null
+   * outside a step; Mover.step falls back to live queries then (e.g.
+   * direct step() calls in tests).
+   */
+  _attractors: null as any[] | null,
+  _repellers: null as any[] | null,
+  _draggers: null as any[] | null,
+
+  /**
    * Advances the simulation one step.
    */
   _step(): void {
     var i, records = System._records,
         len = System._records.length;
+
+    // Items removed mid-step stay in these lists for the remainder of
+    // the step; at one step per 16.7ms the difference is invisible.
+    System._attractors = System.getAllItemsByName('Attractor');
+    System._repellers = System.getAllItemsByName('Repeller');
+    System._draggers = System.getAllItemsByName('Dragger');
 
     for (i = len - 1; i >= 0; i -= 1) {
       if (records[i] && records[i].step && !records[i].world.pauseStep) {
@@ -272,6 +289,11 @@ const System = {
         records[i].step();
       }
     }
+
+    System._attractors = null;
+    System._repellers = null;
+    System._draggers = null;
+
     System.clock++;
   },
 
