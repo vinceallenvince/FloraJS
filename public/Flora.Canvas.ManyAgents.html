@@ -32,13 +32,13 @@
       var rand = Flora.Utils.getRandomNumber;
 
       // The base palette as start -> end gradient pairs, editable live
-      // via the PaletteTuner panel (top right). Defaults are an
-      // analogous blue -> violet -> magenta family so the swarm reads
-      // as one color space; tune it, then "copy as code".
+      // via the PaletteTuner panel (top right). Defaults are an earthy
+      // dirt -> sand -> khaki family so the swarm reads as one color
+      // space; tune it, then "copy as code".
       var palettePairs = [
-        { start: [20, 60, 220], end: [90, 200, 255] },
-        { start: [90, 40, 230], end: [170, 130, 255] },
-        { start: [200, 40, 200], end: [255, 140, 230] }
+        { start: [110, 82, 52], end: [165, 130, 88] },
+        { start: [178, 156, 110], end: [228, 208, 162] },
+        { start: [140, 132, 88], end: [196, 186, 132] }
       ];
 
       function buildPalette(pairs) {
@@ -82,8 +82,8 @@
         // the whole pile and the physics cost explodes.
         for (var j = 0; j < TOTAL_AGENTS; j++) {
           this.add('Agent', {
-            width: 4,
-            height: 4,
+            width: rand(1, 3, true),
+            height: rand(1, 3, true),
             color: palette.getColor(),
             maxSpeed: rand(6, 14),
             maxSteeringForce: rand(1, 3, true) * 0.5,
