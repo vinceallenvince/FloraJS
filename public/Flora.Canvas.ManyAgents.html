@@ -71,6 +71,26 @@
             color: [255, 255, 255],
             location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
           }));
+
+          // A little motor inside each walker: a dark dot parented to
+          // the walker at a small offset, spinning its offsetAngle
+          // each step. (Perlin walkers never rotate — their location
+          // comes straight from noise — so the dot drives its own
+          // orbit rather than riding the parent's angle.)
+          this.add('Mover', {
+            width: 5,
+            height: 5,
+            color: [70, 58, 40],
+            borderRadius: 100,
+            zIndex: 1,
+            parent: walkers[i],
+            offsetDistance: 4,
+            offsetAngle: rand(0, 359),
+            beforeStep: function() {
+              this.offsetAngle += 20;
+            },
+            location: new Flora.Vector(world.width / 2, world.height / 2)
+          });
         }
 
         // High speed with a moderate steering force makes agents chase
@@ -81,7 +101,7 @@
         // collapse into a pile, every agent's flocking neighborhood is
         // the whole pile and the physics cost explodes.
         for (var j = 0; j < TOTAL_AGENTS; j++) {
-          var size = rand(1, 7, true);
+          var size = rand(1, 9, true);
           this.add('Agent', {
             width: size,
             height: size,
