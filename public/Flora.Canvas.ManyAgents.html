@@ -85,7 +85,12 @@
             separateStrength: 1.2,
             wrapWorldEdges: true,
             velocity: new Flora.Vector(rand(-4, 4, true), rand(-4, 4, true)),
-            location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height)),
+            // Opacity inversely proportional to speed: agents at rest
+            // are solid, agents at their top speed fade to a streak.
+            afterStep: function() {
+              this.opacity = Flora.Utils.map(this.velocity.mag(), 0, this.maxSpeed, 1, 0.2);
+            }
           });
         }
 
