@@ -302,7 +302,9 @@ export default class Mover extends Item {
       borderStyle: this.borderStyle,
       borderColor0: this.borderColor[0],
       borderColor1: this.borderColor[1],
-      borderColor2: this.borderColor[2]
+      borderColor2: this.borderColor[2],
+      text: this.text,
+      fontFamily: this.fontFamily
     };
   }
 

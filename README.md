@@ -722,6 +722,14 @@ Flora.System.loop();
 
 For quick comparisons, append `?renderer=canvas` to any demo URL.
 
+Any item can render as text instead of a box by passing a `text`
+option (sized by `height`, colored by `color`, with an optional
+`fontFamily`) — works on both renderers, e.g. emoji creatures:
+
+```js
+this.add('Agent', { text: '🐜', height: 14, seekTarget: crumb });
+```
+
 Canvas limitations: per-item CSS styling and `draggable` are
 unavailable (items have no DOM element), and code that decorates
 `item.el` directly requires the DOMRenderer. CSS `box-shadow` spread is
