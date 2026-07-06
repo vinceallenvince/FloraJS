@@ -46,16 +46,20 @@ export default class CanvasRenderer extends DOMRenderer {
       }
       sprite = document.createElement('canvas');
       var pad = Math.ceil(size * 0.3);
-      var logical = size + pad * 2;
-      sprite.width = logical * 2;
-      sprite.height = logical * 2;
+      var logicalH = size + pad * 2;
       var sctx = sprite.getContext('2d')!;
-      sctx.scale(2, 2);
+      // Size the sprite to the rendered text: words are wider than
+      // their font size (a square sprite would clip them).
       sctx.font = size + 'px ' + fontFamily;
+      var logicalW = Math.max(logicalH, Math.ceil(sctx.measureText(text).width) + pad * 2);
+      sprite.width = logicalW * 2;
+      sprite.height = logicalH * 2;
+      sctx.scale(2, 2);
+      sctx.font = size + 'px ' + fontFamily; // canvas resize resets state
       sctx.textAlign = 'center';
       sctx.textBaseline = 'middle';
       sctx.fillStyle = fill;
-      sctx.fillText(text, logical / 2, logical / 2);
+      sctx.fillText(text, logicalW / 2, logicalH / 2);
       this._glyphSprites.set(key, sprite);
     }
     return sprite;
@@ -180,8 +184,9 @@ export default class CanvasRenderer extends DOMRenderer {
     if (typeof s.text !== 'undefined') {
       var sprite = this._glyphSprite(String(s.text), s.fontFamily || 'sans-serif',
           Math.round(h), fill || 'rgb(255, 255, 255)');
-      var logicalSize = sprite.width / 2;
-      ctx.drawImage(sprite, -logicalSize / 2, -logicalSize / 2, logicalSize, logicalSize);
+      var lw = sprite.width / 2,
+          lh = sprite.height / 2;
+      ctx.drawImage(sprite, -lw / 2, -lh / 2, lw, lh);
       ctx.restore();
       return;
     }

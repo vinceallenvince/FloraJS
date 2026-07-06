@@ -18,7 +18,8 @@
 
       // Entities as text: any item with a `text` option renders as
       // that glyph (sized by height, colored by color) on either
-      // renderer. Here, ants pursue wandering breadcrumbs. Add
+      // renderer. Here, the word "ant" pursues the wandering word
+      // "crumb". Add
       // ?renderer=dom to compare renderers; ?agents=N for population.
       if (!/[?&]renderer=dom/.test(window.location.search)) {
         Flora.setRenderer(new Flora.CanvasRenderer());
@@ -40,19 +41,25 @@
         var crumbs = [];
         for (var i = 0; i < TOTAL_CRUMBS; i++) {
           crumbs.push(this.add('Walker', {
-            text: '🍞',
+            text: 'crumb',
             width: 26,
-            height: 26,
+            height: 18,
+            color: [255, 255, 255],
             perlinSpeed: 0.001,
             location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
           }));
         }
 
         for (var j = 0; j < TOTAL_ANTS; j++) {
+          // A few discrete greys (not a continuous range) keeps the
+          // canvas renderer's glyph sprite cache small: it caches one
+          // sprite per unique text/font/size/color combination.
+          var grey = 110 + rand(0, 4) * 20;
           this.add('Agent', {
-            text: '🐜',
+            text: 'ant',
             width: 14,
             height: rand(10, 18),
+            color: [grey, grey, grey],
             maxSpeed: rand(3, 8),
             maxSteeringForce: rand(1, 3, true) * 0.5,
             seekTarget: crumbs[j % TOTAL_CRUMBS],

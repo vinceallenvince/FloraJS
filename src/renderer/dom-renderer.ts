@@ -128,7 +128,8 @@ export default class DOMRenderer {
       css += ' font-family: ' + (props.fontFamily || 'sans-serif') + ';' +
           ' font-size: ' + props.height + 'px;' +
           ' line-height: ' + props.height + 'px;' +
-          ' text-align: center;';
+          ' text-align: center;' +
+          ' white-space: nowrap;'; // words render wider than the item's box
     } else if (typeof props.color0 !== 'undefined') {
       css += ' background-color: ' + props.colorMode + '(' + props.color0 + ', ' +
           props.color1 + (hsl ? '%' : '') + ', ' + props.color2 + (hsl ? '%' : '') + ');';
