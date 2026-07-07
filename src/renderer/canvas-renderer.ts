@@ -16,10 +16,53 @@ import DOMRenderer, { StyleProps } from './dom-renderer';
  */
 export default class CanvasRenderer extends DOMRenderer {
   /**
+   * Rasterized glyphs for text entities, keyed by
+   * text|font|size|color. fillText per item per frame rasterizes the
+   * glyph every draw (~19fps at 800 emoji); drawing a cached sprite
+   * costs about the same as a rect fill.
+   */
+  _glyphSprites: Map<string, HTMLCanvasElement> = new Map();
+
+  /**
    * Canvas items carry no DOM element; simulation state only.
    */
   addItem(item: any): void {
     item.el = null;
+  }
+
+  /**
+   * Returns (rasterizing on first use) the sprite for a glyph.
+   * Sprites render at 2x for crispness, with padding for glyphs that
+   * overhang their em box.
+   */
+  _glyphSprite(text: string, fontFamily: string, size: number, fill: string): HTMLCanvasElement {
+    var key = text + '|' + fontFamily + '|' + size + '|' + fill;
+    var sprite = this._glyphSprites.get(key);
+    if (!sprite) {
+      if (this._glyphSprites.size >= 256) {
+        // Backstop against unbounded growth (e.g. per-frame color
+        // animation on text items); a rebuild costs one frame.
+        this._glyphSprites.clear();
+      }
+      sprite = document.createElement('canvas');
+      var pad = Math.ceil(size * 0.3);
+      var logicalH = size + pad * 2;
+      var sctx = sprite.getContext('2d')!;
+      // Size the sprite to the rendered text: words are wider than
+      // their font size (a square sprite would clip them).
+      sctx.font = size + 'px ' + fontFamily;
+      var logicalW = Math.max(logicalH, Math.ceil(sctx.measureText(text).width) + pad * 2);
+      sprite.width = logicalW * 2;
+      sprite.height = logicalH * 2;
+      sctx.scale(2, 2);
+      sctx.font = size + 'px ' + fontFamily; // canvas resize resets state
+      sctx.textAlign = 'center';
+      sctx.textBaseline = 'middle';
+      sctx.fillStyle = fill;
+      sctx.fillText(text, logicalW / 2, logicalH / 2);
+      this._glyphSprites.set(key, sprite);
+    }
+    return sprite;
   }
 
   /**
@@ -133,8 +176,22 @@ export default class CanvasRenderer extends DOMRenderer {
     }
     ctx.globalAlpha = typeof s.opacity === 'undefined' ? 1 : s.opacity;
 
-    var radius = this._cornerRadius(s.borderRadius, w, h);
     var fill = this._colorString(s.colorMode, s.color0, s.color1, s.color2);
+
+    // Glyph mode: draw the item as text (sized by height, colored by
+    // the item's color — color emoji ignore fillStyle) instead of a
+    // box. Inherits the transform, so glyphs rotate with their item.
+    if (typeof s.text !== 'undefined') {
+      var sprite = this._glyphSprite(String(s.text), s.fontFamily || 'sans-serif',
+          Math.round(h), fill || 'rgb(255, 255, 255)');
+      var lw = sprite.width / 2,
+          lh = sprite.height / 2;
+      ctx.drawImage(sprite, -lw / 2, -lh / 2, lw, lh);
+      ctx.restore();
+      return;
+    }
+
+    var radius = this._cornerRadius(s.borderRadius, w, h);
 
     // CSS box-shadow spread has no canvas equivalent: approximate with
     // a backing shape inflated by the spread, using the shadow color.

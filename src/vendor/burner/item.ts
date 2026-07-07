@@ -172,6 +172,13 @@ export default class Item {
     this.controlCamera = typeof this.controlCamera !== 'undefined' ? this.controlCamera :
         !!options.controlCamera;
 
+    // When set, renderers draw the item as this glyph (sized by
+    // height, colored by color) instead of a box.
+    this.text = typeof this.text !== 'undefined' ? this.text : options.text;
+
+    this.fontFamily = typeof this.fontFamily !== 'undefined' ? this.fontFamily :
+        options.fontFamily || 'sans-serif';
+
     this._force = this._force || new Vector();
 
     this.id = this.name + Item._idCount;
@@ -306,7 +313,9 @@ export default class Item {
       color2: this.color[2],
       opacity: this.opacity,
       zIndex: this.zIndex,
-      visibility: this.visibility
+      visibility: this.visibility,
+      text: this.text,
+      fontFamily: this.fontFamily
     };
   }
 }

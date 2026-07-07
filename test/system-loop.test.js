@@ -101,6 +101,27 @@ test('World with explicit dimensions keeps them; resize updates only auto-sized 
   expect(world._autoHeight).toBe(false);
 });
 
+test('text entities render as glyphs: font/color css, no box fill or border.', () => {
+  const r = new DOMRenderer();
+  const glyph = r.buildCSSText({ x: 0, y: 0, angle: 0, scale: 1, width: 14, height: 16, colorMode: 'rgb', color0: 10, color1: 20, color2: 30, borderWidth: 2, borderStyle: 'solid', borderColor0: 0, borderColor1: 0, borderColor2: 0, borderRadius: 100, text: 'A', fontFamily: 'monospace' });
+  expect(glyph).toContain('color: rgb(10, 20, 30);');
+  expect(glyph).toContain('font-size: 16px;');
+  expect(glyph).toContain('font-family: monospace;');
+  expect(glyph).not.toContain('background-color');
+  expect(glyph).not.toContain('border');
+
+  // drawItem writes the glyph as element content.
+  const item = System.add('Item', { text: 'A' });
+  item.draw();
+  expect(item.el.textContent).toBe('A');
+  expect(item.el.style.fontSize).toBe('10px'); // default height
+
+  // and clears it when text is removed.
+  item.text = undefined;
+  item.draw();
+  expect(item.el.textContent).toBe('');
+});
+
 test('getNeighbors covers every same-name item within radius (grid vs brute force).', () => {
   // Deterministic pseudo-random locations, including cell-boundary values.
   let seed = 42;

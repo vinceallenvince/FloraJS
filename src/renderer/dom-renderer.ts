@@ -30,6 +30,9 @@ export interface StyleProps {
   opacity?: number;
   zIndex?: number;
   visibility?: string;
+  /** When set, the item renders as this glyph instead of a box. */
+  text?: string;
+  fontFamily?: string;
   [key: string]: any;
 }
 
@@ -76,7 +79,23 @@ export default class DOMRenderer {
     if (typeof item.getStyle !== 'function') {
       return;
     }
-    item.el.style.cssText = this.buildCSSText(item.getStyle());
+    var style = item.getStyle();
+    item.el.style.cssText = this.buildCSSText(style);
+    // Text entities render their glyph as the element's content. Only
+    // elements that have been in text mode are ever touched: writing
+    // textContent on anything else would destroy child elements — a
+    // World's element contains every item, and demos may decorate an
+    // item's element with children (e.g. Flora.Sim.FishFood's eyes).
+    if (typeof style.text !== 'undefined') {
+      var text = String(style.text);
+      if ((item.el as any)._floraText !== text) {
+        item.el.textContent = text;
+        (item.el as any)._floraText = text;
+      }
+    } else if (typeof (item.el as any)._floraText !== 'undefined') {
+      item.el.textContent = '';
+      delete (item.el as any)._floraText;
+    }
   }
 
   /**
@@ -100,19 +119,30 @@ export default class DOMRenderer {
     if (typeof props.height !== 'undefined') {
       css += ' height: ' + props.height + 'px;';
     }
-    if (typeof props.color0 !== 'undefined') {
+    if (typeof props.text !== 'undefined') {
+      // Glyph mode: the item's color colors the text; no box fill.
+      if (typeof props.color0 !== 'undefined') {
+        css += ' color: ' + props.colorMode + '(' + props.color0 + ', ' +
+            props.color1 + (hsl ? '%' : '') + ', ' + props.color2 + (hsl ? '%' : '') + ');';
+      }
+      css += ' font-family: ' + (props.fontFamily || 'sans-serif') + ';' +
+          ' font-size: ' + props.height + 'px;' +
+          ' line-height: ' + props.height + 'px;' +
+          ' text-align: center;' +
+          ' white-space: nowrap;'; // words render wider than the item's box
+    } else if (typeof props.color0 !== 'undefined') {
       css += ' background-color: ' + props.colorMode + '(' + props.color0 + ', ' +
           props.color1 + (hsl ? '%' : '') + ', ' + props.color2 + (hsl ? '%' : '') + ');';
     }
-    if (typeof props.borderWidth !== 'undefined') {
+    if (typeof props.borderWidth !== 'undefined' && typeof props.text === 'undefined') {
       css += ' border: ' + props.borderWidth + 'px ' + props.borderStyle + ' ' +
           (props.colorMode || 'rgb') + '(' + props.borderColor0 + ', ' +
           props.borderColor1 + (hsl ? '%' : '') + ', ' + props.borderColor2 + (hsl ? '%' : '') + ');';
     }
-    if (typeof props.borderRadius !== 'undefined') {
+    if (typeof props.borderRadius !== 'undefined' && typeof props.text === 'undefined') {
       css += ' border-radius: ' + props.borderRadius + '%;';
     }
-    if (typeof props.boxShadowOffsetX !== 'undefined') {
+    if (typeof props.boxShadowOffsetX !== 'undefined' && typeof props.text === 'undefined') {
       css += ' box-shadow: ' + props.boxShadowOffsetX + 'px ' + props.boxShadowOffsetY + 'px ' +
           props.boxShadowBlur + 'px ' + props.boxShadowSpread + 'px ' +
           (props.colorMode || 'rgb') + '(' + props.boxShadowColor0 + ', ' +
