@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      /*
+       * EVOLUTION — a text-rendered predator/prey escalation.
+       *
+       * A generalization of Sheep vs. Wolves. Every organism is drawn
+       * as its species name (the text-entity feature). Predators pursue
+       * and, on contact, CONVERT prey into their own species. When the
+       * newest species reaches ~90% of the population, a new apex
+       * predator "mutates" into existence — and it preys on EVERY
+       * earlier species, the old predator included. This repeats
+       * forever: today's dominant species is tomorrow's prey.
+       *
+       * -- LLM integration (this version simulates it) --------------
+       * The chain of species is authored, not hand-written. Here that
+       * authorship is faked by generateStage() below. A future version
+       * would replace those functions with real LLM calls:
+       *
+       *   - Up front: one call returning the opening species as JSON,
+       *     e.g. { name, color } for the initial prey and predator.
+       *   - Rolling: when a stage nears its 90:10 trigger, call the LLM
+       *     for the NEXT species, passing the chain so far so it stays
+       *     coherent ("given amoeba -> paramecium -> ..., name the next
+       *     predator"). Rolling generation is what makes it endless and
+       *     is where the model is told to start inventing plausible
+       *     FICTIONAL organisms once real taxonomy runs out. A higher
+       *     temperature keeps each run's storyline different.
+       *
+       *   These pages are static (GitHub Pages, no server), so a real
+       *   version would call the Anthropic API directly from the
+       *   browser with a user-supplied key (kept in localStorage) via
+       *   the CORS opt-in header, and fall back to the simulated chain
+       *   below when no key is present. Model: Haiku is plenty — the
+       *   task is tiny and temperature does the creative work.
+       *
+       * -- POC simplifications (all called out here) ----------------
+       *   - Catch = Flora.Utils.isInside (as Sheep vs. Wolves does).
+       *   - Convert = mutate the organism in place (reassign species,
+       *     name, color, speed) rather than remove + respawn, so the
+       *     population stays exactly constant and runs flat forever.
+       *   - Escalation converts ONE random organism into the new apex
+       *     (a mutation emerging), also population-neutral.
+       *   - Each organism seeks the nearest individual of ANY earlier
+       *     species (its prey); prey with nothing to hunt just wander.
+       *   - No flee behavior yet: pursuit alone reads clearly when the
+       *     bodies are words. Sheep vs. Wolves' prey flee; a future
+       *     version could give prey a COWARD sensor.
+       */
+
+      // Default to the DOMRenderer so every organism is a real,
+      // inspectable text node. ?renderer=canvas compares.
+      if (/[?&]renderer=canvas/.test(window.location.search)) {
+        Flora.setRenderer(new Flora.CanvasRenderer());
+      }
+
+      var POPULATION = 140;
+      var ESCALATE_RATIO = 0.9;   // newest species share that triggers the next
+      var ESCALATE_COOLDOWN = 360; // min frames between escalations (~6s), so
+                                   // each stage is a readable epoch rather than
+                                   // an instant sweep
+      var CATCH_DISTANCE = 11;     // center distance for a catch (a tight radius
+                                   // slows predation so hunts are watchable)
+      var rand = Flora.Utils.getRandomNumber;
+
+      // ---- Simulated LLM: the species chain -----------------------
+
+      // Real organisms in rough order of trophic complexity. The
+      // generator walks these (with a little jitter, standing in for a
+      // higher LLM temperature) then hands off to invented names.
+      var REAL_ORGANISMS = [
+        'amoeba', 'plankton', 'rotifer', 'hydra', 'flatworm', 'snail',
+        'shrimp', 'mayfly', 'minnow', 'tadpole', 'newt', 'perch',
+        'crayfish', 'frog', 'pike', 'heron', 'otter', 'osprey'
+      ];
+      var FAKE_PREFIX = ['xor', 'vel', 'thra', 'quen', 'morv', 'zeph', 'glau', 'ryth'];
+      var FAKE_SUFFIX = ['odon', 'ipax', 'threx', 'ula', 'oth', 'arne', 'ix', 'oma'];
+
+      // Stage -> color: hue marches around the wheel so each species is
+      // visually distinct from its neighbors in the chain.
+      function stageColor(index) {
+        var hue = (index * 47) % 360;
+        return hslToRgb(hue, 0.55, 0.6);
+      }
+
+      // Returns the species descriptor for a given stage index. This is
+      // the seam a real (rolling) LLM call would replace.
+      function generateStage(index) {
+        var name;
+        if (index < REAL_ORGANISMS.length) {
+          name = REAL_ORGANISMS[index];
+        } else {
+          // Ran out of real taxonomy: invent a plausible organism.
+          name = FAKE_PREFIX[rand(0, FAKE_PREFIX.length - 1)] +
+              FAKE_SUFFIX[rand(0, FAKE_SUFFIX.length - 1)];
+        }
+        return {
+          name: name,
+          color: stageColor(index),
+          // Newer species are a touch faster so they can catch the
+          // field, but capped so the chase stays legible.
+          maxSpeed: Math.min(6.5, 3 + index * 0.3)
+        };
+      }
+
+      var chain = []; // grows via rolling generation
+      function ensureStage(index) {
+        while (chain.length <= index) {
+          chain.push(generateStage(chain.length));
+        }
+        return chain[index];
+      }
+
+      // ---- Organisms ----------------------------------------------
+
+      // Apply a species descriptor to an item (used at birth and on
+      // every conversion — mutation in place).
+      function becomeSpecies(item, index) {
+        var spec = ensureStage(index);
+        item._species = index;
+        item.text = spec.name;
+        item.color = spec.color.slice();
+        item.maxSpeed = spec.maxSpeed;
+        item.height = 16;
+        item.width = spec.name.length * 9; // hitbox roughly matches the glyph
+      }
+
+      function addOrganism(index, x, y) {
+        var item = Flora.System.add('Agent', {
+          maxSteeringForce: 0.4,
+          wrapWorldEdges: true,
+          velocity: new Flora.Vector(rand(-2, 2, true), rand(-2, 2, true)),
+          location: new Flora.Vector(x, y),
+          beforeStep: organismStep
+        });
+        becomeSpecies(item, index);
+        return item;
+      }
+
+      // Each organism, every step: hunt the nearest earlier-species
+      // organism (its prey), converting it on contact; wander if it has
+      // no prey. O(n) per organism — fine at this population.
+      function organismStep() {
+        var me = this;
+        var records = Flora.System._records;
+        var nearest = null, nearestDist = Infinity;
+
+        for (var i = 0, max = records.length; i < max; i++) {
+          var o = records[i];
+          if (o === me || o._species === undefined) continue;
+          if (o._species >= me._species) continue; // only earlier species are prey
+          var d = me.location.distance(o.location);
+          if (d < nearestDist) { nearestDist = d; nearest = o; }
+        }
+
+        if (nearest) {
+          var desired = Flora.Vector.VectorSub(nearest.location, me.location);
+          desired.normalize();
+          desired.mult(me.maxSpeed);
+          var steer = Flora.Vector.VectorSub(desired, me.velocity);
+          steer.limit(me.maxSteeringForce);
+          me.applyForce(steer);
+
+          if (nearestDist < CATCH_DISTANCE) {
+            becomeSpecies(nearest, me._species); // convert prey -> predator
+          }
+        } else {
+          // No prey (lowest surviving species): wander.
+          me._wander = (me._wander || 0) + rand(-0.4, 0.4, true);
+          me.applyForce(new Flora.Vector(
+              Math.cos(me._wander) * 0.3, Math.sin(me._wander) * 0.3));
+        }
+      }
+
+      // ---- Ecosystem manager (runs each frame) --------------------
+
+      var statusEl;
+      var lastEscalation = 0;
+      function manageEcosystem() {
+        var records = Flora.System._records;
+        var counts = {}, total = 0, newest = 0;
+
+        for (var i = 0, max = records.length; i < max; i++) {
+          var s = records[i]._species;
+          if (s === undefined) continue;
+          counts[s] = (counts[s] || 0) + 1;
+          total++;
+          if (s > newest) newest = s;
+        }
+        if (!total) return;
+
+        // Newest species dominates -> a new apex mutates into being and
+        // preys on everyone. The cooldown gives each stage a stable
+        // epoch before the next punctuation. (Rolling generation:
+        // ensureStage may author a brand-new species here.)
+        if ((counts[newest] || 0) / total >= ESCALATE_RATIO &&
+            Flora.System.clock - lastEscalation >= ESCALATE_COOLDOWN) {
+          var victim = records[rand(0, records.length - 1)];
+          if (victim._species !== undefined) {
+            becomeSpecies(victim, newest + 1);
+            lastEscalation = Flora.System.clock;
+          }
+        }
+
+        updateStatus(counts, newest, total);
+      }
+
+      function updateStatus(counts, newest, total) {
+        if (Flora.System.clock % 15 !== 0) return; // ~4x/sec
+        if (!statusEl) {
+          statusEl = document.createElement('div');
+          statusEl.style.cssText = 'position: fixed; top: 8px; left: 8px;' +
+              'z-index: 1001; color: #ccc; font: 12px Helvetica, sans-serif;' +
+              'background: rgba(0,0,0,0.5); padding: 6px 8px; border-radius: 4px;' +
+              'white-space: pre; pointer-events: none;';
+          document.body.appendChild(statusEl);
+        }
+        var lines = ['stage ' + newest + '  ·  ' + total + ' organisms'];
+        for (var s = newest; s >= 0 && lines.length < 6; s--) {
+          if (counts[s]) {
+            var pct = Math.round((counts[s] / total) * 100);
+            lines.push(chain[s].name + ': ' + pct + '%');
+          }
+        }
+        statusEl.textContent = lines.join('\n');
+      }
+
+      // ---- Setup --------------------------------------------------
+
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0,
+          color: [16, 16, 20]
+        });
+
+        ensureStage(1); // stage 0 = prey, stage 1 = first predator
+
+        // Many prey, one predator (as in Sheep vs. Wolves).
+        for (var i = 0; i < POPULATION; i++) {
+          addOrganism(0, rand(0, world.width), rand(0, world.height));
+        }
+        addOrganism(1, world.width / 2, world.height / 2);
+
+        this.add('Caption', {
+          text: 'Flora.Sim.Evolution',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+      });
+
+      Flora.System.loop(manageEcosystem);
+
+      // HSL (h in degrees, s/l in 0..1) -> [r, g, b] 0..255.
+      function hslToRgb(h, s, l) {
+        h /= 360;
+        var r, g, b;
+        if (s === 0) {
+          r = g = b = l;
+        } else {
+          var hue2rgb = function(p, q, t) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+          };
+          var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          var p = 2 * l - q;
+          r = hue2rgb(p, q, h + 1 / 3);
+          g = hue2rgb(p, q, h);
+          b = hue2rgb(p, q, h - 1 / 3);
+        }
+        return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+      }
+    </script>
+  </body>
+</html>
