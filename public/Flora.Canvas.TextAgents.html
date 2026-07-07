@@ -41,11 +41,12 @@
         var crumbs = [];
         for (var i = 0; i < TOTAL_CRUMBS; i++) {
           crumbs.push(this.add('Walker', {
-            text: 'crumb',
+            text: 'food',
             width: 26,
             height: 18,
             color: [255, 255, 255],
             perlinSpeed: 0.001,
+            wrapWorldEdges: true,
             location: new Flora.Vector(rand(0, world.width), rand(0, world.height))
           }));
         }
@@ -56,7 +57,7 @@
           // sprite per unique text/font/size/color combination.
           var grey = 110 + rand(0, 4) * 20;
           this.add('Agent', {
-            text: 'ant',
+            text: 'fish',
             width: 14,
             height: rand(10, 18),
             color: [grey, grey, grey],
