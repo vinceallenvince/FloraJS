@@ -28,10 +28,12 @@
        * thins. Only sustained pressure transforms the word.
        *
        * Each chapter runs the same arc:
-       *   1. SIEGE     - swarm S besieges target T; T trembles and
-       *                  swells as pressure builds.
+       *   1. SIEGE     - swarm S besieges target T, which wanders on
+       *                  steadily, unmoved until the pressure tips.
        *   2. TRANSFORM - T becomes the next word on its journey; a
-       *                  stunned beat before it wanders on.
+       *                  glitchy beat — the word holds its place and
+       *                  size while its characters churn and resolve —
+       *                  then it wanders on.
        *   3. RELEASE   - every S drops its seekTarget at once and
        *                  drifts, dimmed. The collective loss of purpose
        *                  right after the payoff.
@@ -95,7 +97,9 @@
       var QUORUM = 28;          // how many it takes to apply pressure
       var FILL = 1 / 600;       // ~10s of sustained quorum to transform
       var DRAIN = 1 / 400;      // pressure decays faster than it builds
-      var STUN_FRAMES = 120;    // the target's stunned beat after transforming
+      var GLITCH_FRAMES = 50;   // the transform lands as a text-scramble glitch:
+                                // the word holds its place and size while its
+                                // characters churn and resolve into the new word
       var RECRUIT_MIN = 150;    // frames until a lapsed word re-enlists...
       var RECRUIT_MAX = 600;    // ...sampled per instance, so sieges condense
       var REMNANT_CHANCE = 0.05; // the long tail that never converts
@@ -191,35 +195,80 @@
       // ---- The target ----------------------------------------------
 
       function targetStep() {
-        if (this._stun > 0) {
-          this._stun--;
-          this.velocity.mult(0); // a stunned beat: hold still
-          if (this._stun === 0 && resetTaleAfterStun) {
-            resetTaleAfterStun = false;
-            this.text = TARGET_START; // the bard begins the tale again
-            story = [TARGET_START];
-            // When the tale is retold, even the remnants rejoin the
-            // audience — without this, 5% attrition per chapter
-            // compounds until too few actives remain to meet QUORUM
-            // and the siege stalls forever.
-            for (var i = 0; i < swarm.length; i++) {
-              if (swarm[i]._state === 'remnant') {
-                swarm[i]._state = 'lapsed';
-                swarm[i]._recruitAt = Flora.System.clock + rand(RECRUIT_MIN, RECRUIT_MAX);
-              }
-            }
+        if (this._glitch > 0) {
+          this.velocity.mult(0); // hold roughly in place while glitching
+        }
+      }
+
+      // Characters churn and resolve left-to-right into the new word.
+      var GLYPHS = '!<>-_\\/[]{}=+*^?#';
+      function scramble(from, to, progress) {
+        var len = Math.round(from.length + (to.length - from.length) * progress);
+        var resolved = Math.floor(to.length * progress);
+        var out = '';
+        for (var i = 0; i < len; i++) {
+          if (i < resolved && i < to.length) {
+            out += to.charAt(i);
+          } else if (i < from.length && Math.random() < 0.4) {
+            out += from.charAt(i);
+          } else {
+            out += GLYPHS.charAt(rand(0, GLYPHS.length - 1));
           }
         }
-        // Tremble and swell under pressure; pulse when transformed.
-        this.angle = rand(-10, 10, true) * pressure;
-        this.scale = 1 + pressure * 0.15 +
-            (this._stun > 0 ? 0.5 * (this._stun / STUN_FRAMES) : 0);
+        return out;
+      }
+
+      // Runs after the step, once pointToDirection has aimed the word
+      // along its travel (heading frozen while paused). No pressure
+      // tremble or swell: the word rides steady until the transform
+      // lands as a glitch — same place, same size, characters churning.
+      // (Canvas note: every scramble frame is a new glyph sprite; the
+      // renderer's 256-sprite cache absorbs and periodically clears
+      // this churn.)
+      function targetStyle() {
+        if (this.velocity.mag() > 0.1) {
+          this._heading = this.angle;
+        }
+        this.angle = typeof this._heading === 'undefined' ? 0 : this._heading;
+
+        if (this._glitch > 0) {
+          this._glitch--;
+          var progress = 1 - this._glitch / GLITCH_FRAMES;
+          if (this._glitch === 0) {
+            this.text = this._toWord;
+            this.color = [255, 255, 255];
+            this.opacity = 1;
+            if (resetTaleAfterStun) {
+              resetTaleAfterStun = false;
+              this.text = TARGET_START; // the bard begins the tale again
+              story = [TARGET_START];
+              // When the tale is retold, even the remnants rejoin the
+              // audience — without this, 5% attrition per chapter
+              // compounds until too few actives remain to meet QUORUM
+              // and the siege stalls forever.
+              for (var i = 0; i < swarm.length; i++) {
+                if (swarm[i]._state === 'remnant') {
+                  swarm[i]._state = 'lapsed';
+                  swarm[i]._recruitAt = Flora.System.clock + rand(RECRUIT_MIN, RECRUIT_MAX);
+                }
+              }
+            }
+          } else {
+            this.text = scramble(this._fromWord, this._toWord, progress);
+            // flicker: brief drops in opacity and stray tint frames
+            this.opacity = this._glitch % 5 === 0 ? rand(0.35, 0.7, true) : 1;
+            var flick = this._glitch % 7;
+            this.color = flick === 0 ? [90, 235, 255] :
+                flick === 3 ? [255, 90, 200] : [255, 255, 255];
+          }
+        }
       }
 
       function transform() {
         var chapter = currentChapter();
-        target.text = chapter.becomes;
-        target._stun = STUN_FRAMES;
+        target._fromWord = target.text;
+        target._toWord = chapter.becomes;
+        target._glitch = GLITCH_FRAMES;
         story.push(chapter.becomes);
         pressure = 0;
         nextChapterRequested = false;
@@ -242,7 +291,7 @@
           }
         }
 
-        if (target._stun === 0) {
+        if (target._glitch === 0) {
           pressure = near >= QUORUM ?
               Math.min(1, pressure + FILL) :
               Math.max(0, pressure - DRAIN);
@@ -296,19 +345,25 @@
         // The target: one word, large and bright, wandering slowly
         // from the center. pointToDirection off so the pressure
         // tremble owns its angle.
+        // A slow cap alone pins the perlin walk at constant speed
+        // (robotic straight glide); scaling perlinAccel down with the
+        // cap keeps the walker's meander — it pauses, drifts and
+        // surges below the cap. Stock accel with a high cap is worse:
+        // the target outruns the swarm and the siege never lands.
         target = this.add('Walker', {
           text: TARGET_START,
           width: 60,
           height: 34,
           color: [255, 255, 255],
-          maxSpeed: 0.9,
-          perlinSpeed: 0.002,
-          pointToDirection: false,
+          maxSpeed: 1.1,
+          perlinAccelLow: -0.009,
+          perlinAccelHigh: 0.009,
           wrapWorldEdges: true,
           location: new Flora.Vector(world.width / 2, world.height / 2),
-          beforeStep: targetStep
+          beforeStep: targetStep,
+          afterStep: targetStyle
         });
-        target._stun = 0;
+        target._glitch = 0;
 
         // The swarm: everyone starts lapsed with a scattered timer, so
         // the first siege condenses out of a drifting crowd.
