@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="keywords" content="JavaScript, Framework, Animation, Natural, System" />
+  <meta name="description" content="FloraJS simulates natural systems using JavaScript." />
+  <meta name="viewport" content = "user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name='apple-mobile-web-app-capable' content='yes' />
+  <meta property='og:title' content='FloraJS' />
+  <meta property='og:url' content='http://www.florajs.com' />
+  <meta property='og:site_name' content='FloraJS' />
+  <title>FloraJS | Simulate natural systems with JavaScript</title>
+  <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+  <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+
+      /*
+       * ODYSSEY — influence as a swarm dynamic, grounded in a real
+       * narrative.
+       *
+       * One target word wanders slowly, large and bright. A swarm of
+       * smaller words besieges it. Unlike predation (Sheep vs. Wolves,
+       * Flora.Sim.Evolution), influence is ACCUMULATED, not instant:
+       * the target carries a pressure meter that fills while enough of
+       * the swarm crowds inside its radius and drains when the siege
+       * thins. Only sustained pressure transforms the word.
+       *
+       * Each chapter runs the same arc:
+       *   1. SIEGE     - swarm S besieges target T; T trembles and
+       *                  swells as pressure builds.
+       *   2. TRANSFORM - T becomes the next word on its journey; a
+       *                  stunned beat before it wanders on.
+       *   3. RELEASE   - every S drops its seekTarget at once and
+       *                  drifts, dimmed. The collective loss of purpose
+       *                  right after the payoff.
+       *   4. RECRUIT   - each instance independently, on its own
+       *                  randomized timer, becomes the next chapter's
+       *                  swarm word and takes up the new siege. A few
+       *                  never convert: remnants of old chapters haunt
+       *                  the field (and are the seed for a future
+       *                  competing-swarms version — flip their
+       *                  allegiance and the old guard pulls the target
+       *                  BACK along its journey).
+       *
+       * The words are grounded in The Odyssey: the target's biography
+       * tracks Odysseus' inner state through the epic's episodes, each
+       * besieged by that episode's pressure (lotus, boast, waves,
+       * siren-song ... suitors), ending in restoration: "recognition"
+       * turns "stranger" back into "Odysseus". Then the bard begins
+       * the tale again.
+       *
+       * -- v2: LLM orchestration over a real vector space ------------
+       * This POC bakes the chapter table below. The intended v2
+       * replaces requestNextChapter() with a real, ROLLING Anthropic
+       * API call (fired when pressure crosses ~70%, so the next
+       * chapter arrives before the transformation lands):
+       *
+       *   - The LLM is the stage manager: given the story so far, it
+       *     chooses the next episode's swarm word and the target's
+       *     next state, at temperature, so each run is a different
+       *     reading of the same voyage.
+       *   - Grounding tool: a `search_odyssey` tool backed by a vector
+       *     space over a public-domain translation (e.g. Butler 1900,
+       *     Project Gutenberg). The embeddings are precomputed offline
+       *     and shipped as a static file (a few thousand passages,
+       *     quantized, ~1-2MB); cosine similarity runs client-side, so
+       *     the whole thing still works on GitHub Pages with a
+       *     user-supplied key — no server. Chapters can then cite the
+       *     passage their words came from.
+       *   - Semantic distance as physics: the pressure required for
+       *     T -> T' can scale with embedding distance, so nearby words
+       *     tip easily and big semantic leaps demand long sieges.
+       *   - The harness is corpus-agnostic: swap the embedding file
+       *     for Moby-Dick or Ovid's Metamorphoses and it's a series.
+       *
+       * -- POC simplifications ---------------------------------------
+       *   - Chapter table hand-derived from the epic's episodes.
+       *   - Pressure = count of active swarm within a fixed radius,
+       *     O(n) per frame over ~320 agents.
+       *   - Fixed pressure threshold (no semantic distance yet).
+       *   - Remnants drift forever; no competing swarms yet.
+       *   - Chain restarts when the tale ends.
+       */
+
+      // The look leans on the canvas renderer's layered text;
+      // ?renderer=dom runs the same scene as live DOM text nodes.
+      if (!/[?&]renderer=dom/.test(window.location.search)) {
+        Flora.setRenderer(new Flora.CanvasRenderer());
+      }
+
+      var SWARM_SIZE = 320;
+      var SIEGE_RADIUS = 130;   // "surrounding" = active swarm within this range
+      var QUORUM = 28;          // how many it takes to apply pressure
+      var FILL = 1 / 600;       // ~10s of sustained quorum to transform
+      var DRAIN = 1 / 400;      // pressure decays faster than it builds
+      var STUN_FRAMES = 120;    // the target's stunned beat after transforming
+      var RECRUIT_MIN = 150;    // frames until a lapsed word re-enlists...
+      var RECRUIT_MAX = 600;    // ...sampled per instance, so sieges condense
+      var REMNANT_CHANCE = 0.05; // the long tail that never converts
+
+      var rand = Flora.Utils.getRandomNumber;
+
+      // ---- The tale (v2: authored by a grounded, rolling LLM) ------
+
+      var TARGET_START = 'resolve';
+      var CHAPTERS = [
+        { episode: 'the Lotus-eaters',     swarm: 'lotus',       becomes: 'languor' },
+        { episode: 'the Cyclops',          swarm: 'boast',       becomes: 'pride' },
+        { episode: "Poseidon's sea",       swarm: 'waves',       becomes: 'wandering' },
+        { episode: "Circe's isle",         swarm: 'enchantment', becomes: 'surrender' },
+        { episode: 'the Underworld',       swarm: 'shades',      becomes: 'grief' },
+        { episode: 'the Sirens',           swarm: 'siren-song',  becomes: 'longing' },
+        { episode: 'Scylla and Charybdis', swarm: 'terror',      becomes: 'endurance' },
+        { episode: 'the cattle of Helios', swarm: 'hunger',      becomes: 'ruin' },
+        { episode: "Calypso's island",     swarm: 'promises',    becomes: 'yearning' },
+        { episode: 'the Phaeacian court',  swarm: 'songs',       becomes: 'stranger' },
+        { episode: 'the hall of suitors',  swarm: 'suitors',     becomes: 'vengeance' },
+        { episode: 'the recognition',      swarm: 'recognition', becomes: 'Odysseus' }
+      ];
+
+      var chapterIndex = 0;
+      var nextChapterRequested = false;
+
+      // v2: this is the seam for the real rolling call — an async
+      // Anthropic API request (with the search_odyssey vector tool)
+      // that must resolve before pressure hits 100%. Here the table
+      // above stands in for the model.
+      function requestNextChapter() {
+        nextChapterRequested = true;
+      }
+
+      function currentChapter() {
+        return CHAPTERS[chapterIndex];
+      }
+
+      // ---- Scene state ---------------------------------------------
+
+      var target;
+      var swarm = [];
+      var pressure = 0;
+      var story = [TARGET_START];
+      var resetTaleAfterStun = false;
+
+      // ---- Swarm behavior ------------------------------------------
+
+      function swarmStep() {
+        // Lapsed words re-enlist for the current chapter when their
+        // personal timer comes up (remnants never do).
+        if (this._state === 'lapsed' && Flora.System.clock >= this._recruitAt) {
+          enlist(this);
+        }
+        // Without a target, drift.
+        if (!this.seekTarget) {
+          this._wander = (this._wander || 0) + rand(-0.3, 0.3, true);
+          this.applyForce(new Flora.Vector(
+              Math.cos(this._wander) * 0.15, Math.sin(this._wander) * 0.15));
+        }
+      }
+
+      function swarmStyle() {
+        this.opacity = this._state === 'active' ? 0.85 :
+            this._state === 'lapsed' ? 0.3 : 0.15;
+      }
+
+      function enlist(agent) {
+        agent._state = 'active';
+        agent.text = currentChapter().swarm;
+        agent.seekTarget = target;
+        agent.flocking = true;
+      }
+
+      // The collective loss of purpose after a transformation. A few
+      // instances keep their old word forever.
+      function release() {
+        for (var i = 0; i < swarm.length; i++) {
+          var a = swarm[i];
+          if (a._state !== 'active') continue;
+          a.seekTarget = null;
+          a.flocking = false;
+          if (Math.random() < REMNANT_CHANCE) {
+            a._state = 'remnant';
+          } else {
+            a._state = 'lapsed';
+            a._recruitAt = Flora.System.clock + rand(RECRUIT_MIN, RECRUIT_MAX);
+          }
+        }
+      }
+
+      // ---- The target ----------------------------------------------
+
+      function targetStep() {
+        if (this._stun > 0) {
+          this._stun--;
+          this.velocity.mult(0); // a stunned beat: hold still
+          if (this._stun === 0 && resetTaleAfterStun) {
+            resetTaleAfterStun = false;
+            this.text = TARGET_START; // the bard begins the tale again
+            story = [TARGET_START];
+            // When the tale is retold, even the remnants rejoin the
+            // audience — without this, 5% attrition per chapter
+            // compounds until too few actives remain to meet QUORUM
+            // and the siege stalls forever.
+            for (var i = 0; i < swarm.length; i++) {
+              if (swarm[i]._state === 'remnant') {
+                swarm[i]._state = 'lapsed';
+                swarm[i]._recruitAt = Flora.System.clock + rand(RECRUIT_MIN, RECRUIT_MAX);
+              }
+            }
+          }
+        }
+        // Tremble and swell under pressure; pulse when transformed.
+        this.angle = rand(-10, 10, true) * pressure;
+        this.scale = 1 + pressure * 0.15 +
+            (this._stun > 0 ? 0.5 * (this._stun / STUN_FRAMES) : 0);
+      }
+
+      function transform() {
+        var chapter = currentChapter();
+        target.text = chapter.becomes;
+        target._stun = STUN_FRAMES;
+        story.push(chapter.becomes);
+        pressure = 0;
+        nextChapterRequested = false;
+        chapterIndex = (chapterIndex + 1) % CHAPTERS.length;
+        if (chapterIndex === 0) {
+          resetTaleAfterStun = true; // the tale has ended; retell it
+        }
+        release();
+      }
+
+      // ---- Pressure + narration (runs once per frame) --------------
+
+      var statusEl;
+      function manageScene() {
+        var near = 0;
+        for (var i = 0; i < swarm.length; i++) {
+          if (swarm[i]._state === 'active' &&
+              swarm[i].location.distance(target.location) < SIEGE_RADIUS) {
+            near++;
+          }
+        }
+
+        if (target._stun === 0) {
+          pressure = near >= QUORUM ?
+              Math.min(1, pressure + FILL) :
+              Math.max(0, pressure - DRAIN);
+        }
+
+        // v2: fire the rolling LLM request here, while the siege is
+        // still building, so the next chapter is ready in time.
+        if (pressure >= 0.7 && !nextChapterRequested) {
+          requestNextChapter();
+        }
+
+        if (pressure >= 1) {
+          transform();
+        }
+
+        updateStatus(near);
+      }
+
+      function updateStatus(near) {
+        if (Flora.System.clock % 15 !== 0) return;
+        if (!statusEl) {
+          statusEl = document.createElement('div');
+          statusEl.style.cssText = 'position: fixed; top: 8px; left: 8px;' +
+              'z-index: 1001; color: #ccc; font: 12px Helvetica, sans-serif;' +
+              'background: rgba(0,0,0,0.5); padding: 6px 8px; border-radius: 4px;' +
+              'white-space: pre; pointer-events: none;';
+          document.body.appendChild(statusEl);
+        }
+        var chapter = currentChapter();
+        var meter = '';
+        for (var i = 0; i < 10; i++) {
+          meter += i < Math.round(pressure * 10) ? '▓' : '░';
+        }
+        var recent = story.slice(-4).join(' → ');
+        statusEl.textContent =
+            'THE ODYSSEY · ' + chapter.episode + '\n' +
+            '"' + chapter.swarm + '" besieges "' + target.text + '"  ' +
+            meter + '  (' + near + ' near)\n' +
+            recent + (story.length < CHAPTERS.length + 1 ? ' → ?' : '');
+      }
+
+      // ---- Setup ----------------------------------------------------
+
+      Flora.System.setup(function() {
+        var world = this.add('World', {
+          gravity: new Flora.Vector(),
+          c: 0,
+          color: [14, 14, 18]
+        });
+
+        // The target: one word, large and bright, wandering slowly
+        // from the center. pointToDirection off so the pressure
+        // tremble owns its angle.
+        target = this.add('Walker', {
+          text: TARGET_START,
+          width: 60,
+          height: 34,
+          color: [255, 255, 255],
+          maxSpeed: 0.9,
+          perlinSpeed: 0.002,
+          pointToDirection: false,
+          wrapWorldEdges: true,
+          location: new Flora.Vector(world.width / 2, world.height / 2),
+          beforeStep: targetStep
+        });
+        target._stun = 0;
+
+        // The swarm: everyone starts lapsed with a scattered timer, so
+        // the first siege condenses out of a drifting crowd.
+        for (var i = 0; i < SWARM_SIZE; i++) {
+          var grey = 110 + rand(0, 4) * 20;
+          var agent = this.add('Agent', {
+            text: currentChapter().swarm,
+            width: 14,
+            height: rand(11, 17),
+            color: [grey, grey, grey],
+            maxSpeed: rand(3, 6),
+            maxSteeringForce: rand(1, 3, true) * 0.4,
+            flocking: false,
+            desiredSeparation: 20,
+            separateStrength: 1.1,
+            wrapWorldEdges: true,
+            velocity: new Flora.Vector(rand(-3, 3, true), rand(-3, 3, true)),
+            location: new Flora.Vector(rand(0, world.width), rand(0, world.height)),
+            beforeStep: swarmStep,
+            afterStep: swarmStyle
+          });
+          agent._state = 'lapsed';
+          agent._recruitAt = Flora.System.clock + rand(30, RECRUIT_MAX);
+          swarm.push(agent);
+        }
+
+        this.add('Caption', {
+          text: 'Flora.Sim.Odyssey',
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'top center'
+        });
+
+        this.add('InputMenu', {
+          opacity: 0.4,
+          borderColor: 'transparent',
+          position: 'bottom center'
+        });
+      });
+
+      Flora.System.loop(manageScene);
+    </script>
+  </body>
+</html>
